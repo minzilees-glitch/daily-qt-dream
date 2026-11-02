@@ -1,1 +1,59 @@
-# daily-qt-dream
+# DAILY QT
+
+매일 Quiet Time을 기록하고, 순(그룹) 참여 현황과 월간 랭킹을 확인하는 웹 앱 **Phase 1 프론트엔드 프로토타입**입니다.
+
+> 실제 카카오 로그인 / Supabase는 포함되어 있지 않습니다. 테스트 로그인만 제공합니다.
+
+## 기술 스택
+
+- Next.js (App Router) + TypeScript + Tailwind CSS
+- Lucide React
+- Mock 데이터 (`src/lib/mock-data`) — 약 300명 / 30순 / 최근 3개월 QT
+
+## 실행 방법
+
+```bash
+npm install
+npm run dev
+```
+
+브라우저에서 [http://localhost:3000](http://localhost:3000) 을 엽니다.
+
+프로덕션 빌드:
+
+```bash
+npm run build
+npm start
+```
+
+## 테스트 로그인
+
+1. 앱 실행 후 `/login` 으로 이동합니다.
+2. **「테스트로 시작하기」** 버튼을 누릅니다. (실제 카카오 로그인이 아님을 화면에 명시)
+3. 테스트 계정 `테스트유저` (사랑순, 관리자)로 홈에 입장합니다.
+
+로그아웃은 마이페이지(`/me`)에서 할 수 있습니다. 세션은 브라우저 `localStorage`에만 저장됩니다.
+
+## 주요 화면
+
+| 경로 | 설명 |
+|------|------|
+| `/login` | 테스트 로그인 |
+| `/home` | 홈 대시보드 |
+| `/qt` | 오늘의 QT 체크 · 묵상 |
+| `/history` | 나의 QT 월간 캘린더 |
+| `/group` | 우리 순 참여 현황 |
+| `/ranking` | 전체 순 월간 랭킹 |
+| `/me` | 마이페이지 |
+| `/admin` | 관리자(Mock) — 멤버/순/시상 |
+
+## 참고
+
+- 날짜·집계 기준: **Asia/Seoul**
+- 랭킹 참여율 = 순 전체 QT 완료 수 ÷ (인원 × 집계 일수) × 100
+- 이번 달은 오늘까지, 지난달은 전체 일수 기준
+- 타 순원의 묵상 내용은 노출하지 않습니다
+
+## 라이선스
+
+Private prototype.
