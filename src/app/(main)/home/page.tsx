@@ -107,9 +107,9 @@ export default function HomePage() {
 
           <Link
             href="/qt"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-cta px-5 py-3.5 text-[15px] font-semibold text-white shadow-[var(--shadow-cta)] transition hover:brightness-105"
+            className="btn-cta inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-cta px-5 py-3.5 text-[15px] font-semibold !text-white shadow-[var(--shadow-cta)] transition hover:brightness-105 [&_svg]:!text-white"
           >
-            <PenLine size={18} strokeWidth={1.75} />
+            <PenLine size={18} strokeWidth={1.75} className="text-white" />
             {doneToday ? "오늘 기록 수정하기" : "오늘의 QT 작성하기"}
           </Link>
         </SoftCard>

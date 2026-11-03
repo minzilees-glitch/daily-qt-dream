@@ -28,10 +28,22 @@
   --color-sky-light: var(--sky-light);
   --color-cta: var(--cta);
   --color-ivory: var(--ivory);
+  --color-white: #ffffff;
   --color-pure-white: var(--white);
   --color-text-main: var(--text-main);
   --color-text-secondary: var(--text-secondary);
   --font-sans: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+
+/* Filled CTA surfaces: label + icons always white */
+.bg-cta,
+.btn-cta {
+  color: #ffffff !important;
+}
+.bg-cta svg,
+.btn-cta svg {
+  color: #ffffff !important;
+  stroke: currentColor;
 }
 
 * {

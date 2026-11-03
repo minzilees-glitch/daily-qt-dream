@@ -62,7 +62,7 @@ export function QtCalendar({
               aria-pressed={selected}
               className={`relative flex aspect-square flex-col items-center justify-center rounded-2xl text-sm transition ${
                 selected
-                  ? "bg-cta text-white shadow-[var(--shadow-cta)]"
+                  ? "bg-cta !text-white shadow-[var(--shadow-cta)]"
                   : done
                     ? "bg-sky-light text-text-main"
                     : future
