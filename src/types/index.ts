@@ -43,6 +43,8 @@ export interface QtReadingRange {
   date: string; // YYYY-MM-DD
   range: string; // e.g. "창세기 1:1–2:3"
   title?: string;
+  /** Full mock scripture text for the day’s reading. */
+  passage?: string;
 }
 
 export interface MonthlyAward {
