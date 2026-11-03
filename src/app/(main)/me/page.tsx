@@ -133,7 +133,8 @@ export default function MePage() {
       </PrimaryButton>
 
       <p className="mt-4 text-center text-xs text-text-secondary">
-        세션은 이 브라우저 localStorage에만 저장됩니다. (프로토타입)
+        로그인 세션은 이 브라우저 localStorage에 저장됩니다. QT 기록은
+        Supabase가 설정되면 DB에 저장되고, 없으면 로컬로 대체됩니다.
       </p>
     </div>
   );

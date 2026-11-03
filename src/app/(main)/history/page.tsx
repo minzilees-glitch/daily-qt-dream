@@ -235,8 +235,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           <QtEntryForm
             key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
             initial={selectedEntry}
-            onSave={(fields) => {
-              const res = saveEntry(selected, fields);
+            onSave={async (fields) => {
+              const res = await saveEntry(selected, fields);
               showToast(res.message);
               if (res.ok) setEditing(false);
             }}
@@ -250,8 +250,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             <QtEntryForm
               key={`hist-new-${selected}`}
               initial={null}
-              onSave={(fields) => {
-                const res = saveEntry(selected, fields);
+              onSave={async (fields) => {
+                const res = await saveEntry(selected, fields);
                 showToast(res.message);
               }}
             />
@@ -266,8 +266,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         confirmLabel="삭제"
         cancelLabel="취소"
         onCancel={() => setConfirmOpen(false)}
-        onConfirm={() => {
-          const res = clearEntry(selected);
+        onConfirm={async () => {
+          const res = await clearEntry(selected);
           showToast(res.message);
           setConfirmOpen(false);
           setEditing(false);
