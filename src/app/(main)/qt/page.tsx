@@ -37,7 +37,7 @@ export default function TodayQtPage() {
         <Link
           href="/home"
           aria-label="홈으로"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-[var(--shadow-soft)]"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory shadow-[var(--shadow-soft)]"
         >
           <ArrowLeft size={18} strokeWidth={1.75} />
         </Link>

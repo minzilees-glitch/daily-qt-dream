@@ -67,7 +67,7 @@ export function QtCalendar({
                     ? "bg-sky-light text-text-main"
                     : future
                       ? "text-text-secondary/40"
-                      : "text-text-main hover:bg-white"
+                      : "text-text-main hover:bg-ivory"
               }`}
             >
               <span className={`font-medium ${isToday && !selected ? "text-sky" : ""}`}>
