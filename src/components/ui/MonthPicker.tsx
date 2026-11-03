@@ -26,7 +26,7 @@ export function MonthPicker({
         aria-label="이전 달"
         disabled={!canPrev}
         onClick={() => canPrev && onChange(prev)}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-text-main shadow-[0_6px_16px_rgba(36,55,70,0.06)] transition disabled:opacity-30"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory text-text-main shadow-[0_6px_16px_rgba(36,55,70,0.06)] transition disabled:opacity-30"
       >
         <ChevronLeft size={18} strokeWidth={1.75} />
       </button>
@@ -38,7 +38,7 @@ export function MonthPicker({
         aria-label="다음 달"
         disabled={!canNext}
         onClick={() => canNext && onChange(next)}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-text-main shadow-[0_6px_16px_rgba(36,55,70,0.06)] transition disabled:opacity-30"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory text-text-main shadow-[0_6px_16px_rgba(36,55,70,0.06)] transition disabled:opacity-30"
       >
         <ChevronRight size={18} strokeWidth={1.75} />
       </button>

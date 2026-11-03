@@ -4,11 +4,12 @@
   --sky: #78bdec;
   --sky-secondary: #83aeee;
   --sky-light: #e8f3fb;
+  /* Surface swap (Phase 1 polish): page = white, cards = ivory */
   --ivory: #faf8f3;
   --white: #ffffff;
   --text-main: #243746;
   --text-secondary: #768896;
-  --gradient-hero: linear-gradient(180deg, #83bff0 0%, #d9edf9 58%, #faf8f3 100%);
+  --gradient-hero: linear-gradient(180deg, #83bff0 0%, #d9edf9 58%, #ffffff 100%);
   --shadow-soft: 0 10px 30px rgba(36, 55, 70, 0.06);
   --shadow-nav: 0 12px 28px rgba(120, 189, 236, 0.35);
   --radius-card: 24px;
@@ -23,6 +24,7 @@
   --color-sky-secondary: var(--sky-secondary);
   --color-sky-light: var(--sky-light);
   --color-ivory: var(--ivory);
+  --color-pure-white: var(--white);
   --color-text-main: var(--text-main);
   --color-text-secondary: var(--text-secondary);
   --font-sans: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
@@ -106,7 +108,7 @@ a {
 }
 
 .soft-card {
-  background: var(--white);
+  background: var(--ivory);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-soft);
 }
@@ -117,7 +119,7 @@ a {
   min-height: 100dvh;
   margin: 0 auto;
   position: relative;
-  background: var(--ivory);
+  background: var(--white);
   overflow-x: hidden;
 }
 

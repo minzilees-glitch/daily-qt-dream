@@ -8,7 +8,7 @@ export function StatRow({
       {items.map((item) => (
         <div
           key={item.label}
-          className="rounded-[20px] bg-white/80 px-3 py-3 text-center shadow-[var(--shadow-soft)] backdrop-blur"
+          className="rounded-[20px] bg-ivory/80 px-3 py-3 text-center shadow-[var(--shadow-soft)] backdrop-blur"
         >
           <p className="text-[11px] font-medium text-text-secondary">{item.label}</p>
           <p className="mt-1 text-lg font-semibold tracking-tight text-text-main">
