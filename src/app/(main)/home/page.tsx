@@ -8,7 +8,7 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { QtCalendar } from "@/components/qt/QtCalendar";
-import { ReadingRangeInline } from "@/components/qt/ReadingRangeInline";
+import { ReadingPassageBlock } from "@/components/qt/ReadingPassageBlock";
 import { useApp } from "@/lib/app-context";
 import { getReadingForDate } from "@/lib/mock-data";
 import {
@@ -72,7 +72,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="hero-gradient px-5 pb-8">
+      <section className="hero-gradient px-5 pb-10 pt-1">
         <AppHeader
           light
           homeLayout
@@ -81,19 +81,24 @@ export default function HomePage() {
           groupName={group?.name ?? "순"}
         />
 
-        <SoftCard className="animate-fade-up mt-6 space-y-4" padding="p-5">
+        <SoftCard
+          className="animate-fade-up mt-7 space-y-5"
+          padding="p-6"
+        >
           <div>
-            <p className="text-sm font-medium text-text-secondary">오늘 QT 했나요?</p>
-            <h2 className="mt-1 text-lg font-semibold tracking-tight text-text-main">
+            <p className="text-[15px] font-medium text-text-secondary">
+              오늘 QT 했나요?
+            </p>
+            <h2 className="mt-1.5 text-[22px] font-bold leading-snug tracking-tight text-text-main">
               오늘 묵상할 하나님 말씀
             </h2>
           </div>
 
-          <ReadingRangeInline reading={reading} label="본문" />
+          <ReadingPassageBlock reading={reading} label="본문" />
 
           <Link
             href="/qt"
-            className="btn-cta inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-cta px-5 py-3.5 text-[15px] font-semibold !text-white shadow-none transition hover:brightness-105 [&_svg]:!text-white"
+            className="btn-cta inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-cta px-5 py-4 text-[15px] font-semibold !text-white shadow-none transition hover:brightness-105 [&_svg]:!text-white"
           >
             <PenLine size={18} strokeWidth={1.75} className="text-white" />
             {doneToday ? "오늘 기록 수정하기" : "오늘의 QT 작성하기"}
@@ -101,10 +106,10 @@ export default function HomePage() {
         </SoftCard>
       </section>
 
-      <section className="space-y-5 px-5 pt-2">
-        <SoftCard id="calendar" className="scroll-mt-6 space-y-4">
+      <section className="space-y-4 px-5 pb-2 pt-1">
+        <SoftCard id="calendar" className="scroll-mt-6 space-y-3" padding="p-4">
           <div>
-            <h3 className="mb-3 text-[16px] font-semibold text-text-main">
+            <h3 className="mb-2 text-[15px] font-semibold text-text-secondary">
               나의 QT 캘린더
             </h3>
             <MonthPicker
