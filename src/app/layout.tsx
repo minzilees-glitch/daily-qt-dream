@@ -24,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
         />
       </head>
-      <body className="min-h-full font-sans text-text-main">
+      <body className="min-h-full font-sans antialiased text-text-main">
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

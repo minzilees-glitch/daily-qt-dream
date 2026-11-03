@@ -12,9 +12,9 @@
   --text-main: #243746;
   --text-secondary: #768896;
   --gradient-hero: linear-gradient(180deg, #5fbcfc 0%, #d9edf9 58%, #ffffff 100%);
-  --shadow-soft: 0 10px 30px rgba(36, 55, 70, 0.06);
-  --shadow-nav: 0 12px 28px rgba(95, 188, 252, 0.35);
-  --shadow-cta: 0 10px 24px rgba(0, 140, 255, 0.35);
+  /* Soft elevation: tighter blur, slightly more opaque (app-wide) */
+  --shadow-soft: 0 6px 16px rgba(36, 55, 70, 0.1);
+  --shadow-nav: 0 10px 22px rgba(95, 188, 252, 0.32);
   --radius-card: 24px;
   --radius-btn: 18px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -32,13 +32,16 @@
   --color-pure-white: var(--white);
   --color-text-main: var(--text-main);
   --color-text-secondary: var(--text-secondary);
-  --font-sans: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --font-sans:
+    "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR",
+    sans-serif;
 }
 
-/* Filled CTA surfaces: label + icons always white */
+/* Filled CTA surfaces: label + icons always white, no shadow */
 .bg-cta,
 .btn-cta {
   color: #ffffff !important;
+  box-shadow: none !important;
 }
 .bg-cta svg,
 .btn-cta svg {
@@ -56,7 +59,9 @@ body {
   min-height: 100%;
   background: #eef3f7;
   color: var(--text-main);
-  font-family: var(--font-sans);
+  font-family:
+    "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -151,8 +156,8 @@ a {
     margin-top: 24px;
     margin-bottom: 24px;
     border-radius: 32px;
-    /* Soft elevated frame — large blur, low opacity (은은하게) */
-    box-shadow: 0 18px 48px rgba(36, 55, 70, 0.08);
+    /* Same soft elevation token as cards — 은은하게 */
+    box-shadow: var(--shadow-soft);
     overflow: hidden;
   }
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
@@ -27,11 +28,18 @@ import {
   userMonthStats,
 } from "@/lib/stats";
 
-export default function HistoryPage() {
+function parseDateParam(raw: string | null): string | null {
+  if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
+  return raw;
+}
+
+function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const { currentUser, completions, isCompleted, getEntry, saveEntry, clearEntry } =
     useApp();
-  const [ym, setYm] = useState(currentYearMonth());
-  const [selected, setSelected] = useState(todaySeoul());
+
+  const [ym, setYm] = useState(yearMonthOf(initialDate));
+  const [selected, setSelected] = useState(initialDate);
+  const [calendarExpanded, setCalendarExpanded] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -95,7 +103,15 @@ export default function HistoryPage() {
       <section className="hero-gradient px-5 pb-6">
         <AppHeader light subtitle="나의 QT 기록" />
         <SoftCard className="mt-5 space-y-4">
-          <MonthPicker value={ym} onChange={setYm} min={minYm} max={maxYm} />
+          <MonthPicker
+            value={ym}
+            onChange={(next) => {
+              setYm(next);
+              setCalendarExpanded(false);
+            }}
+            min={minYm}
+            max={maxYm}
+          />
           <div className="flex items-center justify-between rounded-[18px] bg-sky-light px-4 py-3">
             <div>
               <p className="text-xs text-text-secondary">누적 완료</p>
@@ -115,7 +131,26 @@ export default function HistoryPage() {
             completedDates={completedDates}
             selectedDate={selected}
             onSelect={selectDate}
+            collapsed={!calendarExpanded}
           />
+          <button
+            type="button"
+            onClick={() => setCalendarExpanded((v) => !v)}
+            className="flex w-full items-center justify-center gap-1.5 rounded-[14px] bg-white/70 py-2.5 text-sm font-medium text-text-secondary transition hover:bg-white"
+            aria-expanded={calendarExpanded}
+          >
+            {calendarExpanded ? (
+              <>
+                최근 2주만 보기
+                <ChevronUp size={16} strokeWidth={1.75} />
+              </>
+            ) : (
+              <>
+                전체 달 보기
+                <ChevronDown size={16} strokeWidth={1.75} />
+              </>
+            )}
+          </button>
         </SoftCard>
       </section>
 
@@ -146,7 +181,7 @@ export default function HistoryPage() {
                 <MoreHorizontal size={18} strokeWidth={1.75} />
               </button>
               {menuOpen ? (
-                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-2xl bg-white py-1 shadow-[0_12px_30px_rgba(36,55,70,0.14)]">
+                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-2xl bg-white py-1 shadow-[var(--shadow-soft)]">
                   <button
                     type="button"
                     className="block w-full px-4 py-2.5 text-left text-sm font-medium text-text-main hover:bg-sky-light"
@@ -221,5 +256,28 @@ export default function HistoryPage() {
 
       <Toast message={toast} />
     </div>
+  );
+}
+
+function HistoryParamsGate() {
+  const searchParams = useSearchParams();
+  const dateParam = parseDateParam(searchParams.get("date"));
+  const initialDate = dateParam ?? todaySeoul();
+  return (
+    <HistoryPageInner key={dateParam ?? "today"} initialDate={initialDate} />
+  );
+}
+
+export default function HistoryPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-5 pt-16 text-center text-sm text-text-secondary">
+          기록을 불러오는 중…
+        </div>
+      }
+    >
+      <HistoryParamsGate />
+    </Suspense>
   );
 }

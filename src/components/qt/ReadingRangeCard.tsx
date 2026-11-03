@@ -1,7 +1,7 @@
 import { BookOpen } from "lucide-react";
 import type { QtReadingRange } from "@/types";
-import { SoftCard } from "@/components/ui/SoftCard";
 
+/** Reading-range card — soft sky wash milestone (not ivory SoftCard). */
 export function ReadingRangeCard({
   reading,
   compact = false,
@@ -10,9 +10,13 @@ export function ReadingRangeCard({
   compact?: boolean;
 }) {
   return (
-    <SoftCard padding={compact ? "p-4" : "p-5"}>
+    <div
+      className={`rounded-[24px] bg-sky-light shadow-[var(--shadow-soft)] ${
+        compact ? "p-4" : "p-5"
+      }`}
+    >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-light text-sky">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-text-main">
           <BookOpen size={18} strokeWidth={1.75} aria-hidden />
         </div>
         <div className="min-w-0">
@@ -25,6 +29,6 @@ export function ReadingRangeCard({
           ) : null}
         </div>
       </div>
-    </SoftCard>
+    </div>
   );
 }
