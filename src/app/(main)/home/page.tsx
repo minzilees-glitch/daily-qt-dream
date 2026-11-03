@@ -88,7 +88,7 @@ export default function HomePage() {
           <div className="mt-5">
             <Link
               href="/qt"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-sky px-5 py-3.5 text-[15px] font-semibold text-white shadow-[0_10px_24px_rgba(120,189,236,0.35)] transition hover:brightness-105"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-sky px-5 py-3.5 text-[15px] font-semibold text-white shadow-[0_10px_24px_rgba(95,188,252,0.35)] transition hover:brightness-105"
             >
               <PenLine size={18} strokeWidth={1.75} />
               {doneToday ? "오늘 기록 수정하기" : "오늘의 QT 작성하기"}

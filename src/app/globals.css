@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --sky: #78bdec;
+  --sky: #5fbcfc;
   --sky-secondary: #83aeee;
   --sky-light: #e8f3fb;
   /* Surface swap (Phase 1 polish): page = white, cards = ivory */
@@ -9,9 +9,9 @@
   --white: #ffffff;
   --text-main: #243746;
   --text-secondary: #768896;
-  --gradient-hero: linear-gradient(180deg, #83bff0 0%, #d9edf9 58%, #ffffff 100%);
+  --gradient-hero: linear-gradient(180deg, #5fbcfc 0%, #d9edf9 58%, #ffffff 100%);
   --shadow-soft: 0 10px 30px rgba(36, 55, 70, 0.06);
-  --shadow-nav: 0 12px 28px rgba(120, 189, 236, 0.35);
+  --shadow-nav: 0 12px 28px rgba(95, 188, 252, 0.35);
   --radius-card: 24px;
   --radius-btn: 18px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
