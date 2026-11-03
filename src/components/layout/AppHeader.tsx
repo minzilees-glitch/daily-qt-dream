@@ -7,7 +7,7 @@ export function AppHeader({
   title = "드림 매일큐티",
   subtitle,
   light = false,
-  /** Home: date largest, brand small, avatar + user/group stacked on the left. */
+  /** Home: large date left, profile cluster top-right beside the date row. */
   homeLayout = false,
   dateLabel,
   userName,
@@ -24,11 +24,11 @@ export function AppHeader({
   if (homeLayout) {
     return (
       <header
-        className={`pt-[calc(12px+var(--safe-top))] ${
+        className={`flex items-start justify-between gap-3 pt-[calc(12px+var(--safe-top))] ${
           light ? "text-white" : "text-text-main"
         }`}
       >
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p
             className={`text-[22px] font-bold leading-snug tracking-tight ${
               light ? "text-white" : "text-text-main"
@@ -45,34 +45,34 @@ export function AppHeader({
           </p>
         </div>
 
-        <div className="mt-5 flex items-start gap-3">
-          <Link
-            href="/me"
-            aria-label="마이페이지"
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition ${
-              light
-                ? "bg-white/20 text-white hover:bg-white/30"
-                : "bg-ivory text-sky shadow-[var(--shadow-soft)] hover:bg-sky-light"
-            }`}
-          >
-            <UserRound size={22} strokeWidth={1.75} />
-          </Link>
-          <div className="min-w-0 pt-0.5">
+        <div className="flex shrink-0 items-center gap-2.5 pt-0.5">
+          <div className="min-w-0 text-right">
             <p
-              className={`truncate text-[15px] font-semibold tracking-tight ${
+              className={`truncate text-[13px] font-semibold tracking-tight ${
                 light ? "text-white" : "text-text-main"
               }`}
             >
               {userName}
             </p>
             <p
-              className={`mt-0.5 truncate text-sm ${
+              className={`mt-0.5 truncate text-xs ${
                 light ? "text-white/80" : "text-text-secondary"
               }`}
             >
               {groupName}
             </p>
           </div>
+          <Link
+            href="/me"
+            aria-label="마이페이지"
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
+              light
+                ? "bg-white/20 text-white hover:bg-white/30"
+                : "bg-ivory text-sky shadow-[var(--shadow-soft)] hover:bg-sky-light"
+            }`}
+          >
+            <UserRound size={20} strokeWidth={1.75} />
+          </Link>
         </div>
       </header>
     );
