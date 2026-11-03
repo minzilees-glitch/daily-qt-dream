@@ -301,7 +301,7 @@ export function SkyWalkers({
             <p className="mt-1 text-lg font-semibold text-white">{memberCount}명</p>
           </div>
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <p className="text-[11px] text-white/85">빛</p>
+            <p className="text-[11px] text-white/85">우리순 현재</p>
             <div className="mt-1 flex justify-center">
               <LightCount
                 lights={lights}
