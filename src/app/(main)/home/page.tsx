@@ -97,8 +97,19 @@ export default function HomePage() {
         />
 
         <SoftCard className="animate-fade-up mt-7 space-y-5" padding="p-6">
-          <h2 className="text-[16px] font-semibold tracking-[0.04em] text-text-main">
-            {doneToday ? "오늘의 말씀을 묵상했어요." : "오늘의 말씀이 기다리고 있어요."}
+          <h2 className="flex items-center gap-1.5 text-[16px] font-semibold tracking-[0.04em] text-text-main">
+            <LightIcon
+              active={doneToday}
+              tone={doneToday ? "active" : "inactive"}
+              size={20}
+              justEarned={doneToday}
+              label=""
+            />
+            <span>
+              {doneToday
+                ? "오늘의 말씀을 묵상했어요."
+                : "오늘의 말씀이 기다리고 있어요."}
+            </span>
           </h2>
           <ReadingPassageBlock reading={reading} label="본문" />
 
@@ -145,11 +156,18 @@ export default function HomePage() {
                 : "btn-cta bg-cta inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-[15px] font-semibold !text-white shadow-none transition hover:brightness-105"
             }
           >
-            <LightIcon size={18} tone={doneToday ? "active" : "white"} label="빛" justEarned={lastEarnedDate === today} />
             {doneToday ? (
               <span className="text-[#008CFF]/70">나의 QT보러가기</span>
             ) : (
-              "오늘의 QT 작성하기"
+              <>
+                <LightIcon
+                  size={18}
+                  tone="white"
+                  label="빛"
+                  justEarned={lastEarnedDate === today}
+                />
+                오늘의 QT 작성하기
+              </>
             )}
           </Link>
         </SoftCard>
