@@ -8,7 +8,7 @@ import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
-import { LightIcon } from "@/components/ui/LightIcon";
+import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import {
   QtCalendar,
   isDateInCollapsedCalendar,
@@ -26,11 +26,7 @@ import {
   todaySeoul,
   yearMonthOf,
 } from "@/lib/dates";
-import {
-  buildCompletionSet,
-  formatLights,
-  userMonthStats,
-} from "@/lib/stats";
+import { buildCompletionSet, userMonthStats } from "@/lib/stats";
 
 function parseDateParam(raw: string | null): string | null {
   if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
@@ -134,9 +130,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           <div className="flex items-center justify-between rounded-[18px] bg-sky-light px-4 py-3">
             <div>
               <p className="text-xs text-text-secondary">이번 달 빛</p>
-              <p className="text-lg font-semibold text-text-main">
-                {formatLights(stats.lights)}
-              </p>
+              <LightCount
+                lights={stats.lights}
+                size={20}
+                className="mt-0.5"
+                textClassName="text-lg font-semibold text-text-main"
+              />
             </div>
             <div className="text-right">
               <p className="text-xs text-text-secondary">집계 일수</p>
@@ -179,7 +178,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               <h2 className="text-lg font-semibold text-text-main">
                 {formatDisplayDate(selected)}
               </h2>
-              {!future ? <LightIcon active={selectedCompleted} /> : null}
+              {!future ? (
+                <LightIcon active={selectedCompleted} size={22} />
+              ) : null}
             </div>
             {future ? (
               <p className="mt-1 text-sm text-text-secondary">

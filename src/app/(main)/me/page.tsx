@@ -17,9 +17,9 @@ import {
   parseYmd,
   todaySeoul,
 } from "@/lib/dates";
+import { LightCount } from "@/components/ui/LightIcon";
 import {
   buildCompletionSet,
-  formatLights,
   userMonthStats,
   userYearDays,
 } from "@/lib/stats";
@@ -60,16 +60,24 @@ export default function MePage() {
         <div className="mt-5 grid grid-cols-2 gap-3">
           <div className="rounded-[18px] bg-sky-light px-3 py-3 text-center">
             <p className="text-xs text-text-secondary">이번 달 빛</p>
-            <p className="mt-1 text-lg font-semibold">
-              {formatLights(month.lights)}
-            </p>
+            <div className="mt-1 flex justify-center">
+              <LightCount
+                lights={month.lights}
+                size={18}
+                textClassName="text-lg font-semibold text-text-main"
+              />
+            </div>
             <p className="text-xs text-text-secondary">{month.possible}일 중</p>
           </div>
           <div className="rounded-[18px] bg-sky-light px-3 py-3 text-center">
             <p className="text-xs text-text-secondary">{year}년 누적</p>
-            <p className="mt-1 text-lg font-semibold">
-              {formatLights(yearDays)}
-            </p>
+            <div className="mt-1 flex justify-center">
+              <LightCount
+                lights={yearDays}
+                size={18}
+                textClassName="text-lg font-semibold text-text-main"
+              />
+            </div>
             <p className="text-xs text-text-secondary">모은 빛</p>
           </div>
         </div>
