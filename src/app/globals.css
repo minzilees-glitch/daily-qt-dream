@@ -12,8 +12,8 @@
   --text-main: #243746;
   --text-secondary: #768896;
   --gradient-hero: linear-gradient(180deg, #5fbcfc 0%, #d9edf9 58%, #ffffff 100%);
-  /* Soft elevation: tighter blur, slightly more opaque (app-wide) */
-  --shadow-soft: 0 6px 16px rgba(36, 55, 70, 0.1);
+  /* Soft elevation: tighter blur, darker/more opaque (app-wide; CTA stays shadowless) */
+  --shadow-soft: 0 6px 16px rgba(36, 55, 70, 0.16);
   --shadow-nav: 0 10px 22px rgba(95, 188, 252, 0.32);
   --radius-card: 24px;
   --radius-btn: 18px;
