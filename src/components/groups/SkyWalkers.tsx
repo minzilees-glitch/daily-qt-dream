@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { User } from "@/types";
 
 const BODY_TONES = [
@@ -14,6 +14,14 @@ const BODY_TONES = [
   "#D4C07A",
 ];
 
+const AVATAR_STYLES = [
+  "avataaars",
+  "lorelei",
+  "notionists",
+  "thumbs",
+  "shapes",
+] as const;
+
 type WalkerState = {
   id: string;
   x: number;
@@ -23,6 +31,12 @@ type WalkerState = {
   bobPhase: number;
   bobSpeed: number;
 };
+
+function avatarUrl(userId: string, index: number): string {
+  const style = AVATAR_STYLES[index % AVATAR_STYLES.length]!;
+  const seed = encodeURIComponent(userId);
+  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundType=gradientLinear&radius=50`;
+}
 
 function seedWalkers(
   members: User[],
@@ -49,6 +63,7 @@ export function SkyWalkers({ members }: { members: User[] }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef<WalkerState[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -120,6 +135,23 @@ export function SkyWalkers({ members }: { members: User[] }) {
     return () => cancelAnimationFrame(raf);
   }, [members]);
 
+  useEffect(() => {
+    if (!selectedId) return;
+    const onDoc = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      const walker = (target as HTMLElement).closest?.("[data-walker-id]");
+      if (walker) return;
+      setSelectedId(null);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("touchstart", onDoc);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("touchstart", onDoc);
+    };
+  }, [selectedId]);
+
   if (members.length === 0) {
     return (
       <div className="flex h-56 items-center justify-center rounded-[24px] bg-sky-light px-4 text-sm text-text-secondary">
@@ -131,13 +163,13 @@ export function SkyWalkers({ members }: { members: User[] }) {
   const visible = members.slice(0, 12);
 
   return (
-    <div className="overflow-hidden rounded-[24px] bg-white">
+    <div className="overflow-hidden rounded-[24px] bg-white shadow-none">
       <div className="relative z-10 px-4 pb-2 pt-4">
         <h2 className="text-[16px] font-semibold tracking-tight text-text-main">
           하늘나라 구름 위
         </h2>
         <p className="mt-1 text-xs text-text-secondary">
-          우리 순이 구름 위를 함께 걸어가요.
+          우리 순이 구름 위를 함께 걸어가요. 얼굴을 누르면 이름을 볼 수 있어요.
         </p>
       </div>
 
@@ -150,20 +182,37 @@ export function SkyWalkers({ members }: { members: User[] }) {
         <div ref={layerRef} className="absolute inset-0">
           {visible.map((u, i) => {
             const tone = BODY_TONES[i % BODY_TONES.length]!;
+            const selected = selectedId === u.id;
             return (
               <div
                 key={u.id}
-                className="absolute left-0 top-0 will-change-transform"
+                data-walker-id={u.id}
+                className="absolute left-0 top-0 z-[1] will-change-transform"
                 style={{ width: 40 }}
               >
-                <div className="flex flex-col items-center">
-                  <div
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[13px] font-semibold text-white"
-                    style={{ background: tone }}
-                    aria-hidden
-                  >
-                    {u.name.slice(0, 1)}
-                  </div>
+                <button
+                  type="button"
+                  className="relative flex w-full flex-col items-center border-0 bg-transparent p-0"
+                  aria-label={`${u.name}${selected ? " 선택됨" : ""}`}
+                  aria-pressed={selected}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedId((cur) => (cur === u.id ? null : u.id));
+                  }}
+                >
+                  {selected ? (
+                    <span className="absolute -top-7 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#243746] px-2.5 py-1 text-[11px] font-medium text-white">
+                      {u.name}
+                    </span>
+                  ) : null}
+                  <img
+                    src={avatarUrl(u.id, i)}
+                    alt=""
+                    width={36}
+                    height={36}
+                    className="h-9 w-9 rounded-full bg-white object-cover"
+                    draggable={false}
+                  />
                   <div data-body className="flex flex-col items-center">
                     <div
                       className="mt-0.5 h-[18px] w-5 rounded-[7px]"
@@ -180,7 +229,7 @@ export function SkyWalkers({ members }: { members: User[] }) {
                       />
                     </div>
                   </div>
-                </div>
+                </button>
               </div>
             );
           })}
