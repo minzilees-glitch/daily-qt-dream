@@ -22,7 +22,6 @@ export function QtCompleteToggle({
       onClick={onToggle}
       className={`flex w-full items-center justify-between gap-4 rounded-[22px] px-5 py-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky focus-visible:ring-offset-2 disabled:opacity-50 ${
         completed
-          ? "bg-sky text-white shadow-[0_12px_28px_rgba(120,189,236,0.35)]"
           ? "bg-sky text-white shadow-[0_12px_28px_rgba(95,188,252,0.35)]"
           : "bg-ivory text-text-main shadow-[var(--shadow-soft)]"
       }`}
