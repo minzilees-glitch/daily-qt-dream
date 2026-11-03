@@ -1,6 +1,6 @@
 import { Trophy } from "lucide-react";
 import type { GroupRankRow } from "@/types";
-import { formatRate } from "@/lib/stats";
+import { formatLights } from "@/lib/stats";
 
 export function RankingList({ rows }: { rows: GroupRankRow[] }) {
   if (rows.length === 0) {
@@ -39,11 +39,11 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
               ) : null}
             </p>
             <p className="mt-0.5 text-xs text-text-secondary">
-              {row.memberCount}명 · 완료 {row.completionCount}/{row.possibleCount}
+              {row.memberCount}명 · 집계 {row.possibleCount}일
             </p>
           </div>
           <p className="shrink-0 text-[15px] font-semibold text-text-main">
-            {formatRate(row.rate)}
+            {formatLights(row.lights)}
           </p>
         </li>
       ))}

@@ -14,7 +14,7 @@ import {
   currentYearMonth,
   formatMonthLabel,
 } from "@/lib/dates";
-import { computeGroupRanking, formatRate } from "@/lib/stats";
+import { computeGroupRanking, formatLights } from "@/lib/stats";
 
 type Tab = "batch" | "groups" | "awards";
 
@@ -290,8 +290,8 @@ export default function AdminPage() {
                 {top?.groupName ?? "-"}
               </p>
               <p className="text-sm text-text-secondary">
-                참여율 {formatRate(top?.rate ?? 0)} · 완료{" "}
-                {top?.completionCount ?? 0}/{top?.possibleCount ?? 0}
+                {formatLights(top?.lights ?? 0)} · 집계{" "}
+                {top?.possibleCount ?? 0}일
               </p>
             </div>
             <PrimaryButton
@@ -300,7 +300,7 @@ export default function AdminPage() {
               disabled={!top}
               onClick={() => {
                 if (!top) return;
-                confirmAward(ym, top.groupId, top.rate);
+                confirmAward(ym, top.groupId, top.lights);
                 showToast(`${formatMonthLabel(ym)} 시상을 확정했습니다.`);
               }}
             >
@@ -310,7 +310,7 @@ export default function AdminPage() {
               <p className="text-center text-xs text-text-secondary">
                 확정됨:{" "}
                 {groups.find((g) => g.id === awardForMonth.groupId)?.name} (
-                {formatRate(awardForMonth.rate)})
+                {formatLights(awardForMonth.lights)})
               </p>
             ) : (
               <p className="text-center text-xs text-text-secondary">

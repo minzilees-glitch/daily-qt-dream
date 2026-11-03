@@ -18,11 +18,12 @@ export function buildCompletionSet(completions: QtCompletion[]): Set<string> {
   return set;
 }
 
+/** One completed QT day = 1 light. */
 export function userMonthStats(
   userId: string,
   yearMonth: string,
   completionSet: Set<string>,
-): { days: number; rate: number; possible: number } {
+): { days: number; lights: number; possible: number } {
   const dates = rankingScopeDays(yearMonth);
   const possible = dates.length;
   const days = dates.filter((d) =>
@@ -30,8 +31,8 @@ export function userMonthStats(
   ).length;
   return {
     days,
+    lights: days,
     possible,
-    rate: possible === 0 ? 0 : (days / possible) * 100,
   };
 }
 
@@ -58,30 +59,28 @@ export function groupMonthStats(
   yearMonth: string,
   completionSet: Set<string>,
 ): {
-  completionCount: number;
+  lights: number;
   possibleCount: number;
-  rate: number;
   memberCount: number;
 } {
   const members = users.filter((u) => u.groupId === groupId);
   const dates = rankingScopeDays(yearMonth);
   const memberCount = members.length;
   const possibleCount = memberCount * dates.length;
-  let completionCount = 0;
+  let lights = 0;
   for (const m of members) {
     for (const d of dates) {
-      if (completionSet.has(completionSetKey(m.id, d))) completionCount += 1;
+      if (completionSet.has(completionSetKey(m.id, d))) lights += 1;
     }
   }
   return {
     memberCount,
-    completionCount,
+    lights,
     possibleCount,
-    rate: possibleCount === 0 ? 0 : (completionCount / possibleCount) * 100,
   };
 }
 
-/** Rank by rate desc. Ties share the same rank (1,2,2,4). */
+/** Rank by light count desc. Ties share the same rank (1,2,2,4). */
 export function computeGroupRanking(
   groups: Group[],
   users: User[],
@@ -97,27 +96,23 @@ export function computeGroupRanking(
       groupId: g.id,
       groupName: g.name,
       memberCount: stats.memberCount,
-      completionCount: stats.completionCount,
+      lights: stats.lights,
       possibleCount: stats.possibleCount,
-      rate: stats.rate,
       isMine: myGroupId ? g.id === myGroupId : false,
     };
   });
 
   rows.sort((a, b) => {
-    if (b.rate !== a.rate) return b.rate - a.rate;
-    if (b.completionCount !== a.completionCount) {
-      return b.completionCount - a.completionCount;
-    }
+    if (b.lights !== a.lights) return b.lights - a.lights;
     return a.groupName.localeCompare(b.groupName, "ko");
   });
 
-  let lastRate = Number.NaN;
+  let lastLights = Number.NaN;
   let lastRank = 0;
   rows.forEach((row, i) => {
-    if (row.rate !== lastRate) {
+    if (row.lights !== lastLights) {
       lastRank = i + 1;
-      lastRate = row.rate;
+      lastLights = row.lights;
     }
     row.rank = lastRank;
   });
@@ -125,8 +120,8 @@ export function computeGroupRanking(
   return rows;
 }
 
-export function formatRate(rate: number): string {
-  return `${rate.toFixed(1)}%`;
+export function formatLights(lights: number): string {
+  return `${lights}빛`;
 }
 
 export function memberDayCounts(

@@ -19,7 +19,7 @@ import {
 } from "@/lib/dates";
 import {
   buildCompletionSet,
-  formatRate,
+  formatLights,
   userMonthStats,
   userYearDays,
 } from "@/lib/stats";
@@ -59,14 +59,18 @@ export default function MePage() {
         </div>
         <div className="mt-5 grid grid-cols-2 gap-3">
           <div className="rounded-[18px] bg-sky-light px-3 py-3 text-center">
-            <p className="text-xs text-text-secondary">이번 달</p>
-            <p className="mt-1 text-lg font-semibold">{month.days}일</p>
-            <p className="text-xs text-text-secondary">{formatRate(month.rate)}</p>
+            <p className="text-xs text-text-secondary">이번 달 빛</p>
+            <p className="mt-1 text-lg font-semibold">
+              {formatLights(month.lights)}
+            </p>
+            <p className="text-xs text-text-secondary">{month.possible}일 중</p>
           </div>
           <div className="rounded-[18px] bg-sky-light px-3 py-3 text-center">
             <p className="text-xs text-text-secondary">{year}년 누적</p>
-            <p className="mt-1 text-lg font-semibold">{yearDays}일</p>
-            <p className="text-xs text-text-secondary">완료 일수</p>
+            <p className="mt-1 text-lg font-semibold">
+              {formatLights(yearDays)}
+            </p>
+            <p className="text-xs text-text-secondary">모은 빛</p>
           </div>
         </div>
       </SoftCard>
