@@ -19,7 +19,7 @@ export function BottomNav() {
       aria-label="하단 메뉴"
       className="pointer-events-none absolute inset-x-0 bottom-0 z-40"
     >
-      <div className="pointer-events-auto grid w-full grid-cols-4 bg-cta pb-[var(--safe-bottom)] shadow-none">
+      <div className="pointer-events-auto grid w-full grid-cols-4 bg-sky pb-[var(--safe-bottom)] shadow-none">
         {TABS.map(({ href, label, icon: Icon }) => {
           const active =
             pathname === href ||

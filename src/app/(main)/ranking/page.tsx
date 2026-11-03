@@ -6,7 +6,7 @@ import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { RankingList } from "@/components/ranking/RankingList";
 import { useApp } from "@/lib/app-context";
-import { addMonths, currentYearMonth, rankingScopeDays } from "@/lib/dates";
+import { addMonths, currentYearMonth } from "@/lib/dates";
 import { computeGroupRanking } from "@/lib/stats";
 
 export default function RankingPage() {
@@ -25,8 +25,6 @@ export default function RankingPage() {
     [groups, users, completions, ym, currentUser?.groupId],
   );
 
-  const scopeDays = rankingScopeDays(ym).length;
-
   if (!currentUser) return null;
 
   return (
@@ -41,9 +39,9 @@ export default function RankingPage() {
             max={currentYearMonth()}
           />
           <p className="text-center text-xs leading-relaxed text-text-secondary">
-            참여율 = 순 전체 QT 완료 수 ÷ (인원 × {scopeDays}일) × 100
+            QT를 완료한 날마다 빛 1개를 모읍니다.
             <br />
-            동률이면 같은 순위입니다. 이번 달은 오늘까지 집계합니다.
+            순 전체 빛 수로 순위를 매깁니다. 동률이면 같은 순위입니다.
           </p>
         </SoftCard>
       </section>

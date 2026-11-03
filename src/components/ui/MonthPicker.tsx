@@ -44,7 +44,7 @@ export function MonthPicker({
       >
         <ChevronLeft size={18} strokeWidth={1.75} />
       </button>
-      <div className="flex min-w-0 items-center justify-center gap-2">
+      <div className="flex min-w-0 items-center justify-center gap-4">
         <p
           className={`text-[17px] font-semibold tracking-tight ${
             light ? "text-white" : "text-text-main"
@@ -56,8 +56,10 @@ export function MonthPicker({
           <button
             type="button"
             onClick={onToday}
-            className={`shrink-0 text-[13px] font-semibold transition hover:brightness-95 ${
-              light ? "text-white" : "text-cta"
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-bold tracking-tight transition hover:brightness-95 ${
+              light
+                ? "bg-white/25 text-white"
+                : "bg-sky-light text-cta"
             }`}
           >
             오늘

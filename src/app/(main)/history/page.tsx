@@ -8,6 +8,7 @@ import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { LightIcon } from "@/components/ui/LightIcon";
 import {
   QtCalendar,
   isDateInCollapsedCalendar,
@@ -27,7 +28,7 @@ import {
 } from "@/lib/dates";
 import {
   buildCompletionSet,
-  formatRate,
+  formatLights,
   userMonthStats,
 } from "@/lib/stats";
 
@@ -55,7 +56,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const set = useMemo(() => buildCompletionSet(completions), [completions]);
   const stats = currentUser
     ? userMonthStats(currentUser.id, ym, set)
-    : { days: 0, rate: 0, possible: 0 };
+    : { days: 0, lights: 0, possible: 0 };
 
   const completedDates = useMemo(() => {
     const s = new Set<string>();
@@ -132,15 +133,15 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           />
           <div className="flex items-center justify-between rounded-[18px] bg-sky-light px-4 py-3">
             <div>
-              <p className="text-xs text-text-secondary">누적 완료</p>
+              <p className="text-xs text-text-secondary">이번 달 빛</p>
               <p className="text-lg font-semibold text-text-main">
-                {stats.days}일 / {stats.possible}일
+                {formatLights(stats.lights)}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-text-secondary">참여율</p>
+              <p className="text-xs text-text-secondary">집계 일수</p>
               <p className="text-lg font-semibold text-text-main">
-                {formatRate(stats.rate)}
+                {stats.possible}일
               </p>
             </div>
           </div>
@@ -174,16 +175,17 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       <section className="animate-fade-up space-y-4 px-5 pt-2">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-lg font-semibold text-text-main">
-              {formatDisplayDate(selected)}
-            </h2>
-            <p className="mt-1 text-sm text-text-secondary">
-              {future
-                ? "미래 날짜는 완료할 수 없습니다."
-                : selectedCompleted
-                  ? "이 날은 QT를 완료했습니다."
-                  : "이 날은 아직 미완료입니다."}
-            </p>
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-lg font-semibold text-text-main">
+                {formatDisplayDate(selected)}
+              </h2>
+              {!future ? <LightIcon active={selectedCompleted} /> : null}
+            </div>
+            {future ? (
+              <p className="mt-1 text-sm text-text-secondary">
+                미래 날짜는 완료할 수 없습니다.
+              </p>
+            ) : null}
           </div>
 
           {!future ? (

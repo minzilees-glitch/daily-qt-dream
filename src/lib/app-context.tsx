@@ -52,7 +52,7 @@ interface AppState {
   /** Admin batch assign — membership is admin-managed only. */
   assignUsersToGroup: (userIds: string[], groupId: string) => void;
   setGroupLeader: (groupId: string, userId: string) => void;
-  confirmAward: (yearMonth: string, groupId: string, rate: number) => void;
+  confirmAward: (yearMonth: string, groupId: string, lights: number) => void;
   isCompleted: (userId: string, date: string) => boolean;
   getReflection: (userId: string, date: string) => QtEntry | undefined;
   getEntry: (userId: string, date: string) => QtEntry | undefined;
@@ -234,7 +234,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const awards = useMemo(() => {
     const map = new Map(base.awards.map((a) => [a.yearMonth, a]));
-    for (const a of overrides.awards) map.set(a.yearMonth, a);
+    for (const raw of overrides.awards) {
+      const lights =
+        typeof (raw as { lights?: number }).lights === "number"
+          ? (raw as { lights: number }).lights
+          : 0;
+      map.set(raw.yearMonth, {
+        yearMonth: raw.yearMonth,
+        groupId: raw.groupId,
+        lights,
+        confirmed: raw.confirmed,
+      });
+    }
     return Array.from(map.values()).sort((a, b) =>
       b.yearMonth.localeCompare(a.yearMonth),
     );
@@ -367,10 +378,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const confirmAward = useCallback(
-    (yearMonth: string, groupId: string, rate: number) => {
+    (yearMonth: string, groupId: string, lights: number) => {
       const next = [
         ...overrides.awards.filter((a) => a.yearMonth !== yearMonth),
-        { yearMonth, groupId, rate, confirmed: true },
+        { yearMonth, groupId, lights, confirmed: true },
       ];
       writeOverrides({ ...overrides, awards: next });
     },

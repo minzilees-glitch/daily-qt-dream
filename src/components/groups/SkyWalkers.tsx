@@ -148,7 +148,7 @@ export function SkyWalkers({
   minYearMonth,
   maxYearMonth,
   memberCount,
-  rateLabel,
+  lightsLabel,
   rankLabel,
 }: {
   members: User[];
@@ -157,7 +157,7 @@ export function SkyWalkers({
   minYearMonth: string;
   maxYearMonth: string;
   memberCount: number;
-  rateLabel: string;
+  lightsLabel: string;
   rankLabel: string;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
@@ -300,8 +300,8 @@ export function SkyWalkers({
             <p className="mt-1 text-lg font-semibold text-white">{memberCount}명</p>
           </div>
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <p className="text-[11px] text-white/85">참여율</p>
-            <p className="mt-1 text-lg font-semibold text-white">{rateLabel}</p>
+            <p className="text-[11px] text-white/85">빛</p>
+            <p className="mt-1 text-lg font-semibold text-white">{lightsLabel}</p>
           </div>
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <p className="text-[11px] text-white/85">전체 순위</p>
@@ -350,7 +350,7 @@ export function SkyWalkers({
                       alt=""
                       width={28}
                       height={28}
-                      className="pointer-events-none absolute left-1/2 top-[14px] z-[1] h-[28px] w-[28px] -translate-x-1/2 rounded-full bg-white object-cover"
+                      className="pointer-events-none absolute left-1/2 top-[10px] z-[1] h-[28px] w-[28px] -translate-x-1/2 rounded-full bg-white object-cover"
                       draggable={false}
                     />
                     {/* eslint-disable-next-line @next/next/no-img-element */}

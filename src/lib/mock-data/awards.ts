@@ -17,7 +17,7 @@ export function buildAwards(
     return {
       yearMonth,
       groupId: top?.groupId ?? groups[0]!.id,
-      rate: top?.rate ?? 0,
+      lights: top?.lights ?? 0,
       confirmed: true,
     };
   });

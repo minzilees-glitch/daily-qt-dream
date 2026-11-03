@@ -11,7 +11,7 @@ import { addMonths, currentYearMonth } from "@/lib/dates";
 import {
   buildCompletionSet,
   computeGroupRanking,
-  formatRate,
+  formatLights,
   groupDayParticipation,
   groupWeekdayParticipation,
 } from "@/lib/stats";
@@ -63,7 +63,7 @@ export default function GroupPage() {
             minYearMonth={addMonths(currentYearMonth(), -2)}
             maxYearMonth={currentYearMonth()}
             memberCount={myRank?.memberCount ?? 0}
-            rateLabel={formatRate(myRank?.rate ?? 0)}
+            lightsLabel={formatLights(myRank?.lights ?? 0)}
             rankLabel={`${myRank?.rank ?? "-"}위`}
           />
         </div>

@@ -48,7 +48,8 @@ export interface QtReadingRange {
 export interface MonthlyAward {
   yearMonth: string; // YYYY-MM
   groupId: GroupId;
-  rate: number;
+  /** Total lights (completed QT days) for the winning group. */
+  lights: number;
   confirmed: boolean;
 }
 
@@ -57,9 +58,9 @@ export interface GroupRankRow {
   groupId: GroupId;
   groupName: string;
   memberCount: number;
-  completionCount: number;
+  /** Sum of completed QT days across members in ranking scope. */
+  lights: number;
   possibleCount: number;
-  rate: number;
   isMine: boolean;
 }
 
