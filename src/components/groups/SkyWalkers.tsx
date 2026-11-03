@@ -129,7 +129,7 @@ export function SkyWalkers({
       last = now;
       const width = stage.clientWidth;
       const height = stage.clientHeight;
-      const figureW = 56;
+      const figureW = 58;
       const figureH = 78;
 
       for (const s of stateRef.current) {
@@ -226,7 +226,7 @@ export function SkyWalkers({
                 key={u.id}
                 data-walker-id={u.id}
                 className="absolute left-0 top-0 z-[1] will-change-transform"
-                style={{ width: 56 }}
+                style={{ width: 58 }}
               >
                 <button
                   type="button"
@@ -244,8 +244,8 @@ export function SkyWalkers({
                     </span>
                   ) : null}
 
-                  <div data-figure className="relative h-[72px] w-[56px]">
-                    {/* Body outline (face sits in the U opening) */}
+                  <div data-figure className="relative h-[76px] w-[58px]">
+                    {/* Filled body (v2) — face sits in the U opening */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={bodyUrl(i)}
@@ -253,14 +253,14 @@ export function SkyWalkers({
                       className="pointer-events-none absolute inset-0 h-full w-full object-contain"
                       draggable={false}
                     />
-                    {/* Face in neck opening */}
+                    {/* Face nested in neck opening */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={avatarUrl(u.id, i)}
                       alt=""
-                      width={30}
-                      height={30}
-                      className="pointer-events-none absolute left-1/2 top-[2px] z-10 h-[30px] w-[30px] -translate-x-1/2 rounded-full bg-white object-cover"
+                      width={28}
+                      height={28}
+                      className="pointer-events-none absolute left-1/2 top-[4px] z-10 h-[28px] w-[28px] -translate-x-1/2 rounded-full bg-white object-cover ring-1 ring-white/80"
                       draggable={false}
                     />
                   </div>
