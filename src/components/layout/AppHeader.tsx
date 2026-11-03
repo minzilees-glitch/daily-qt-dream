@@ -4,7 +4,7 @@ import Link from "next/link";
 import { UserRound } from "lucide-react";
 
 export function AppHeader({
-  title = "DAILY QT",
+  title = "드림 매일큐티",
   subtitle,
   light = false,
 }: {

@@ -3,7 +3,7 @@ import { AppProvider } from "@/lib/app-context";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DAILY QT",
+  title: "드림 매일큐티",
   description: "매일의 Quiet Time을 함께 기록하는 순 공동체 앱",
 };
 

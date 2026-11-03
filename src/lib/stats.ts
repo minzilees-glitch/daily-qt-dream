@@ -166,3 +166,29 @@ export function groupDayParticipation(
     ).length,
   }));
 }
+
+/** Mon–Sun aggregate participation for a group in a month. */
+export function groupWeekdayParticipation(
+  groupId: string,
+  users: User[],
+  yearMonth: string,
+  completionSet: Set<string>,
+): { weekday: number; label: string; count: number; possible: number }[] {
+  const labels = ["월", "화", "수", "목", "금", "토", "일"];
+  const dayPart = groupDayParticipation(groupId, users, yearMonth, completionSet);
+  const buckets = labels.map((label, weekday) => ({
+    weekday,
+    label,
+    count: 0,
+    possible: 0,
+  }));
+
+  for (const d of dayPart) {
+    const sun0 = new Date(`${d.date}T12:00:00+09:00`).getUTCDay();
+    const monFirst = sun0 === 0 ? 6 : sun0 - 1;
+    buckets[monFirst]!.count += d.count;
+    buckets[monFirst]!.possible += d.total;
+  }
+
+  return buckets;
+}

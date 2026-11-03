@@ -1,18 +1,21 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { addMonths, formatMonthLabel } from "@/lib/dates";
+import { addMonths, formatMonthLabel, formatMonthOnly } from "@/lib/dates";
 
 export function MonthPicker({
   value,
   onChange,
   min,
   max,
+  monthOnly = false,
 }: {
   value: string;
   onChange: (ym: string) => void;
   min?: string;
   max?: string;
+  /** Show "11월" instead of "2026년 11월". */
+  monthOnly?: boolean;
 }) {
   const prev = addMonths(value, -1);
   const next = addMonths(value, 1);
@@ -31,7 +34,7 @@ export function MonthPicker({
         <ChevronLeft size={18} strokeWidth={1.75} />
       </button>
       <p className="text-[17px] font-semibold tracking-tight text-text-main">
-        {formatMonthLabel(value)}
+        {monthOnly ? formatMonthOnly(value) : formatMonthLabel(value)}
       </p>
       <button
         type="button"

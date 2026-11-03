@@ -95,6 +95,17 @@ export function formatMonthLabel(yearMonth: string): string {
   return `${y}년 ${m}월`;
 }
 
+/** Month-only label, e.g. "11월". */
+export function formatMonthOnly(yearMonth: string): string {
+  const [, m] = yearMonth.split("-").map(Number);
+  return `${m}월`;
+}
+
+/** Sunday=0 … Saturday=6 for Seoul civil date. */
+export function weekdaySunFirst(ymd: string): number {
+  return new Date(`${ymd}T12:00:00+09:00`).getUTCDay();
+}
+
 export function isFutureDate(ymd: string, today = todaySeoul()): boolean {
   return ymd > today;
 }
