@@ -69,7 +69,7 @@ export function ProfileAvatarButton({
         type="button"
         aria-label="프로필 사진 변경"
         onClick={() => inputRef.current?.click()}
-        className="relative flex shrink-0 items-center justify-center overflow-visible text-xl font-semibold transition"
+        className="relative flex shrink-0 items-center justify-center overflow-visible text-[21px] font-semibold transition"
         style={{ width: size, height: size }}
       >
         <span
@@ -122,7 +122,7 @@ export function ProfileAvatarButton({
             className="w-full max-w-sm rounded-[16px] bg-white p-5 shadow-none"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-[15px] font-semibold text-text-main">
+            <p className="text-[16px] font-semibold text-text-main">
               프로필 사진 변경
             </p>
             <div className="mt-4 flex justify-center">
@@ -134,13 +134,13 @@ export function ProfileAvatarButton({
               />
             </div>
             {error ? (
-              <p className="mt-3 text-center text-[13px] text-red-500">{error}</p>
+              <p className="mt-3 text-center text-[14px] text-red-500">{error}</p>
             ) : null}
             <div className="mt-5 grid grid-cols-2 gap-2">
               <button
                 type="button"
                 disabled={saving}
-                className="rounded-full bg-sky-light px-4 py-3 text-[14px] font-semibold text-text-main disabled:opacity-50"
+                className="rounded-full bg-sky-light px-4 py-3 text-[15px] font-semibold text-text-main disabled:opacity-50"
                 onClick={() => setOpen(false)}
               >
                 취소
@@ -148,7 +148,7 @@ export function ProfileAvatarButton({
               <button
                 type="button"
                 disabled={saving}
-                className="btn-cta bg-cta rounded-full px-4 py-3 text-[14px] font-semibold !text-white disabled:opacity-50"
+                className="btn-cta bg-cta rounded-full px-4 py-3 text-[15px] font-semibold !text-white disabled:opacity-50"
                 onClick={() => void onSave()}
               >
                 {saving ? "저장 중…" : "저장"}

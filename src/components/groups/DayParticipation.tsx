@@ -17,7 +17,7 @@ export function DayParticipation({
 
   if (days.length === 0) {
     return (
-      <p className="py-6 text-center text-sm text-text-secondary">
+      <p className="py-6 text-center text-[15px] text-text-secondary">
         이번 달 참여 데이터가 아직 없습니다.
       </p>
     );
@@ -86,7 +86,7 @@ export function DayParticipation({
                 style={{ height: `${Math.max(8, ratio * 100)}%` }}
               />
             </div>
-            <span className="text-[11px] text-text-secondary">{dayNum}</span>
+            <span className="text-[12px] text-text-secondary">{dayNum}</span>
           </div>
         );
       })}

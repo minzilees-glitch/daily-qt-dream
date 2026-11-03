@@ -32,14 +32,14 @@ export function AppHeader({
       >
         <div className="min-w-0 flex-1">
           <p
-            className={`text-sm font-medium tracking-[0.04em] ${
+            className={`text-[15px] font-medium tracking-[0.04em] ${
               light ? "text-white/80" : "text-sky"
             }`}
           >
             {title}
           </p>
           <p
-            className={`mt-1.5 text-[22px] font-bold leading-snug tracking-[0.02em] ${
+            className={`mt-1.5 text-[23px] font-bold leading-snug tracking-[0.02em] ${
               light ? "text-white" : "text-text-main"
             }`}
             suppressHydrationWarning
@@ -51,14 +51,14 @@ export function AppHeader({
         <div className="flex shrink-0 items-center gap-2.5 pt-0.5">
           <div className="min-w-0 text-right">
             <p
-              className={`truncate text-[13px] font-semibold tracking-tight ${
+              className={`truncate text-[14px] font-semibold tracking-tight ${
                 light ? "text-white" : "text-text-main"
               }`}
             >
               {userName}
             </p>
             <p
-              className={`mt-0.5 truncate text-xs ${
+              className={`mt-0.5 truncate text-[13px] ${
                 light ? "text-white/80" : "text-text-secondary"
               }`}
             >

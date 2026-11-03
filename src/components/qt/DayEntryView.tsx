@@ -5,7 +5,7 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   if (!entry) {
     return (
       <SoftCard padding="p-5">
-        <p className="text-center text-sm text-text-secondary">
+        <p className="text-center text-[15px] text-text-secondary">
           이 날짜에 작성한 QT 기록이 없습니다.
         </p>
       </SoftCard>
@@ -21,7 +21,7 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   if (rows.length === 0) {
     return (
       <SoftCard padding="p-5">
-        <p className="text-center text-sm text-text-secondary">
+        <p className="text-center text-[15px] text-text-secondary">
           이 날짜에 작성한 QT 기록이 없습니다.
         </p>
       </SoftCard>
@@ -32,8 +32,8 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
     <SoftCard padding="p-5" className="space-y-7">
       {rows.map((row) => (
         <div key={row.label}>
-          <p className="text-[14px] font-semibold text-text-main">{row.label}</p>
-          <p className="mt-1 whitespace-pre-wrap text-[17px] leading-relaxed text-text-main">
+          <p className="text-[15px] font-semibold text-text-main">{row.label}</p>
+          <p className="mt-1 whitespace-pre-wrap text-[18px] leading-relaxed text-text-main">
             {row.value}
           </p>
         </div>

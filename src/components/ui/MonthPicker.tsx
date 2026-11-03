@@ -29,8 +29,8 @@ export function MonthPicker({
   const canNext = !max || next <= max;
   const isRange = size === "range";
   const labelClass = isRange
-    ? "text-[16px] font-semibold tracking-[0.02em]"
-    : "text-[22px] font-semibold tracking-[0.02em]";
+    ? "text-[17px] font-semibold tracking-[0.02em]"
+    : "text-[23px] font-semibold tracking-[0.02em]";
   const chevronBox = isRange ? "h-8 w-8" : "h-9 w-9";
   const chevronIcon = isRange ? 18 : 22;
   // Tight chevrons hugging the month label — flat, no shadow.

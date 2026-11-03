@@ -23,6 +23,11 @@ export interface QtCompletion {
   userId: UserId;
   date: string;
   completed: boolean;
+  /**
+   * When false, day is completed (calendar/content) but does not earn a light
+   * for rankings/stats — used for past-date backfills. Default true.
+   */
+  earnsLight?: boolean;
 }
 
 /**

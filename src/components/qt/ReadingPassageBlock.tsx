@@ -6,8 +6,8 @@ import type { QtReadingRange } from "@/types";
 import { ReadingPassageHeader } from "@/components/qt/ReadingPassageHeader";
 
 const PREVIEW_CHARS = 140;
-/** Body is text-[15px]; verse nums are 1pt smaller. */
-const VERSE_NUM_CLASS = "text-[14px] opacity-60";
+/** Body is text-[16px]; verse nums are 1pt smaller. */
+const VERSE_NUM_CLASS = "text-[15px] opacity-60";
 
 function renderPassage(text: string): ReactNode {
   // Style leading verse numbers: "1  예수께서… 2  입을 열어…"
@@ -58,7 +58,7 @@ export function ReadingPassageBlock({
 
       {passage ? (
         <div className="mt-3 border-t border-white/70 pt-3">
-          <p className="text-[15px] leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
+          <p className="text-[16px] leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
             {renderPassage(shown)}
           </p>
           {needsToggle ? (

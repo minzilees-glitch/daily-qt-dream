@@ -5,7 +5,7 @@ import { LightCount } from "@/components/ui/LightIcon";
 export function RankingList({ rows }: { rows: GroupRankRow[] }) {
   if (rows.length === 0) {
     return (
-      <p className="py-10 text-center text-sm text-text-secondary">
+      <p className="py-10 text-center text-[15px] text-text-secondary">
         표시할 랭킹이 없습니다.
       </p>
     );
@@ -38,17 +38,17 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
                 aria-label="2위"
               />
             ) : (
-              <span className="text-sm font-semibold text-text-secondary">
+              <span className="text-[15px] font-semibold text-text-secondary">
                 {row.rank}
               </span>
             )}
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
-            <p className="min-w-0 truncate text-[15px] font-semibold text-text-main">
+            <p className="min-w-0 truncate text-[16px] font-semibold text-text-main">
               {row.groupName}
             </p>
             {row.isMine ? (
-              <span className="inline-flex shrink-0 items-center rounded-full bg-sky px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+              <span className="inline-flex shrink-0 items-center rounded-full bg-sky px-1.5 py-0.5 text-[11px] font-bold leading-none text-white">
                 내 순
               </span>
             ) : null}

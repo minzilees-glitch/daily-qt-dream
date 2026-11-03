@@ -30,10 +30,10 @@ export function QtEntryForm({
 
   return (
     <div className="space-y-7">
-            <p className="text-xs leading-relaxed text-text-secondary">
+            <p className="text-[13px] leading-relaxed text-text-secondary">
         묵상 · 구절 · 기도제목 중 하나 이상을{" "}
         <span className="font-bold text-text-main opacity-100">20자 이상</span>{" "}
-        적어 주세요.
+        적어주세요.
       </p>
 
       <Field
@@ -123,11 +123,11 @@ function Field({
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between gap-2">
-        <label htmlFor={id} className="text-[16px] font-semibold text-text-main">
+        <label htmlFor={id} className="text-[17px] font-semibold text-text-main">
           {label}
         </label>
         <span
-          className={`text-[11px] tabular-nums ${
+          className={`text-[12px] tabular-nums ${
             len >= QT_MIN_CHARS ? "text-text-main" : "text-text-secondary/70"
           }`}
         >
@@ -141,7 +141,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
-        className="w-full resize-none rounded-[12px] border-0 bg-ivory px-4 py-3.5 text-[17px] leading-relaxed text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
+        className="w-full resize-none rounded-[12px] border-0 bg-ivory px-4 py-3.5 text-[18px] leading-relaxed text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
       />
     </div>
   );

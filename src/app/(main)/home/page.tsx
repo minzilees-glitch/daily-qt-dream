@@ -75,13 +75,25 @@ export default function HomePage() {
       todayEntry.verse.trim().length > 0 ||
       todayEntry.prayer.trim().length > 0);
 
+  const hasQtOnDate = (date: string) =>
+    isCompleted(currentUser.id, date) || !!getEntry(currentUser.id, date);
+
+  const pastEmptySelected =
+    !!selectedDate && selectedDate < today && !hasQtOnDate(selectedDate);
+  const pastEmptyReading = pastEmptySelected
+    ? getReadingForDate(selectedDate)
+    : null;
+
   const onSelectDate = (date: string) => {
     setSelectedDate(date);
-    if (date < today) {
+    if (date < today && hasQtOnDate(date)) {
+      // Past + QT exists → 나의 QT for that date
       router.push(`/history?date=${encodeURIComponent(date)}`);
+      return;
     }
+    // Past + no QT: stay, show 본문 + CTA below calendar
     // today: selection only
-    // future: selection + 본문 preview below calendar
+    // future: selection + header-only 본문 preview
   };
 
   return (
@@ -97,7 +109,7 @@ export default function HomePage() {
         />
 
         <SoftCard className="animate-fade-up mt-7 space-y-5" padding="p-6">
-          <h2 className="flex items-center gap-1.5 text-[16px] font-semibold tracking-[0.04em] text-text-main">
+          <h2 className="flex items-center gap-1.5 text-[17px] font-semibold tracking-[0.04em] text-text-main">
             <LightIcon
               active={doneToday}
               tone={doneToday ? "active" : "inactive"}
@@ -117,30 +129,30 @@ export default function HomePage() {
             <div className="space-y-7 rounded-[20px] bg-sky-light/70 px-4 py-4">
               {todayEntry.meditation.trim() ? (
                 <div>
-                  <p className="text-[14px] font-semibold text-text-main">
+                  <p className="text-[15px] font-semibold text-text-main">
                     오늘 나의 묵상
                   </p>
-                  <p className="mt-1 whitespace-pre-wrap text-[17px] leading-relaxed text-text-main">
+                  <p className="mt-1 whitespace-pre-wrap text-[18px] leading-relaxed text-text-main">
                     {todayEntry.meditation}
                   </p>
                 </div>
               ) : null}
               {todayEntry.verse.trim() ? (
                 <div>
-                  <p className="text-[14px] font-semibold text-text-main">
+                  <p className="text-[15px] font-semibold text-text-main">
                     오늘 나의 마음에 남는 구절
                   </p>
-                  <p className="mt-1 whitespace-pre-wrap text-[17px] leading-relaxed text-text-main">
+                  <p className="mt-1 whitespace-pre-wrap text-[18px] leading-relaxed text-text-main">
                     {todayEntry.verse}
                   </p>
                 </div>
               ) : null}
               {todayEntry.prayer.trim() ? (
                 <div>
-                  <p className="text-[14px] font-semibold text-text-main">
+                  <p className="text-[15px] font-semibold text-text-main">
                     묵상 후 나의 기도제목
                   </p>
-                  <p className="mt-1 whitespace-pre-wrap text-[17px] leading-relaxed text-text-main">
+                  <p className="mt-1 whitespace-pre-wrap text-[18px] leading-relaxed text-text-main">
                     {todayEntry.prayer}
                   </p>
                 </div>
@@ -152,8 +164,8 @@ export default function HomePage() {
             href={doneToday ? "/history" : "/qt"}
             className={
               doneToday
-                ? "inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#008CFF] bg-white px-5 py-4 text-[15px] font-semibold shadow-none transition hover:bg-sky-light/50"
-                : "btn-cta bg-cta inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-[15px] font-semibold !text-white shadow-none transition hover:brightness-105"
+                ? "inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#008CFF] bg-white px-5 py-4 text-[16px] font-semibold shadow-none transition hover:bg-sky-light/50"
+                : "btn-cta bg-cta inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-[16px] font-semibold !text-white shadow-none transition hover:brightness-105"
             }
           >
             {doneToday ? (
@@ -194,7 +206,20 @@ export default function HomePage() {
           />
         </SoftCard>
 
-        {futurePreviewReading ? (
+        {pastEmptyReading && selectedDate ? (
+          <div className="animate-fade-up space-y-3">
+            <ReadingPassageBlock reading={pastEmptyReading} label="본문" />
+            <p className="px-1 text-center text-[13px] leading-relaxed text-text-secondary">
+              지난 날짜 큐티는 기록할 수 있지만, 빛은 모이지 않아요.
+            </p>
+            <Link
+              href={`/history?date=${encodeURIComponent(selectedDate)}`}
+              className="btn-cta bg-cta inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-[16px] font-semibold !text-white shadow-none transition hover:brightness-105"
+            >
+              지난 큐티 작성하러 가기
+            </Link>
+          </div>
+        ) : futurePreviewReading ? (
           <div className="animate-fade-up">
             <ReadingRangeMilestone reading={futurePreviewReading} label="본문" />
           </div>
