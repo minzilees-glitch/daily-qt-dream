@@ -103,7 +103,7 @@ function TeaCup() {
   return (
     <span
       data-prop="tea"
-      className="pointer-events-none absolute -right-1 top-[22px] z-[3] block h-[14px] w-[12px] will-change-transform"
+      className="pointer-events-none absolute -right-1 top-[28px] z-[3] block h-[14px] w-[12px] will-change-transform"
       aria-hidden
     >
       <span className="absolute inset-x-0 bottom-0 h-[10px] rounded-[3px] rounded-b-[4px] bg-[#F4E8D8] ring-1 ring-[#D9C4A8]" />
@@ -117,7 +117,7 @@ function BookProp() {
   return (
     <span
       data-prop="book"
-      className="pointer-events-none absolute left-1/2 top-[26px] z-[3] block h-[12px] w-[16px] -translate-x-1/2"
+      className="pointer-events-none absolute left-1/2 top-[32px] z-[3] block h-[12px] w-[16px] -translate-x-1/2"
       aria-hidden
     >
       <span className="absolute inset-0 rounded-[2px] bg-[#5F8FCF] ring-1 ring-white/70" />
@@ -132,7 +132,7 @@ function WaveHand() {
   return (
     <span
       data-prop="wave"
-      className="pointer-events-none absolute -right-0.5 top-[18px] z-[3] block h-[10px] w-[10px] origin-bottom will-change-transform"
+      className="pointer-events-none absolute -right-0.5 top-[24px] z-[3] block h-[10px] w-[10px] origin-bottom will-change-transform"
       aria-hidden
     >
       <span className="absolute inset-0 rounded-full bg-[#F2C9A8] ring-1 ring-white/60" />
@@ -342,22 +342,22 @@ export function SkyWalkers({
                     </span>
                   ) : null}
 
-                  <div data-figure className="relative h-[70px] w-[56px]">
-                    {/* Face tucked into U; body above so collar hugs chin */}
+                  <div data-figure className="relative h-[68px] w-[56px]">
+                    {/* Face overlaps collar: sits low in U so shoulders cover lower face */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={avatarUrl(u.id, i)}
                       alt=""
-                      width={30}
-                      height={30}
-                      className="pointer-events-none absolute left-1/2 top-0 z-[1] h-[30px] w-[30px] -translate-x-1/2 rounded-full bg-white object-cover"
+                      width={28}
+                      height={28}
+                      className="pointer-events-none absolute left-1/2 top-[14px] z-[1] h-[28px] w-[28px] -translate-x-1/2 rounded-full bg-white object-cover"
                       draggable={false}
                     />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={bodyUrl(i)}
                       alt=""
-                      className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[58px] w-full object-contain object-bottom"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[60px] w-full object-contain object-bottom"
                       draggable={false}
                     />
                     {activity === "tea" ? <TeaCup /> : null}
