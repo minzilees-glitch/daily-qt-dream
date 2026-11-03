@@ -6,6 +6,7 @@ import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { DayParticipation } from "@/components/groups/DayParticipation";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
+import { SkyWalkers } from "@/components/groups/SkyWalkers";
 import { useApp } from "@/lib/app-context";
 import { addMonths, currentYearMonth } from "@/lib/dates";
 import {
@@ -21,6 +22,16 @@ export default function GroupPage() {
   const [ym, setYm] = useState(currentYearMonth());
 
   const set = useMemo(() => buildCompletionSet(completions), [completions]);
+
+  const members = useMemo(() => {
+    if (!currentUser) return [];
+    return users
+      .filter((u) => u.groupId === currentUser.groupId)
+      .sort((a, b) => {
+        if (a.isLeader !== b.isLeader) return a.isLeader ? -1 : 1;
+        return a.name.localeCompare(b.name, "ko");
+      });
+  }, [users, currentUser]);
 
   if (!currentUser) return null;
 
@@ -75,6 +86,10 @@ export default function GroupPage() {
       </section>
 
       <section className="animate-fade-up space-y-5 px-5 pt-1">
+        <div className="sky-walkers-card overflow-hidden rounded-[24px] shadow-none">
+          <SkyWalkers members={members} />
+        </div>
+
         <SoftCard>
           <h2 className="mb-1 text-[16px] font-semibold text-text-main">
             요일별 참여
