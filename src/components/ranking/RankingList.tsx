@@ -1,6 +1,6 @@
 import { Trophy } from "lucide-react";
 import type { GroupRankRow } from "@/types";
-import { formatLights } from "@/lib/stats";
+import { LightCount } from "@/components/ui/LightIcon";
 
 export function RankingList({ rows }: { rows: GroupRankRow[] }) {
   if (rows.length === 0) {
@@ -42,9 +42,7 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
               {row.memberCount}명 · 집계 {row.possibleCount}일
             </p>
           </div>
-          <p className="shrink-0 text-[15px] font-semibold text-text-main">
-            {formatLights(row.lights)}
-          </p>
+          <LightCount lights={row.lights} size={18} />
         </li>
       ))}
     </ul>

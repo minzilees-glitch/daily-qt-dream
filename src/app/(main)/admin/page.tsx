@@ -14,7 +14,8 @@ import {
   currentYearMonth,
   formatMonthLabel,
 } from "@/lib/dates";
-import { computeGroupRanking, formatLights } from "@/lib/stats";
+import { LightCount } from "@/components/ui/LightIcon";
+import { computeGroupRanking } from "@/lib/stats";
 
 type Tab = "batch" | "groups" | "awards";
 
@@ -289,10 +290,14 @@ export default function AdminPage() {
               <p className="mt-2 text-lg font-bold text-text-main">
                 {top?.groupName ?? "-"}
               </p>
-              <p className="text-sm text-text-secondary">
-                {formatLights(top?.lights ?? 0)} · 집계{" "}
-                {top?.possibleCount ?? 0}일
-              </p>
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-text-secondary">
+                <LightCount
+                  lights={top?.lights ?? 0}
+                  size={16}
+                  textClassName="text-sm font-semibold text-text-main"
+                />
+                <span>· 집계 {top?.possibleCount ?? 0}일</span>
+              </div>
             </div>
             <PrimaryButton
               type="button"
@@ -307,11 +312,17 @@ export default function AdminPage() {
               1위 시상 확정 (Mock)
             </PrimaryButton>
             {awardForMonth ? (
-              <p className="text-center text-xs text-text-secondary">
-                확정됨:{" "}
-                {groups.find((g) => g.id === awardForMonth.groupId)?.name} (
-                {formatLights(awardForMonth.lights)})
-              </p>
+              <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-text-secondary">
+                <span>
+                  확정됨:{" "}
+                  {groups.find((g) => g.id === awardForMonth.groupId)?.name}
+                </span>
+                <LightCount
+                  lights={awardForMonth.lights}
+                  size={14}
+                  textClassName="text-xs font-semibold text-text-main"
+                />
+              </div>
             ) : (
               <p className="text-center text-xs text-text-secondary">
                 아직 확정된 시상이 없습니다.

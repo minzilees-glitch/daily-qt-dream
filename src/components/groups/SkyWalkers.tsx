@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
+import { LightCount } from "@/components/ui/LightIcon";
 import type { User } from "@/types";
 
 const BODY_VARIANTS = [
@@ -148,7 +149,7 @@ export function SkyWalkers({
   minYearMonth,
   maxYearMonth,
   memberCount,
-  lightsLabel,
+  lights,
   rankLabel,
 }: {
   members: User[];
@@ -157,7 +158,7 @@ export function SkyWalkers({
   minYearMonth: string;
   maxYearMonth: string;
   memberCount: number;
-  lightsLabel: string;
+  lights: number;
   rankLabel: string;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
@@ -301,7 +302,14 @@ export function SkyWalkers({
           </div>
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <p className="text-[11px] text-white/85">빛</p>
-            <p className="mt-1 text-lg font-semibold text-white">{lightsLabel}</p>
+            <div className="mt-1 flex justify-center">
+              <LightCount
+                lights={lights}
+                size={18}
+                tone="onDark"
+                textClassName="text-lg font-semibold text-white"
+              />
+            </div>
           </div>
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <p className="text-[11px] text-white/85">전체 순위</p>
