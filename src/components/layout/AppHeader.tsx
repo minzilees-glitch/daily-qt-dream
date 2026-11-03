@@ -7,7 +7,7 @@ export function AppHeader({
   title = "드림 매일큐티",
   subtitle,
   light = false,
-  /** Home: large date left, profile cluster top-right beside the date row. */
+  /** Home: brand then large date (swapped), profile top-right beside date area. */
   homeLayout = false,
   dateLabel,
   userName,
@@ -30,18 +30,18 @@ export function AppHeader({
       >
         <div className="min-w-0 flex-1">
           <p
-            className={`text-[22px] font-bold leading-snug tracking-tight ${
-              light ? "text-white" : "text-text-main"
-            }`}
-          >
-            {dateLabel}
-          </p>
-          <p
-            className={`mt-1.5 text-sm font-medium tracking-[0.04em] ${
+            className={`text-sm font-medium tracking-[0.04em] ${
               light ? "text-white/80" : "text-sky"
             }`}
           >
             {title}
+          </p>
+          <p
+            className={`mt-1.5 text-[22px] font-bold leading-snug tracking-tight ${
+              light ? "text-white" : "text-text-main"
+            }`}
+          >
+            {dateLabel}
           </p>
         </div>
 
