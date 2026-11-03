@@ -167,3 +167,43 @@ a {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* 하늘나라 구름 위 — soft heaven deck behind walkers */
+.sky-walkers-stage {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 110%, #ffffff 0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 18% 78%, rgba(255, 255, 255, 0.95) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 36% at 78% 82%, rgba(255, 255, 255, 0.9) 0%, transparent 68%),
+    radial-gradient(ellipse 40% 30% at 48% 70%, rgba(255, 255, 255, 0.75) 0%, transparent 70%),
+    linear-gradient(180deg, #9fd0f5 0%, #c5e4fa 42%, #e8f4fc 78%, #f7fbfe 100%);
+}
+
+.sky-walkers-clouds::before,
+.sky-walkers-clouds::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(1px);
+}
+
+.sky-walkers-clouds::before {
+  width: 46%;
+  height: 42px;
+  left: -4%;
+  bottom: 18%;
+}
+
+.sky-walkers-clouds::after {
+  width: 52%;
+  height: 48px;
+  right: -6%;
+  bottom: 10%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-walker,
+  .sky-walkers-stage .will-change-transform {
+    will-change: auto;
+  }
+}
