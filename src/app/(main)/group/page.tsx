@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
-import { MemberList } from "@/components/groups/MemberList";
 import { DayParticipation } from "@/components/groups/DayParticipation";
 import { useApp } from "@/lib/app-context";
 import { addMonths, currentYearMonth } from "@/lib/dates";
@@ -13,7 +12,6 @@ import {
   computeGroupRanking,
   formatRate,
   groupDayParticipation,
-  memberDayCounts,
 } from "@/lib/stats";
 
 export default function GroupPage() {
@@ -33,7 +31,6 @@ export default function GroupPage() {
     currentUser.groupId,
   );
   const myRank = ranking.find((r) => r.groupId === currentUser.groupId);
-  const members = memberDayCounts(currentUser.groupId, users, ym, set);
   const dayPart = groupDayParticipation(currentUser.groupId, users, ym, set);
 
   return (
@@ -63,21 +60,13 @@ export default function GroupPage() {
               <p className="mt-1 text-lg font-semibold">{myRank?.rank ?? "-"}위</p>
             </div>
           </div>
+          <p className="mt-3 text-center text-xs text-text-secondary">
+            순 소속은 관리자가 배정합니다. 다른 순원의 기록 내용은 보이지 않습니다.
+          </p>
         </SoftCard>
       </section>
 
       <section className="animate-fade-up space-y-5 px-5 pt-1">
-        <div>
-          <h2 className="mb-3 text-[16px] font-semibold text-text-main">
-            순원별 QT 일수
-          </h2>
-          <p className="mb-3 text-xs text-text-secondary">
-            순 소속은 관리자가 배정합니다. 다른 순원의 기록 내용은 표시되지
-            않으며, 완료 여부와 일수만 보입니다.
-          </p>
-          <MemberList items={members} />
-        </div>
-
         <SoftCard>
           <h2 className="mb-3 text-[16px] font-semibold text-text-main">
             날짜별 참여

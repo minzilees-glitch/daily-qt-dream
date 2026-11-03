@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { SoftCard } from "@/components/ui/SoftCard";
 import { Toast } from "@/components/ui/Toast";
@@ -13,6 +14,7 @@ import { formatDisplayDate, todaySeoul } from "@/lib/dates";
 
 export default function TodayQtPage() {
   const { currentUser, isCompleted, getEntry, saveEntry, clearEntry } = useApp();
+  const router = useRouter();
   const [toast, setToast] = useState<string | null>(null);
   const today = todaySeoul();
 
@@ -57,7 +59,15 @@ export default function TodayQtPage() {
           key={`qt-${today}-${entry?.updatedAt ?? "new"}`}
           initial={entry}
           showClear={completed || !!entry}
-          onSave={(fields) => showToast(saveEntry(today, fields).message)}
+          onSave={(fields) => {
+            const res = saveEntry(today, fields);
+            showToast(res.message);
+            if (res.ok) {
+              window.setTimeout(() => {
+                router.push("/home#calendar");
+              }, 650);
+            }
+          }}
           onClear={() => showToast(clearEntry(today).message)}
         />
       </div>

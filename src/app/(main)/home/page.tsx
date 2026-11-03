@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { ChevronRight, PenLine } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
@@ -24,6 +25,19 @@ import {
 
 export default function HomePage() {
   const { currentUser, groups, users, completions, isCompleted } = useApp();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash !== "#calendar") return;
+    const el = document.getElementById("calendar");
+    if (!el) return;
+    // Wait a tick for layout after navigation
+    const t = window.setTimeout(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+    return () => window.clearTimeout(t);
+  }, []);
+
   if (!currentUser) return null;
 
   const today = todaySeoul();
@@ -95,7 +109,7 @@ export default function HomePage() {
           ]}
         />
 
-        <SoftCard>
+        <SoftCard id="calendar" className="scroll-mt-6">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-[16px] font-semibold text-text-main">이번 달 미리보기</h3>
             <Link

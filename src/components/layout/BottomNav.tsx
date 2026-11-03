@@ -28,19 +28,24 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
-              className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-full px-2 py-2 transition ${
-                active
-                  ? "bg-white/25 text-white"
-                  : "text-white/75 hover:text-white"
+              className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-full px-2 py-2 text-white transition ${
+                active ? "bg-white/20" : "opacity-70 hover:opacity-100"
               }`}
               aria-current={active ? "page" : undefined}
             >
               <Icon
                 size={20}
-                strokeWidth={active ? 2.25 : 1.75}
+                strokeWidth={active ? 2.4 : 1.75}
+                className="text-white"
                 aria-hidden
               />
-              <span className="truncate text-[11px] font-medium tracking-tight">
+              <span
+                className={`truncate text-[11px] tracking-tight text-white ${
+                  active
+                    ? "font-semibold underline decoration-white/80 underline-offset-4"
+                    : "font-medium"
+                }`}
+              >
                 {label}
               </span>
             </Link>
