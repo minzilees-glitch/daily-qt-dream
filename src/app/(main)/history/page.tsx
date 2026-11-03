@@ -6,9 +6,10 @@ import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { QtCalendar } from "@/components/qt/QtCalendar";
-import { QtCompleteToggle } from "@/components/qt/QtCompleteToggle";
-import { ReflectionEditor } from "@/components/qt/ReflectionEditor";
+import { QtEntryForm } from "@/components/qt/QtEntryForm";
+import { ReadingRangeCard } from "@/components/qt/ReadingRangeCard";
 import { useApp } from "@/lib/app-context";
+import { getReadingForDate } from "@/lib/mock-data";
 import {
   addMonths,
   currentYearMonth,
@@ -24,14 +25,8 @@ import {
 } from "@/lib/stats";
 
 export default function HistoryPage() {
-  const {
-    currentUser,
-    completions,
-    isCompleted,
-    getReflection,
-    toggleCompletion,
-    saveReflection,
-  } = useApp();
+  const { currentUser, completions, isCompleted, getEntry, saveEntry, clearEntry } =
+    useApp();
   const [ym, setYm] = useState(currentYearMonth());
   const [selected, setSelected] = useState(todaySeoul());
   const [toast, setToast] = useState<string | null>(null);
@@ -62,12 +57,13 @@ export default function HistoryPage() {
   if (!currentUser) return null;
 
   const selectedCompleted = isCompleted(currentUser.id, selected);
-  const selectedReflection = getReflection(currentUser.id, selected);
+  const selectedEntry = getEntry(currentUser.id, selected);
   const future = isFutureDate(selected);
+  const reading = getReadingForDate(selected);
 
   const showToast = (message: string) => {
     setToast(message);
-    window.setTimeout(() => setToast(null), 2200);
+    window.setTimeout(() => setToast(null), 2400);
   };
 
   return (
@@ -111,23 +107,22 @@ export default function HistoryPage() {
             {future
               ? "미래 날짜는 완료할 수 없습니다."
               : selectedCompleted
-                ? "이 날은 QT를 완료했습니다."
-                : "이 날은 아직 미완료입니다."}
+                ? "이 날은 QT를 완료했습니다. 기록을 수정하거나 삭제할 수 있어요."
+                : "이 날은 아직 미완료입니다. 기록을 저장하면 완료됩니다."}
           </p>
         </div>
 
-        <QtCompleteToggle
-          completed={selectedCompleted}
-          disabled={future}
-          onToggle={() => showToast(toggleCompletion(selected).message)}
-        />
+        {!future ? <ReadingRangeCard reading={reading} compact /> : null}
 
-        <ReflectionEditor
-          key={`hist-${selected}-${selectedReflection?.updatedAt ?? "new"}`}
-          initial={selectedReflection?.content ?? ""}
-          disabled={future}
-          onSave={(content) => showToast(saveReflection(selected, content).message)}
-        />
+        {!future ? (
+          <QtEntryForm
+            key={`hist-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
+            initial={selectedEntry}
+            showClear={selectedCompleted || !!selectedEntry}
+            onSave={(fields) => showToast(saveEntry(selected, fields).message)}
+            onClear={() => showToast(clearEntry(selected).message)}
+          />
+        ) : null}
       </section>
 
       <Toast message={toast} />

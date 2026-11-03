@@ -72,7 +72,8 @@ export default function GroupPage() {
             순원별 QT 일수
           </h2>
           <p className="mb-3 text-xs text-text-secondary">
-            다른 순원의 묵상 내용은 표시되지 않습니다.
+            순 소속은 관리자가 배정합니다. 다른 순원의 기록 내용은 표시되지
+            않으며, 완료 여부와 일수만 보입니다.
           </p>
           <MemberList items={members} />
         </div>

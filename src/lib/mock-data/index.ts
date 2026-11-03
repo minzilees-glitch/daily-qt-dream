@@ -2,18 +2,20 @@ import type {
   Group,
   MonthlyAward,
   QtCompletion,
-  QtReflection,
+  QtEntry,
+  QtReadingRange,
   User,
 } from "@/types";
 import { buildGroups } from "./groups";
 import { buildUsers } from "./users";
 import {
   buildQtCompletions,
-  buildReflections,
+  buildEntries,
   ensureTestUserToday,
   monthsCovered,
 } from "./qt-records";
 import { buildAwards } from "./awards";
+import { buildReadingRanges, readingForDate } from "./reading-ranges";
 
 export const TEST_USER_ID = "u-001";
 
@@ -21,9 +23,11 @@ export interface MockDataset {
   groups: Group[];
   users: User[];
   completions: QtCompletion[];
-  reflections: QtReflection[];
+  /** Valid QT entries — completion requires a valid entry. */
+  reflections: QtEntry[];
   awards: MonthlyAward[];
   months: string[];
+  readingRanges: QtReadingRange[];
 }
 
 let cached: MockDataset | null = null;
@@ -35,8 +39,9 @@ export function getMockData(): MockDataset {
   const users = buildUsers(groups);
   let completions = buildQtCompletions(users);
   completions = ensureTestUserToday(completions, TEST_USER_ID);
-  const reflections = buildReflections(users, completions);
+  const reflections = buildEntries(users, completions);
   const awards = buildAwards(groups, users, completions);
+  const readingRanges = buildReadingRanges(3);
 
   cached = {
     groups,
@@ -45,6 +50,7 @@ export function getMockData(): MockDataset {
     reflections,
     awards,
     months: monthsCovered(),
+    readingRanges,
   };
   return cached;
 }
@@ -62,3 +68,10 @@ export function getTestUser(): User {
   if (!user) throw new Error("Test user missing from mock data");
   return user;
 }
+
+export function getReadingForDate(date: string): QtReadingRange {
+  const cachedRange = getMockData().readingRanges.find((r) => r.date === date);
+  return cachedRange ?? readingForDate(date);
+}
+
+export { readingForDate };

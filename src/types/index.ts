@@ -10,6 +10,7 @@ export interface Group {
 export interface User {
   id: UserId;
   name: string;
+  /** Assigned by admin only — users do not self-join. */
   groupId: GroupId;
   isAdmin: boolean;
   isLeader: boolean;
@@ -22,11 +23,26 @@ export interface QtCompletion {
   completed: boolean;
 }
 
-export interface QtReflection {
+/**
+ * Daily QT entry. Completion requires saving with validation
+ * (at least one field trimmed length ≥ 20).
+ */
+export interface QtEntry {
   userId: UserId;
   date: string;
-  content: string;
+  meditation: string;
+  verse: string;
+  prayer: string;
   updatedAt: string;
+}
+
+/** @deprecated Use QtEntry — alias kept for gradual rename in UI. */
+export type QtReflection = QtEntry;
+
+export interface QtReadingRange {
+  date: string; // YYYY-MM-DD
+  range: string; // e.g. "창세기 1:1–2:3"
+  title?: string;
 }
 
 export interface MonthlyAward {
@@ -50,5 +66,11 @@ export interface GroupRankRow {
 export interface DayStatus {
   date: string;
   completed: boolean;
-  hasReflection: boolean;
+  hasEntry: boolean;
+}
+
+export interface QtEntryFields {
+  meditation: string;
+  verse: string;
+  prayer: string;
 }
