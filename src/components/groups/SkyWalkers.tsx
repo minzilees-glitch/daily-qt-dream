@@ -4,16 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import type { User } from "@/types";
 
-const BODY_TONES = [
-  "#7EB6E8",
-  "#8FC7A3",
-  "#E8B07A",
-  "#C9A0DC",
-  "#7CC4C0",
-  "#E89A9A",
-  "#A8B8E0",
-  "#D4C07A",
-];
+const BODY_VARIANTS = [
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "teal",
+  "blue",
+  "purple",
+  "pink",
+] as const;
 
 const AVATAR_STYLES = [
   "avataaars",
@@ -39,23 +39,29 @@ function avatarUrl(userId: string, index: number): string {
   return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundType=gradientLinear&radius=50`;
 }
 
+function bodyUrl(index: number): string {
+  const name = BODY_VARIANTS[index % BODY_VARIANTS.length]!;
+  return `/group/bodies/body-${name}.png`;
+}
+
 function seedWalkers(
   members: User[],
   width: number,
   height: number,
 ): WalkerState[] {
   return members.slice(0, 12).map((u, i) => {
-    // Slower roam than first pass
-    const speed = 5.5 + (i % 5) * 1.2 + (u.id.charCodeAt(u.id.length - 1) % 4) * 0.4;
+    // Faster than the previous slowed pass, still readable
+    const speed =
+      11 + (i % 5) * 2.2 + (u.id.charCodeAt(u.id.length - 1) % 5) * 0.6;
     const facing: 1 | -1 = i % 2 === 0 ? 1 : -1;
     return {
       id: u.id,
-      x: 20 + ((i * 51) % Math.max(48, width - 52)),
-      y: Math.max(8, height * 0.22) + ((i * 19) % Math.max(24, height * 0.45)),
+      x: 16 + ((i * 51) % Math.max(48, width - 64)),
+      y: Math.max(8, height * 0.2) + ((i * 19) % Math.max(24, height * 0.42)),
       vx: speed * facing,
       facing,
       bobPhase: (i * 0.85) % (Math.PI * 2),
-      bobSpeed: 1.4 + (i % 4) * 0.25,
+      bobSpeed: 1.8 + (i % 4) * 0.3,
     };
   });
 }
@@ -101,10 +107,10 @@ export function SkyWalkers({
       stateRef.current.forEach((s, i) => {
         const el = nodes[i];
         if (!el) return;
-        const bob = Math.sin(s.bobPhase) * 2;
-        const body = el.querySelector<HTMLElement>("[data-body]");
+        const bob = Math.sin(s.bobPhase) * 2.2;
+        const figure = el.querySelector<HTMLElement>("[data-figure]");
         el.style.transform = `translate3d(${s.x}px, ${s.y + bob}px, 0)`;
-        if (body) body.style.transform = `scaleX(${s.facing})`;
+        if (figure) figure.style.transform = `scaleX(${s.facing})`;
       });
     };
 
@@ -123,27 +129,26 @@ export function SkyWalkers({
       last = now;
       const width = stage.clientWidth;
       const height = stage.clientHeight;
-      const figureW = 40;
-      const figureH = 70;
+      const figureW = 56;
+      const figureH = 78;
 
       for (const s of stateRef.current) {
         s.x += s.vx * dt;
         s.bobPhase += s.bobSpeed * dt;
 
-        if (s.x < 6) {
-          s.x = 6;
+        if (s.x < 4) {
+          s.x = 4;
           s.vx = Math.abs(s.vx);
           s.facing = 1;
-        } else if (s.x > width - figureW - 6) {
-          s.x = width - figureW - 6;
+        } else if (s.x > width - figureW - 4) {
+          s.x = width - figureW - 4;
           s.vx = -Math.abs(s.vx);
           s.facing = -1;
         }
 
-        s.y += Math.sin(s.bobPhase * 0.28) * 3.5 * dt;
-        // Keep figures in the lower cloud band
-        const minY = height * 0.18;
-        const maxY = Math.max(minY, height - figureH - 6);
+        s.y += Math.sin(s.bobPhase * 0.3) * 4 * dt;
+        const minY = height * 0.16;
+        const maxY = Math.max(minY, height - figureH - 4);
         if (s.y < minY) s.y = minY;
         if (s.y > maxY) s.y = maxY;
       }
@@ -215,14 +220,13 @@ export function SkyWalkers({
       >
         <div ref={layerRef} className="absolute inset-0">
           {visible.map((u, i) => {
-            const tone = BODY_TONES[i % BODY_TONES.length]!;
             const selected = selectedId === u.id;
             return (
               <div
                 key={u.id}
                 data-walker-id={u.id}
                 className="absolute left-0 top-0 z-[1] will-change-transform"
-                style={{ width: 40 }}
+                style={{ width: 56 }}
               >
                 <button
                   type="button"
@@ -235,34 +239,30 @@ export function SkyWalkers({
                   }}
                 >
                   {selected ? (
-                    <span className="absolute -top-7 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#243746] px-2.5 py-1 text-[11px] font-medium text-white">
+                    <span className="absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#243746] px-2.5 py-1 text-[11px] font-medium text-white">
                       {u.name}
                     </span>
                   ) : null}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={avatarUrl(u.id, i)}
-                    alt=""
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 rounded-full bg-white object-cover"
-                    draggable={false}
-                  />
-                  <div data-body className="flex flex-col items-center">
-                    <div
-                      className="mt-0.5 h-[18px] w-5 rounded-[7px]"
-                      style={{ background: tone }}
+
+                  <div data-figure className="relative h-[72px] w-[56px]">
+                    {/* Body outline (face sits in the U opening) */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={bodyUrl(i)}
+                      alt=""
+                      className="pointer-events-none absolute inset-0 h-full w-full object-contain"
+                      draggable={false}
                     />
-                    <div className="mt-0.5 flex gap-[3px]">
-                      <span
-                        className="block h-3 w-[5px] rounded-full"
-                        style={{ background: tone }}
-                      />
-                      <span
-                        className="block h-3 w-[5px] rounded-full"
-                        style={{ background: tone }}
-                      />
-                    </div>
+                    {/* Face in neck opening */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={avatarUrl(u.id, i)}
+                      alt=""
+                      width={30}
+                      height={30}
+                      className="pointer-events-none absolute left-1/2 top-[2px] z-10 h-[30px] w-[30px] -translate-x-1/2 rounded-full bg-white object-cover"
+                      draggable={false}
+                    />
                   </div>
                 </button>
               </div>
