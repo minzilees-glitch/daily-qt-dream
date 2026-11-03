@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { SoftCard } from "@/components/ui/SoftCard";
-import { MonthPicker } from "@/components/ui/MonthPicker";
 import { DayParticipation } from "@/components/groups/DayParticipation";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
 import { SkyWalkers } from "@/components/groups/SkyWalkers";
@@ -56,40 +55,21 @@ export default function GroupPage() {
     <div>
       <section className="hero-gradient px-5 pb-6">
         <AppHeader light subtitle={group?.name ?? "우리 순"} />
-        <SoftCard className="mt-5">
-          <MonthPicker
-            value={ym}
-            onChange={setYm}
-            min={addMonths(currentYearMonth(), -2)}
-            max={currentYearMonth()}
+        <div className="mt-5 animate-fade-up">
+          <SkyWalkers
+            members={members}
+            yearMonth={ym}
+            onYearMonthChange={setYm}
+            minYearMonth={addMonths(currentYearMonth(), -2)}
+            maxYearMonth={currentYearMonth()}
+            memberCount={myRank?.memberCount ?? 0}
+            rateLabel={formatRate(myRank?.rate ?? 0)}
+            rankLabel={`${myRank?.rank ?? "-"}위`}
           />
-          <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-            <div className="rounded-[18px] bg-sky-light px-2 py-3">
-              <p className="text-[11px] text-text-secondary">인원</p>
-              <p className="mt-1 text-lg font-semibold">{myRank?.memberCount ?? 0}명</p>
-            </div>
-            <div className="rounded-[18px] bg-sky-light px-2 py-3">
-              <p className="text-[11px] text-text-secondary">참여율</p>
-              <p className="mt-1 text-lg font-semibold">
-                {formatRate(myRank?.rate ?? 0)}
-              </p>
-            </div>
-            <div className="rounded-[18px] bg-sky-light px-2 py-3">
-              <p className="text-[11px] text-text-secondary">전체 순위</p>
-              <p className="mt-1 text-lg font-semibold">{myRank?.rank ?? "-"}위</p>
-            </div>
-          </div>
-          <p className="mt-3 text-center text-xs text-text-secondary">
-            순 소속은 관리자가 배정합니다. 다른 순원의 기록 내용은 보이지 않습니다.
-          </p>
-        </SoftCard>
+        </div>
       </section>
 
       <section className="animate-fade-up space-y-5 px-5 pt-1">
-        <div className="sky-walkers-card overflow-hidden rounded-[24px] shadow-none">
-          <SkyWalkers members={members} />
-        </div>
-
         <SoftCard>
           <h2 className="mb-1 text-[16px] font-semibold text-text-main">
             요일별 참여

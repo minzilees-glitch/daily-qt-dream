@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { MonthPicker } from "@/components/ui/MonthPicker";
 import type { User } from "@/types";
 
 const BODY_TONES = [
@@ -44,22 +45,41 @@ function seedWalkers(
   height: number,
 ): WalkerState[] {
   return members.slice(0, 12).map((u, i) => {
-    const speed = 14 + (i % 5) * 3.5 + (u.id.charCodeAt(u.id.length - 1) % 6);
+    // Slower roam than first pass
+    const speed = 5.5 + (i % 5) * 1.2 + (u.id.charCodeAt(u.id.length - 1) % 4) * 0.4;
     const facing: 1 | -1 = i % 2 === 0 ? 1 : -1;
     return {
       id: u.id,
       x: 20 + ((i * 51) % Math.max(48, width - 52)),
-      y: 40 + ((i * 29) % Math.max(36, height - 96)),
+      y: Math.max(8, height * 0.22) + ((i * 19) % Math.max(24, height * 0.45)),
       vx: speed * facing,
       facing,
       bobPhase: (i * 0.85) % (Math.PI * 2),
-      bobSpeed: 2.1 + (i % 4) * 0.4,
+      bobSpeed: 1.4 + (i % 4) * 0.25,
     };
   });
 }
 
-/** Soft heaven-above-clouds scene with wandering group-member figures. */
-export function SkyWalkers({ members }: { members: User[] }) {
+/** Combined sky dashboard + cloud walkers (single card). */
+export function SkyWalkers({
+  members,
+  yearMonth,
+  onYearMonthChange,
+  minYearMonth,
+  maxYearMonth,
+  memberCount,
+  rateLabel,
+  rankLabel,
+}: {
+  members: User[];
+  yearMonth: string;
+  onYearMonthChange: (ym: string) => void;
+  minYearMonth: string;
+  maxYearMonth: string;
+  memberCount: number;
+  rateLabel: string;
+  rankLabel: string;
+}) {
   const stageRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef<WalkerState[]>([]);
@@ -81,7 +101,7 @@ export function SkyWalkers({ members }: { members: User[] }) {
       stateRef.current.forEach((s, i) => {
         const el = nodes[i];
         if (!el) return;
-        const bob = Math.sin(s.bobPhase) * 2.5;
+        const bob = Math.sin(s.bobPhase) * 2;
         const body = el.querySelector<HTMLElement>("[data-body]");
         el.style.transform = `translate3d(${s.x}px, ${s.y + bob}px, 0)`;
         if (body) body.style.transform = `scaleX(${s.facing})`;
@@ -120,9 +140,10 @@ export function SkyWalkers({ members }: { members: User[] }) {
           s.facing = -1;
         }
 
-        s.y += Math.sin(s.bobPhase * 0.32) * 5 * dt;
-        const minY = 24;
-        const maxY = Math.max(minY, height - figureH - 8);
+        s.y += Math.sin(s.bobPhase * 0.28) * 3.5 * dt;
+        // Keep figures in the lower cloud band
+        const minY = height * 0.18;
+        const maxY = Math.max(minY, height - figureH - 6);
         if (s.y < minY) s.y = minY;
         if (s.y > maxY) s.y = maxY;
       }
@@ -138,10 +159,9 @@ export function SkyWalkers({ members }: { members: User[] }) {
   useEffect(() => {
     if (!selectedId) return;
     const onDoc = (e: MouseEvent | TouchEvent) => {
-      const target = e.target as Node | null;
+      const target = e.target as HTMLElement | null;
       if (!target) return;
-      const walker = (target as HTMLElement).closest?.("[data-walker-id]");
-      if (walker) return;
+      if (target.closest?.("[data-walker-id]")) return;
       setSelectedId(null);
     };
     document.addEventListener("mousedown", onDoc);
@@ -152,33 +172,47 @@ export function SkyWalkers({ members }: { members: User[] }) {
     };
   }, [selectedId]);
 
-  if (members.length === 0) {
-    return (
-      <div className="flex h-56 items-center justify-center rounded-[24px] bg-sky-light px-4 text-sm text-text-secondary">
-        아직 순원이 없습니다.
-      </div>
-    );
-  }
-
   const visible = members.slice(0, 12);
 
   return (
-    <div className="overflow-hidden rounded-[24px] bg-white shadow-none">
+    <div className="sky-group-card relative overflow-hidden rounded-[24px] shadow-none">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/group/sky-clouds-bg.png"
+        alt=""
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+        draggable={false}
+      />
+
       <div className="relative z-10 px-4 pb-2 pt-4">
-        <h2 className="text-[16px] font-semibold tracking-tight text-text-main">
-          하늘나라 구름 위
-        </h2>
-        <p className="mt-1 text-xs text-text-secondary">
-          우리 순이 구름 위를 함께 걸어가요. 얼굴을 누르면 이름을 볼 수 있어요.
-        </p>
+        <MonthPicker
+          value={yearMonth}
+          onChange={onYearMonthChange}
+          min={minYearMonth}
+          max={maxYearMonth}
+          light
+        />
+        <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+          <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+            <p className="text-[11px] text-white/85">인원</p>
+            <p className="mt-1 text-lg font-semibold text-white">{memberCount}명</p>
+          </div>
+          <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+            <p className="text-[11px] text-white/85">참여율</p>
+            <p className="mt-1 text-lg font-semibold text-white">{rateLabel}</p>
+          </div>
+          <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+            <p className="text-[11px] text-white/85">전체 순위</p>
+            <p className="mt-1 text-lg font-semibold text-white">{rankLabel}</p>
+          </div>
+        </div>
       </div>
 
       <div
         ref={stageRef}
-        className="sky-walkers-stage relative h-[230px] w-full overflow-hidden"
+        className="sky-walkers-stage relative z-10 h-[210px] w-full overflow-hidden"
         aria-label="순원들이 구름 위를 걷는 장면"
       >
-        <div className="sky-walkers-clouds pointer-events-none absolute inset-0" />
         <div ref={layerRef} className="absolute inset-0">
           {visible.map((u, i) => {
             const tone = BODY_TONES[i % BODY_TONES.length]!;
@@ -205,6 +239,7 @@ export function SkyWalkers({ members }: { members: User[] }) {
                       {u.name}
                     </span>
                   ) : null}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={avatarUrl(u.id, i)}
                     alt=""
