@@ -68,7 +68,7 @@ export function AppHeader({
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
               light
                 ? "bg-white/20 text-white hover:bg-white/30"
-                : "bg-ivory text-sky shadow-[var(--shadow-soft)] hover:bg-sky-light"
+                : "bg-ivory text-sky shadow-none hover:bg-sky-light"
             }`}
           >
             <UserRound size={20} strokeWidth={1.75} />
@@ -108,7 +108,7 @@ export function AppHeader({
         className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
           light
             ? "bg-white/20 text-white hover:bg-white/30"
-            : "bg-ivory text-sky shadow-[var(--shadow-soft)] hover:bg-sky-light"
+            : "bg-ivory text-sky shadow-none hover:bg-sky-light"
         }`}
       >
         <UserRound size={20} strokeWidth={1.75} />

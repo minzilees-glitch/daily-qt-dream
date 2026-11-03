@@ -176,12 +176,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 aria-label="더보기"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory text-text-main shadow-[var(--shadow-soft)]"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory text-text-main shadow-none"
               >
                 <MoreHorizontal size={18} strokeWidth={1.75} />
               </button>
               {menuOpen ? (
-                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-2xl bg-white py-1 shadow-[var(--shadow-soft)]">
+                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-2xl bg-white py-1 shadow-none">
                   <button
                     type="button"
                     className="block w-full px-4 py-2.5 text-left text-sm font-medium text-text-main hover:bg-sky-light"

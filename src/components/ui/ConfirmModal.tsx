@@ -30,7 +30,7 @@ export function ConfirmModal({
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-[360px] rounded-[24px] bg-white p-5 shadow-[var(--shadow-soft)]"
+        className="w-full max-w-[360px] rounded-[24px] bg-white p-5 shadow-none"
         onClick={(e) => e.stopPropagation()}
       >
         <h2

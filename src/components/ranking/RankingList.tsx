@@ -19,7 +19,7 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
           className={`flex items-center gap-3 rounded-[22px] px-4 py-3.5 transition ${
             row.isMine
               ? "bg-sky-light ring-1 ring-sky/40"
-              : "bg-ivory shadow-[var(--shadow-soft)]"
+              : "bg-ivory shadow-none"
           }`}
         >
           <div className="flex w-10 flex-col items-center">

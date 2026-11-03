@@ -11,7 +11,7 @@ export function MemberList({
       {items.map(({ user, days }) => (
         <li
           key={user.id}
-          className="flex items-center justify-between rounded-[20px] bg-ivory px-4 py-3 shadow-[var(--shadow-soft)]"
+          className="flex items-center justify-between rounded-[20px] bg-ivory px-4 py-3 shadow-none"
         >
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-light text-sm font-semibold text-sky">

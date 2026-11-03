@@ -12,9 +12,9 @@
   --text-main: #243746;
   --text-secondary: #768896;
   --gradient-hero: linear-gradient(180deg, #5fbcfc 0%, #d9edf9 58%, #ffffff 100%);
-  /* Soft elevation: tighter blur, darker/more opaque (app-wide; CTA stays shadowless) */
-  --shadow-soft: 0 6px 16px rgba(36, 55, 70, 0.16);
-  --shadow-nav: 0 10px 22px rgba(95, 188, 252, 0.32);
+  /* Shadows removed app-wide */
+  --shadow-soft: none;
+  --shadow-nav: none;
   --radius-card: 24px;
   --radius-btn: 18px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -131,7 +131,7 @@ a {
 .soft-card {
   background: var(--ivory);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-soft);
+  box-shadow: none;
 }
 
 .phone-shell {
@@ -156,8 +156,7 @@ a {
     margin-top: 24px;
     margin-bottom: 24px;
     border-radius: 32px;
-    /* Same soft elevation token as cards — 은은하게 */
-    box-shadow: var(--shadow-soft);
+    box-shadow: none;
     overflow: hidden;
   }
 }

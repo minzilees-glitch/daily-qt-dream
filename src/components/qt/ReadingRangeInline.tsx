@@ -10,7 +10,7 @@ export function ReadingRangeInline({
   label?: string;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-[18px] bg-sky-light px-3.5 py-3 shadow-[var(--shadow-soft)]">
+    <div className="flex items-start gap-3 rounded-[18px] bg-sky-light px-3.5 py-3 shadow-none">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-text-main">
         <BookOpen size={16} strokeWidth={1.75} aria-hidden />
       </div>
