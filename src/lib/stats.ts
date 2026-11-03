@@ -18,20 +18,35 @@ export function buildCompletionSet(completions: QtCompletion[]): Set<string> {
   return set;
 }
 
-/** One completed QT day = 1 light. */
+/** Completions that earn lights (excludes past-date backfills). */
+export function buildLightSet(completions: QtCompletion[]): Set<string> {
+  const set = new Set<string>();
+  for (const c of completions) {
+    if (c.completed && c.earnsLight !== false) {
+      set.add(completionSetKey(c.userId, c.date));
+    }
+  }
+  return set;
+}
+
+/** On-time completed QT day = 1 light. Past backfills complete but earn 0. */
 export function userMonthStats(
   userId: string,
   yearMonth: string,
   completionSet: Set<string>,
+  lightSet: Set<string> = completionSet,
 ): { days: number; lights: number; possible: number } {
   const dates = rankingScopeDays(yearMonth);
   const possible = dates.length;
   const days = dates.filter((d) =>
     completionSet.has(completionSetKey(userId, d)),
   ).length;
+  const lights = dates.filter((d) =>
+    lightSet.has(completionSetKey(userId, d)),
+  ).length;
   return {
     days,
-    lights: days,
+    lights,
     possible,
   };
 }
@@ -53,11 +68,22 @@ export function userYearDays(
   return count;
 }
 
+/** Year cumulative lights — same keys as light set (on-time only). */
+export function userYearLights(
+  userId: string,
+  year: number,
+  lightSet: Set<string>,
+  todayLimit: string,
+): number {
+  return userYearDays(userId, year, lightSet, todayLimit);
+}
+
 export function groupMonthStats(
   groupId: string,
   users: User[],
   yearMonth: string,
   completionSet: Set<string>,
+  lightSet: Set<string> = completionSet,
 ): {
   lights: number;
   possibleCount: number;
@@ -70,7 +96,7 @@ export function groupMonthStats(
   let lights = 0;
   for (const m of members) {
     for (const d of dates) {
-      if (completionSet.has(completionSetKey(m.id, d))) lights += 1;
+      if (lightSet.has(completionSetKey(m.id, d))) lights += 1;
     }
   }
   return {
@@ -89,8 +115,9 @@ export function computeGroupRanking(
   myGroupId?: string,
 ): GroupRankRow[] {
   const set = buildCompletionSet(completions);
+  const lightSet = buildLightSet(completions);
   const rows = groups.map((g) => {
-    const stats = groupMonthStats(g.id, users, yearMonth, set);
+    const stats = groupMonthStats(g.id, users, yearMonth, set, lightSet);
     return {
       rank: 0,
       groupId: g.id,

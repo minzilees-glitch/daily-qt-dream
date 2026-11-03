@@ -51,12 +51,12 @@ export function ConfirmModal({
       >
         <h2
           id="confirm-title"
-          className="text-lg font-semibold tracking-tight text-text-main"
+          className="text-[19px] font-semibold tracking-tight text-text-main"
         >
           {title}
         </h2>
         {description ? (
-          <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+          <p className="mt-2 break-keep text-[15px] leading-relaxed break-words text-text-secondary">
             {description}
           </p>
         ) : null}

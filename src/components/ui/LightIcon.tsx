@@ -247,7 +247,7 @@ export function LightIcon({
         <span
           id={tipId}
           role="tooltip"
-          className="absolute left-1/2 top-full z-30 mt-2 w-max max-w-[220px] -translate-x-1/2 rounded-[12px] bg-text-main px-3 py-2 text-center text-[12px] font-medium leading-snug text-white shadow-none"
+          className="absolute left-1/2 top-full z-30 mt-2 w-max max-w-[220px] -translate-x-1/2 rounded-[12px] bg-text-main px-3 py-2 text-center text-[13px] font-medium leading-snug text-white shadow-none"
         >
           {tipText}
         </span>
@@ -262,7 +262,7 @@ export function LightCount({
   size = 16,
   tone = "active",
   className = "",
-  textClassName = "text-[15px] font-semibold text-text-main",
+  textClassName = "text-[16px] font-semibold text-text-main",
   /** Metrics default off — no earn burst unless explicitly enabled. */
   rays = false,
 }: {

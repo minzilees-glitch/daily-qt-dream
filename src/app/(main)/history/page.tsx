@@ -1,6 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import { ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
@@ -25,11 +32,54 @@ import {
   todaySeoul,
   yearMonthOf,
 } from "@/lib/dates";
-import { buildCompletionSet, userMonthStats } from "@/lib/stats";
+import { buildCompletionSet, buildLightSet, userMonthStats } from "@/lib/stats";
 
 function parseDateParam(raw: string | null): string | null {
   if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
   return raw;
+}
+
+const DATE_TITLE_MAX_PX = 23;
+const DATE_TITLE_MIN_PX = 13;
+
+/** Single-line title that shrinks to the largest font size that still fits. */
+function FitDateTitle({ text }: { text: string }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLHeadingElement>(null);
+
+  useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    const el = textRef.current;
+    if (!wrap || !el) return;
+
+    const fit = () => {
+      let size = DATE_TITLE_MAX_PX;
+      el.style.fontSize = `${size}px`;
+      el.style.whiteSpace = "nowrap";
+      while (size > DATE_TITLE_MIN_PX && el.scrollWidth > wrap.clientWidth) {
+        size -= 0.5;
+        el.style.fontSize = `${size}px`;
+      }
+    };
+
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, [text]);
+
+  return (
+    <div ref={wrapRef} className="min-w-0 flex-1 overflow-hidden">
+      <h2
+        ref={textRef}
+        className="whitespace-nowrap font-semibold tracking-[0.02em] text-text-main"
+        style={{ fontSize: DATE_TITLE_MAX_PX }}
+        suppressHydrationWarning
+      >
+        {text}
+      </h2>
+    </div>
+  );
 }
 
 function HistoryPageInner({ initialDate }: { initialDate: string }) {
@@ -49,8 +99,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const maxYm = currentYearMonth();
 
   const set = useMemo(() => buildCompletionSet(completions), [completions]);
+  const lightSet = useMemo(() => buildLightSet(completions), [completions]);
   const stats = currentUser
-    ? userMonthStats(currentUser.id, ym, set)
+    ? userMonthStats(currentUser.id, ym, set, lightSet)
     : { days: 0, lights: 0, possible: 0 };
 
   const completedDates = useMemo(() => {
@@ -120,13 +171,13 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   lights={stats.lights}
                   size={18}
                   rays={false}
-                  textClassName="text-lg font-semibold text-text-main"
+                  textClassName="text-[19px] font-semibold text-text-main"
                 />
               </div>
             </div>
             <div className="rounded-[16px] bg-white px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">집계 일수</StatLabel>
-              <p className="mt-1 text-lg font-semibold text-text-main">
+              <p className="mt-1 text-[19px] font-semibold text-text-main">
                 {stats.possible}일
               </p>
             </div>
@@ -161,26 +212,29 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
       <section className="animate-fade-up space-y-4 px-5 pt-2">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <LightIcon
-                active={selectedCompleted}
-                future={future}
-                size={28}
-                justEarned={selectedCompleted && !future}
-              />
-              <h2
-                className="text-[22px] font-semibold tracking-[0.02em] text-text-main"
-                suppressHydrationWarning
-              >
-                {formatDisplayDate(selected)}
-              </h2>
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-center gap-1.5">
+              <span className="shrink-0">
+                <LightIcon
+                  active={selectedCompleted}
+                  future={future}
+                  size={28}
+                  justEarned={selectedCompleted && !future}
+                />
+              </span>
+              <FitDateTitle text={formatDisplayDate(selected)} />
             </div>
             {future ? (
-              <p className="mt-1 text-sm text-text-secondary">
+              <p className="mt-1 text-[15px] text-text-secondary">
                 미래 날짜는 완료할 수 없습니다.
               </p>
-            ) : null}
+            ) : (
+              <p className="mt-1 break-keep text-[13px] leading-relaxed text-text-secondary">
+                빛은 당일 큐티에만 지급됩니다.
+                <br />
+                하지만 지난 큐티는 당신 심령에 남을거에요.
+              </p>
+            )}
           </div>
 
           {!future ? (
@@ -198,7 +252,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-2xl bg-white py-1 shadow-none">
                   <button
                     type="button"
-                    className="block w-full px-4 py-2.5 text-left text-sm font-medium text-text-main hover:bg-sky-light"
+                    className="block w-full px-4 py-2.5 text-left text-[15px] font-medium text-text-main hover:bg-sky-light"
                     onClick={() => {
                       setMenuOpen(false);
                       setEditing(true);
@@ -208,7 +262,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   </button>
                   <button
                     type="button"
-                    className="block w-full px-4 py-2.5 text-left text-sm font-medium text-[#E35D5D] hover:bg-sky-light disabled:opacity-40"
+                    className="block w-full px-4 py-2.5 text-left text-[15px] font-medium text-[#E35D5D] hover:bg-sky-light disabled:opacity-40"
                     disabled={!hasEntry && !selectedCompleted}
                     onClick={() => {
                       setMenuOpen(false);
@@ -290,7 +344,7 @@ export default function HistoryPage() {
   return (
     <Suspense
       fallback={
-        <div className="px-5 pt-16 text-center text-sm text-text-secondary">
+        <div className="px-5 pt-16 text-center text-[15px] text-text-secondary">
           기록을 불러오는 중…
         </div>
       }

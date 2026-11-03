@@ -65,6 +65,9 @@ body {
     "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR",
     sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* App-wide: wrap on word boundaries (Korean); break only if a token overflows. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 button,

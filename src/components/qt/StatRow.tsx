@@ -13,7 +13,7 @@ export function StatRow({
           className="rounded-[20px] bg-ivory/80 px-3 py-3 text-center shadow-none backdrop-blur"
         >
           <StatLabel className="text-text-secondary">{item.label}</StatLabel>
-          <p className="mt-1 text-lg font-semibold tracking-tight text-text-main">
+          <p className="mt-1 text-[19px] font-semibold tracking-tight text-text-main">
             {item.value}
           </p>
         </div>

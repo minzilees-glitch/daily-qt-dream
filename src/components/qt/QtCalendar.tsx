@@ -95,14 +95,14 @@ export function QtCalendar({
 
   return (
     <div>
-      <div className="mb-2 grid grid-cols-7 gap-1 text-center text-[11px] font-medium text-text-secondary">
+      <div className="mb-2 grid grid-cols-7 gap-2 text-center text-[12px] font-medium text-text-secondary">
         {WEEKDAYS.map((d) => (
           <div key={d} className="py-1">
             {d}
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-1 overflow-visible">
+      <div className="grid grid-cols-7 gap-2 overflow-visible">
         {rows.flatMap((row, ri) =>
           row.map((day, ci) => {
             const idx = ri * 7 + ci;
@@ -123,43 +123,49 @@ export function QtCalendar({
                 onClick={() => onSelect?.(date)}
                 aria-label={`${date}${done ? ", 완료" : ""}`}
                 aria-pressed={selected}
-                className={`relative flex aspect-square flex-col items-center justify-center overflow-visible rounded-2xl text-sm transition ${
-                  selected
-                    ? "bg-cta !text-white shadow-none"
-                    : isToday
-                      ? "bg-[#008CFF]/18 text-cta hover:bg-[#008CFF]/24"
-                      : done
-                        ? "bg-white text-text-main"
-                        : future
-                          ? "text-text-secondary/40"
-                          : "text-text-main hover:bg-white/70"
+                className={`group relative flex min-h-[44px] aspect-square origin-center items-center justify-center overflow-visible transition ${
+                  selected ? "z-10 scale-[1.08]" : ""
                 }`}
               >
                 <span
-                  className={`leading-none font-medium ${
+                  className={`mx-auto flex h-full w-[calc(100%-2px)] flex-col items-center justify-center gap-1 rounded-[8px] py-2 text-center ${
                     selected
-                      ? ""
+                      ? "bg-cta !text-white shadow-none"
                       : isToday
-                        ? "font-semibold text-cta"
+                        ? "bg-[#008CFF]/18 text-cta group-hover:bg-[#008CFF]/24"
                         : done
-                          ? "text-sky"
-                          : ""
+                          ? "bg-white text-text-main"
+                          : future
+                            ? "text-text-secondary/40"
+                            : "text-text-main group-hover:bg-white/70"
                   }`}
                 >
-                  {day}
-                </span>
-                {done ? (
-                  <span className="mt-0.5 flex h-5 w-5 translate-y-px items-center justify-center overflow-visible">
-                    <LightIcon
-                      tone="active"
-                      size={16}
-                      label="빛 수집됨"
-                      justEarned={justEarnedDate === date}
-                    />
+                  <span
+                    className={`text-center text-[14px] leading-none font-medium tabular-nums ${
+                      selected
+                        ? ""
+                        : isToday
+                          ? "font-semibold text-cta"
+                          : done
+                            ? "text-sky"
+                            : ""
+                    }`}
+                  >
+                    {day}
                   </span>
-                ) : (
-                  <span className="mt-0.5 h-5 w-5" />
-                )}
+                  {done ? (
+                    <span className="mx-auto flex h-5 w-5 shrink-0 items-center justify-center overflow-visible">
+                      <LightIcon
+                        tone="active"
+                        size={16}
+                        label="빛 수집됨"
+                        justEarned={justEarnedDate === date}
+                      />
+                    </span>
+                  ) : (
+                    <span className="mx-auto h-5 w-5 shrink-0" />
+                  )}
+                </span>
               </button>
             );
           }),

@@ -38,10 +38,10 @@ export default function RankingPage() {
             light
           />
         </div>
-        <p className="mt-5 text-center text-[14px] leading-relaxed text-text-main">
-          QT를 완료한 날마다 빛 1개를 모읍니다.
+        <p className="mt-5 text-center text-[15px] leading-relaxed text-text-main">
+          당일 QT를 완료한 날마다 빛 1개를 모읍니다.
           <br />
-          순 전체 빛 수로 순위를 매깁니다. 동률이면 같은 순위입니다.
+          지난 날짜 작성은 빛에 포함되지 않아요. 순 전체 빛 수로 순위를 매깁니다.
         </p>
       </section>
 

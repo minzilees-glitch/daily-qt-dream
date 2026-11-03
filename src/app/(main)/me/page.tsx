@@ -23,8 +23,10 @@ import {
 import { LightCount } from "@/components/ui/LightIcon";
 import {
   buildCompletionSet,
+  buildLightSet,
   userMonthStats,
   userWeekdayParticipation,
+  userYearLights,
 } from "@/lib/stats";
 
 export default function MePage() {
@@ -35,18 +37,19 @@ export default function MePage() {
 
   const group = groups.find((g) => g.id === currentUser.groupId);
   const set = buildCompletionSet(completions);
+  const lightSet = buildLightSet(completions);
   const ym = currentYearMonth();
   const year = parseYmd(todaySeoul()).year;
   const { weeksStarted, currentWeek } = yearWeekProgress(todaySeoul());
-  const month = userMonthStats(currentUser.id, ym, set);
+  const month = userMonthStats(currentUser.id, ym, set, lightSet);
   const weekdayPart = userWeekdayParticipation(
     currentUser.id,
     year,
     set,
     todaySeoul(),
   );
-  // Completed QT days this year = sum of weekday bar counts.
-  const yearDays = weekdayPart.reduce((sum, d) => sum + d.count, 0);
+  // On-time lights this year (past backfills excluded).
+  const yearDays = userYearLights(currentUser.id, year, lightSet, todaySeoul());
 
   return (
     <div>
@@ -56,10 +59,10 @@ export default function MePage() {
             <div className="flex items-center gap-4">
               <ProfileAvatarButton size={56} fallback="initial" />
               <div className="min-w-0">
-                <p className="truncate text-lg font-semibold text-text-main">
+                <p className="truncate text-[19px] font-semibold text-text-main">
                   {currentUser.name}
                 </p>
-                <p className="text-sm text-text-secondary">
+                <p className="text-[15px] text-text-secondary">
                   {group?.name ?? "-"}
                   {currentUser.isLeader ? " · 순장" : ""}
                   {currentUser.isAdmin ? " · 관리자" : ""}
@@ -74,7 +77,7 @@ export default function MePage() {
                     lights={month.lights}
                     size={18}
                     rays={false}
-                    textClassName="text-lg font-semibold text-text-main"
+                    textClassName="text-[19px] font-semibold text-text-main"
                   />
                 </div>
               </div>
@@ -84,7 +87,7 @@ export default function MePage() {
                   <LightCount
                     lights={yearDays}
                     size={18}
-                    textClassName="text-lg font-semibold text-text-main"
+                    textClassName="text-[19px] font-semibold text-text-main"
                   />
                 </div>
               </div>
@@ -96,10 +99,10 @@ export default function MePage() {
       <section className="animate-fade-up space-y-5 px-5 pt-1">
         <SoftCard className="bg-ivory">
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <h2 className="text-[16px] font-semibold text-text-main">
+            <h2 className="text-[17px] font-semibold text-text-main">
               내가 잘 지키는 요일
             </h2>
-            <span className="text-[13px] font-medium text-text-secondary">
+            <span className="text-[14px] font-medium text-text-secondary">
               {year}년 누적 기준 {weeksStarted}개 주 중에 {currentWeek}번째 주
             </span>
           </div>
@@ -111,10 +114,10 @@ export default function MePage() {
             type="button"
             className="soft-card flex w-full items-center justify-between p-4 text-left"
           >
-            <span className="flex items-center gap-3 text-[15px] font-medium">
+            <span className="flex items-center gap-3 text-[16px] font-medium">
               <Settings size={18} className="text-sky" strokeWidth={1.75} />
               계정 설정
-              <span className="text-xs font-normal text-text-secondary">(준비 중)</span>
+              <span className="text-[13px] font-normal text-text-secondary">(준비 중)</span>
             </span>
             <ChevronRight size={18} className="text-text-secondary" />
           </button>
@@ -123,7 +126,7 @@ export default function MePage() {
               href="/admin"
               className="soft-card flex items-center justify-between p-4"
             >
-              <span className="flex items-center gap-3 text-[15px] font-medium">
+              <span className="flex items-center gap-3 text-[16px] font-medium">
                 <Shield size={18} className="text-sky" strokeWidth={1.75} />
                 관리자
               </span>
@@ -145,7 +148,7 @@ export default function MePage() {
           로그아웃
         </PrimaryButton>
 
-        <p className="text-center text-xs text-text-secondary">
+        <p className="text-center text-[13px] text-text-secondary">
           로그인 세션은 이 브라우저 localStorage에 저장됩니다. QT 기록은
           Supabase가 설정되면 DB에 저장되고, 없으면 로컬로 대체됩니다.
         </p>

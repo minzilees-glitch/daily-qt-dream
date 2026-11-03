@@ -74,14 +74,14 @@ export default function GroupPage() {
 
       <section className="animate-fade-up space-y-5 px-5 pt-1">
         <SoftCard>
-          <h2 className="mb-3 text-[16px] font-semibold text-text-main">
+          <h2 className="mb-3 text-[17px] font-semibold text-text-main">
             요일별 참여
           </h2>
           <WeekdayParticipation days={weekdayPart} />
         </SoftCard>
 
         <SoftCard>
-          <h2 className="mb-3 text-[16px] font-semibold text-text-main">
+          <h2 className="mb-3 text-[17px] font-semibold text-text-main">
             날짜별 참여
           </h2>
           <DayParticipation days={dayPart} />

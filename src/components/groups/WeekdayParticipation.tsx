@@ -10,7 +10,7 @@ export function WeekdayParticipation({
 }) {
   if (days.length === 0 || days.every((d) => d.possible === 0)) {
     return (
-      <p className="py-6 text-center text-sm text-text-secondary">
+      <p className="py-6 text-center text-[15px] text-text-secondary">
         이번 달 참여 데이터가 아직 없습니다.
       </p>
     );
@@ -28,7 +28,7 @@ export function WeekdayParticipation({
             className="flex flex-col items-center gap-1.5"
             title={`${d.label}: ${d.count}/${d.possible}`}
           >
-            <p className="text-[13px] font-semibold tabular-nums text-text-main">
+            <p className="text-[14px] font-semibold tabular-nums text-text-main">
               {d.count}
             </p>
             <div className="flex h-16 w-8 items-end overflow-hidden rounded-full bg-sky-light">
@@ -41,7 +41,7 @@ export function WeekdayParticipation({
               {d.label}
             </StatLabel>
             {showPossible ? (
-              <span className="text-[10px] tabular-nums text-text-secondary/80">
+              <span className="text-[11px] tabular-nums text-text-secondary/80">
                 /{d.possible}
               </span>
             ) : null}

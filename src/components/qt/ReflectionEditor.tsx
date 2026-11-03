@@ -16,7 +16,7 @@ export function ReflectionEditor({
 
   return (
     <div className="space-y-6">
-      <label htmlFor="reflection" className="block text-[16px] font-semibold text-text-main">
+      <label htmlFor="reflection" className="block text-[17px] font-semibold text-text-main">
         오늘 나의 묵상
       </label>
       <textarea
@@ -26,7 +26,7 @@ export function ReflectionEditor({
         onChange={(e) => setValue(e.target.value)}
         rows={7}
         placeholder="오늘 말씀을 통해 받은 은혜를 자유롭게 적어보세요. (선택)"
-        className="w-full resize-none rounded-[12px] border-0 bg-ivory px-4 py-4 text-[17px] leading-relaxed text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
+        className="w-full resize-none rounded-[12px] border-0 bg-ivory px-4 py-4 text-[18px] leading-relaxed text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
       />
       <PrimaryButton
         type="button"
@@ -36,7 +36,7 @@ export function ReflectionEditor({
       >
         묵상 저장
       </PrimaryButton>
-      <p className="text-center text-xs text-text-secondary">
+      <p className="text-center text-[13px] text-text-secondary">
         체크와 묵상은 서로 독립적입니다. 작성 없이도 완료할 수 있어요.
       </p>
     </div>

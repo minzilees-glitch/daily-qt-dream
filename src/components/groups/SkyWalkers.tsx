@@ -500,7 +500,7 @@ export function SkyWalkers({
         ))}
         {capped ? (
           <span
-            className="absolute text-[11px] font-medium tracking-widest text-white/75"
+            className="absolute text-[12px] font-medium tracking-widest text-white/75"
             style={{
               right: 12,
               top: skyBand ? skyBand.lightTop + 8 : "48%",
@@ -515,7 +515,7 @@ export function SkyWalkers({
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순은</StatLabel>
-            <p className="mt-1 text-lg font-semibold text-white">{memberCount}명</p>
+            <p className="mt-1 text-[19px] font-semibold text-white">{memberCount}명</p>
           </div>
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순 현재</StatLabel>
@@ -524,13 +524,13 @@ export function SkyWalkers({
                 lights={lights}
                 size={18}
                 tone="onDark"
-                textClassName="text-lg font-semibold text-white"
+                textClassName="text-[19px] font-semibold text-white"
               />
             </div>
           </div>
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순 순위</StatLabel>
-            <p className="mt-1 text-lg font-semibold text-white">{rankLabel}</p>
+            <p className="mt-1 text-[19px] font-semibold text-white">{rankLabel}</p>
           </div>
         </div>
       </div>
@@ -562,7 +562,7 @@ export function SkyWalkers({
                   }}
                 >
                   {selected ? (
-                    <span className="absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#243746] px-2.5 py-1 text-[11px] font-medium text-white">
+                    <span className="absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#243746] px-2.5 py-1 text-[12px] font-medium text-white">
                       {u.name}
                     </span>
                   ) : null}

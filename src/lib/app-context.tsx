@@ -23,7 +23,7 @@ import {
   getTestUser,
   TEST_USER_ID,
 } from "@/lib/mock-data";
-import { isFutureDate } from "@/lib/dates";
+import { isFutureDate, todaySeoul } from "@/lib/dates";
 import { loadJson, removeKey, saveJson } from "@/lib/storage";
 import {
   normalizeEntry,
@@ -97,6 +97,11 @@ interface Overrides {
   awards: MonthlyAward[];
   /** Profile photo data URLs keyed by user id. */
   avatarMap: Record<string, string>;
+  /**
+   * Completions that do not earn lights (past-date backfills).
+   * Keys: `userId|YYYY-MM-DD`. Persists for both local + Supabase saves.
+   */
+  noLightKeys?: string[];
 }
 
 const emptyOverrides = (): Overrides => ({
@@ -106,6 +111,7 @@ const emptyOverrides = (): Overrides => ({
   leaderMap: {},
   awards: [],
   avatarMap: {},
+  noLightKeys: [],
 });
 
 type StoreSnapshot = {
@@ -352,14 +358,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
     remoteTick,
   ]);
 
+  const noLightKeySet = useMemo(() => {
+    const fromOverrides = new Set(overrides.noLightKeys ?? []);
+    // Also honor earnsLight:false stored on local completion rows.
+    for (const c of overrides.completions) {
+      if (c.completed && c.earnsLight === false) {
+        fromOverrides.add(`${c.userId}|${c.date}`);
+      }
+    }
+    return fromOverrides;
+  }, [overrides.noLightKeys, overrides.completions]);
+
   const completions = useMemo(() => {
     const list: QtCompletion[] = [];
     for (const [key, completed] of completionMap) {
       const [userId, date] = key.split("|");
-      if (completed) list.push({ userId, date, completed: true });
+      if (!completed) continue;
+      list.push({
+        userId,
+        date,
+        completed: true,
+        earnsLight: !noLightKeySet.has(key),
+      });
     }
     return list;
-  }, [completionMap]);
+  }, [completionMap, noLightKeySet]);
 
   const reflections = useMemo(
     () => Array.from(reflectionMap.values()),
@@ -426,8 +449,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (isFutureDate(date)) {
         return { ok: false, message: "미래 날짜에는 저장할 수 없습니다." };
       }
-      const wasComplete =
-        completionMap.get(`${sessionUserId}|${date}`) === true;
+      const key = `${sessionUserId}|${date}`;
+      const wasComplete = completionMap.get(key) === true;
       const err = validationMessage(fields);
       if (err) return { ok: false, message: err };
 
@@ -438,6 +461,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...trimmed,
         updatedAt: new Date().toISOString(),
       };
+      // Only same-day completion earns a light; past backfills save without count/burst.
+      const onTime = date === todaySeoul();
+      const earnsLight = onTime;
+      const prevNoLight = overrides.noLightKeys ?? [];
+      const nextNoLight = earnsLight
+        ? prevNoLight.filter((k) => k !== key)
+        : prevNoLight.includes(key)
+          ? prevNoLight
+          : [...prevNoLight, key];
 
       if (supabaseEnabled) {
         const res = await upsertQtEntry(sessionUserId, date, trimmed);
@@ -458,7 +490,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
             ...prev.presence.filter(
               (c) => !(c.userId === sessionUserId && c.date === date),
             ),
-            { userId: sessionUserId, date, completed: true },
+            {
+              userId: sessionUserId,
+              date,
+              completed: true,
+              earnsLight,
+            },
           ];
           return {
             myEntries,
@@ -466,11 +503,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
             loadedFor: sessionUserId,
           };
         });
+        writeOverrides({ ...overrides, noLightKeys: nextNoLight });
         setRemoteTick((t) => t + 1);
-        if (!wasComplete) notifyEarned(date);
+        if (!wasComplete && earnsLight) notifyEarned(date);
         return {
           ok: true,
-          message: "오늘도 주님의 말씀 안에서 살아가시기를 기도합니다",
+          message: earnsLight
+            ? "오늘도 주님의 말씀 안에서 살아가시기를 기도합니다"
+            : "지난 큐티를 저장했어요. 빛은 모이지 않아요.",
         };
       }
 
@@ -484,17 +524,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...overrides.completions.filter(
           (c) => !(c.userId === sessionUserId && c.date === date),
         ),
-        { userId: sessionUserId, date, completed: true },
+        { userId: sessionUserId, date, completed: true, earnsLight },
       ];
       writeOverrides({
         ...overrides,
         reflections: nextReflections,
         completions: nextCompletions,
+        noLightKeys: nextNoLight,
       });
-      if (!wasComplete) notifyEarned(date);
+      if (!wasComplete && earnsLight) notifyEarned(date);
       return {
         ok: true,
-        message: "오늘도 주님의 말씀 안에서 살아가시기를 기도합니다",
+        message: earnsLight
+          ? "오늘도 주님의 말씀 안에서 살아가시기를 기도합니다"
+          : "지난 큐티를 저장했어요. 빛은 모이지 않아요.",
       };
     },
     [sessionUserId, overrides, supabaseEnabled, completionMap, notifyEarned],
@@ -508,6 +551,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (isFutureDate(date)) {
         return { ok: false, message: "미래 날짜는 변경할 수 없습니다." };
       }
+
+      const key = `${sessionUserId}|${date}`;
+      const nextNoLight = (overrides.noLightKeys ?? []).filter((k) => k !== key);
 
       if (supabaseEnabled) {
         const res = await deleteQtEntry(sessionUserId, date);
@@ -526,6 +572,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ),
           loadedFor: sessionUserId,
         }));
+        writeOverrides({ ...overrides, noLightKeys: nextNoLight });
         setRemoteTick((t) => t + 1);
         return { ok: true, message: "기록을 지우고 완료를 취소했습니다." };
       }
@@ -543,6 +590,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...overrides,
         reflections: nextReflections,
         completions: nextCompletions,
+        noLightKeys: nextNoLight,
       });
       return { ok: true, message: "기록을 지우고 완료를 취소했습니다." };
     },
