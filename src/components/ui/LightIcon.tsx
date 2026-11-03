@@ -46,13 +46,21 @@ function RayBurst({ size, color }: { size: number; color: string }) {
   const stroke = Math.max(1.25, size * 0.07);
   const angles = [0, 45, 90, 135, 180, 225, 270, 315];
 
+  // Center with margins (not transform) so light-rays scale animation
+  // does not fight translate(-50%, -50%).
   return (
     <svg
-      className="light-rays pointer-events-none absolute inset-0"
+      className="light-rays pointer-events-none absolute"
       width={box}
       height={box}
       viewBox={`0 0 ${box} ${box}`}
       aria-hidden
+      style={{
+        left: "50%",
+        top: "50%",
+        marginLeft: -box / 2,
+        marginTop: -box / 2,
+      }}
     >
       {angles.map((deg) => {
         const rad = (deg * Math.PI) / 180;
@@ -192,30 +200,27 @@ export function LightIcon({
     (future ? "아직 열리지 않은 빛" : isInactive ? "빛 미수집" : "빛 수집됨");
 
   const showBurst = rays && burst && !isInactive;
-  const pad = Math.max(2, Math.round(size * 0.18));
-  const box = showBurst ? size + pad * 2 : size;
 
   if (!isInactive) {
+    // Layout box is always `size`×`size` so earn rays/zoom never shift
+    // the glyph center in flex rows (home title, history date, calendar).
     return (
       <span
-        className={`inline-flex overflow-visible ${className}`}
+        className={`relative inline-flex shrink-0 items-center justify-center overflow-visible ${className}`}
         role="img"
         aria-label={aria}
         title={aria}
+        style={{ width: size, height: size }}
       >
         <span
-          className={`relative inline-flex shrink-0 items-center justify-center overflow-visible${
+          className={`relative flex h-full w-full items-center justify-center overflow-visible${
             showBurst ? " light-earn-burst" : ""
           }`}
-          style={{ width: box, height: box }}
         >
           {showBurst ? (
             <RayBurst size={size} color={toneColor(resolved)} />
           ) : null}
-          <span
-            className="relative z-[1] inline-flex"
-            style={{ width: size, height: size }}
-          >
+          <span className="relative z-[1] inline-flex">
             <LightGlyph tone={resolved} size={size} />
           </span>
         </span>
