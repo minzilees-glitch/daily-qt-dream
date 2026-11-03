@@ -12,7 +12,8 @@ import type {
   Group,
   MonthlyAward,
   QtCompletion,
-  QtReflection,
+  QtEntry,
+  QtEntryFields,
   User,
 } from "@/types";
 import {
@@ -22,6 +23,13 @@ import {
 } from "@/lib/mock-data";
 import { isFutureDate, todaySeoul } from "@/lib/dates";
 import { loadJson, removeKey, saveJson } from "@/lib/storage";
+import {
+  isEmptyQtEntry,
+  isValidQtEntry,
+  normalizeEntry,
+  trimFields,
+  validationMessage,
+} from "@/lib/qt-entry";
 
 interface AppState {
   ready: boolean;
@@ -29,27 +37,35 @@ interface AppState {
   groups: Group[];
   users: User[];
   completions: QtCompletion[];
-  reflections: QtReflection[];
+  reflections: QtEntry[];
   awards: MonthlyAward[];
   loginAsTestUser: () => void;
   logout: () => void;
-  toggleCompletion: (date: string) => { ok: boolean; message: string };
-  saveReflection: (date: string, content: string) => { ok: boolean; message: string };
+  /** Save QT entry; marks day complete if valid. */
+  saveEntry: (
+    date: string,
+    fields: QtEntryFields,
+  ) => { ok: boolean; message: string };
+  /** Clear entry and uncomplete the day. */
+  clearEntry: (date: string) => { ok: boolean; message: string };
   assignUserGroup: (userId: string, groupId: string) => void;
+  /** Admin batch assign — membership is admin-managed only. */
+  assignUsersToGroup: (userIds: string[], groupId: string) => void;
   setGroupLeader: (groupId: string, userId: string) => void;
   confirmAward: (yearMonth: string, groupId: string, rate: number) => void;
   isCompleted: (userId: string, date: string) => boolean;
-  getReflection: (userId: string, date: string) => QtReflection | undefined;
+  getReflection: (userId: string, date: string) => QtEntry | undefined;
+  getEntry: (userId: string, date: string) => QtEntry | undefined;
 }
 
 const AppContext = createContext<AppState | null>(null);
 
 const SESSION_KEY = "session-user-id";
-const OVERRIDES_KEY = "qt-overrides";
+const OVERRIDES_KEY = "qt-overrides-v2";
 
 interface Overrides {
   completions: QtCompletion[];
-  reflections: QtReflection[];
+  reflections: QtEntry[];
   userGroupMap: Record<string, string>;
   leaderMap: Record<string, string>;
   awards: MonthlyAward[];
@@ -85,9 +101,15 @@ function emit() {
 
 function readFresh(): StoreSnapshot {
   version += 1;
+  const raw = loadJson<Overrides>(OVERRIDES_KEY, emptyOverrides());
   clientSnap = {
     sessionUserId: loadJson<string | null>(SESSION_KEY, null),
-    overrides: loadJson<Overrides>(OVERRIDES_KEY, emptyOverrides()),
+    overrides: {
+      ...raw,
+      reflections: (raw.reflections ?? []).map((r) =>
+        normalizeEntry(r as QtEntry & { content?: string }),
+      ),
+    },
     version,
   };
   return clientSnap;
@@ -186,12 +208,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [base.completions, overrides.completions]);
 
   const reflectionMap = useMemo(() => {
-    const map = new Map<string, QtReflection>();
+    const map = new Map<string, QtEntry>();
     for (const r of base.reflections) {
-      map.set(`${r.userId}|${r.date}`, r);
+      map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
     }
     for (const r of overrides.reflections) {
-      map.set(`${r.userId}|${r.date}`, r);
+      map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
     }
     return map;
   }, [base.reflections, overrides.reflections]);
@@ -237,61 +259,77 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [completionMap],
   );
 
-  const getReflection = useCallback(
+  const getEntry = useCallback(
     (userId: string, date: string) => reflectionMap.get(`${userId}|${date}`),
     [reflectionMap],
   );
 
-  const toggleCompletion = useCallback(
-    (date: string) => {
-      if (!sessionUserId) {
-        return { ok: false, message: "로그인이 필요합니다." };
-      }
-      if (isFutureDate(date)) {
-        return { ok: false, message: "미래 날짜는 체크할 수 없습니다." };
-      }
-      const key = `${sessionUserId}|${date}`;
-      const currently = completionMap.get(key) === true;
-      const nextCompleted = !currently;
-      const nextList = [
-        ...overrides.completions.filter(
-          (c) => !(c.userId === sessionUserId && c.date === date),
-        ),
-        { userId: sessionUserId, date, completed: nextCompleted },
-      ];
-      writeOverrides({ ...overrides, completions: nextList });
-      return {
-        ok: true,
-        message: nextCompleted
-          ? "오늘 QT를 완료로 표시했습니다."
-          : "QT 완료를 취소했습니다.",
-      };
-    },
-    [sessionUserId, completionMap, overrides],
-  );
+  const getReflection = getEntry;
 
-  const saveReflection = useCallback(
-    (date: string, content: string) => {
+  const saveEntry = useCallback(
+    (date: string, fields: QtEntryFields) => {
       if (!sessionUserId) {
         return { ok: false, message: "로그인이 필요합니다." };
       }
       if (isFutureDate(date)) {
-        return { ok: false, message: "미래 날짜에는 묵상을 저장할 수 없습니다." };
+        return { ok: false, message: "미래 날짜에는 저장할 수 없습니다." };
       }
-      const entry: QtReflection = {
+      const err = validationMessage(fields);
+      if (err) return { ok: false, message: err };
+
+      const trimmed = trimFields(fields);
+      const entry: QtEntry = {
         userId: sessionUserId,
         date,
-        content: content.trim(),
+        ...trimmed,
         updatedAt: new Date().toISOString(),
       };
-      const nextList = [
+      const nextReflections = [
         ...overrides.reflections.filter(
           (r) => !(r.userId === sessionUserId && r.date === date),
         ),
         entry,
       ];
-      writeOverrides({ ...overrides, reflections: nextList });
-      return { ok: true, message: "묵상을 저장했습니다." };
+      const nextCompletions = [
+        ...overrides.completions.filter(
+          (c) => !(c.userId === sessionUserId && c.date === date),
+        ),
+        { userId: sessionUserId, date, completed: true },
+      ];
+      writeOverrides({
+        ...overrides,
+        reflections: nextReflections,
+        completions: nextCompletions,
+      });
+      return { ok: true, message: "저장했습니다. 오늘 QT가 완료 처리됩니다." };
+    },
+    [sessionUserId, overrides],
+  );
+
+  const clearEntry = useCallback(
+    (date: string) => {
+      if (!sessionUserId) {
+        return { ok: false, message: "로그인이 필요합니다." };
+      }
+      if (isFutureDate(date)) {
+        return { ok: false, message: "미래 날짜는 변경할 수 없습니다." };
+      }
+      const nextReflections = overrides.reflections.filter(
+        (r) => !(r.userId === sessionUserId && r.date === date),
+      );
+      // Explicit uncomplete override even if base mock had a completion
+      const nextCompletions = [
+        ...overrides.completions.filter(
+          (c) => !(c.userId === sessionUserId && c.date === date),
+        ),
+        { userId: sessionUserId, date, completed: false },
+      ];
+      writeOverrides({
+        ...overrides,
+        reflections: nextReflections,
+        completions: nextCompletions,
+      });
+      return { ok: true, message: "기록을 지우고 완료를 취소했습니다." };
     },
     [sessionUserId, overrides],
   );
@@ -302,6 +340,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...overrides,
         userGroupMap: { ...overrides.userGroupMap, [userId]: groupId },
       });
+    },
+    [overrides],
+  );
+
+  const assignUsersToGroup = useCallback(
+    (userIds: string[], groupId: string) => {
+      const map = { ...overrides.userGroupMap };
+      for (const id of userIds) map[id] = groupId;
+      writeOverrides({ ...overrides, userGroupMap: map });
     },
     [overrides],
   );
@@ -337,13 +384,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     awards,
     loginAsTestUser,
     logout,
-    toggleCompletion,
-    saveReflection,
+    saveEntry,
+    clearEntry,
     assignUserGroup,
+    assignUsersToGroup,
     setGroupLeader,
     confirmAward,
     isCompleted,
     getReflection,
+    getEntry,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
@@ -355,4 +404,4 @@ export function useApp(): AppState {
   return ctx;
 }
 
-export { TEST_USER_ID, todaySeoul };
+export { TEST_USER_ID, todaySeoul, isEmptyQtEntry, isValidQtEntry };
