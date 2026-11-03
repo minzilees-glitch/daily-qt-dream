@@ -120,8 +120,9 @@ export function computeGroupRanking(
   return rows;
 }
 
+/** Numeric light count only — pair with LightIcon in UI. */
 export function formatLights(lights: number): string {
-  return `${lights}빛`;
+  return String(lights);
 }
 
 export function memberDayCounts(

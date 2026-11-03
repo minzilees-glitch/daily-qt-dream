@@ -74,8 +74,8 @@ export function LightCount({
 }) {
   return (
     <span className={`inline-flex items-center gap-1 ${className}`}>
-      <LightIcon tone={tone} size={size} label={`${lights}빛`} />
-      <span className={textClassName}>{lights}빛</span>
+      <LightIcon tone={tone} size={size} label={`빛 ${lights}`} />
+      <span className={textClassName}>{lights}</span>
     </span>
   );
 }
