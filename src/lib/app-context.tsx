@@ -301,7 +301,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         reflections: nextReflections,
         completions: nextCompletions,
       });
-      return { ok: true, message: "저장했습니다. 오늘 QT가 완료 처리됩니다." };
+      return {
+        ok: true,
+        message: "오늘도 주님의 말씀 안에서 살아가시기를 기도합니다",
+      };
     },
     [sessionUserId, overrides],
   );
