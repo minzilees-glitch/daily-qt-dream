@@ -137,11 +137,13 @@ a {
 .phone-shell {
   width: 100%;
   max-width: var(--phone-max);
-  min-height: 100dvh;
+  /* Fixed shell height: content scrolls inside; bottom nav stays pinned */
+  height: 100dvh;
+  max-height: 100dvh;
   margin: 0 auto;
   position: relative;
   background: var(--white);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 @media (min-width: 520px) {
@@ -152,7 +154,8 @@ a {
   }
 
   .phone-shell {
-    min-height: calc(100dvh - 48px);
+    height: calc(100dvh - 48px);
+    max-height: calc(100dvh - 48px);
     margin-top: 24px;
     margin-bottom: 24px;
     border-radius: 32px;

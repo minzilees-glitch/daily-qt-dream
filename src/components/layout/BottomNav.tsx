@@ -11,13 +11,14 @@ const TABS = [
   { href: "/ranking", label: "랭킹", icon: Trophy },
 ] as const;
 
+/** Pinned to the bottom of `.phone-shell` (viewport on mobile, phone frame on desktop). */
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
     <nav
       aria-label="하단 메뉴"
-      className="pointer-events-none absolute inset-x-0 bottom-0 z-40"
+      className="pointer-events-none z-40 w-full shrink-0"
     >
       <div className="pointer-events-auto grid w-full grid-cols-4 bg-sky pb-[var(--safe-bottom)] shadow-none">
         {TABS.map(({ href, label, icon: Icon }) => {

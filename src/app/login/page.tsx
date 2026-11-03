@@ -17,7 +17,7 @@ export default function LoginPage() {
 
   return (
     <PhoneShell>
-      <div className="hero-gradient relative flex min-h-[100dvh] flex-col px-6 pb-10 pt-[calc(48px+var(--safe-top))]">
+      <div className="hero-gradient relative flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-10 pt-[calc(48px+var(--safe-top))]">
         <div className="animate-fade-up flex flex-1 flex-col items-center justify-center text-center">
           <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-[28px] bg-ivory/70 shadow-none backdrop-blur">
             <BookHeart className="text-sky" size={36} strokeWidth={1.5} />

@@ -12,10 +12,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <PhoneShell>
       <AuthGate>
-        <div className={hideNav ? "pb-8" : "pb-[calc(96px+var(--safe-bottom))]"}>
-          {children}
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div
+            className={`min-h-0 flex-1 overflow-y-auto overscroll-y-contain ${
+              hideNav ? "pb-8" : "pb-3"
+            }`}
+          >
+            {children}
+          </div>
+          {!hideNav ? <BottomNav /> : null}
         </div>
-        {!hideNav ? <BottomNav /> : null}
       </AuthGate>
     </PhoneShell>
   );
