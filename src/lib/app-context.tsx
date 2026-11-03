@@ -4,7 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -21,15 +23,20 @@ import {
   getTestUser,
   TEST_USER_ID,
 } from "@/lib/mock-data";
-import { isFutureDate, todaySeoul } from "@/lib/dates";
+import { isFutureDate } from "@/lib/dates";
 import { loadJson, removeKey, saveJson } from "@/lib/storage";
 import {
-  isEmptyQtEntry,
-  isValidQtEntry,
   normalizeEntry,
   trimFields,
   validationMessage,
 } from "@/lib/qt-entry";
+import {
+  deleteQtEntry,
+  fetchQtPresence,
+  fetchUserQtEntries,
+  isSupabaseConfigured,
+  upsertQtEntry,
+} from "@/lib/supabase/qt-repo";
 
 interface AppState {
   ready: boolean;
@@ -39,15 +46,17 @@ interface AppState {
   completions: QtCompletion[];
   reflections: QtEntry[];
   awards: MonthlyAward[];
+  /** True when NEXT_PUBLIC_SUPABASE_* is set. */
+  supabaseEnabled: boolean;
   loginAsTestUser: () => void;
   logout: () => void;
   /** Save QT entry; marks day complete if valid. */
   saveEntry: (
     date: string,
     fields: QtEntryFields,
-  ) => { ok: boolean; message: string };
+  ) => Promise<{ ok: boolean; message: string }>;
   /** Clear entry and uncomplete the day. */
-  clearEntry: (date: string) => { ok: boolean; message: string };
+  clearEntry: (date: string) => Promise<{ ok: boolean; message: string }>;
   assignUserGroup: (userId: string, groupId: string) => void;
   /** Admin batch assign — membership is admin-managed only. */
   assignUsersToGroup: (userIds: string[], groupId: string) => void;
@@ -64,6 +73,7 @@ const SESSION_KEY = "session-user-id";
 const OVERRIDES_KEY = "qt-overrides-v2";
 
 interface Overrides {
+  /** Used when Supabase env is missing (local fallback). */
   completions: QtCompletion[];
   reflections: QtEntry[];
   userGroupMap: Record<string, string>;
@@ -167,6 +177,20 @@ function getReadyServerSnapshot() {
   return READY_FALSE;
 }
 
+type RemoteQt = {
+  /** Full entries for the logged-in user. */
+  myEntries: QtEntry[];
+  /** Presence for light counts (all users that have rows in Supabase). */
+  presence: QtCompletion[];
+  loadedFor: string | null;
+};
+
+const EMPTY_REMOTE: RemoteQt = {
+  myEntries: [],
+  presence: [],
+  loadedFor: null,
+};
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const snap = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const clientReady = useSyncExternalStore(
@@ -178,6 +202,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const sessionUserId = snap.sessionUserId;
   const overrides = snap.overrides;
   const base = useMemo(() => getMockData(), []);
+  const supabaseEnabled = isSupabaseConfigured();
+
+  const [remoteQt, setRemoteQt] = useState<RemoteQt>(EMPTY_REMOTE);
+  const [remoteTick, setRemoteTick] = useState(0);
+
+  useEffect(() => {
+    if (!supabaseEnabled || !sessionUserId) return;
+    let cancelled = false;
+    (async () => {
+      const [mine, presence] = await Promise.all([
+        fetchUserQtEntries(sessionUserId),
+        fetchQtPresence(),
+      ]);
+      if (cancelled) return;
+      setRemoteQt({
+        myEntries: mine.ok ? mine.data : [],
+        presence: presence.ok ? presence.data : [],
+        loadedFor: sessionUserId,
+      });
+      setRemoteTick((t) => t + 1);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [supabaseEnabled, sessionUserId]);
+
+  const remoteReady =
+    supabaseEnabled &&
+    !!sessionUserId &&
+    remoteQt.loadedFor === sessionUserId;
 
   const users = useMemo(() => {
     return base.users.map((u) => {
@@ -201,22 +255,65 @@ export function AppProvider({ children }: { children: ReactNode }) {
     for (const c of base.completions) {
       map.set(`${c.userId}|${c.date}`, c.completed);
     }
-    for (const c of overrides.completions) {
-      map.set(`${c.userId}|${c.date}`, c.completed);
+
+    if (remoteReady) {
+      // Prefer Supabase presence for light counts; clear mock days for the
+      // logged-in user so lights = their real qt_entries only.
+      if (sessionUserId) {
+        for (const key of [...map.keys()]) {
+          if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
+        }
+      }
+      for (const c of remoteQt.presence) {
+        map.set(`${c.userId}|${c.date}`, c.completed);
+      }
+    } else if (!supabaseEnabled) {
+      for (const c of overrides.completions) {
+        map.set(`${c.userId}|${c.date}`, c.completed);
+      }
     }
     return map;
-  }, [base.completions, overrides.completions]);
+    // remoteTick forces refresh after optimistic local remote updates
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    base.completions,
+    overrides.completions,
+    supabaseEnabled,
+    remoteReady,
+    remoteQt,
+    sessionUserId,
+    remoteTick,
+  ]);
 
   const reflectionMap = useMemo(() => {
     const map = new Map<string, QtEntry>();
     for (const r of base.reflections) {
       map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
     }
-    for (const r of overrides.reflections) {
-      map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
+
+    if (remoteReady && sessionUserId) {
+      for (const key of [...map.keys()]) {
+        if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
+      }
+      for (const r of remoteQt.myEntries) {
+        map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
+      }
+    } else if (!supabaseEnabled) {
+      for (const r of overrides.reflections) {
+        map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
+      }
     }
     return map;
-  }, [base.reflections, overrides.reflections]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    base.reflections,
+    overrides.reflections,
+    supabaseEnabled,
+    remoteReady,
+    remoteQt,
+    sessionUserId,
+    remoteTick,
+  ]);
 
   const completions = useMemo(() => {
     const list: QtCompletion[] = [];
@@ -278,7 +375,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const getReflection = getEntry;
 
   const saveEntry = useCallback(
-    (date: string, fields: QtEntryFields) => {
+    async (date: string, fields: QtEntryFields) => {
       if (!sessionUserId) {
         return { ok: false, message: "로그인이 필요합니다." };
       }
@@ -295,6 +392,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...trimmed,
         updatedAt: new Date().toISOString(),
       };
+
+      if (supabaseEnabled) {
+        const res = await upsertQtEntry(sessionUserId, date, trimmed);
+        if (!res.ok) {
+          return {
+            ok: false,
+            message: `저장 실패: ${res.error}. Supabase 마이그레이션·시드(u-001)를 확인하세요.`,
+          };
+        }
+        setRemoteQt((prev) => {
+          const myEntries = [
+            ...prev.myEntries.filter(
+              (r) => !(r.userId === sessionUserId && r.date === date),
+            ),
+            res.data,
+          ];
+          const presence = [
+            ...prev.presence.filter(
+              (c) => !(c.userId === sessionUserId && c.date === date),
+            ),
+            { userId: sessionUserId, date, completed: true },
+          ];
+          return {
+            myEntries,
+            presence,
+            loadedFor: sessionUserId,
+          };
+        });
+        setRemoteTick((t) => t + 1);
+        return {
+          ok: true,
+          message: "오늘도 주님의 말씀 안에서 살아가시기를 기도합니다",
+        };
+      }
+
       const nextReflections = [
         ...overrides.reflections.filter(
           (r) => !(r.userId === sessionUserId && r.date === date),
@@ -317,21 +449,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
         message: "오늘도 주님의 말씀 안에서 살아가시기를 기도합니다",
       };
     },
-    [sessionUserId, overrides],
+    [sessionUserId, overrides, supabaseEnabled],
   );
 
   const clearEntry = useCallback(
-    (date: string) => {
+    async (date: string) => {
       if (!sessionUserId) {
         return { ok: false, message: "로그인이 필요합니다." };
       }
       if (isFutureDate(date)) {
         return { ok: false, message: "미래 날짜는 변경할 수 없습니다." };
       }
+
+      if (supabaseEnabled) {
+        const res = await deleteQtEntry(sessionUserId, date);
+        if (!res.ok) {
+          return {
+            ok: false,
+            message: `삭제 실패: ${res.error}`,
+          };
+        }
+        setRemoteQt((prev) => ({
+          myEntries: prev.myEntries.filter(
+            (r) => !(r.userId === sessionUserId && r.date === date),
+          ),
+          presence: prev.presence.filter(
+            (c) => !(c.userId === sessionUserId && c.date === date),
+          ),
+          loadedFor: sessionUserId,
+        }));
+        setRemoteTick((t) => t + 1);
+        return { ok: true, message: "기록을 지우고 완료를 취소했습니다." };
+      }
+
       const nextReflections = overrides.reflections.filter(
         (r) => !(r.userId === sessionUserId && r.date === date),
       );
-      // Explicit uncomplete override even if base mock had a completion
       const nextCompletions = [
         ...overrides.completions.filter(
           (c) => !(c.userId === sessionUserId && c.date === date),
@@ -345,7 +498,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       return { ok: true, message: "기록을 지우고 완료를 취소했습니다." };
     },
-    [sessionUserId, overrides],
+    [sessionUserId, overrides, supabaseEnabled],
   );
 
   const assignUserGroup = useCallback(
@@ -396,6 +549,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     completions,
     reflections,
     awards,
+    supabaseEnabled,
     loginAsTestUser,
     logout,
     saveEntry,
@@ -418,4 +572,4 @@ export function useApp(): AppState {
   return ctx;
 }
 
-export { TEST_USER_ID, todaySeoul, isEmptyQtEntry, isValidQtEntry };
+export { TEST_USER_ID };

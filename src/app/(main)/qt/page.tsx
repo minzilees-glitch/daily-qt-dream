@@ -59,8 +59,8 @@ export default function TodayQtPage() {
           key={`qt-${today}-${entry?.updatedAt ?? "new"}`}
           initial={entry}
           showClear={completed || !!entry}
-          onSave={(fields) => {
-            const res = saveEntry(today, fields);
+          onSave={async (fields) => {
+            const res = await saveEntry(today, fields);
             showToast(res.message);
             if (res.ok) {
               window.setTimeout(() => {
@@ -68,7 +68,10 @@ export default function TodayQtPage() {
               }, 650);
             }
           }}
-          onClear={() => showToast(clearEntry(today).message)}
+          onClear={async () => {
+            const res = await clearEntry(today);
+            showToast(res.message);
+          }}
         />
       </div>
 

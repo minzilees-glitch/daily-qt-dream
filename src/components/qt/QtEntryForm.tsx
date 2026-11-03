@@ -14,8 +14,8 @@ export function QtEntryForm({
   showClear,
 }: {
   initial?: QtEntry | null;
-  onSave: (fields: QtEntryFields) => void;
-  onClear?: () => void;
+  onSave: (fields: QtEntryFields) => void | Promise<void>;
+  onClear?: () => void | Promise<void>;
   disabled?: boolean;
   showClear?: boolean;
 }) {
@@ -23,8 +23,10 @@ export function QtEntryForm({
   const [meditation, setMeditation] = useState(seed.meditation);
   const [verse, setVerse] = useState(seed.verse);
   const [prayer, setPrayer] = useState(seed.prayer);
+  const [busy, setBusy] = useState(false);
 
   const fields = { meditation, verse, prayer };
+  const locked = disabled || busy;
 
   return (
     <div className="space-y-4">
@@ -39,7 +41,7 @@ export function QtEntryForm({
         label="오늘의 묵상"
         placeholder="오늘 말씀을 통해 받은 은혜를 적어보세요."
         value={meditation}
-        disabled={disabled}
+        disabled={locked}
         rows={5}
         onChange={setMeditation}
       />
@@ -48,7 +50,7 @@ export function QtEntryForm({
         label="오늘 마음에 남는 구절"
         placeholder="기억에 남는 구절을 적어보세요."
         value={verse}
-        disabled={disabled}
+        disabled={locked}
         rows={3}
         onChange={setVerse}
       />
@@ -57,7 +59,7 @@ export function QtEntryForm({
         label="묵상 후 기도제목"
         placeholder="오늘의 기도제목을 적어보세요."
         value={prayer}
-        disabled={disabled}
+        disabled={locked}
         rows={3}
         onChange={setPrayer}
       />
@@ -65,10 +67,17 @@ export function QtEntryForm({
       <PrimaryButton
         type="button"
         className="w-full"
-        disabled={disabled}
-        onClick={() => onSave(fields)}
+        disabled={locked}
+        onClick={async () => {
+          setBusy(true);
+          try {
+            await onSave(fields);
+          } finally {
+            setBusy(false);
+          }
+        }}
       >
-        저장하고 QT 완료하기
+        {busy ? "저장 중…" : "저장하고 QT 완료하기"}
       </PrimaryButton>
 
       {showClear && onClear ? (
@@ -76,8 +85,15 @@ export function QtEntryForm({
           type="button"
           variant="soft"
           className="w-full"
-          disabled={disabled}
-          onClick={onClear}
+          disabled={locked}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              await onClear();
+            } finally {
+              setBusy(false);
+            }
+          }}
         >
           기록 삭제 · 완료 취소
         </PrimaryButton>
