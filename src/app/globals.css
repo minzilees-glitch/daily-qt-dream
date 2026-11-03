@@ -245,8 +245,28 @@ a {
   background: transparent;
 }
 
+/* Decorative group lights drifting in the upper sky band */
+@keyframes sky-light-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.sky-light-drift {
+  animation: sky-light-drift var(--sky-dur, 4s) ease-in-out infinite;
+  animation-delay: var(--sky-delay, 0s);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sky-walkers-stage .will-change-transform {
     will-change: auto;
+  }
+
+  .sky-light-drift {
+    animation: none;
   }
 }

@@ -1,9 +1,140 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { LightCount } from "@/components/ui/LightIcon";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { User } from "@/types";
+
+/** Hard visual max for decorative sky lights. */
+const SKY_LIGHT_HARD_MAX = 64;
+
+/** Four discrete sizes (~11px baseline +5%): smaller / base / larger / largest. */
+const SKY_LIGHT_SIZES = [8.4, 10.5, 12.6, 14.7] as const;
+
+/** Bump hash salt when board layout changes so sparks re-place on the new sky. */
+const SKY_LAYOUT_SALT = 20261103.52;
+
+/** Walker figure metrics (after body shrink + face +10%). */
+const WALKER_FACE_PX = 35; // was 31 → larger again
+const WALKER_BODY_H = 54; // was 60 → slightly smaller
+const WALKER_FIGURE_H = 62; // was 68
+const WALKER_FIGURE_W = 52; // was 56
+const WALKER_FACE_TOP = 2; // 3 → 2
+const FLOOR_INSET_PX = 2; // feet barely on-card (1–2px)
+
+type SkySpark = {
+  left: number; // px within card
+  top: number; // px within card
+  size: number;
+  delay: number;
+  dur: number;
+};
+
+type SkyBandPx = {
+  cardW: number;
+  cardH: number;
+  /** First Y where lights may sit = stats bottom + 5px */
+  lightTop: number;
+  /** Soft ceiling before walker feet zone */
+  lightBottom: number;
+  statsLeft: number;
+  statsRight: number;
+  statsTop: number;
+  statsBottom: number;
+};
+
+function hash01(i: number): number {
+  const x = Math.sin(i * 127.1 + 311.7 + SKY_LAYOUT_SALT) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+/** Extra gap between light icons (px). */
+const LIGHT_GAP_PX = 4;
+const STATS_GAP_PX = 2;
+
+function hitsStatsAabb(
+  left: number,
+  top: number,
+  sizePx: number,
+  band: SkyBandPx,
+): boolean {
+  const r = sizePx / 2;
+  return !(
+    left + r < band.statsLeft ||
+    left - r > band.statsRight ||
+    top + r < band.statsTop ||
+    top - r > band.statsBottom
+  );
+}
+
+function sparksOverlap(
+  a: { left: number; top: number; size: number },
+  b: { left: number; top: number; size: number },
+): boolean {
+  const minDist = (a.size + b.size) / 2 + LIGHT_GAP_PX;
+  const dx = a.left - b.left;
+  const dy = a.top - b.top;
+  return dx * dx + dy * dy < minDist * minDist;
+}
+
+/**
+ * Scatter in free sky: top = stats SoftCard bottom + 5px.
+ * Avoids stats AABB, no icon overlap, stays above walker feet zone.
+ */
+function buildSkySparks(
+  lights: number,
+  band: SkyBandPx | null,
+): { sparks: SkySpark[]; capped: boolean } {
+  const total = Math.max(0, Math.floor(lights));
+  const show = Math.min(total, SKY_LIGHT_HARD_MAX);
+  if (!band || band.cardW < 8 || band.cardH < 8) {
+    return { sparks: [], capped: total > 0 };
+  }
+
+  const sparks: SkySpark[] = [];
+  const padX = 10;
+  const minX = padX;
+  const maxX = band.cardW - padX;
+  const minY = band.lightTop;
+  const maxY = Math.max(minY + 8, band.lightBottom);
+  const spanX = Math.max(8, maxX - minX);
+  const spanY = Math.max(8, maxY - minY);
+
+  for (let i = 0; i < show; i++) {
+    const size =
+      SKY_LIGHT_SIZES[Math.floor(hash01(i + 41) * SKY_LIGHT_SIZES.length)]!;
+    let placed: SkySpark | null = null;
+
+    for (let attempt = 0; attempt < 56; attempt++) {
+      const a = hash01(i * 19 + attempt * 7 + 3);
+      const b = hash01(i * 23 + attempt * 11 + 5);
+      // Bias early attempts into the upper free sky just under stats.
+      const yBias = attempt < 36 ? b * 0.72 : b;
+      const left = minX + a * spanX;
+      const top = minY + yBias * spanY;
+
+      if (hitsStatsAabb(left, top, size, band)) continue;
+
+      const candidate: SkySpark = {
+        left,
+        top,
+        size,
+        delay: a * 2.6,
+        dur: 3.4 + b * 2.2,
+      };
+      if (sparks.some((s) => sparksOverlap(candidate, s))) continue;
+      placed = candidate;
+      break;
+    }
+
+    if (placed) sparks.push(placed);
+  }
+
+  return {
+    sparks,
+    capped: total > SKY_LIGHT_HARD_MAX || sparks.length < Math.min(total, show),
+  };
+}
 
 const BODY_VARIANTS = [
   "red",
@@ -69,11 +200,22 @@ function pickActivity(index: number): Activity {
   return cycle[index % cycle.length]!;
 }
 
+/** Aggressive lower ground band — squeezed toward card floor. */
+function walkBand(height: number): { minY: number; maxY: number } {
+  const maxY = Math.max(0, height - WALKER_FIGURE_H - FLOOR_INSET_PX);
+  // Narrow strip near the floor (top of band also shifts down).
+  const span = Math.max(10, height * 0.08);
+  const minY = Math.min(maxY, Math.max(0, maxY - span));
+  return { minY, maxY };
+}
+
 function seedWalkers(
   members: User[],
   width: number,
   height: number,
 ): WalkerState[] {
+  const { minY, maxY } = walkBand(height);
+  const span = Math.max(8, maxY - minY);
   return members.slice(0, 12).map((u, i) => {
     const activity = pickActivity(i);
     const baseSpeed =
@@ -88,8 +230,8 @@ function seedWalkers(
     return {
       id: u.id,
       activity,
-      x: 16 + ((i * 51) % Math.max(48, width - 64)),
-      y: Math.max(8, height * 0.2) + ((i * 19) % Math.max(24, height * 0.42)),
+      x: 16 + ((i * 51) % Math.max(48, width - WALKER_FIGURE_W - 8)),
+      y: minY + ((i * 19) % span),
       vx: speed * facing,
       facing,
       bobPhase: (i * 0.85) % (Math.PI * 2),
@@ -110,7 +252,7 @@ function TeaCup() {
   return (
     <span
       data-prop="tea"
-      className="pointer-events-none absolute -right-1 top-[28px] z-[3] block h-[14px] w-[12px] will-change-transform"
+      className="pointer-events-none absolute -right-1 top-[24px] z-[3] block h-[14px] w-[12px] will-change-transform"
       aria-hidden
     >
       <span className="absolute inset-x-0 bottom-0 h-[10px] rounded-[3px] rounded-b-[4px] bg-[#F4E8D8] ring-1 ring-[#D9C4A8]" />
@@ -124,7 +266,7 @@ function BookProp() {
   return (
     <span
       data-prop="book"
-      className="pointer-events-none absolute left-1/2 top-[32px] z-[3] block h-[12px] w-[16px] -translate-x-1/2"
+      className="pointer-events-none absolute left-1/2 top-[28px] z-[3] block h-[12px] w-[16px] -translate-x-1/2"
       aria-hidden
     >
       <span className="absolute inset-0 rounded-[2px] bg-[#5F8FCF] ring-1 ring-white/70" />
@@ -139,7 +281,7 @@ function WaveHand() {
   return (
     <span
       data-prop="wave"
-      className="pointer-events-none absolute -right-0.5 top-[24px] z-[3] block h-[10px] w-[10px] origin-bottom will-change-transform"
+      className="pointer-events-none absolute -right-0.5 top-[20px] z-[3] block h-[10px] w-[10px] origin-bottom will-change-transform"
       aria-hidden
     >
       <span className="absolute inset-0 rounded-full bg-[#F2C9A8] ring-1 ring-white/60" />
@@ -159,10 +301,51 @@ export function SkyWalkers({
   lights: number;
   rankLabel: string;
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef<WalkerState[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [skyBand, setSkyBand] = useState<SkyBandPx | null>(null);
+
+  // Measure stats SoftCard bottom → lights start 5px below.
+  useLayoutEffect(() => {
+    const card = cardRef.current;
+    const stats = statsRef.current;
+    if (!card || !stats) return;
+
+    const measure = () => {
+      const cr = card.getBoundingClientRect();
+      const sr = stats.getBoundingClientRect();
+      const statsTop = sr.top - cr.top;
+      const statsBottom = sr.bottom - cr.top;
+      const statsLeft = sr.left - cr.left;
+      const statsRight = sr.right - cr.left;
+      // Free sky from 5px under stats down toward walker zone (leave lower stage for feet).
+      const lightTop = statsBottom + STATS_GAP_PX;
+      const lightBottom = Math.min(
+        cr.height * 0.58,
+        cr.height - WALKER_FIGURE_H - 24,
+      );
+      setSkyBand({
+        cardW: cr.width,
+        cardH: cr.height,
+        lightTop,
+        lightBottom: Math.max(lightTop + 12, lightBottom),
+        statsLeft,
+        statsRight,
+        statsTop,
+        statsBottom,
+      });
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(card);
+    ro.observe(stats);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -213,8 +396,7 @@ export function SkyWalkers({
       last = now;
       const width = stage.clientWidth;
       const height = stage.clientHeight;
-      const figureW = 56;
-      const figureH = 72;
+      const { minY, maxY } = walkBand(height);
 
       for (const s of stateRef.current) {
         s.bobPhase += s.bobSpeed * dt;
@@ -236,15 +418,13 @@ export function SkyWalkers({
           s.x = 4;
           s.vx = Math.abs(s.vx);
           s.facing = 1;
-        } else if (s.x > width - figureW - 4) {
-          s.x = width - figureW - 4;
+        } else if (s.x > width - WALKER_FIGURE_W - 4) {
+          s.x = width - WALKER_FIGURE_W - 4;
           s.vx = -Math.abs(s.vx);
           s.facing = -1;
         }
 
         s.y += Math.sin(s.bobPhase * 0.3) * (s.activity === "book" ? 2 : 4) * dt;
-        const minY = height * 0.16;
-        const maxY = Math.max(minY, height - figureH - 4);
         if (s.y < minY) s.y = minY;
         if (s.y > maxY) s.y = maxY;
       }
@@ -274,9 +454,16 @@ export function SkyWalkers({
   }, [selectedId]);
 
   const visible = members.slice(0, 12);
+  const { sparks, capped } = useMemo(
+    () => buildSkySparks(lights, skyBand),
+    [lights, skyBand],
+  );
 
   return (
-    <div className="sky-group-card relative overflow-hidden rounded-[16px] shadow-none">
+    <div
+      ref={cardRef}
+      className="sky-group-card relative overflow-hidden rounded-[16px] shadow-none"
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/group/sky-clouds-bg.png"
@@ -285,7 +472,46 @@ export function SkyWalkers({
         draggable={false}
       />
 
-      <div className="relative z-10 px-4 pb-2 pt-4">
+      {/* Sky lights — px positions from measured stats bottom + 5px */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+        aria-hidden
+      >
+        {sparks.map((s, i) => (
+          <span
+            key={`${SKY_LAYOUT_SALT}-${i}-${s.left.toFixed(1)}-${s.top.toFixed(1)}`}
+            className="sky-light-drift absolute opacity-100"
+            style={{
+              left: s.left,
+              top: s.top,
+              ["--sky-delay" as string]: `${s.delay}s`,
+              ["--sky-dur" as string]: `${s.dur}s`,
+            }}
+          >
+            <LightIcon
+              active
+              tone="active"
+              size={s.size}
+              rays={false}
+              label=""
+              className="drop-shadow-[0_0_1px_rgba(255,255,255,0.35)]"
+            />
+          </span>
+        ))}
+        {capped ? (
+          <span
+            className="absolute text-[11px] font-medium tracking-widest text-white/75"
+            style={{
+              right: 12,
+              top: skyBand ? skyBand.lightTop + 8 : "48%",
+            }}
+          >
+            …
+          </span>
+        ) : null}
+      </div>
+
+      <div ref={statsRef} className="relative z-10 px-4 pb-2 pt-4">
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순은</StatLabel>
@@ -323,7 +549,7 @@ export function SkyWalkers({
                 key={u.id}
                 data-walker-id={u.id}
                 className="absolute left-0 top-0 z-[1] will-change-transform"
-                style={{ width: 56 }}
+                style={{ width: WALKER_FIGURE_W }}
               >
                 <button
                   type="button"
@@ -341,22 +567,35 @@ export function SkyWalkers({
                     </span>
                   ) : null}
 
-                  <div data-figure className="relative h-[68px] w-[56px]">
+                  <div
+                    data-figure
+                    className="relative"
+                    style={{
+                      height: WALKER_FIGURE_H,
+                      width: WALKER_FIGURE_W,
+                    }}
+                  >
                     {/* Face overlaps collar: sits low in U so shoulders cover lower face */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={walkerFaceSrc(u, i)}
                       alt=""
-                      width={28}
-                      height={28}
-                      className="pointer-events-none absolute left-1/2 top-[10px] z-[1] h-[28px] w-[28px] -translate-x-1/2 rounded-full bg-white object-cover"
+                      width={WALKER_FACE_PX}
+                      height={WALKER_FACE_PX}
+                      className="pointer-events-none absolute left-1/2 z-[3] -translate-x-1/2 rounded-full bg-white object-cover"
+                      style={{
+                        top: WALKER_FACE_TOP,
+                        width: WALKER_FACE_PX,
+                        height: WALKER_FACE_PX,
+                      }}
                       draggable={false}
                     />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={bodyUrl(i)}
                       alt=""
-                      className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[60px] w-full object-contain object-bottom"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
+                      style={{ height: WALKER_BODY_H }}
                       draggable={false}
                     />
                     {activity === "tea" ? <TeaCup /> : null}
