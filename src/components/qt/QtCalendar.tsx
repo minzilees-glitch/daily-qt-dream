@@ -57,6 +57,17 @@ function collapsedWeekRows(
   return rows.slice(start, lastRelevant + 1);
 }
 
+/** Whether `date` appears in the collapsed (~2 week) view for its month. */
+export function isDateInCollapsedCalendar(
+  date: string,
+  today = todaySeoul(),
+): boolean {
+  const ym = yearMonthOf(date);
+  const day = Number(date.slice(8, 10));
+  const rows = collapsedWeekRows(ym, buildWeekRows(ym), today);
+  return rows.some((row) => row.includes(day));
+}
+
 export function QtCalendar({
   yearMonth,
   completedDates,

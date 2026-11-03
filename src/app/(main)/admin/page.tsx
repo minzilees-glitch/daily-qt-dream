@@ -92,7 +92,7 @@ export default function AdminPage() {
         <Link
           href="/me"
           aria-label="뒤로"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory shadow-[var(--shadow-soft)]"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory shadow-none"
         >
           <ArrowLeft size={18} strokeWidth={1.75} />
         </Link>
@@ -104,7 +104,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="mb-5 flex gap-2 rounded-full bg-ivory p-1 shadow-[var(--shadow-soft)]">
+      <div className="mb-5 flex gap-2 rounded-full bg-ivory p-1 shadow-none">
         {(
           [
             ["batch", "일괄 배정"],
@@ -186,7 +186,7 @@ export default function AdminPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="이름 또는 순 검색"
-            className="w-full rounded-[18px] border-0 bg-ivory px-4 py-3 text-sm shadow-[var(--shadow-soft)] focus:outline-none focus:ring-2 focus:ring-sky"
+            className="w-full rounded-[18px] border-0 bg-ivory px-4 py-3 text-sm shadow-none focus:outline-none focus:ring-2 focus:ring-sky"
           />
           <p className="text-xs text-text-secondary">
             전체 {users.length}명 · 검색 {filteredUsers.length}명 · 선택{" "}

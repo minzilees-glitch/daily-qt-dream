@@ -11,7 +11,7 @@ export function ReadingRangeCard({
 }) {
   return (
     <div
-      className={`rounded-[24px] bg-sky-light shadow-[var(--shadow-soft)] ${
+      className={`rounded-[24px] bg-sky-light shadow-none ${
         compact ? "p-4" : "p-5"
       }`}
     >

@@ -125,7 +125,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
-        className="w-full resize-none rounded-[22px] border-0 bg-white px-4 py-3.5 text-[15px] leading-relaxed text-text-main shadow-[var(--shadow-soft)] placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
+        className="w-full resize-none rounded-[22px] border-0 bg-white px-4 py-3.5 text-[15px] leading-relaxed text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
       />
     </div>
   );

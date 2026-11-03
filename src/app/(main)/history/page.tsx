@@ -8,7 +8,10 @@ import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
-import { QtCalendar } from "@/components/qt/QtCalendar";
+import {
+  QtCalendar,
+  isDateInCollapsedCalendar,
+} from "@/components/qt/QtCalendar";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
 import { ReadingRangeCard } from "@/components/qt/ReadingRangeCard";
 import { DayEntryView } from "@/components/qt/DayEntryView";
@@ -85,6 +88,19 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     if (yearMonthOf(date) !== ym) setYm(yearMonthOf(date));
   };
 
+  const jumpToToday = () => {
+    const today = todaySeoul();
+    const todayYm = yearMonthOf(today);
+    setYm(todayYm);
+    setSelected(today);
+    setEditing(false);
+    setMenuOpen(false);
+    // 접힌 2주 뷰에 오늘이 없으면 전체 달로 펼침
+    if (!isDateInCollapsedCalendar(today)) {
+      setCalendarExpanded(true);
+    }
+  };
+
   if (!currentUser) return null;
 
   const selectedCompleted = isCompleted(currentUser.id, selected);
@@ -111,6 +127,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             }}
             min={minYm}
             max={maxYm}
+            showTodayButton
+            onToday={jumpToToday}
           />
           <div className="flex items-center justify-between rounded-[18px] bg-sky-light px-4 py-3">
             <div>
@@ -133,24 +151,23 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             onSelect={selectDate}
             collapsed={!calendarExpanded}
           />
-          <button
-            type="button"
-            onClick={() => setCalendarExpanded((v) => !v)}
-            className="flex w-full items-center justify-center gap-1.5 rounded-[14px] bg-white/70 py-2.5 text-sm font-medium text-text-secondary transition hover:bg-white"
-            aria-expanded={calendarExpanded}
-          >
-            {calendarExpanded ? (
-              <>
-                최근 2주만 보기
-                <ChevronUp size={16} strokeWidth={1.75} />
-              </>
-            ) : (
-              <>
-                전체 달 보기
-                <ChevronDown size={16} strokeWidth={1.75} />
-              </>
-            )}
-          </button>
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => setCalendarExpanded((v) => !v)}
+              className="flex h-8 w-8 items-center justify-center text-text-secondary transition hover:text-text-main"
+              aria-expanded={calendarExpanded}
+              aria-label={
+                calendarExpanded ? "최근 2주만 보기" : "전체 달 보기"
+              }
+            >
+              {calendarExpanded ? (
+                <ChevronUp size={20} strokeWidth={1.75} />
+              ) : (
+                <ChevronDown size={20} strokeWidth={1.75} />
+              )}
+            </button>
+          </div>
         </SoftCard>
       </section>
 
@@ -176,12 +193,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 aria-label="더보기"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory text-text-main shadow-[var(--shadow-soft)]"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory text-text-main shadow-none"
               >
                 <MoreHorizontal size={18} strokeWidth={1.75} />
               </button>
               {menuOpen ? (
-                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-2xl bg-white py-1 shadow-[var(--shadow-soft)]">
+                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-2xl bg-white py-1 shadow-none">
                   <button
                     type="button"
                     className="block w-full px-4 py-2.5 text-left text-sm font-medium text-text-main hover:bg-sky-light"
