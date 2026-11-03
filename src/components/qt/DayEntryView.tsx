@@ -13,9 +13,9 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   }
 
   const rows = [
-    { label: "오늘의 묵상", value: entry.meditation },
-    { label: "오늘 마음에 남는 구절", value: entry.verse },
-    { label: "묵상 후 기도제목", value: entry.prayer },
+    { label: "오늘 나의 묵상", value: entry.meditation },
+    { label: "오늘 나의 마음에 남는 구절", value: entry.verse },
+    { label: "묵상 후 나의 기도제목", value: entry.prayer },
   ].filter((r) => r.value.trim().length > 0);
 
   if (rows.length === 0) {
@@ -29,11 +29,11 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   }
 
   return (
-    <SoftCard padding="p-5" className="space-y-4">
+    <SoftCard padding="p-5" className="space-y-7">
       {rows.map((row) => (
         <div key={row.label}>
-          <p className="text-xs font-medium text-text-secondary">{row.label}</p>
-          <p className="mt-1 whitespace-pre-wrap text-[15px] leading-relaxed text-text-main">
+          <p className="text-[14px] font-semibold text-text-main">{row.label}</p>
+          <p className="mt-1 whitespace-pre-wrap text-[17px] leading-relaxed text-text-main">
             {row.value}
           </p>
         </div>

@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { BookHeart } from "lucide-react";
 import { PhoneShell } from "@/components/layout/PhoneShell";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { BrandMark } from "@/components/ui/BrandMark";
 import { useApp } from "@/lib/app-context";
 
 export default function LoginPage() {
@@ -19,9 +19,7 @@ export default function LoginPage() {
     <PhoneShell>
       <div className="hero-gradient relative flex min-h-[100dvh] flex-col px-6 pb-10 pt-[calc(48px+var(--safe-top))]">
         <div className="animate-fade-up flex flex-1 flex-col items-center justify-center text-center">
-          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-[28px] bg-ivory/70 shadow-none backdrop-blur">
-            <BookHeart className="text-sky" size={36} strokeWidth={1.5} />
-          </div>
+          <BrandMark size={80} rounded={28} className="mb-6" />
           <h1 className="text-[32px] font-bold tracking-tight text-text-main">
             드림 매일큐티
           </h1>
@@ -33,7 +31,7 @@ export default function LoginPage() {
         </div>
 
         <div className="animate-fade-up space-y-4" style={{ animationDelay: "80ms" }}>
-          <div className="rounded-[24px] bg-ivory/85 p-5 shadow-none backdrop-blur">
+          <div className="rounded-[16px] bg-ivory/85 p-5 shadow-none backdrop-blur">
             <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-sky">
               Prototype · Test Login
             </p>

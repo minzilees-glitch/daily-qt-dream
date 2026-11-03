@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/lib/app-context";
 import { PhoneShell } from "@/components/layout/PhoneShell";
+import { BrandMark } from "@/components/ui/BrandMark";
 
 export default function RootPage() {
   const { ready, currentUser } = useApp();
@@ -17,7 +18,7 @@ export default function RootPage() {
   return (
     <PhoneShell>
       <div className="flex min-h-[70vh] items-center justify-center">
-        <div className="h-10 w-10 animate-soft-pulse rounded-full bg-sky/40" />
+        <BrandMark size={64} rounded={22} className="animate-soft-pulse" />
       </div>
     </PhoneShell>
   );

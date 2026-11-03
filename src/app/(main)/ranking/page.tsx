@@ -1,8 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AppHeader } from "@/components/layout/AppHeader";
-import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { RankingList } from "@/components/ranking/RankingList";
 import { useApp } from "@/lib/app-context";
@@ -30,20 +28,21 @@ export default function RankingPage() {
   return (
     <div>
       <section className="hero-gradient px-5 pb-6">
-        <AppHeader light subtitle="전체 순 랭킹" />
-        <SoftCard className="mt-5 space-y-3">
+        {/* Page title row = month navigation (same as 우리순) */}
+        <div className="pt-[calc(28px+var(--safe-top))]">
           <MonthPicker
             value={ym}
             onChange={setYm}
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
+            light
           />
-          <p className="text-center text-xs leading-relaxed text-text-secondary">
-            QT를 완료한 날마다 빛 1개를 모읍니다.
-            <br />
-            순 전체 빛 수로 순위를 매깁니다. 동률이면 같은 순위입니다.
-          </p>
-        </SoftCard>
+        </div>
+        <p className="mt-5 text-center text-[14px] leading-relaxed text-text-main">
+          QT를 완료한 날마다 빛 1개를 모읍니다.
+          <br />
+          순 전체 빛 수로 순위를 매깁니다. 동률이면 같은 순위입니다.
+        </p>
       </section>
 
       <section className="animate-fade-up px-5 pt-1">

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/lib/app-context";
+import { BrandMark } from "@/components/ui/BrandMark";
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const { ready, currentUser } = useApp();
@@ -19,7 +20,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   if (!ready) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-10 w-10 animate-soft-pulse rounded-full bg-sky/40" />
+        <BrandMark size={56} rounded={18} className="animate-soft-pulse" />
       </div>
     );
   }
@@ -27,7 +28,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   if (!currentUser && pathname !== "/login") {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-10 w-10 animate-soft-pulse rounded-full bg-sky/40" />
+        <BrandMark size={56} rounded={18} className="animate-soft-pulse" />
       </div>
     );
   }

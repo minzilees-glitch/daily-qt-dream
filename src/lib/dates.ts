@@ -85,9 +85,9 @@ export function formatDisplayDate(ymd: string): string {
   const probe = new Date(`${ymd}T12:00:00+09:00`);
   const weekday = new Intl.DateTimeFormat("ko-KR", {
     timeZone: SEOUL,
-    weekday: "short",
+    weekday: "long",
   }).format(probe);
-  return `${year}년 ${month}월 ${day}일 (${weekday})`;
+  return `${year}년 ${month}월 ${day}일 ${weekday}`;
 }
 
 export function formatMonthLabel(yearMonth: string): string {
@@ -108,4 +108,23 @@ export function weekdaySunFirst(ymd: string): number {
 
 export function isFutureDate(ymd: string, today = todaySeoul()): boolean {
   return ymd > today;
+}
+
+/** Mon-first week ordinal in a calendar year (week containing Jan 1 = 1). */
+export function yearWeekProgress(ymd: string = todaySeoul()): {
+  year: number;
+  weeksStarted: number;
+  currentWeek: number;
+} {
+  const { year } = parseYmd(ymd);
+  const jan1 = formatYmd(year, 1, 1);
+  const offsetFromMon = weekdayIndexMonFirst(jan1); // days since Monday
+  const weekStart = new Date(`${jan1}T12:00:00+09:00`);
+  weekStart.setUTCDate(weekStart.getUTCDate() - offsetFromMon);
+  const cursor = new Date(`${ymd}T12:00:00+09:00`);
+  const days = Math.round(
+    (cursor.getTime() - weekStart.getTime()) / 86_400_000,
+  );
+  const week = Math.floor(days / 7) + 1;
+  return { year, weeksStarted: week, currentWeek: week };
 }

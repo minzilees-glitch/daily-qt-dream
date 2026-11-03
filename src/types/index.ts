@@ -14,6 +14,8 @@ export interface User {
   groupId: GroupId;
   isAdmin: boolean;
   isLeader: boolean;
+  /** Local profile photo (data URL) from camera roll / file picker. */
+  avatarUrl?: string | null;
 }
 
 /** One QT check for a user on a calendar date (YYYY-MM-DD, Asia/Seoul). */

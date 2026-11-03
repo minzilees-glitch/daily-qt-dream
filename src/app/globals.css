@@ -15,8 +15,8 @@
   /* Shadows removed app-wide */
   --shadow-soft: none;
   --shadow-nav: none;
-  --radius-card: 24px;
-  --radius-btn: 18px;
+  --radius-card: 16px;
+  --radius-btn: 9999px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 480px;
@@ -37,11 +37,13 @@
     sans-serif;
 }
 
-/* Filled CTA surfaces: label + icons always white, no shadow */
+/* Primary filled CTAs: CTA blue + white label/icons, pill, flat */
 .bg-cta,
 .btn-cta {
+  background-color: var(--cta) !important;
   color: #ffffff !important;
   box-shadow: none !important;
+  border-radius: 9999px;
 }
 .bg-cta svg,
 .btn-cta svg {
@@ -122,6 +124,59 @@ a {
 
 .animate-toast {
   animation: toast-in 0.3s ease-out both;
+}
+
+
+
+@keyframes light-earn-zoom {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.22);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes light-rays-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  28% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.light-earn-burst {
+  transform-origin: center center;
+  animation: light-earn-zoom 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.light-rays {
+  transform-origin: center center;
+  animation: light-rays-burst 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .light-earn-burst {
+    animation: none;
+  }
+  .light-rays {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 .hero-gradient {

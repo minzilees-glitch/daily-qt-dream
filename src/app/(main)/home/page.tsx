@@ -3,24 +3,26 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { PenLine } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { SoftCard } from "@/components/ui/SoftCard";
+import { LightIcon } from "@/components/ui/LightIcon";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { QtCalendar } from "@/components/qt/QtCalendar";
 import { ReadingPassageBlock } from "@/components/qt/ReadingPassageBlock";
+import { ReadingRangeMilestone } from "@/components/qt/ReadingRangeMilestone";
 import { useApp } from "@/lib/app-context";
 import { getReadingForDate } from "@/lib/mock-data";
 import {
   addMonths,
   currentYearMonth,
   formatDisplayDate,
-  todaySeoul,
+  isFutureDate,
   yearMonthOf,
 } from "@/lib/dates";
+import { useSeoulToday } from "@/hooks/useSeoulToday";
 
 export default function HomePage() {
-  const { currentUser, groups, completions, isCompleted } = useApp();
+  const { currentUser, groups, completions, isCompleted, getEntry, lastEarnedDate } = useApp();
   const router = useRouter();
   const [calYm, setCalYm] = useState(currentYearMonth());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export default function HomePage() {
     return () => window.clearTimeout(t);
   }, []);
 
-  const today = todaySeoul();
+  const today = useSeoulToday();
   const dashYm = currentYearMonth();
   const minYm = addMonths(dashYm, -2);
   const maxYm = dashYm;
@@ -56,18 +58,30 @@ export default function HomePage() {
     return s;
   }, [completions, currentUser, calYm]);
 
+  const futurePreviewReading = useMemo(() => {
+    if (!selectedDate || !isFutureDate(selectedDate, today)) return null;
+    return getReadingForDate(selectedDate);
+  }, [selectedDate, today]);
+
   if (!currentUser) return null;
 
   const group = groups.find((g) => g.id === currentUser.groupId);
   const doneToday = isCompleted(currentUser.id, today);
   const reading = getReadingForDate(today);
+  const todayEntry = doneToday ? getEntry(currentUser.id, today) : undefined;
+  const showTodayWriting =
+    !!todayEntry &&
+    (todayEntry.meditation.trim().length > 0 ||
+      todayEntry.verse.trim().length > 0 ||
+      todayEntry.prayer.trim().length > 0);
 
   const onSelectDate = (date: string) => {
     setSelectedDate(date);
-    // 지난날 → 나의 QT에서 기록 확인
     if (date < today) {
       router.push(`/history?date=${encodeURIComponent(date)}`);
     }
+    // today: selection only
+    // future: selection + 본문 preview below calendar
   };
 
   return (
@@ -76,60 +90,97 @@ export default function HomePage() {
         <AppHeader
           light
           homeLayout
+          title="오늘은"
           dateLabel={formatDisplayDate(today)}
           userName={currentUser.name}
           groupName={group?.name ?? "순"}
         />
 
-        <SoftCard
-          className="animate-fade-up mt-7 space-y-5"
-          padding="p-6"
-        >
-          <div>
-            <p className="text-[15px] font-medium text-text-secondary">
-              오늘 QT 했나요?
-            </p>
-            <h2 className="mt-1.5 text-[22px] font-bold leading-snug tracking-tight text-text-main">
-              오늘 묵상할 하나님 말씀
-            </h2>
-          </div>
-
+        <SoftCard className="animate-fade-up mt-7 space-y-5" padding="p-6">
+          <h2 className="text-[16px] font-semibold tracking-[0.04em] text-text-main">
+            {doneToday ? "오늘의 말씀을 묵상했어요." : "오늘의 말씀이 기다리고 있어요."}
+          </h2>
           <ReadingPassageBlock reading={reading} label="본문" />
 
+          {showTodayWriting && todayEntry ? (
+            <div className="space-y-7 rounded-[20px] bg-sky-light/70 px-4 py-4">
+              {todayEntry.meditation.trim() ? (
+                <div>
+                  <p className="text-[14px] font-semibold text-text-main">
+                    오늘 나의 묵상
+                  </p>
+                  <p className="mt-1 whitespace-pre-wrap text-[17px] leading-relaxed text-text-main">
+                    {todayEntry.meditation}
+                  </p>
+                </div>
+              ) : null}
+              {todayEntry.verse.trim() ? (
+                <div>
+                  <p className="text-[14px] font-semibold text-text-main">
+                    오늘 나의 마음에 남는 구절
+                  </p>
+                  <p className="mt-1 whitespace-pre-wrap text-[17px] leading-relaxed text-text-main">
+                    {todayEntry.verse}
+                  </p>
+                </div>
+              ) : null}
+              {todayEntry.prayer.trim() ? (
+                <div>
+                  <p className="text-[14px] font-semibold text-text-main">
+                    묵상 후 나의 기도제목
+                  </p>
+                  <p className="mt-1 whitespace-pre-wrap text-[17px] leading-relaxed text-text-main">
+                    {todayEntry.prayer}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
           <Link
-            href="/qt"
-            className="btn-cta inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-cta px-5 py-4 text-[15px] font-semibold !text-white shadow-none transition hover:brightness-105 [&_svg]:!text-white"
+            href={doneToday ? "/history" : "/qt"}
+            className={
+              doneToday
+                ? "inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#008CFF] bg-white px-5 py-4 text-[15px] font-semibold shadow-none transition hover:bg-sky-light/50"
+                : "btn-cta bg-cta inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-[15px] font-semibold !text-white shadow-none transition hover:brightness-105"
+            }
           >
-            <PenLine size={18} strokeWidth={1.75} className="text-white" />
-            {doneToday ? "오늘 기록 수정하기" : "오늘의 QT 작성하기"}
+            <LightIcon size={18} tone={doneToday ? "active" : "white"} label="빛" justEarned={lastEarnedDate === today} />
+            {doneToday ? (
+              <span className="text-[#008CFF]/70">나의 QT보러가기</span>
+            ) : (
+              "오늘의 QT 작성하기"
+            )}
           </Link>
         </SoftCard>
       </section>
 
       <section className="space-y-4 px-5 pb-2 pt-1">
         <SoftCard id="calendar" className="scroll-mt-6 space-y-3" padding="p-4">
-          <div>
-            <h3 className="mb-2 text-[15px] font-semibold text-text-secondary">
-              나의 QT 캘린더
-            </h3>
-            <MonthPicker
-              value={calYm}
-              onChange={(ym) => {
-                setCalYm(ym);
-                setSelectedDate(null);
-              }}
-              min={minYm}
-              max={maxYm}
-              monthOnly
-            />
-          </div>
+          <MonthPicker
+            value={calYm}
+            onChange={(ym) => {
+              setCalYm(ym);
+              setSelectedDate(null);
+            }}
+            min={minYm}
+            max={maxYm}
+            size="range"
+          />
           <QtCalendar
             yearMonth={calYm}
             completedDates={completedDates}
             selectedDate={selectedDate}
             onSelect={onSelectDate}
+            justEarnedDate={lastEarnedDate}
           />
         </SoftCard>
+
+        {futurePreviewReading ? (
+          <div className="animate-fade-up">
+            <ReadingRangeMilestone reading={futurePreviewReading} label="본문" />
+          </div>
+        ) : null}
       </section>
     </div>
   );

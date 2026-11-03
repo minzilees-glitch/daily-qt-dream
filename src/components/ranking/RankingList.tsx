@@ -16,31 +16,42 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
       {rows.map((row) => (
         <li
           key={row.groupId}
-          className={`flex items-center gap-3 rounded-[22px] px-4 py-3.5 transition ${
+          className={`flex items-center gap-3 rounded-[12px] px-4 py-5 transition ${
             row.isMine
-              ? "bg-sky-light ring-1 ring-sky/40"
+              ? "bg-sky/20 ring-1 ring-sky/20"
               : "bg-ivory shadow-none"
           }`}
         >
           <div className="flex w-10 flex-col items-center">
             {row.rank === 1 ? (
-              <Trophy size={18} className="text-sky" strokeWidth={1.75} aria-label="1위" />
+              <Trophy
+                size={22}
+                strokeWidth={1.75}
+                color="#E8B923"
+                aria-label="1위"
+              />
+            ) : row.rank === 2 ? (
+              <Trophy
+                size={22}
+                strokeWidth={1.75}
+                color="#A8B0B8"
+                aria-label="2위"
+              />
             ) : (
               <span className="text-sm font-semibold text-text-secondary">
                 {row.rank}
               </span>
             )}
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[15px] font-semibold text-text-main">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5">
+            <p className="min-w-0 truncate text-[15px] font-semibold text-text-main">
               {row.groupName}
-              {row.isMine ? (
-                <span className="ml-2 text-xs font-medium text-sky">내 순</span>
-              ) : null}
             </p>
-            <p className="mt-0.5 text-xs text-text-secondary">
-              {row.memberCount}명 · 집계 {row.possibleCount}일
-            </p>
+            {row.isMine ? (
+              <span className="inline-flex shrink-0 items-center rounded-full bg-sky px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+                내 순
+              </span>
+            ) : null}
           </div>
           <LightCount lights={row.lights} size={18} />
         </li>

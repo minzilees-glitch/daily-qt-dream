@@ -27,7 +27,7 @@ export function isEmptyQtEntry(fields: QtEntryFields): boolean {
 
 export function validationMessage(fields: QtEntryFields): string | null {
   if (isEmptyQtEntry(fields) || !isValidQtEntry(fields)) {
-    return "묵상 구절 기도제목 중 하나 이상을 20자 이상 적어주세요";
+    return "묵상 · 구절 · 기도제목 중 하나 이상을 20자 이상 적어 주세요.";
   }
   return null;
 }
