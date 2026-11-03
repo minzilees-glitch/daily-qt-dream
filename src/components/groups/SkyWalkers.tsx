@@ -129,8 +129,8 @@ export function SkyWalkers({
       last = now;
       const width = stage.clientWidth;
       const height = stage.clientHeight;
-      const figureW = 58;
-      const figureH = 78;
+      const figureW = 56;
+      const figureH = 72;
 
       for (const s of stateRef.current) {
         s.x += s.vx * dt;
@@ -226,7 +226,7 @@ export function SkyWalkers({
                 key={u.id}
                 data-walker-id={u.id}
                 className="absolute left-0 top-0 z-[1] will-change-transform"
-                style={{ width: 58 }}
+                style={{ width: 56 }}
               >
                 <button
                   type="button"
@@ -244,23 +244,22 @@ export function SkyWalkers({
                     </span>
                   ) : null}
 
-                  <div data-figure className="relative h-[76px] w-[58px]">
-                    {/* Filled body (v2) — face sits in the U opening */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={bodyUrl(i)}
-                      alt=""
-                      className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-                      draggable={false}
-                    />
-                    {/* Face nested in neck opening */}
+                  <div data-figure className="relative h-[70px] w-[56px]">
+                    {/* Face tucked into U; body drawn above so collar hugs the chin */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={avatarUrl(u.id, i)}
                       alt=""
-                      width={28}
-                      height={28}
-                      className="pointer-events-none absolute left-1/2 top-[4px] z-10 h-[28px] w-[28px] -translate-x-1/2 rounded-full bg-white object-cover ring-1 ring-white/80"
+                      width={30}
+                      height={30}
+                      className="pointer-events-none absolute left-1/2 top-0 z-[1] h-[30px] w-[30px] -translate-x-1/2 rounded-full bg-white object-cover"
+                      draggable={false}
+                    />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={bodyUrl(i)}
+                      alt=""
+                      className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[58px] w-full object-contain object-bottom"
                       draggable={false}
                     />
                   </div>
