@@ -4,12 +4,16 @@ export function SoftCard({
   children,
   className = "",
   padding = "p-5",
+  id,
 }: {
   children: ReactNode;
   className?: string;
   padding?: string;
+  id?: string;
 }) {
   return (
-    <div className={`soft-card ${padding} ${className}`}>{children}</div>
+    <div id={id} className={`soft-card ${padding} ${className}`}>
+      {children}
+    </div>
   );
 }

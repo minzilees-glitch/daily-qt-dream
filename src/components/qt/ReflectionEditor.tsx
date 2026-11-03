@@ -26,7 +26,7 @@ export function ReflectionEditor({
         onChange={(e) => setValue(e.target.value)}
         rows={7}
         placeholder="오늘 말씀을 통해 받은 은혜를 자유롭게 적어보세요. (선택)"
-        className="w-full resize-none rounded-[22px] border-0 bg-white px-4 py-4 text-[15px] leading-relaxed text-text-main shadow-[var(--shadow-soft)] placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
+        className="w-full resize-none rounded-[22px] border-0 bg-ivory px-4 py-4 text-[15px] leading-relaxed text-text-main shadow-[var(--shadow-soft)] placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
       />
       <PrimaryButton
         type="button"

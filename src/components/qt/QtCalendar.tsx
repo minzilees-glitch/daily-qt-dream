@@ -62,12 +62,12 @@ export function QtCalendar({
               aria-pressed={selected}
               className={`relative flex aspect-square flex-col items-center justify-center rounded-2xl text-sm transition ${
                 selected
-                  ? "bg-sky text-white shadow-[0_8px_18px_rgba(120,189,236,0.35)]"
+                  ? "bg-sky text-white shadow-[0_8px_18px_rgba(95,188,252,0.35)]"
                   : done
                     ? "bg-sky-light text-text-main"
                     : future
                       ? "text-text-secondary/40"
-                      : "text-text-main hover:bg-white"
+                      : "text-text-main hover:bg-ivory"
               }`}
             >
               <span className={`font-medium ${isToday && !selected ? "text-sky" : ""}`}>
