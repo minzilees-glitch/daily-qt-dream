@@ -29,11 +29,9 @@ export function QtEntryForm({
   return (
     <div className="space-y-4">
       <p className="text-xs leading-relaxed text-text-secondary">
-        묵상 · 마음에 남는 구절 · 기도제목 중{" "}
-        <span className="font-semibold text-text-main">하나 이상</span>을
-        작성하고, 그중 하나는 공백 제외{" "}
+        묵상 · 구절 · 기도제목 중 하나 이상을{" "}
         <span className="font-semibold text-text-main">{QT_MIN_CHARS}자 이상</span>
-        이어야 완료됩니다.
+        적어 주세요.
       </p>
 
       <Field
@@ -114,7 +112,7 @@ function Field({
         </label>
         <span
           className={`text-[11px] tabular-nums ${
-            len >= QT_MIN_CHARS ? "text-sky" : "text-text-secondary/70"
+            len >= QT_MIN_CHARS ? "text-cta" : "text-text-secondary/70"
           }`}
         >
           {len}자

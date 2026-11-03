@@ -22,10 +22,10 @@ export default function LoginPage() {
           <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-[28px] bg-ivory/70 shadow-[var(--shadow-soft)] backdrop-blur">
             <BookHeart className="text-sky" size={36} strokeWidth={1.5} />
           </div>
-          <h1 className="text-[34px] font-bold tracking-tight text-white drop-shadow-sm">
-            DAILY QT
+          <h1 className="text-[32px] font-bold tracking-tight text-text-main">
+            드림 매일큐티
           </h1>
-          <p className="mt-3 max-w-[260px] text-[15px] leading-relaxed text-white/90">
+          <p className="mt-3 max-w-[280px] text-[15px] leading-relaxed text-text-main">
             매일의 Quiet Time을 기록하고,
             <br />
             우리 순과 함께 성장해요.

@@ -3,7 +3,7 @@ import { AppProvider } from "@/lib/app-context";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DAILY QT",
+  title: "드림 매일큐티",
   description: "매일의 Quiet Time을 함께 기록하는 순 공동체 앱",
 };
 
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
         />
       </head>
-      <body className="min-h-full font-sans text-text-main">
+      <body className="min-h-full font-sans antialiased text-text-main">
         <AppProvider>{children}</AppProvider>
       </body>
     </html>
