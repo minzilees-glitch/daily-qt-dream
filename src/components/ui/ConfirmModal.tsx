@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
 export function ConfirmModal({
@@ -19,11 +21,25 @@ export function ConfirmModal({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
-  if (!open) return null;
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCancel();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onCancel]);
 
-  return (
+  if (!open || typeof document === "undefined") return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#243746]/45 px-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#243746]/65 px-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-title"
@@ -62,6 +78,7 @@ export function ConfirmModal({
           </PrimaryButton>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
