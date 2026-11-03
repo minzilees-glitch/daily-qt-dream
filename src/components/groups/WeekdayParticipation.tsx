@@ -1,7 +1,12 @@
+import { StatLabel } from "@/components/ui/StatLabel";
+
 export function WeekdayParticipation({
   days,
+  showPossible = true,
 }: {
   days: { weekday: number; label: string; count: number; possible: number }[];
+  /** Per-bar `/{possible}` under each weekday. Default true (우리순). */
+  showPossible?: boolean;
 }) {
   if (days.length === 0 || days.every((d) => d.possible === 0)) {
     return (
@@ -32,12 +37,14 @@ export function WeekdayParticipation({
                 style={{ height: `${Math.max(10, ratio * 100)}%` }}
               />
             </div>
-            <span className="text-[12px] font-medium text-text-secondary">
+            <StatLabel as="span" className="text-text-secondary">
               {d.label}
-            </span>
-            <span className="text-[10px] tabular-nums text-text-secondary/80">
-              /{d.possible}
-            </span>
+            </StatLabel>
+            {showPossible ? (
+              <span className="text-[10px] tabular-nums text-text-secondary/80">
+                /{d.possible}
+              </span>
+            ) : null}
           </div>
         );
       })}

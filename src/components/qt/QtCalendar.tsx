@@ -8,6 +8,7 @@ import {
   weekdayIndexMonFirst,
   yearMonthOf,
 } from "@/lib/dates";
+import { LightIcon } from "@/components/ui/LightIcon";
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
@@ -75,12 +76,15 @@ export function QtCalendar({
   onSelect,
   /** When true, only render ~2 recent weeks (accordion collapsed). */
   collapsed = false,
+  /** Date that just earned a light — one-shot ray burst on that cell. */
+  justEarnedDate = null,
 }: {
   yearMonth: string;
   completedDates: Set<string>;
   selectedDate?: string | null;
   onSelect?: (date: string) => void;
   collapsed?: boolean;
+  justEarnedDate?: string | null;
 }) {
   const [y, m] = yearMonth.split("-").map(Number);
   const today = todaySeoul();
@@ -98,7 +102,7 @@ export function QtCalendar({
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 overflow-visible">
         {rows.flatMap((row, ri) =>
           row.map((day, ci) => {
             const idx = ri * 7 + ci;
@@ -119,29 +123,42 @@ export function QtCalendar({
                 onClick={() => onSelect?.(date)}
                 aria-label={`${date}${done ? ", 완료" : ""}`}
                 aria-pressed={selected}
-                className={`relative flex aspect-square flex-col items-center justify-center rounded-2xl text-sm transition ${
+                className={`relative flex aspect-square flex-col items-center justify-center overflow-visible rounded-2xl text-sm transition ${
                   selected
                     ? "bg-cta !text-white shadow-none"
-                    : done
-                      ? "bg-sky-light text-text-main"
-                      : future
-                        ? "text-text-secondary/40"
-                        : "text-text-main hover:bg-white/70"
+                    : isToday
+                      ? "bg-[#008CFF]/18 text-cta hover:bg-[#008CFF]/24"
+                      : done
+                        ? "bg-white text-text-main"
+                        : future
+                          ? "text-text-secondary/40"
+                          : "text-text-main hover:bg-white/70"
                 }`}
               >
                 <span
-                  className={`font-medium ${isToday && !selected ? "text-sky" : ""}`}
+                  className={`leading-none font-medium ${
+                    selected
+                      ? ""
+                      : isToday
+                        ? "font-semibold text-cta"
+                        : done
+                          ? "text-sky"
+                          : ""
+                  }`}
                 >
                   {day}
                 </span>
                 {done ? (
-                  <span
-                    className={`mt-0.5 h-1.5 w-1.5 rounded-full ${
-                      selected ? "bg-white" : "bg-sky"
-                    }`}
-                  />
+                  <span className="mt-0.5 flex h-5 w-5 translate-y-px items-center justify-center overflow-visible">
+                    <LightIcon
+                      tone="active"
+                      size={16}
+                      label="빛 수집됨"
+                      justEarned={justEarnedDate === date}
+                    />
+                  </span>
                 ) : (
-                  <span className="mt-0.5 h-1.5 w-1.5" />
+                  <span className="mt-0.5 h-5 w-5" />
                 )}
               </button>
             );

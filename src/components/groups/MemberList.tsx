@@ -1,4 +1,5 @@
 import { Crown } from "lucide-react";
+import { StatLabel } from "@/components/ui/StatLabel";
 import type { User } from "@/types";
 
 export function MemberList({
@@ -24,7 +25,7 @@ export function MemberList({
                   <Crown size={14} className="shrink-0 text-sky" aria-label="순장" />
                 ) : null}
               </p>
-              <p className="text-xs text-text-secondary">이번 달 QT</p>
+              <StatLabel className="text-text-secondary">이번 달 QT</StatLabel>
             </div>
           </div>
           <p className="text-[15px] font-semibold text-text-main">{days}일</p>

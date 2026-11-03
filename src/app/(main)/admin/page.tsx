@@ -97,12 +97,9 @@ export default function AdminPage() {
         >
           <ArrowLeft size={18} strokeWidth={1.75} />
         </Link>
-        <div>
-          <h1 className="text-xl font-bold text-text-main">관리자</h1>
-          <p className="text-xs text-text-secondary">
-            Mock UI · 순 배정은 관리자 일괄만 가능
-          </p>
-        </div>
+        <p className="text-xs text-text-secondary">
+          Mock UI · 순 배정은 관리자 일괄만 가능
+        </p>
       </div>
 
       <div className="mb-5 flex gap-2 rounded-full bg-ivory p-1 shadow-none">

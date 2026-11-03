@@ -1,17 +1,17 @@
 "use client";
 
-import Link from "next/link";
-import { UserRound } from "lucide-react";
+import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
 
 export function AppHeader({
-  title = "드림 매일큐티",
+  title,
   subtitle,
   light = false,
-  /** Home: brand then large date (swapped), profile top-right beside date area. */
+  /** Home: 「오늘은」 + large date, profile photo change top-right. */
   homeLayout = false,
   dateLabel,
   userName,
   groupName,
+  showAvatar = true,
 }: {
   title?: string;
   subtitle?: string;
@@ -20,6 +20,8 @@ export function AppHeader({
   dateLabel?: string;
   userName?: string;
   groupName?: string;
+  /** When false, hide top-right profile avatar (e.g. history/group/ranking). */
+  showAvatar?: boolean;
 }) {
   if (homeLayout) {
     return (
@@ -37,9 +39,10 @@ export function AppHeader({
             {title}
           </p>
           <p
-            className={`mt-1.5 text-[22px] font-bold leading-snug tracking-tight ${
+            className={`mt-1.5 text-[22px] font-bold leading-snug tracking-[0.02em] ${
               light ? "text-white" : "text-text-main"
             }`}
+            suppressHydrationWarning
           >
             {dateLabel}
           </p>
@@ -62,57 +65,28 @@ export function AppHeader({
               {groupName}
             </p>
           </div>
-          <Link
-            href="/me"
-            aria-label="마이페이지"
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
-              light
-                ? "bg-white/20 text-white hover:bg-white/30"
-                : "bg-ivory text-sky shadow-none hover:bg-sky-light"
-            }`}
-          >
-            <UserRound size={20} strokeWidth={1.75} />
-          </Link>
+          {showAvatar ? <ProfileAvatarButton light={light} /> : null}
         </div>
       </header>
     );
   }
 
+  if (!showAvatar) {
+    return (
+      <div
+        className="pt-[calc(12px+var(--safe-top))]"
+        aria-hidden
+      />
+    );
+  }
+
   return (
     <header
-      className={`flex items-start justify-between gap-3 pt-[calc(12px+var(--safe-top))] ${
+      className={`flex items-center justify-end pt-[calc(12px+var(--safe-top))] ${
         light ? "text-white" : "text-text-main"
       }`}
     >
-      <div className="min-w-0">
-        <p
-          className={`text-[13px] font-medium tracking-[0.08em] ${
-            light ? "text-white/80" : "text-sky"
-          }`}
-        >
-          {title}
-        </p>
-        {subtitle ? (
-          <p
-            className={`mt-1 truncate text-lg font-semibold tracking-tight ${
-              light ? "text-white" : "text-text-main"
-            }`}
-          >
-            {subtitle}
-          </p>
-        ) : null}
-      </div>
-      <Link
-        href="/me"
-        aria-label="마이페이지"
-        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
-          light
-            ? "bg-white/20 text-white hover:bg-white/30"
-            : "bg-ivory text-sky shadow-none hover:bg-sky-light"
-        }`}
-      >
-        <UserRound size={20} strokeWidth={1.75} />
-      </Link>
+      <ProfileAvatarButton light={light} />
     </header>
   );
 }

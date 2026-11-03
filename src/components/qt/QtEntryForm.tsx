@@ -29,16 +29,16 @@ export function QtEntryForm({
   const locked = disabled || busy;
 
   return (
-    <div className="space-y-4">
-      <p className="text-xs leading-relaxed text-text-secondary">
+    <div className="space-y-7">
+            <p className="text-xs leading-relaxed text-text-secondary">
         묵상 · 구절 · 기도제목 중 하나 이상을{" "}
-        <span className="font-semibold text-text-main">{QT_MIN_CHARS}자 이상</span>
+        <span className="font-bold text-text-main opacity-100">20자 이상</span>{" "}
         적어 주세요.
       </p>
 
       <Field
         id="meditation"
-        label="오늘의 묵상"
+        label="오늘 나의 묵상"
         placeholder="오늘 말씀을 통해 받은 은혜를 적어보세요."
         value={meditation}
         disabled={locked}
@@ -47,7 +47,7 @@ export function QtEntryForm({
       />
       <Field
         id="verse"
-        label="오늘 마음에 남는 구절"
+        label="오늘 나의 마음에 남는 구절"
         placeholder="기억에 남는 구절을 적어보세요."
         value={verse}
         disabled={locked}
@@ -56,7 +56,7 @@ export function QtEntryForm({
       />
       <Field
         id="prayer"
-        label="묵상 후 기도제목"
+        label="묵상 후 나의 기도제목"
         placeholder="오늘의 기도제목을 적어보세요."
         value={prayer}
         disabled={locked}
@@ -123,12 +123,12 @@ function Field({
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between gap-2">
-        <label htmlFor={id} className="text-sm font-medium text-text-secondary">
+        <label htmlFor={id} className="text-[16px] font-semibold text-text-main">
           {label}
         </label>
         <span
           className={`text-[11px] tabular-nums ${
-            len >= QT_MIN_CHARS ? "text-cta" : "text-text-secondary/70"
+            len >= QT_MIN_CHARS ? "text-text-main" : "text-text-secondary/70"
           }`}
         >
           {len}자
@@ -141,7 +141,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
-        className="w-full resize-none rounded-[22px] border-0 bg-white px-4 py-3.5 text-[15px] leading-relaxed text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
+        className="w-full resize-none rounded-[12px] border-0 bg-ivory px-4 py-3.5 text-[17px] leading-relaxed text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
       />
     </div>
   );

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MonthPicker } from "@/components/ui/MonthPicker";
 import { LightCount } from "@/components/ui/LightIcon";
+import { StatLabel } from "@/components/ui/StatLabel";
 import type { User } from "@/types";
 
 const BODY_VARIANTS = [
@@ -38,10 +38,16 @@ type WalkerState = {
   pauseLeft: number;
 };
 
-function avatarUrl(userId: string, index: number): string {
+/** DiceBear placeholder when the member has no stored profile photo. */
+function fallbackAvatarUrl(userId: string, index: number): string {
   const style = AVATAR_STYLES[index % AVATAR_STYLES.length]!;
   const seed = encodeURIComponent(userId);
   return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundType=gradientLinear&radius=50`;
+}
+
+/** Prefer shared `User.avatarUrl` (local avatarMap / mock); else DiceBear. */
+function walkerFaceSrc(user: User, index: number): string {
+  return user.avatarUrl || fallbackAvatarUrl(user.id, index);
 }
 
 function bodyUrl(index: number): string {
@@ -144,19 +150,11 @@ function WaveHand() {
 /** Combined sky dashboard + cloud walkers (single card). */
 export function SkyWalkers({
   members,
-  yearMonth,
-  onYearMonthChange,
-  minYearMonth,
-  maxYearMonth,
   memberCount,
   lights,
   rankLabel,
 }: {
   members: User[];
-  yearMonth: string;
-  onYearMonthChange: (ym: string) => void;
-  minYearMonth: string;
-  maxYearMonth: string;
   memberCount: number;
   lights: number;
   rankLabel: string;
@@ -278,7 +276,7 @@ export function SkyWalkers({
   const visible = members.slice(0, 12);
 
   return (
-    <div className="sky-group-card relative overflow-hidden rounded-[24px] shadow-none">
+    <div className="sky-group-card relative overflow-hidden rounded-[16px] shadow-none">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/group/sky-clouds-bg.png"
@@ -288,20 +286,13 @@ export function SkyWalkers({
       />
 
       <div className="relative z-10 px-4 pb-2 pt-4">
-        <MonthPicker
-          value={yearMonth}
-          onChange={onYearMonthChange}
-          min={minYearMonth}
-          max={maxYearMonth}
-          light
-        />
-        <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+        <div className="grid grid-cols-3 gap-2 text-center">
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <p className="text-[11px] text-white/85">인원</p>
+            <StatLabel className="text-white/85">우리순은</StatLabel>
             <p className="mt-1 text-lg font-semibold text-white">{memberCount}명</p>
           </div>
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <p className="text-[11px] text-white/85">우리순 현재</p>
+            <StatLabel className="text-white/85">우리순 현재</StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount
                 lights={lights}
@@ -312,7 +303,7 @@ export function SkyWalkers({
             </div>
           </div>
           <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <p className="text-[11px] text-white/85">전체 순위</p>
+            <StatLabel className="text-white/85">우리순 순위</StatLabel>
             <p className="mt-1 text-lg font-semibold text-white">{rankLabel}</p>
           </div>
         </div>
@@ -354,7 +345,7 @@ export function SkyWalkers({
                     {/* Face overlaps collar: sits low in U so shoulders cover lower face */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={avatarUrl(u.id, i)}
+                      src={walkerFaceSrc(u, i)}
                       alt=""
                       width={28}
                       height={28}

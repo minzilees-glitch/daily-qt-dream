@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AppHeader } from "@/components/layout/AppHeader";
 import { SoftCard } from "@/components/ui/SoftCard";
+import { MonthPicker } from "@/components/ui/MonthPicker";
 import { DayParticipation } from "@/components/groups/DayParticipation";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
 import { SkyWalkers } from "@/components/groups/SkyWalkers";
@@ -33,7 +33,6 @@ export default function GroupPage() {
 
   if (!currentUser) return null;
 
-  const group = groups.find((g) => g.id === currentUser.groupId);
   const ranking = computeGroupRanking(
     groups,
     users,
@@ -53,14 +52,19 @@ export default function GroupPage() {
   return (
     <div>
       <section className="hero-gradient px-5 pb-6">
-        <AppHeader light subtitle={group?.name ?? "우리 순"} />
+        {/* Page title row = month navigation */}
+        <div className="pt-[calc(28px+var(--safe-top))]">
+          <MonthPicker
+            value={ym}
+            onChange={setYm}
+            min={addMonths(currentYearMonth(), -2)}
+            max={currentYearMonth()}
+            light
+          />
+        </div>
         <div className="mt-5 animate-fade-up">
           <SkyWalkers
             members={members}
-            yearMonth={ym}
-            onYearMonthChange={setYm}
-            minYearMonth={addMonths(currentYearMonth(), -2)}
-            maxYearMonth={currentYearMonth()}
             memberCount={myRank?.memberCount ?? 0}
             lights={myRank?.lights ?? 0}
             rankLabel={`${myRank?.rank ?? "-"}위`}
@@ -70,12 +74,9 @@ export default function GroupPage() {
 
       <section className="animate-fade-up space-y-5 px-5 pt-1">
         <SoftCard>
-          <h2 className="mb-1 text-[16px] font-semibold text-text-main">
+          <h2 className="mb-3 text-[16px] font-semibold text-text-main">
             요일별 참여
           </h2>
-          <p className="mb-3 text-xs text-text-secondary">
-            요일마다 순원 QT 완료 횟수 합계입니다.
-          </p>
           <WeekdayParticipation days={weekdayPart} />
         </SoftCard>
 

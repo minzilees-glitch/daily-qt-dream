@@ -4,7 +4,7 @@ import type {
   QtCompletion,
   User,
 } from "@/types";
-import { rankingScopeDays } from "@/lib/dates";
+import { rankingScopeDays, todaySeoul } from "@/lib/dates";
 
 export function completionSetKey(userId: string, date: string): string {
   return `${userId}|${date}`;
@@ -188,3 +188,37 @@ export function groupWeekdayParticipation(
 
   return buckets;
 }
+
+/** Personal QT completions by weekday (Mon-first) for a month scope. */
+export function userWeekdayParticipation(
+  userId: string,
+  year: number,
+  completionSet: Set<string>,
+  todayLimit: string = todaySeoul(),
+): { weekday: number; label: string; count: number; possible: number }[] {
+  const labels = ["월", "화", "수", "목", "금", "토", "일"];
+  const buckets = labels.map((label, weekday) => ({
+    weekday,
+    label,
+    count: 0,
+    possible: 0,
+  }));
+
+  // Year cumulative through today (same scope as 「N년 누적」 lights).
+  for (let month = 1; month <= 12; month++) {
+    const ym = `${year}-${String(month).padStart(2, "0")}`;
+    for (const date of rankingScopeDays(ym, todayLimit)) {
+      if (!date.startsWith(`${year}-`)) continue;
+      if (date > todayLimit) continue;
+      const sun0 = new Date(`${date}T12:00:00+09:00`).getUTCDay();
+      const monFirst = sun0 === 0 ? 6 : sun0 - 1;
+      buckets[monFirst]!.possible += 1;
+      if (completionSet.has(completionSetKey(userId, date))) {
+        buckets[monFirst]!.count += 1;
+      }
+    }
+  }
+
+  return buckets;
+}
+

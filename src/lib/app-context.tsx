@@ -31,6 +31,12 @@ import {
   validationMessage,
 } from "@/lib/qt-entry";
 import {
+  clearAvatar,
+  dataUrlToBlob,
+  fetchProfileAvatarMap,
+  uploadAndSaveAvatar,
+} from "@/lib/supabase/avatar-repo";
+import {
   deleteQtEntry,
   fetchQtPresence,
   fetchUserQtEntries,
@@ -62,9 +68,19 @@ interface AppState {
   assignUsersToGroup: (userIds: string[], groupId: string) => void;
   setGroupLeader: (groupId: string, userId: string) => void;
   confirmAward: (yearMonth: string, groupId: string, lights: number) => void;
+  /**
+   * Save profile photo for the current user.
+   * Optimistic local map first; when Supabase is configured, also uploads to
+   * Storage (`avatars/{userId}/avatar.*`) and updates `profiles.avatar_url`.
+   */
+  setAvatarUrl: (
+    dataUrl: string | null,
+  ) => Promise<{ ok: boolean; message: string }>;
   isCompleted: (userId: string, date: string) => boolean;
   getReflection: (userId: string, date: string) => QtEntry | undefined;
   getEntry: (userId: string, date: string) => QtEntry | undefined;
+  /** Date just marked complete — drives one-shot light ray burst. */
+  lastEarnedDate: string | null;
 }
 
 const AppContext = createContext<AppState | null>(null);
@@ -79,6 +95,8 @@ interface Overrides {
   userGroupMap: Record<string, string>;
   leaderMap: Record<string, string>;
   awards: MonthlyAward[];
+  /** Profile photo data URLs keyed by user id. */
+  avatarMap: Record<string, string>;
 }
 
 const emptyOverrides = (): Overrides => ({
@@ -87,6 +105,7 @@ const emptyOverrides = (): Overrides => ({
   userGroupMap: {},
   leaderMap: {},
   awards: [],
+  avatarMap: {},
 });
 
 type StoreSnapshot = {
@@ -205,15 +224,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const supabaseEnabled = isSupabaseConfigured();
 
   const [remoteQt, setRemoteQt] = useState<RemoteQt>(EMPTY_REMOTE);
+  const [remoteAvatars, setRemoteAvatars] = useState<Record<string, string>>(
+    {},
+  );
+  const [lastEarnedDate, setLastEarnedDate] = useState<string | null>(null);
   const [remoteTick, setRemoteTick] = useState(0);
 
   useEffect(() => {
     if (!supabaseEnabled || !sessionUserId) return;
     let cancelled = false;
     (async () => {
-      const [mine, presence] = await Promise.all([
+      const [mine, presence, avatars] = await Promise.all([
         fetchUserQtEntries(sessionUserId),
         fetchQtPresence(),
+        fetchProfileAvatarMap(),
       ]);
       if (cancelled) return;
       setRemoteQt({
@@ -221,6 +245,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         presence: presence.ok ? presence.data : [],
         loadedFor: sessionUserId,
       });
+      if (avatars.ok) setRemoteAvatars(avatars.data);
       setRemoteTick((t) => t + 1);
     })();
     return () => {
@@ -239,9 +264,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const isLeader =
         (overrides.leaderMap[groupId] ??
           base.groups.find((g) => g.id === groupId)?.leaderId) === u.id;
-      return { ...u, groupId, isLeader };
+      // Local optimistic / offline → remote profiles.avatar_url → mock
+      const avatarUrl =
+        overrides.avatarMap?.[u.id] ??
+        remoteAvatars[u.id] ??
+        u.avatarUrl ??
+        null;
+      return { ...u, groupId, isLeader, avatarUrl };
     });
-  }, [base, overrides.userGroupMap, overrides.leaderMap]);
+  }, [
+    base,
+    overrides.userGroupMap,
+    overrides.leaderMap,
+    overrides.avatarMap,
+    remoteAvatars,
+  ]);
 
   const groups = useMemo(() => {
     return base.groups.map((g) => ({
@@ -374,6 +411,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const getReflection = getEntry;
 
+  const notifyEarned = useCallback((date: string) => {
+    setLastEarnedDate(date);
+    window.setTimeout(() => {
+      setLastEarnedDate((cur) => (cur === date ? null : cur));
+    }, 1200);
+  }, []);
+
   const saveEntry = useCallback(
     async (date: string, fields: QtEntryFields) => {
       if (!sessionUserId) {
@@ -382,6 +426,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (isFutureDate(date)) {
         return { ok: false, message: "미래 날짜에는 저장할 수 없습니다." };
       }
+      const wasComplete =
+        completionMap.get(`${sessionUserId}|${date}`) === true;
       const err = validationMessage(fields);
       if (err) return { ok: false, message: err };
 
@@ -421,6 +467,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           };
         });
         setRemoteTick((t) => t + 1);
+        if (!wasComplete) notifyEarned(date);
         return {
           ok: true,
           message: "오늘도 주님의 말씀 안에서 살아가시기를 기도합니다",
@@ -444,12 +491,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         reflections: nextReflections,
         completions: nextCompletions,
       });
+      if (!wasComplete) notifyEarned(date);
       return {
         ok: true,
         message: "오늘도 주님의 말씀 안에서 살아가시기를 기도합니다",
       };
     },
-    [sessionUserId, overrides, supabaseEnabled],
+    [sessionUserId, overrides, supabaseEnabled, completionMap, notifyEarned],
   );
 
   const clearEntry = useCallback(
@@ -541,6 +589,54 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [overrides],
   );
 
+  const setAvatarUrl = useCallback(
+    async (dataUrl: string | null) => {
+      if (!sessionUserId) {
+        return { ok: false, message: "로그인이 필요해요." };
+      }
+
+      // Optimistic local update (instant UI for home / me / walkers)
+      const avatarMap = { ...(overrides.avatarMap ?? {}) };
+      if (dataUrl) avatarMap[sessionUserId] = dataUrl;
+      else delete avatarMap[sessionUserId];
+      writeOverrides({ ...overrides, avatarMap });
+
+      if (!supabaseEnabled) {
+        return { ok: true, message: "저장했어요." };
+      }
+
+      if (!dataUrl) {
+        const res = await clearAvatar(sessionUserId);
+        if (!res.ok) {
+          return { ok: false, message: res.error };
+        }
+        setRemoteAvatars((prev) => {
+          const next = { ...prev };
+          delete next[sessionUserId];
+          return next;
+        });
+        return { ok: true, message: "프로필 사진을 삭제했어요." };
+      }
+
+      const blob = dataUrlToBlob(dataUrl);
+      if (!blob) {
+        return { ok: false, message: "이미지 형식을 읽지 못했어요." };
+      }
+
+      const res = await uploadAndSaveAvatar(sessionUserId, blob);
+      if (!res.ok) {
+        return { ok: false, message: res.error };
+      }
+
+      // Replace data URL with durable public Storage URL
+      avatarMap[sessionUserId] = res.data;
+      writeOverrides({ ...overrides, avatarMap });
+      setRemoteAvatars((prev) => ({ ...prev, [sessionUserId]: res.data }));
+      return { ok: true, message: "프로필 사진을 저장했어요." };
+    },
+    [overrides, sessionUserId, supabaseEnabled],
+  );
+
   const value: AppState = {
     ready: clientReady,
     currentUser,
@@ -558,9 +654,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     assignUsersToGroup,
     setGroupLeader,
     confirmAward,
+    setAvatarUrl,
     isCompleted,
     getReflection,
     getEntry,
+    lastEarnedDate,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -5,16 +5,15 @@ import { useSearchParams } from "next/navigation";
 import { ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { SoftCard } from "@/components/ui/SoftCard";
+import { StatLabel } from "@/components/ui/StatLabel";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
-import {
-  QtCalendar,
-  isDateInCollapsedCalendar,
-} from "@/components/qt/QtCalendar";
+import { QtCalendar } from "@/components/qt/QtCalendar";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
-import { ReadingRangeCard } from "@/components/qt/ReadingRangeCard";
+import { ReadingPassageBlock } from "@/components/qt/ReadingPassageBlock";
+import { ReadingRangeMilestone } from "@/components/qt/ReadingRangeMilestone";
 import { DayEntryView } from "@/components/qt/DayEntryView";
 import { useApp } from "@/lib/app-context";
 import { getReadingForDate } from "@/lib/mock-data";
@@ -34,7 +33,7 @@ function parseDateParam(raw: string | null): string | null {
 }
 
 function HistoryPageInner({ initialDate }: { initialDate: string }) {
-  const { currentUser, completions, isCompleted, getEntry, saveEntry, clearEntry } =
+  const { currentUser, completions, isCompleted, getEntry, saveEntry, clearEntry, lastEarnedDate } =
     useApp();
 
   const [ym, setYm] = useState(yearMonthOf(initialDate));
@@ -85,19 +84,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     if (yearMonthOf(date) !== ym) setYm(yearMonthOf(date));
   };
 
-  const jumpToToday = () => {
-    const today = todaySeoul();
-    const todayYm = yearMonthOf(today);
-    setYm(todayYm);
-    setSelected(today);
-    setEditing(false);
-    setMenuOpen(false);
-    // 접힌 2주 뷰에 오늘이 없으면 전체 달로 펼침
-    if (!isDateInCollapsedCalendar(today)) {
-      setCalendarExpanded(true);
-    }
-  };
-
   if (!currentUser) return null;
 
   const selectedCompleted = isCompleted(currentUser.id, selected);
@@ -114,8 +100,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   return (
     <div>
       <section className="hero-gradient px-5 pb-6">
-        <AppHeader light subtitle="나의 QT 기록" />
-        <SoftCard className="mt-5 space-y-4">
+        <AppHeader light showAvatar={false} />
+        <SoftCard className="mt-5 space-y-4 bg-ivory">
           <MonthPicker
             value={ym}
             onChange={(next) => {
@@ -124,22 +110,23 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             }}
             min={minYm}
             max={maxYm}
-            showTodayButton
-            onToday={jumpToToday}
+            size="range"
           />
-          <div className="flex items-center justify-between rounded-[18px] bg-sky-light px-4 py-3">
-            <div>
-              <p className="text-xs text-text-secondary">이번 달 빛</p>
-              <LightCount
-                lights={stats.lights}
-                size={20}
-                className="mt-0.5"
-                textClassName="text-lg font-semibold text-text-main"
-              />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-[16px] bg-white px-3 py-3 text-center">
+              <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
+              <div className="mt-1 flex justify-center">
+                <LightCount
+                  lights={stats.lights}
+                  size={18}
+                  rays={false}
+                  textClassName="text-lg font-semibold text-text-main"
+                />
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-text-secondary">집계 일수</p>
-              <p className="text-lg font-semibold text-text-main">
+            <div className="rounded-[16px] bg-white px-3 py-3 text-center">
+              <StatLabel className="text-text-secondary">집계 일수</StatLabel>
+              <p className="mt-1 text-lg font-semibold text-text-main">
                 {stats.possible}일
               </p>
             </div>
@@ -150,6 +137,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             selectedDate={selected}
             onSelect={selectDate}
             collapsed={!calendarExpanded}
+            justEarnedDate={lastEarnedDate}
           />
           <div className="flex justify-center">
             <button
@@ -174,13 +162,19 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       <section className="animate-fade-up space-y-4 px-5 pt-2">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="flex items-center gap-2.5">
-              <h2 className="text-lg font-semibold text-text-main">
+            <div className="flex items-center gap-1.5">
+              <h2
+                className="text-[22px] font-semibold tracking-[0.02em] text-text-main"
+                suppressHydrationWarning
+              >
                 {formatDisplayDate(selected)}
               </h2>
-              {!future ? (
-                <LightIcon active={selectedCompleted} size={22} />
-              ) : null}
+              <LightIcon
+                active={selectedCompleted}
+                future={future}
+                size={28}
+                justEarned={selected === lastEarnedDate}
+              />
             </div>
             {future ? (
               <p className="mt-1 text-sm text-text-secondary">
@@ -229,7 +223,11 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           ) : null}
         </div>
 
-        {!future ? <ReadingRangeCard reading={reading} compact /> : null}
+        {future ? (
+          <ReadingRangeMilestone key={selected} reading={reading} label="본문" />
+        ) : (
+          <ReadingPassageBlock key={selected} reading={reading} label="본문" defaultExpanded />
+        )}
 
         {!future && editing ? (
           <QtEntryForm

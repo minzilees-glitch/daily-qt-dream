@@ -1,3 +1,5 @@
+import { StatLabel } from "@/components/ui/StatLabel";
+
 export function StatRow({
   items,
 }: {
@@ -10,7 +12,7 @@ export function StatRow({
           key={item.label}
           className="rounded-[20px] bg-ivory/80 px-3 py-3 text-center shadow-none backdrop-blur"
         >
-          <p className="text-[11px] font-medium text-text-secondary">{item.label}</p>
+          <StatLabel className="text-text-secondary">{item.label}</StatLabel>
           <p className="mt-1 text-lg font-semibold tracking-tight text-text-main">
             {item.value}
           </p>

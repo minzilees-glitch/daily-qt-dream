@@ -1,61 +1,78 @@
 "use client";
 
-import { useState } from "react";
-import { BookOpen, ChevronDown, ChevronUp } from "lucide-react";
+import { useMemo, useState, type ReactNode } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import type { QtReadingRange } from "@/types";
+import { ReadingPassageHeader } from "@/components/qt/ReadingPassageHeader";
 
 const PREVIEW_CHARS = 140;
+/** Body is text-[15px]; verse nums are 1pt smaller. */
+const VERSE_NUM_CLASS = "text-[14px] opacity-60";
 
-/** Soft sky-wash 본문: range + scripture with 「본문 더보기」 accordion. */
+function renderPassage(text: string): ReactNode {
+  // Style leading verse numbers: "1  예수께서… 2  입을 열어…"
+  const parts = text.split(/(\d+)(?=\s)/g);
+  if (parts.length === 1) return text;
+
+  const nodes: ReactNode[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    const chunk = parts[i];
+    if (!chunk) continue;
+    if (/^\d+$/.test(chunk) && i + 1 < parts.length && /^\s/.test(parts[i + 1] ?? "")) {
+      nodes.push(
+        <span key={`v-${i}`} className={VERSE_NUM_CLASS}>
+          {chunk}
+        </span>,
+      );
+      // One extra space after the verse number (in addition to source whitespace).
+      nodes.push(<span key={`vs-${i}`}>{" "}</span>);
+    } else {
+      nodes.push(<span key={`t-${i}`}>{chunk}</span>);
+    }
+  }
+  return nodes;
+}
+
+/** Soft sky-wash 본문: shared header + scripture accordion (past/today). */
 export function ReadingPassageBlock({
   reading,
   label = "본문",
+  defaultExpanded = false,
 }: {
   reading: QtReadingRange;
   label?: string;
+  /** When true, verse body starts fully expanded (나의 QT). */
+  defaultExpanded?: boolean;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(defaultExpanded);
   const passage = reading.passage?.trim() ?? "";
   const needsToggle = passage.length > PREVIEW_CHARS;
-  const shown =
-    expanded || !needsToggle
-      ? passage
-      : `${passage.slice(0, PREVIEW_CHARS).trimEnd()}…`;
+  const shown = useMemo(() => {
+    if (expanded || !needsToggle) return passage;
+    return `${passage.slice(0, PREVIEW_CHARS).trimEnd()}…`;
+  }, [expanded, needsToggle, passage]);
 
   return (
     <div className="rounded-[20px] bg-sky-light px-4 py-4 shadow-none">
-      <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-text-main">
-          <BookOpen size={18} strokeWidth={1.75} aria-hidden />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium text-text-secondary">{label}</p>
-          <p className="mt-0.5 text-[16px] font-semibold tracking-tight text-text-main">
-            {reading.range}
-          </p>
-          {reading.title ? (
-            <p className="mt-0.5 text-sm text-text-secondary">{reading.title}</p>
-          ) : null}
-        </div>
-      </div>
+      <ReadingPassageHeader reading={reading} label={label} />
 
       {passage ? (
         <div className="mt-3 border-t border-white/70 pt-3">
-          <p className="text-[14px] leading-relaxed tracking-tight text-text-main whitespace-pre-wrap">
-            {shown}
+          <p className="text-[15px] leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
+            {renderPassage(shown)}
           </p>
           {needsToggle ? (
             <button
               type="button"
               onClick={() => setExpanded((v) => !v)}
-              className="mt-2.5 inline-flex items-center gap-1 text-[13px] font-bold text-cta transition hover:brightness-95"
+              className="mt-3 flex w-full items-center justify-center bg-transparent p-0 text-cta shadow-none transition hover:brightness-95"
               aria-expanded={expanded}
+              aria-label={expanded ? "본문 접기" : "본문 더보기"}
             >
-              {expanded ? "본문 접기" : "본문 더보기"}
               {expanded ? (
-                <ChevronUp size={16} strokeWidth={2.2} aria-hidden />
+                <ChevronUp size={20} strokeWidth={2} aria-hidden />
               ) : (
-                <ChevronDown size={16} strokeWidth={2.2} aria-hidden />
+                <ChevronDown size={20} strokeWidth={2} aria-hidden />
               )}
             </button>
           ) : null}
