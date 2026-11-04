@@ -21,10 +21,9 @@
   --hairline: var(--divider);
   --divider-strong: var(--divider); /* legacy alias — same color as --divider */
   --page-chrome: #eef3f7;
-  --sky-soft: #dceef8; /* PrimaryButton soft hover */
   --muted: #c2cad2; /* LightIcon inactive */
-  --medal-gold: #e8b923;
-  --medal-silver: #a8b0b8;
+  --medal-gold: #e8b923; /* ranking trophy 1위 */
+  --medal-silver: #a8b0b8; /* ranking trophy 2위 */
 
   /* ——— Gradients ——— */
   --gradient-hero: linear-gradient(180deg, #5fbcfc 0%, #d9edf9 58%, #ffffff 100%);
