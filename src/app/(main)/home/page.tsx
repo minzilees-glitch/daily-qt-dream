@@ -39,7 +39,7 @@ export default function HomePage() {
   return (
     <div>
       {/* Top-section-only wash — same pattern as 우리순; does not grow with scroll content. */}
-      <section className="hero-gradient px-5 pb-6">
+      <section className="hero-gradient-spread px-5 pb-6">
         <AppHeader
           light
           homeLayout

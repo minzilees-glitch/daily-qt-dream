@@ -186,6 +186,35 @@ a {
   background: var(--gradient-hero);
 }
 
+/*
+ * Home / history only: paint a taller blue wash behind content via an
+ * absolute layer so SoftCards / calendar are not pushed down (no min-height).
+ */
+.hero-gradient-spread {
+  position: relative;
+  z-index: 0;
+  background: transparent;
+}
+
+.hero-gradient-spread::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  /* Extends below the content-sized header into the page without affecting flow. */
+  height: 22rem;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    #5fbcfc 0%,
+    #5fbcfc 16%,
+    #9fd4fc 45%,
+    #d9edf9 72%,
+    #ffffff 100%
+  );
+}
+
 .soft-card {
   background: var(--ivory);
   border-radius: var(--radius-card);

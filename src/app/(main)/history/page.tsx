@@ -152,7 +152,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   return (
     <div>
       {/* Top-section-only wash — same pattern as 우리순; calendar stays below so gradient does not stretch. */}
-      <section className="hero-gradient px-5 pb-6">
+      <section className="hero-gradient-spread px-5 pb-6">
         <PageTitle light>나의 QT</PageTitle>
         <div className="mt-4">
           <MonthPicker
