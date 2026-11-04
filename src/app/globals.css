@@ -53,7 +53,6 @@
   --fs-section: 18px;
   --fs-body-lg: 19px;
   --fs-stat: 20px;
-  --fs-field-label: 20px; /* QT form field titles = section +2pt */
   --fs-display: 24px;
   --fs-page: 27px;
   --fs-display-xl: 34px; /* login hero */
@@ -151,7 +150,6 @@
   --text-section: var(--fs-section);
   --text-body-lg: var(--fs-body-lg);
   --text-stat: var(--fs-stat);
-  --text-field-label: var(--fs-field-label);
   --text-display: var(--fs-display);
   --text-page: var(--fs-page);
   --text-display-xl: var(--fs-display-xl);
@@ -205,10 +203,6 @@
 }
 .type-section {
   font-size: var(--fs-section);
-  font-weight: 600;
-}
-.type-field-label {
-  font-size: var(--fs-field-label); /* 20px — QT entry field titles */
   font-weight: 600;
 }
 .type-month {
