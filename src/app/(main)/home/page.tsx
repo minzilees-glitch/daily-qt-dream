@@ -38,6 +38,7 @@ export default function HomePage() {
 
   return (
     <div>
+      {/* Top-section-only wash — same pattern as 우리순; does not grow with scroll content. */}
       <section className="hero-gradient px-5 pb-6">
         <AppHeader
           light
@@ -47,8 +48,10 @@ export default function HomePage() {
           userName={currentUser.name}
           groupName={group?.name ?? "순"}
         />
+      </section>
 
-        <SoftCard className="animate-fade-up mt-7 space-y-5 !bg-white" padding="p-5">
+      <section className="animate-fade-up space-y-5 px-5 pb-8 pt-1">
+        <SoftCard className="space-y-5 !bg-white" padding="p-5">
           <div className="space-y-4">
             <h2 className="flex items-center gap-1.5 text-[17px] font-semibold tracking-[0.04em] text-text-main">
               <LightIcon
@@ -78,9 +81,7 @@ export default function HomePage() {
             defaultExpanded
           />
         </SoftCard>
-      </section>
 
-      <section className="animate-fade-up space-y-5 px-5 pb-8 pt-1">
         <QtEntryForm
           key={`home-qt-${today}-${todayEntry?.updatedAt ?? "new"}`}
           initial={todayEntry}

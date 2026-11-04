@@ -151,9 +151,10 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
   return (
     <div>
+      {/* Top-section-only wash — same pattern as 우리순; calendar stays below so gradient does not stretch. */}
       <section className="hero-gradient px-5 pb-6">
         <PageTitle light>나의 QT</PageTitle>
-        <div className="mt-5 space-y-4">
+        <div className="mt-4">
           <MonthPicker
             value={ym}
             onChange={(next) => {
@@ -163,9 +164,15 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             min={minYm}
             max={maxYm}
             size="range"
+            light
           />
+        </div>
+      </section>
+
+      <section className="animate-fade-up space-y-4 px-5 pt-1">
+        <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-[16px] bg-white/80 px-3 py-3 text-center">
+            <div className="rounded-[16px] bg-ivory px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
               <div className="mt-1 flex justify-center">
                 <LightCount
@@ -176,7 +183,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 />
               </div>
             </div>
-            <div className="rounded-[16px] bg-white/80 px-3 py-3 text-center">
+            <div className="rounded-[16px] bg-ivory px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">집계 일수</StatLabel>
               <p className="mt-1 text-[19px] font-semibold text-text-main">
                 {stats.possible}일
