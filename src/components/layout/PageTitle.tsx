@@ -13,7 +13,7 @@ export function PageTitle({
 }) {
   return (
     <h1
-      className={`pt-[calc(12px+var(--safe-top))] text-left text-[22px] font-bold tracking-tight ${
+      className={`pt-[calc(12px+var(--safe-top))] text-left text-[26px] font-bold tracking-tight ${
         light ? "text-white" : "text-text-main"
       } ${className}`}
     >
