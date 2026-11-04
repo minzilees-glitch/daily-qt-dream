@@ -11,7 +11,6 @@ import {
 import { useSearchParams } from "next/navigation";
 import { ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react";
 import { PageTitle } from "@/components/layout/PageTitle";
-import { SoftCard } from "@/components/ui/SoftCard";
 import { StatLabel } from "@/components/ui/StatLabel";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";

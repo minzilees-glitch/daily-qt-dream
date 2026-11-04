@@ -1,14 +1,11 @@
 import type { QtEntry } from "@/types";
-import { SoftCard } from "@/components/ui/SoftCard";
 
 export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   if (!entry) {
     return (
-      <SoftCard padding="p-5">
-        <p className="text-center text-[15px] text-text-secondary">
-          이 날짜에 작성한 QT 기록이 없습니다.
-        </p>
-      </SoftCard>
+      <p className="text-center text-[15px] text-text-secondary">
+        이 날짜에 작성한 QT 기록이 없습니다.
+      </p>
     );
   }
 
@@ -21,16 +18,14 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
 
   if (rows.length === 0) {
     return (
-      <SoftCard padding="p-5">
-        <p className="text-center text-[15px] text-text-secondary">
-          이 날짜에 작성한 QT 기록이 없습니다.
-        </p>
-      </SoftCard>
+      <p className="text-center text-[15px] text-text-secondary">
+        이 날짜에 작성한 QT 기록이 없습니다.
+      </p>
     );
   }
 
   return (
-    <SoftCard padding="p-5" className="space-y-7">
+    <div className="space-y-7">
       {rows.map((row) => (
         <div key={row.label}>
           <p className="text-[15px] font-semibold text-text-main">{row.label}</p>
@@ -39,6 +34,6 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
           </p>
         </div>
       ))}
-    </SoftCard>
+    </div>
   );
 }
