@@ -37,8 +37,8 @@ export function QtEntryForm({
   const locked = disabled || busy;
 
   return (
-    <div className="space-y-7">
-      <p className="text-[13px] leading-relaxed text-text-secondary">
+    <div className="space-y-[var(--space-stack-lg)]">
+      <p className="type-caption text-text-secondary">
         구절 · 묵상 · 결단과 순종 · 기도제목을 전체 합쳐{" "}
         <strong className="font-bold">최소</strong> {QT_MIN_TOTAL_CHARS}자 이상
         적어주세요.
@@ -149,7 +149,7 @@ function Field({
     <div>
       <label
         htmlFor={id}
-        className="mb-1.5 block text-[17px] font-semibold text-text-main"
+        className="type-section mb-1.5 block text-text-main"
       >
         {label}
       </label>
@@ -160,7 +160,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
-        className="w-full resize-none rounded-[12px] border-0 bg-ivory px-4 py-3.5 text-[18px] leading-relaxed text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
+        className="type-body-lg w-full resize-none rounded-[var(--radius-input)] border-0 bg-ivory px-4 py-3.5 text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
       />
     </div>
   );

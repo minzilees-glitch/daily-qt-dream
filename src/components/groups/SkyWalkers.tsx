@@ -255,9 +255,9 @@ function TeaCup() {
       className="pointer-events-none absolute -right-1 top-[24px] z-[3] block h-[14px] w-[12px] will-change-transform"
       aria-hidden
     >
-      <span className="absolute inset-x-0 bottom-0 h-[10px] rounded-[3px] rounded-b-[4px] bg-[#F4E8D8] ring-1 ring-[#D9C4A8]" />
-      <span className="absolute left-[2px] top-[2px] h-[5px] w-[8px] rounded-sm bg-[#C4A574]/90" />
-      <span className="absolute -right-[3px] top-[4px] h-[6px] w-[4px] rounded-full border border-[#D9C4A8]" />
+      <span className="absolute inset-x-0 bottom-0 h-[10px] rounded-[3px] rounded-b-[4px] bg-skywalker-sand ring-1 ring-skywalker-sand-edge" />
+      <span className="absolute left-[2px] top-[2px] h-[5px] w-[8px] rounded-sm bg-skywalker-wood/90" />
+      <span className="absolute -right-[3px] top-[4px] h-[6px] w-[4px] rounded-full border border-skywalker-sand-edge" />
     </span>
   );
 }
@@ -269,7 +269,7 @@ function BookProp() {
       className="pointer-events-none absolute left-1/2 top-[28px] z-[3] block h-[12px] w-[16px] -translate-x-1/2"
       aria-hidden
     >
-      <span className="absolute inset-0 rounded-[2px] bg-[#5F8FCF] ring-1 ring-white/70" />
+      <span className="absolute inset-0 rounded-[2px] bg-skywalker-blue ring-1 ring-white/70" />
       <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/50" />
       <span className="absolute inset-x-[2px] top-[3px] h-px bg-white/40" />
       <span className="absolute inset-x-[2px] top-[6px] h-px bg-white/35" />
@@ -284,7 +284,7 @@ function WaveHand() {
       className="pointer-events-none absolute -right-0.5 top-[20px] z-[3] block h-[10px] w-[10px] origin-bottom will-change-transform"
       aria-hidden
     >
-      <span className="absolute inset-0 rounded-full bg-[#F2C9A8] ring-1 ring-white/60" />
+      <span className="absolute inset-0 rounded-full bg-skywalker-skin ring-1 ring-white/60" />
     </span>
   );
 }
@@ -462,7 +462,7 @@ export function SkyWalkers({
   return (
     <div
       ref={cardRef}
-      className="sky-group-card relative overflow-hidden rounded-[16px] shadow-none"
+      className="soft-card sky-group-card relative overflow-hidden"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -500,7 +500,7 @@ export function SkyWalkers({
         ))}
         {capped ? (
           <span
-            className="absolute text-[12px] font-medium tracking-widest text-white/75"
+            className="absolute type-micro tracking-widest text-white/75"
             style={{
               right: 12,
               top: skyBand ? skyBand.lightTop + 8 : "48%",
@@ -513,24 +513,24 @@ export function SkyWalkers({
 
       <div ref={statsRef} className="relative z-10 px-4 pb-2 pt-4">
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순은</StatLabel>
-            <p className="mt-1 text-[19px] font-semibold text-white">{memberCount}명</p>
+            <p className="mt-1 type-stat text-white">{memberCount}명</p>
           </div>
-          <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순 현재</StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount
                 lights={lights}
                 size={18}
                 tone="onDark"
-                textClassName="text-[19px] font-semibold text-white"
+                textClassName="type-stat text-white"
               />
             </div>
           </div>
-          <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순 순위</StatLabel>
-            <p className="mt-1 text-[19px] font-semibold text-white">{rankLabel}</p>
+            <p className="mt-1 type-stat text-white">{rankLabel}</p>
           </div>
         </div>
       </div>
@@ -562,7 +562,7 @@ export function SkyWalkers({
                   }}
                 >
                   {selected ? (
-                    <span className="absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#243746] px-2.5 py-1 text-[12px] font-medium text-white">
+                    <span className="absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-text-main px-2.5 py-1 type-micro text-white">
                       {u.name}
                     </span>
                   ) : null}

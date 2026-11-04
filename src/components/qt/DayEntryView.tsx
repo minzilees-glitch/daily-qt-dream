@@ -3,7 +3,7 @@ import type { QtEntry } from "@/types";
 export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   if (!entry) {
     return (
-      <p className="text-center text-[15px] text-text-secondary">
+      <p className="text-center type-body-sm text-text-secondary">
         이 날짜에 작성한 QT 기록이 없습니다.
       </p>
     );
@@ -18,18 +18,18 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
 
   if (rows.length === 0) {
     return (
-      <p className="text-center text-[15px] text-text-secondary">
+      <p className="text-center type-body-sm text-text-secondary">
         이 날짜에 작성한 QT 기록이 없습니다.
       </p>
     );
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-[var(--space-stack-lg)]">
       {rows.map((row) => (
         <div key={row.label}>
-          <p className="text-[15px] font-semibold text-text-main">{row.label}</p>
-          <p className="mt-1 whitespace-pre-wrap text-[18px] leading-relaxed text-text-main">
+          <p className="type-body-sm font-semibold text-text-main">{row.label}</p>
+          <p className="type-body-lg mt-1 whitespace-pre-wrap text-text-main">
             {row.value}
           </p>
         </div>

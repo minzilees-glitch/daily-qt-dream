@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 export function SoftCard({
   children,
   className = "",
-  padding = "p-5",
+  padding = "p-[var(--space-card)]",
   id,
 }: {
   children: ReactNode;

@@ -95,7 +95,7 @@ export function QtCalendar({
 
   return (
     <div className="touch-pan-y">
-      <div className="mb-2 grid grid-cols-7 gap-2 text-center text-[12px] font-medium text-text-secondary">
+      <div className="mb-2 grid grid-cols-7 gap-2 text-center type-micro text-text-secondary">
         {WEEKDAYS.map((d) => (
           <div key={d} className="py-1">
             {d}
@@ -126,11 +126,11 @@ export function QtCalendar({
                 className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible touch-pan-y transition"
               >
                 <span
-                  className={`mx-auto flex h-full w-[calc(100%-2px)] flex-col items-center justify-center gap-1 rounded-[8px] py-2 text-center ${
+                  className={`mx-auto flex h-full w-[calc(100%-2px)] flex-col items-center justify-center gap-1 rounded-[var(--radius-day)] py-2 text-center ${
                     selected
-                      ? "bg-[#008CFF] !text-white shadow-none"
+                      ? "bg-cta !text-white shadow-none"
                       : isToday
-                        ? "bg-[#008CFF]/18 text-cta group-hover:bg-[#008CFF]/24"
+                        ? "bg-cta/18 text-cta group-hover:bg-cta/24"
                         : done
                           ? "bg-white text-text-main"
                           : future
@@ -139,7 +139,7 @@ export function QtCalendar({
                   }`}
                 >
                   <span
-                    className={`text-center text-[14px] leading-none font-medium tabular-nums ${
+                    className={`text-center text-label leading-none font-medium tabular-nums ${
                       selected
                         ? ""
                         : isToday

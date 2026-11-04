@@ -46,21 +46,21 @@ export function ConfirmModal({
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-[360px] rounded-[16px] bg-white p-5 shadow-none"
+        className="w-full max-w-[360px] rounded-[var(--radius-md)] bg-white p-[var(--space-card)] shadow-none"
         onClick={(e) => e.stopPropagation()}
       >
         <h2
           id="confirm-title"
-          className="text-[19px] font-semibold tracking-tight text-text-main"
+          className="type-stat text-text-main"
         >
           {title}
         </h2>
         {description ? (
-          <p className="mt-2 break-keep text-[15px] leading-relaxed break-words text-text-secondary">
+          <p className="type-caption mt-2 break-keep break-words text-text-secondary">
             {description}
           </p>
         ) : null}
-        <div className="mt-5 flex gap-2">
+        <div className="mt-[var(--space-stack)] flex gap-2">
           <PrimaryButton
             type="button"
             variant="soft"
@@ -71,7 +71,7 @@ export function ConfirmModal({
           </PrimaryButton>
           <PrimaryButton
             type="button"
-            className="flex-1 !bg-[#E35D5D] !shadow-none"
+            className="flex-1 !bg-danger !shadow-none"
             onClick={onConfirm}
           >
             {confirmLabel}
