@@ -51,7 +51,7 @@ export default function HomePage() {
       </section>
 
       <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pb-[var(--space-section-pb)] pt-1">
-        <SoftCard className="space-y-[var(--space-stack)]">
+        <SoftCard className="space-y-[var(--space-stack)] !bg-white">
           <div className="space-y-[var(--space-stack-sm)]">
             <h2 className="flex items-center gap-1.5 type-section text-text-main">
               <LightIcon
@@ -82,22 +82,20 @@ export default function HomePage() {
           />
         </SoftCard>
 
-        <SoftCard>
-          <QtEntryForm
-            key={`home-qt-${today}`}
-            initial={todayEntry}
-            onSave={async (fields) => {
-              try {
-                const res = await saveEntry(today, fields);
-                showToast(res.message);
-              } catch (err) {
-                const detail =
-                  err instanceof Error ? err.message : "알 수 없는 오류";
-                showToast(`저장 실패: ${detail}`);
-              }
-            }}
-          />
-        </SoftCard>
+        <QtEntryForm
+          key={`home-qt-${today}`}
+          initial={todayEntry}
+          onSave={async (fields) => {
+            try {
+              const res = await saveEntry(today, fields);
+              showToast(res.message);
+            } catch (err) {
+              const detail =
+                err instanceof Error ? err.message : "알 수 없는 오류";
+              showToast(`저장 실패: ${detail}`);
+            }
+          }}
+        />
       </section>
 
       <Toast message={toast} />
