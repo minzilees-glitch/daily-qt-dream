@@ -123,14 +123,12 @@ export function QtCalendar({
                 onClick={() => onSelect?.(date)}
                 aria-label={`${date}${done ? ", 완료" : ""}`}
                 aria-pressed={selected}
-                className={`group relative flex min-h-[44px] aspect-square origin-center items-center justify-center overflow-visible transition ${
-                  selected ? "z-10 scale-[1.08]" : ""
-                }`}
+                className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible transition"
               >
                 <span
                   className={`mx-auto flex h-full w-[calc(100%-2px)] flex-col items-center justify-center gap-1 rounded-[8px] py-2 text-center ${
                     selected
-                      ? "bg-cta !text-white shadow-none"
+                      ? "bg-[#008CFF] !text-white shadow-none"
                       : isToday
                         ? "bg-[#008CFF]/18 text-cta group-hover:bg-[#008CFF]/24"
                         : done
