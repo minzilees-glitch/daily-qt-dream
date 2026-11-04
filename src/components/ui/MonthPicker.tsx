@@ -10,7 +10,7 @@ export function MonthPicker({
   max,
   monthOnly = false,
   light = false,
-  /** `title` = page headers (22px); `range` = match scripture range line (16px). */
+  /** `title` = under page headers (25px); `range` = match scripture range line. */
   size = "title",
 }: {
   value: string;
@@ -30,7 +30,7 @@ export function MonthPicker({
   const isRange = size === "range";
   const labelClass = isRange
     ? "text-[17px] font-semibold tracking-[0.02em]"
-    : "text-[23px] font-semibold tracking-[0.02em]";
+    : "text-[25px] font-semibold tracking-[0.02em]";
   const chevronBox = isRange ? "h-8 w-8" : "h-9 w-9";
   const chevronIcon = isRange ? 18 : 22;
   // Tight chevrons hugging the month label — flat, no shadow.
