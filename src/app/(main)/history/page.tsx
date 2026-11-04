@@ -10,8 +10,7 @@ import {
 } from "react";
 import { useSearchParams } from "next/navigation";
 import { ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react";
-import { AppHeader } from "@/components/layout/AppHeader";
-import { SoftCard } from "@/components/ui/SoftCard";
+import { PageTitle } from "@/components/layout/PageTitle";
 import { StatLabel } from "@/components/ui/StatLabel";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
@@ -153,7 +152,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   return (
     <div>
       <section className="hero-gradient px-5 pb-6">
-        <AppHeader light showAvatar={false} />
+        <PageTitle light>나의 QT</PageTitle>
         <SoftCard className="mt-5 space-y-4 bg-ivory">
           <MonthPicker
             value={ym}
