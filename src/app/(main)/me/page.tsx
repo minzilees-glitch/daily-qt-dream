@@ -8,6 +8,7 @@ import {
   Settings,
   Shield,
 } from "lucide-react";
+import { PageTitle } from "@/components/layout/PageTitle";
 import { SoftCard } from "@/components/ui/SoftCard";
 import { StatLabel } from "@/components/ui/StatLabel";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
@@ -54,7 +55,8 @@ export default function MePage() {
   return (
     <div>
       <section className="hero-gradient px-5 pb-6">
-        <div className="pt-[calc(28px+var(--safe-top))]">
+        <PageTitle light>마이페이지</PageTitle>
+        <div className="mt-5">
           <SoftCard className="animate-fade-up bg-ivory">
             <div className="flex items-center gap-4">
               <ProfileAvatarButton size={56} fallback="initial" />

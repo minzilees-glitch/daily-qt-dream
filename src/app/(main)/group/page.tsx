@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { PageTitle } from "@/components/layout/PageTitle";
 import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { DayParticipation } from "@/components/groups/DayParticipation";
@@ -52,8 +53,8 @@ export default function GroupPage() {
   return (
     <div>
       <section className="hero-gradient px-5 pb-6">
-        {/* Page title row = month navigation */}
-        <div className="pt-[calc(28px+var(--safe-top))]">
+        <PageTitle light>우리 순</PageTitle>
+        <div className="mt-4">
           <MonthPicker
             value={ym}
             onChange={setYm}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { PageTitle } from "@/components/layout/PageTitle";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { RankingList } from "@/components/ranking/RankingList";
 import { useApp } from "@/lib/app-context";
@@ -28,8 +29,8 @@ export default function RankingPage() {
   return (
     <div>
       <section className="hero-gradient px-5 pb-6">
-        {/* Page title row = month navigation (same as 우리순) */}
-        <div className="pt-[calc(28px+var(--safe-top))]">
+        <PageTitle light>랭킹</PageTitle>
+        <div className="mt-4">
           <MonthPicker
             value={ym}
             onChange={setYm}
