@@ -36,7 +36,7 @@ export default function RankingPage() {
             onChange={setYm}
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
-            light
+            size="range"
             capsule
           />
         </div>
