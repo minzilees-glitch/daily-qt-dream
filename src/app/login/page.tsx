@@ -31,7 +31,7 @@ export default function LoginPage() {
         </div>
 
         <div className="animate-fade-up space-y-[var(--space-stack-sm)]" style={{ animationDelay: "80ms" }}>
-          <div className="soft-card bg-ivory/85 p-[var(--space-card)] backdrop-blur">
+          <div className="soft-card p-[var(--space-card)]">
             <p className="mb-3 text-center type-caption font-semibold uppercase tracking-[0.14em] text-sky">
               Prototype · Test Login
             </p>
