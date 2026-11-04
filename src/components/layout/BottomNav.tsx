@@ -20,10 +20,7 @@ export function BottomNav() {
       aria-label="하단 메뉴"
       className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[calc(10px+var(--safe-bottom))]"
     >
-      <div
-        className="pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] bg-cta px-1.5 py-1.5 text-white opacity-100"
-        style={{ boxShadow: "var(--shadow-nav-float)" }}
-      >
+      <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-1.5">
         {TABS.map(({ href, label, icon: Icon }) => {
           const active =
             pathname === href ||
@@ -35,14 +32,14 @@ export function BottomNav() {
               aria-label={label}
               title={label}
               className={`flex min-w-0 items-center justify-center rounded-[var(--radius-btn)] px-1 py-2.5 transition ${
-                active ? "bg-white/15" : "hover:bg-white/10"
+                active ? "bg-white/20" : "hover:bg-white/10"
               }`}
               aria-current={active ? "page" : undefined}
             >
               <Icon
                 size={22}
                 strokeWidth={active ? 2.4 : 1.75}
-                className={active ? "text-white" : "text-white/70"}
+                className={active ? "text-white" : "text-white/75"}
                 aria-hidden
               />
             </Link>

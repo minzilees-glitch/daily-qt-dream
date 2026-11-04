@@ -89,6 +89,10 @@
   --shadow-soft: none;
   --shadow-nav: none;
   --shadow-nav-float: 0 10px 30px rgba(0, 60, 130, 0.42);
+  /* Icon-only bottom nav: frosted CTA-tinted glass (not opaque solid) */
+  --nav-glass-bg: rgba(0, 140, 255, 0.52);
+  --nav-glass-border: rgba(255, 255, 255, 0.28);
+  --nav-glass-blur: 18px;
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
@@ -387,6 +391,20 @@ a {
   background: var(--ivory);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-soft);
+}
+
+/* Bottom nav capsule — translucent sky/CTA glass + blur; float shadow stays */
+.nav-glass {
+  background: var(--nav-glass-bg);
+  border: 1px solid var(--nav-glass-border);
+  backdrop-filter: blur(var(--nav-glass-blur)) saturate(1.35);
+  -webkit-backdrop-filter: blur(var(--nav-glass-blur)) saturate(1.35);
+  box-shadow: var(--shadow-nav-float);
+  color: #ffffff;
+}
+.nav-glass svg {
+  color: currentColor;
+  stroke: currentColor;
 }
 
 .phone-shell {
