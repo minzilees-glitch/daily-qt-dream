@@ -16,7 +16,7 @@ export function BrandMark({
         width: size,
         height: size,
         borderRadius: rounded,
-        backgroundColor: "#5FBCFC",
+        backgroundColor: "var(--sky)",
       }}
       aria-hidden
     >
@@ -25,7 +25,7 @@ export function BrandMark({
         style={{
           width: spark,
           height: spark,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: "var(--white)",
           WebkitMaskImage: "url(/icons/light-icon.png)",
           maskImage: "url(/icons/light-icon.png)",
           WebkitMaskSize: "contain",

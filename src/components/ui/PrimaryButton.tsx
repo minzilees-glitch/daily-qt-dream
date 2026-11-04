@@ -17,7 +17,7 @@ export function PrimaryButton({
     variant === "primary"
       ? "btn-cta bg-cta !text-white shadow-none hover:brightness-105 [&_svg]:!text-white"
       : variant === "soft"
-        ? "bg-sky-light text-text-main hover:bg-[#dceef8]"
+        ? "bg-sky-light text-text-main hover:bg-sky-soft"
         : "bg-transparent text-text-secondary hover:text-text-main";
 
   return (

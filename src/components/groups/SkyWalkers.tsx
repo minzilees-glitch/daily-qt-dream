@@ -462,7 +462,7 @@ export function SkyWalkers({
   return (
     <div
       ref={cardRef}
-      className="sky-group-card relative overflow-hidden rounded-[16px] shadow-none"
+      className="sky-group-card relative overflow-hidden rounded-[var(--radius-md)] shadow-none"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -500,7 +500,7 @@ export function SkyWalkers({
         ))}
         {capped ? (
           <span
-            className="absolute text-[12px] font-medium tracking-widest text-white/75"
+            className="absolute type-micro tracking-widest text-white/75"
             style={{
               right: 12,
               top: skyBand ? skyBand.lightTop + 8 : "48%",
@@ -513,24 +513,24 @@ export function SkyWalkers({
 
       <div ref={statsRef} className="relative z-10 px-4 pb-2 pt-4">
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순은</StatLabel>
-            <p className="mt-1 text-[19px] font-semibold text-white">{memberCount}명</p>
+            <p className="mt-1 type-stat text-white">{memberCount}명</p>
           </div>
-          <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순 현재</StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount
                 lights={lights}
                 size={18}
                 tone="onDark"
-                textClassName="text-[19px] font-semibold text-white"
+                textClassName="type-stat text-white"
               />
             </div>
           </div>
-          <div className="rounded-[18px] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순 순위</StatLabel>
-            <p className="mt-1 text-[19px] font-semibold text-white">{rankLabel}</p>
+            <p className="mt-1 type-stat text-white">{rankLabel}</p>
           </div>
         </div>
       </div>
@@ -562,7 +562,7 @@ export function SkyWalkers({
                   }}
                 >
                   {selected ? (
-                    <span className="absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#243746] px-2.5 py-1 text-[12px] font-medium text-white">
+                    <span className="absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-text-main px-2.5 py-1 type-micro text-white">
                       {u.name}
                     </span>
                   ) : null}

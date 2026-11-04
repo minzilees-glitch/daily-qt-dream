@@ -95,7 +95,7 @@ export function QtCalendar({
 
   return (
     <div className="touch-pan-y">
-      <div className="mb-2 grid grid-cols-7 gap-2 text-center text-[12px] font-medium text-text-secondary">
+      <div className="mb-2 grid grid-cols-7 gap-2 text-center type-micro text-text-secondary">
         {WEEKDAYS.map((d) => (
           <div key={d} className="py-1">
             {d}

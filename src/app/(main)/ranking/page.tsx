@@ -40,7 +40,7 @@ export default function RankingPage() {
             capsule
           />
         </div>
-        <p className="mt-5 text-center text-[15px] leading-relaxed text-text-main">
+        <p className="mt-5 text-center type-body-sm leading-relaxed text-text-main">
           당일 QT를 완료한 날마다 빛 1개를 모읍니다.
           <br />
           지난 날짜 작성은 빛에 포함되지 않아요. 순 전체 빛 수로 순위를 매깁니다.

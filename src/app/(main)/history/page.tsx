@@ -172,20 +172,20 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       <section className="animate-fade-up space-y-4 px-5 pt-1">
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-[16px] bg-ivory px-3 py-3 text-center">
+            <div className="rounded-[var(--radius-md)] bg-ivory px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
               <div className="mt-1 flex justify-center">
                 <LightCount
                   lights={stats.lights}
                   size={18}
                   rays={false}
-                  textClassName="text-[19px] font-semibold text-text-main"
+                  textClassName="type-stat text-text-main"
                 />
               </div>
             </div>
-            <div className="rounded-[16px] bg-ivory px-3 py-3 text-center">
+            <div className="rounded-[var(--radius-md)] bg-ivory px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">집계 일수</StatLabel>
-              <p className="mt-1 text-[19px] font-semibold text-text-main">
+              <p className="mt-1 type-stat text-text-main">
                 {stats.possible}일
               </p>
             </div>
@@ -219,7 +219,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       </section>
 
       <div
-        className="h-2 w-full bg-[#D8DEE6] shadow-none"
+        className="h-2 w-full bg-divider shadow-none"
         role="separator"
         aria-hidden
       />
@@ -239,7 +239,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               <FitDateTitle text={formatDisplayDate(selected)} />
             </div>
             {future ? (
-              <p className="mt-1 text-[15px] text-text-secondary">
+              <p className="mt-1 type-body-sm text-text-secondary">
                 미래 날짜는 완료할 수 없습니다.
               </p>
             ) : past ? (
@@ -263,10 +263,10 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 <MoreHorizontal size={18} strokeWidth={1.75} />
               </button>
               {menuOpen ? (
-                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-2xl bg-white py-1 shadow-none">
+                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-none">
                   <button
                     type="button"
-                    className="block w-full px-4 py-2.5 text-left text-[15px] font-medium text-text-main hover:bg-sky-light"
+                    className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
                     onClick={() => {
                       setMenuOpen(false);
                       setEditing(true);
@@ -276,7 +276,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   </button>
                   <button
                     type="button"
-                    className="block w-full px-4 py-2.5 text-left text-[15px] font-medium text-[#E35D5D] hover:bg-sky-light disabled:opacity-40"
+                    className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
                     disabled={!hasEntry && !selectedCompleted}
                     onClick={() => {
                       setMenuOpen(false);
@@ -358,7 +358,7 @@ export default function HistoryPage() {
   return (
     <Suspense
       fallback={
-        <div className="px-5 pt-16 text-center text-[15px] text-text-secondary">
+        <div className="px-5 pt-16 text-center type-body-sm text-text-secondary">
           기록을 불러오는 중…
         </div>
       }

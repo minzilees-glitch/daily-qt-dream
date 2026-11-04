@@ -37,7 +37,7 @@ export default function TodayQtPage() {
         >
           <ArrowLeft size={22} strokeWidth={1.75} className="text-text-main" />
         </Link>
-        <p className="text-[17px] font-bold text-text-main opacity-50" suppressHydrationWarning>
+        <p className="type-section font-bold text-text-main opacity-50" suppressHydrationWarning>
           {formatDisplayDate(today)}
         </p>
       </div>

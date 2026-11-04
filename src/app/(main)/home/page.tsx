@@ -53,7 +53,7 @@ export default function HomePage() {
       <section className="animate-fade-up space-y-5 px-5 pb-8 pt-1">
         <SoftCard className="space-y-5 !bg-white" padding="p-5">
           <div className="space-y-4">
-            <h2 className="flex items-center gap-1.5 text-[17px] font-semibold tracking-[0.04em] text-text-main">
+            <h2 className="flex items-center gap-1.5 type-section tracking-[var(--tracking-title)] text-text-main">
               <LightIcon
                 active={doneToday}
                 tone={doneToday ? "active" : "inactive"}
@@ -68,7 +68,7 @@ export default function HomePage() {
               </span>
             </h2>
             <div
-              className="h-px w-full bg-[#e5eaf0] shadow-none"
+              className="h-px w-full bg-divider shadow-none"
               role="separator"
               aria-hidden
             />

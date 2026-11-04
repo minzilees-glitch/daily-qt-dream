@@ -32,7 +32,7 @@ export function AppHeader({
       >
         <div className="min-w-0 flex-1">
           <p
-            className={`text-[15px] font-medium tracking-[0.04em] ${
+            className={`type-body-sm font-medium tracking-[0.04em] ${
               light ? "text-white/80" : "text-sky"
             }`}
           >
@@ -52,14 +52,14 @@ export function AppHeader({
           {showAvatar ? <ProfileAvatarButton light={light} /> : null}
           <div className="min-w-0 max-w-[7.5rem] text-center leading-tight">
             <p
-              className={`truncate text-[14px] font-semibold tracking-tight ${
+              className={`truncate type-label font-semibold tracking-tight ${
                 light ? "text-white" : "text-text-main"
               }`}
             >
               {userName}
             </p>
             <p
-              className={`mt-0 truncate text-[13px] leading-tight ${
+              className={`mt-0 truncate type-caption leading-tight ${
                 light ? "text-white/80" : "text-text-secondary"
               }`}
             >
