@@ -94,7 +94,7 @@ export function QtCalendar({
     : allRows;
 
   return (
-    <div>
+    <div className="touch-pan-y">
       <div className="mb-2 grid grid-cols-7 gap-2 text-center text-[12px] font-medium text-text-secondary">
         {WEEKDAYS.map((d) => (
           <div key={d} className="py-1">
@@ -102,7 +102,7 @@ export function QtCalendar({
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-2 overflow-visible">
+      <div className="grid grid-cols-7 gap-2 overflow-visible touch-pan-y">
         {rows.flatMap((row, ri) =>
           row.map((day, ci) => {
             const idx = ri * 7 + ci;
@@ -123,7 +123,7 @@ export function QtCalendar({
                 onClick={() => onSelect?.(date)}
                 aria-label={`${date}${done ? ", 완료" : ""}`}
                 aria-pressed={selected}
-                className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible transition"
+                className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible touch-pan-y transition"
               >
                 <span
                   className={`mx-auto flex h-full w-[calc(100%-2px)] flex-col items-center justify-center gap-1 rounded-[8px] py-2 text-center ${

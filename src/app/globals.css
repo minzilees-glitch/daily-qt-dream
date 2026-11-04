@@ -211,6 +211,8 @@ a {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  /* Vertical finger pans scroll the page (incl. starting over controls). */
+  touch-action: pan-y;
 }
 
 @media (min-width: 520px) {
