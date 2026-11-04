@@ -50,7 +50,7 @@ export function AppHeader({
 
         <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
           {showAvatar ? <ProfileAvatarButton light={light} /> : null}
-          <div className="min-w-0 max-w-[7.5rem] text-center">
+          <div className="min-w-0 max-w-[7.5rem] text-center leading-tight">
             <p
               className={`truncate text-[14px] font-semibold tracking-tight ${
                 light ? "text-white" : "text-text-main"
@@ -59,7 +59,7 @@ export function AppHeader({
               {userName}
             </p>
             <p
-              className={`mt-0.5 truncate text-[13px] ${
+              className={`mt-0 truncate text-[13px] leading-tight ${
                 light ? "text-white/80" : "text-text-secondary"
               }`}
             >
