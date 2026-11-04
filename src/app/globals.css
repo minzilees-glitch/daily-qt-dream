@@ -11,15 +11,7 @@
   --white: #ffffff;
   --text-main: #243746;
   --text-secondary: #768896;
-  /* Blue holds longer, then softens lower before white — taller wash feel. */
-  --gradient-hero: linear-gradient(
-    180deg,
-    #5fbcfc 0%,
-    #5fbcfc 14%,
-    #9fd4fc 42%,
-    #d4ebf9 78%,
-    #ffffff 100%
-  );
+  --gradient-hero: linear-gradient(180deg, #5fbcfc 0%, #d9edf9 58%, #ffffff 100%);
   /* Shadows removed app-wide */
   --shadow-soft: none;
   --shadow-nav: none;
@@ -192,13 +184,6 @@ a {
 
 .hero-gradient {
   background: var(--gradient-hero);
-  /* Top-section-only band: taller wash even when header content is short. */
-  min-height: 13.5rem;
-}
-
-/* Home / history: hug header content so SoftCards & calendar are not shoved down. */
-.hero-gradient.hero-gradient-fit {
-  min-height: 0;
 }
 
 .soft-card {
