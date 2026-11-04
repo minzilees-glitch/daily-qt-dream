@@ -38,7 +38,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="bg-sky px-5 pb-6 pt-1">
+      <section className="hero-gradient px-5 pb-8 pt-1">
         <AppHeader
           light
           homeLayout
@@ -47,25 +47,23 @@ export default function HomePage() {
           userName={currentUser.name}
           groupName={group?.name ?? "순"}
         />
-      </section>
 
-      <section className="animate-fade-up space-y-5 bg-white px-5 pb-8 pt-6">
-        <h2 className="flex items-center gap-1.5 text-[17px] font-semibold tracking-[0.04em] text-text-main">
-          <LightIcon
-            active={doneToday}
-            tone={doneToday ? "active" : "inactive"}
-            size={20}
-            justEarned={doneToday || lastEarnedDate === today}
-            label=""
-          />
-          <span>
-            {doneToday
-              ? "오늘의 말씀을 묵상했어요."
-              : "오늘의 말씀이 기다리고 있어요."}
-          </span>
-        </h2>
+        <SoftCard className="animate-fade-up mt-7 space-y-5 !bg-white" padding="p-5">
+          <h2 className="flex items-center gap-1.5 text-[17px] font-semibold tracking-[0.04em] text-text-main">
+            <LightIcon
+              active={doneToday}
+              tone={doneToday ? "active" : "inactive"}
+              size={20}
+              justEarned={doneToday || lastEarnedDate === today}
+              label=""
+            />
+            <span>
+              {doneToday
+                ? "오늘의 말씀을 묵상했어요."
+                : "오늘의 말씀이 기다리고 있어요."}
+            </span>
+          </h2>
 
-        <SoftCard className="!bg-white" padding="p-5">
           <ReadingPassageBlock
             reading={reading}
             label="본문"
@@ -74,14 +72,16 @@ export default function HomePage() {
           />
         </SoftCard>
 
-        <QtEntryForm
-          key={`home-qt-${today}-${todayEntry?.updatedAt ?? "new"}`}
-          initial={todayEntry}
-          onSave={async (fields) => {
-            const res = await saveEntry(today, fields);
-            showToast(res.message);
-          }}
-        />
+        <div className="animate-fade-up mt-5">
+          <QtEntryForm
+            key={`home-qt-${today}-${todayEntry?.updatedAt ?? "new"}`}
+            initial={todayEntry}
+            onSave={async (fields) => {
+              const res = await saveEntry(today, fields);
+              showToast(res.message);
+            }}
+          />
+        </div>
       </section>
 
       <Toast message={toast} />
