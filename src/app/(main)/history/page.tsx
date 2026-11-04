@@ -244,9 +244,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               </p>
             ) : past ? (
               <p className="mt-1 break-keep text-[13px] leading-relaxed text-text-secondary">
-                빛은 당일 큐티에만 지급됩니다.
+                지난 큐티완료는 빛을 획득할 수 없습니다.
                 <br />
-                하지만 지난 큐티는 당신 심령에 남을거에요.
+                그러나 지난 큐티는 당신 심령에 남을거에요.
               </p>
             ) : null}
           </div>
