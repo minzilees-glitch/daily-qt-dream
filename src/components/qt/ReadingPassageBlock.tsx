@@ -45,8 +45,8 @@ export function ReadingPassageBlock({
   /** When true, verse body starts fully expanded (나의 QT). */
   defaultExpanded?: boolean;
   /**
-   * When true (inside SoftCard), sky wash is a band on one surface —
-   * no nested rounded card panel.
+   * When true (inside SoftCard): same ivory surface as the card —
+   * no sky wash / nested panel; hairline divider before verse body.
    */
   embedded?: boolean;
 }) {
@@ -62,14 +62,20 @@ export function ReadingPassageBlock({
     <div
       className={
         embedded
-          ? "-mx-6 bg-sky-light px-6 py-4 shadow-none"
+          ? "shadow-none"
           : "rounded-[20px] bg-sky-light px-4 py-4 shadow-none"
       }
     >
       <ReadingPassageHeader reading={reading} label={label} />
 
       {passage ? (
-        <div className="mt-3 border-t border-white/70 pt-3">
+        <div
+          className={
+            embedded
+              ? "mt-3 border-t border-[#e5eaf0] pt-3"
+              : "mt-3 border-t border-white/70 pt-3"
+          }
+        >
           <p className="text-[16px] leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
             {renderPassage(shown)}
           </p>
