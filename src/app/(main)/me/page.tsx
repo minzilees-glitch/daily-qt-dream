@@ -57,7 +57,7 @@ export default function MePage() {
       <section className="hero-gradient px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
         <PageTitle light>마이페이지</PageTitle>
         <div className="mt-[var(--space-stack)]">
-          <SoftCard className="animate-fade-up bg-ivory">
+          <SoftCard className="animate-fade-up">
             <div className="flex items-center gap-4">
               <ProfileAvatarButton size={56} fallback="initial" />
               <div className="min-w-0">
@@ -99,7 +99,7 @@ export default function MePage() {
       </section>
 
       <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pt-1">
-        <SoftCard className="bg-ivory">
+        <SoftCard>
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h2 className="type-section text-text-main">
               내가 잘 지키는 요일

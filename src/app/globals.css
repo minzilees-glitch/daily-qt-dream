@@ -57,7 +57,8 @@
   --fs-page: 27px;
   --fs-display-xl: 34px; /* login hero */
   --lh-relaxed: 1.625;
-  --tracking-title: 0.04em;
+  --lh-page-title: 1.15;
+  --tracking-title: 0.01em; /* page titles — was 0.04em */
   --tracking-label: 0.06em;
   --tracking-month: 0.02em;
 
@@ -93,10 +94,17 @@
   --nav-glass-bg: rgba(0, 140, 255, 0.52);
   --nav-glass-border: rgba(255, 255, 255, 0.28);
   --nav-glass-blur: 18px;
+  /* SoftCard / primary frames — ivory glass (shared with month capsule tint) */
+  --frame-glass-bg: rgba(250, 248, 243, 0.72);
+  --frame-glass-border: rgba(255, 255, 255, 0.55);
+  --frame-glass-blur: 16px;
+  --frame-glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 8px 24px rgba(0, 70, 140, 0.06);
   /* MonthPicker ivory capsule — soft mirror sheen (sky-tinted, no purple) */
-  --month-capsule-bg: rgba(250, 248, 243, 0.88);
-  --month-capsule-border: rgba(255, 255, 255, 0.65);
-  --month-capsule-blur: 12px;
+  --month-capsule-bg: var(--frame-glass-bg);
+  --month-capsule-border: var(--frame-glass-border);
+  --month-capsule-blur: var(--frame-glass-blur);
   --month-capsule-sheen: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.72) 0%,
@@ -153,7 +161,7 @@
   --text-display: var(--fs-display);
   --text-page: var(--fs-page);
   --text-display-xl: var(--fs-display-xl);
-  --tracking-title: 0.04em;
+  --tracking-title: 0.01em;
   --tracking-label: 0.06em;
   --tracking-month: 0.02em;
   --radius-sm: 12px;
@@ -214,6 +222,7 @@
   font-size: var(--fs-page);
   font-weight: 600; /* one step down from 700 */
   letter-spacing: var(--tracking-title);
+  line-height: var(--lh-page-title);
 }
 .type-display {
   font-size: var(--fs-display);
@@ -401,10 +410,22 @@ a {
   background: var(--gradient-hero-spread);
 }
 
+/* Primary content frames — frosted ivory glass (SoftCard + soft-card rows) */
 .soft-card {
-  background: var(--ivory);
+  background: var(--frame-glass-bg);
+  border: 1px solid var(--frame-glass-border);
   border-radius: var(--radius-card);
+  box-shadow: var(--frame-glass-shadow);
+  backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.2);
+}
+/* SkyWalkers photo card keeps opaque scene fill — not ivory glass */
+.soft-card.sky-group-card {
+  background: #9fd0f5;
+  border: none;
   box-shadow: var(--shadow-soft);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* Bottom nav capsule — translucent sky/CTA glass + blur; float shadow stays */
