@@ -145,17 +145,14 @@ function Field({
   disabled?: boolean;
   rows: number;
 }) {
-  const len = value.trim().length;
   return (
     <div>
-      <div className="mb-1.5 flex items-center justify-between gap-2">
-        <label htmlFor={id} className="text-[17px] font-semibold text-text-main">
-          {label}
-        </label>
-        <span className="text-[12px] tabular-nums text-text-secondary/70">
-          {len}자
-        </span>
-      </div>
+      <label
+        htmlFor={id}
+        className="mb-1.5 block text-[17px] font-semibold text-text-main"
+      >
+        {label}
+      </label>
       <textarea
         id={id}
         value={value}
