@@ -38,7 +38,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="hero-gradient px-5 pb-8 pt-1">
+      <section className="hero-gradient px-5 pb-6">
         <AppHeader
           light
           homeLayout
@@ -71,17 +71,17 @@ export default function HomePage() {
             defaultExpanded
           />
         </SoftCard>
+      </section>
 
-        <div className="animate-fade-up mt-5">
-          <QtEntryForm
-            key={`home-qt-${today}-${todayEntry?.updatedAt ?? "new"}`}
-            initial={todayEntry}
-            onSave={async (fields) => {
-              const res = await saveEntry(today, fields);
-              showToast(res.message);
-            }}
-          />
-        </div>
+      <section className="animate-fade-up space-y-5 px-5 pb-8 pt-1">
+        <QtEntryForm
+          key={`home-qt-${today}-${todayEntry?.updatedAt ?? "new"}`}
+          initial={todayEntry}
+          onSave={async (fields) => {
+            const res = await saveEntry(today, fields);
+            showToast(res.message);
+          }}
+        />
       </section>
 
       <Toast message={toast} />
