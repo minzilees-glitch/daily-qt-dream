@@ -246,10 +246,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
         fetchProfileAvatarMap(),
       ]);
       if (cancelled) return;
-      setRemoteQt({
-        myEntries: mine.ok ? mine.data : [],
-        presence: presence.ok ? presence.data : [],
-        loadedFor: sessionUserId,
+      // Keep optimistic rows if fetch fails or returns older data (home save race).
+      setRemoteQt((prev) => {
+        const sameUser = prev.loadedFor === sessionUserId;
+        let myEntries = mine.ok ? mine.data : sameUser ? prev.myEntries : [];
+        if (mine.ok && sameUser && prev.myEntries.length > 0) {
+          const map = new Map<string, (typeof mine.data)[number]>();
+          for (const e of mine.data) map.set(`${e.userId}|${e.date}`, e);
+          for (const e of prev.myEntries) {
+            const k = `${e.userId}|${e.date}`;
+            const remote = map.get(k);
+            if (!remote || e.updatedAt > remote.updatedAt) map.set(k, e);
+          }
+          myEntries = [...map.values()];
+        }
+        return {
+          myEntries,
+          presence: presence.ok
+            ? presence.data
+            : sameUser
+              ? prev.presence
+              : [],
+          loadedFor: sessionUserId,
+        };
       });
       if (avatars.ok) setRemoteAvatars(avatars.data);
       setRemoteTick((t) => t + 1);
@@ -472,7 +491,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
           : [...prevNoLight, key];
 
       if (supabaseEnabled) {
-        const res = await upsertQtEntry(sessionUserId, date, trimmed);
+        let res: Awaited<ReturnType<typeof upsertQtEntry>>;
+        try {
+          res = await upsertQtEntry(sessionUserId, date, trimmed);
+        } catch (err) {
+          const detail =
+            err instanceof Error ? err.message : "네트워크 오류";
+          return { ok: false, message: `저장 실패: ${detail}` };
+        }
         if (!res.ok) {
           return {
             ok: false,

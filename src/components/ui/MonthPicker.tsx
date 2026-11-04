@@ -10,7 +10,7 @@ export function MonthPicker({
   max,
   monthOnly = false,
   light = false,
-  /** Ivory rounded-full pill; black ink (overrides `light`). */
+  /** Ivory mirrored capsule; black ink (overrides `light`). Shared by 나의 QT / 우리순 / 랭킹. */
   capsule = false,
 }: {
   value: string;
@@ -30,13 +30,13 @@ export function MonthPicker({
   // Color only: capsule → black on ivory; light → white on sky; else black.
   const onLight = light && !capsule;
   const ink = onLight ? "text-white" : "text-black";
-  const chevronClass = `flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-transparent ${ink} shadow-none transition disabled:opacity-30`;
+  const chevronClass = `relative z-[1] flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-transparent ${ink} shadow-none transition disabled:opacity-30`;
 
   return (
     <div className="flex items-center justify-center">
       <div
         className={`inline-flex items-center gap-1.5 ${
-          capsule ? "rounded-full bg-ivory px-3 py-1.5 shadow-none" : ""
+          capsule ? "month-capsule relative px-3 py-1.5" : ""
         }`}
       >
         <button
@@ -48,7 +48,7 @@ export function MonthPicker({
         >
           <ChevronLeft size={18} strokeWidth={2.5} />
         </button>
-        <p className={`type-month whitespace-nowrap text-center ${ink}`}>
+        <p className={`relative z-[1] type-month whitespace-nowrap text-center ${ink}`}>
           {monthOnly ? formatMonthOnly(value) : formatMonthLabel(value)}
         </p>
         <button

@@ -83,11 +83,17 @@ export default function HomePage() {
         </SoftCard>
 
         <QtEntryForm
-          key={`home-qt-${today}-${todayEntry?.updatedAt ?? "new"}`}
+          key={`home-qt-${today}`}
           initial={todayEntry}
           onSave={async (fields) => {
-            const res = await saveEntry(today, fields);
-            showToast(res.message);
+            try {
+              const res = await saveEntry(today, fields);
+              showToast(res.message);
+            } catch (err) {
+              const detail =
+                err instanceof Error ? err.message : "알 수 없는 오류";
+              showToast(`저장 실패: ${detail}`);
+            }
           }}
         />
       </section>

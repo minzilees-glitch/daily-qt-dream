@@ -149,7 +149,7 @@ function Field({
     <div>
       <label
         htmlFor={id}
-        className="type-section mb-1.5 block text-text-main"
+        className="type-field-label mb-1.5 block text-text-main"
       >
         {label}
       </label>
