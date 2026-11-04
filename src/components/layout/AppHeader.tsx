@@ -39,7 +39,7 @@ export function AppHeader({
             {title}
           </p>
           <p
-            className={`type-display mt-1.5 ${
+            className={`type-page-title mt-1.5 ${
               light ? "text-white" : "text-text-main"
             }`}
             suppressHydrationWarning

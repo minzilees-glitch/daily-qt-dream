@@ -95,25 +95,56 @@ export async function upsertQtEntry(
   if (!sb) return { ok: false, error: "Supabase not configured" };
 
   const updatedAt = new Date().toISOString();
-  const { data, error } = await sb
+  const row = {
+    user_id: userId,
+    entry_date: date,
+    meditation: fields.meditation,
+    verse: fields.verse,
+    decision_obedience: fields.decisionObedience,
+    prayer: fields.prayer,
+    updated_at: updatedAt,
+  };
+
+  const first = await sb
     .from("qt_entries")
-    .upsert(
-      {
-        user_id: userId,
-        entry_date: date,
-        meditation: fields.meditation,
-        verse: fields.verse,
-        decision_obedience: fields.decisionObedience,
-        prayer: fields.prayer,
-        updated_at: updatedAt,
-      },
-      { onConflict: "user_id,entry_date" },
-    )
+    .upsert(row, { onConflict: "user_id,entry_date" })
     .select(ENTRY_SELECT)
     .single();
 
-  if (error) return { ok: false, error: error.message };
-  return { ok: true, data: mapEntry(data) };
+  if (!first.error) return { ok: true, data: mapEntry(first.data) };
+
+  // Production may lag the decision_obedience migration — retry without it
+  // so home/history saves still persist meditation/verse/prayer.
+  const missingDecisionCol =
+    /decision_obedience/i.test(first.error.message) ||
+    first.error.code === "PGRST204";
+  if (!missingDecisionCol) return { ok: false, error: first.error.message };
+
+  const legacySelect =
+    "user_id, entry_date, meditation, verse, prayer, updated_at";
+  const legacyRow = {
+    user_id: row.user_id,
+    entry_date: row.entry_date,
+    meditation: row.meditation,
+    verse: row.verse,
+    prayer: row.prayer,
+    updated_at: row.updated_at,
+  };
+  const second = await sb
+    .from("qt_entries")
+    // Legacy schema without decision_obedience — cast for Typed client.
+    .upsert(legacyRow as typeof row, { onConflict: "user_id,entry_date" })
+    .select(legacySelect)
+    .single();
+
+  if (second.error) return { ok: false, error: second.error.message };
+  return {
+    ok: true,
+    data: mapEntry({
+      ...second.data,
+      decision_obedience: fields.decisionObedience,
+    }),
+  };
 }
 
 export async function deleteQtEntry(

@@ -163,7 +163,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             }}
             min={minYm}
             max={maxYm}
-            light
+            capsule
           />
         </div>
       </section>
@@ -301,9 +301,15 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
             initial={selectedEntry}
             onSave={async (fields) => {
-              const res = await saveEntry(selected, fields);
-              showToast(res.message);
-              if (res.ok) setEditing(false);
+              try {
+                const res = await saveEntry(selected, fields);
+                showToast(res.message);
+                if (res.ok) setEditing(false);
+              } catch (err) {
+                const detail =
+                  err instanceof Error ? err.message : "알 수 없는 오류";
+                showToast(`저장 실패: ${detail}`);
+              }
             }}
           />
         ) : null}
@@ -316,8 +322,14 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               key={`hist-new-${selected}`}
               initial={null}
               onSave={async (fields) => {
-                const res = await saveEntry(selected, fields);
-                showToast(res.message);
+                try {
+                  const res = await saveEntry(selected, fields);
+                  showToast(res.message);
+                } catch (err) {
+                  const detail =
+                    err instanceof Error ? err.message : "알 수 없는 오류";
+                  showToast(`저장 실패: ${detail}`);
+                }
               }}
             />
           )
