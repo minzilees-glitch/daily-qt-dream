@@ -408,8 +408,10 @@ a {
   background: var(--gradient-hero-spread);
 }
 
-/* Primary content frames — frosted ivory glass (SoftCard + soft-card rows) */
+/* Primary content frames — ivory glass + same specular mirror as month capsules */
 .soft-card {
+  position: relative;
+  overflow: hidden;
   background: var(--frame-glass-bg);
   border: 1px solid var(--frame-glass-border);
   border-radius: var(--radius-card);
@@ -417,13 +419,29 @@ a {
   backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.2);
   -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.2);
 }
-/* SkyWalkers photo card keeps opaque scene fill — not ivory glass */
+.soft-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--frame-mirror-sheen);
+  pointer-events: none;
+  z-index: 0;
+}
+.soft-card > * {
+  position: relative;
+  z-index: 1;
+}
+/* SkyWalkers photo card keeps opaque scene fill — no ivory glass / mirror */
 .soft-card.sky-group-card {
   background: #9fd0f5;
   border: none;
   box-shadow: var(--shadow-soft);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+}
+.soft-card.sky-group-card::after {
+  display: none;
 }
 
 /* Bottom nav capsule — translucent sky/CTA glass + blur; float shadow stays */
