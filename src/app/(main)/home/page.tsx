@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
+import { SoftCard } from "@/components/ui/SoftCard";
 import { LightIcon } from "@/components/ui/LightIcon";
 import { Toast } from "@/components/ui/Toast";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
@@ -64,18 +65,14 @@ export default function HomePage() {
           </span>
         </h2>
 
-        <ReadingPassageBlock
-          reading={reading}
-          label="본문"
-          embedded
-          defaultExpanded
-        />
-
-        <div
-          className="h-2 bg-[#D8DEE6] shadow-none"
-          role="separator"
-          aria-hidden
-        />
+        <SoftCard className="!bg-white" padding="p-5">
+          <ReadingPassageBlock
+            reading={reading}
+            label="본문"
+            embedded
+            defaultExpanded
+          />
+        </SoftCard>
 
         <QtEntryForm
           key={`home-qt-${today}-${todayEntry?.updatedAt ?? "new"}`}
