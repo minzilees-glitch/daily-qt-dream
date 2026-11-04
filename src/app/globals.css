@@ -94,27 +94,25 @@
   --nav-glass-bg: rgba(0, 140, 255, 0.52);
   --nav-glass-border: rgba(255, 255, 255, 0.28);
   --nav-glass-blur: 18px;
-  /* SoftCard / primary frames — ivory glass (shared with month capsule tint) */
+  /* SoftCard + month capsule — ivory glass + shared specular mirror sheen */
   --frame-glass-bg: rgba(250, 248, 243, 0.72);
   --frame-glass-border: rgba(255, 255, 255, 0.55);
   --frame-glass-blur: 16px;
   --frame-glass-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.75),
-    0 8px 24px rgba(0, 70, 140, 0.06);
-  /* MonthPicker ivory capsule — soft mirror sheen (sky-tinted, no purple) */
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(36, 55, 70, 0.05),
+    0 8px 24px rgba(0, 70, 140, 0.08);
+  --frame-mirror-sheen: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.22) 38%,
+    rgba(255, 255, 255, 0) 58%
+  );
   --month-capsule-bg: var(--frame-glass-bg);
   --month-capsule-border: var(--frame-glass-border);
   --month-capsule-blur: var(--frame-glass-blur);
-  --month-capsule-sheen: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(255, 255, 255, 0.18) 40%,
-    rgba(255, 255, 255, 0) 58%
-  );
-  --month-capsule-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(36, 55, 70, 0.05),
-    0 6px 16px rgba(0, 70, 140, 0.1);
+  --month-capsule-sheen: var(--frame-mirror-sheen);
+  --month-capsule-shadow: var(--frame-glass-shadow);
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
