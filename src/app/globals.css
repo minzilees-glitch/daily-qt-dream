@@ -212,7 +212,7 @@
 }
 .type-page-title {
   font-size: var(--fs-page);
-  font-weight: 700;
+  font-weight: 600; /* one step down from 700 */
   letter-spacing: var(--tracking-title);
 }
 .type-display {
