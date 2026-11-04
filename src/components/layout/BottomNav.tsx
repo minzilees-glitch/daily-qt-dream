@@ -43,8 +43,8 @@ export function BottomNav() {
               <span
                 className={`max-w-full truncate text-[11px] tracking-tight ${
                   active
-                    ? "font-semibold text-[#008CFF]"
-                    : "font-medium text-[#008CFF]/70"
+                    ? "font-bold text-[#008CFF]"
+                    : "font-semibold text-[#008CFF]/70"
                 }`}
               >
                 {label}

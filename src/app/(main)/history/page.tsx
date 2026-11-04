@@ -139,7 +139,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
   const selectedCompleted = isCompleted(currentUser.id, selected);
   const selectedEntry = getEntry(currentUser.id, selected);
-  const future = isFutureDate(selected);
+  const today = todaySeoul();
+  const future = isFutureDate(selected, today);
+  const past = selected < today;
   const reading = getReadingForDate(selected);
   const hasEntry = !!selectedEntry;
 
@@ -228,13 +230,13 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               <p className="mt-1 text-[15px] text-text-secondary">
                 미래 날짜는 완료할 수 없습니다.
               </p>
-            ) : (
+            ) : past ? (
               <p className="mt-1 break-keep text-[13px] leading-relaxed text-text-secondary">
                 빛은 당일 큐티에만 지급됩니다.
                 <br />
                 하지만 지난 큐티는 당신 심령에 남을거에요.
               </p>
-            )}
+            ) : null}
           </div>
 
           {!future ? (

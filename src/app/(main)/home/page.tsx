@@ -108,7 +108,7 @@ export default function HomePage() {
           groupName={group?.name ?? "순"}
         />
 
-        <SoftCard className="animate-fade-up mt-7 space-y-5" padding="p-6">
+        <SoftCard className="animate-fade-up mt-7 space-y-5 !bg-white" padding="p-6">
           <h2 className="flex items-center gap-1.5 text-[17px] font-semibold tracking-[0.04em] text-text-main">
             <LightIcon
               active={doneToday}
