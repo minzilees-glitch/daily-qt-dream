@@ -389,14 +389,11 @@ a {
   background: var(--gradient-hero-spread);
 }
 
-/* Primary content frames — frosted ivory glass (SoftCard + soft-card rows) */
+/* Primary content frames — solid ivory (no glass) */
 .soft-card {
-  background: var(--frame-glass-bg);
-  border: 1px solid var(--frame-glass-border);
+  background: var(--ivory);
   border-radius: var(--radius-card);
-  box-shadow: var(--frame-glass-shadow);
-  backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.2);
-  -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.2);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Bottom nav capsule — translucent sky/CTA glass + blur; float shadow stays */
@@ -413,23 +410,12 @@ a {
   stroke: currentColor;
 }
 
-/* Shared MonthPicker ivory capsule (history / group / ranking) */
+/* Shared MonthPicker ivory capsule — solid (no glass / sheen) */
 .month-capsule {
   border-radius: var(--radius-pill);
-  background: var(--month-capsule-bg);
-  border: 1px solid var(--month-capsule-border);
-  backdrop-filter: blur(var(--month-capsule-blur)) saturate(1.25);
-  -webkit-backdrop-filter: blur(var(--month-capsule-blur)) saturate(1.25);
-  box-shadow: var(--month-capsule-shadow);
+  background: var(--ivory);
+  box-shadow: none;
   overflow: hidden;
-}
-.month-capsule::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--month-capsule-sheen);
-  pointer-events: none;
 }
 
 .phone-shell {
