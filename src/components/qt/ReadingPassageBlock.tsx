@@ -42,10 +42,10 @@ export function ReadingPassageBlock({
 }: {
   reading: QtReadingRange;
   label?: string;
-  /** When true, verse body starts fully expanded (나의 QT). */
+  /** When true, verse body starts fully expanded (나의 QT / Home). */
   defaultExpanded?: boolean;
   /**
-   * When true (inside SoftCard): same ivory surface as the card —
+   * When true (inside SoftCard): same surface as the card —
    * no sky wash / nested panel; hairline divider before verse body.
    */
   embedded?: boolean;
@@ -69,21 +69,12 @@ export function ReadingPassageBlock({
       <ReadingPassageHeader reading={reading} label={label} />
 
       {passage ? (
-        <div
-          className={
-            embedded
-              ? "mt-3 border-t border-[#e5eaf0] pt-3"
-              : "mt-3 border-t border-white/70 pt-3"
-          }
-        >
-          <p className="text-[16px] leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
-            {renderPassage(shown)}
-          </p>
+        <>
           {needsToggle ? (
             <button
               type="button"
               onClick={() => setExpanded((v) => !v)}
-              className="mt-3 flex w-full items-center justify-center bg-transparent p-0 text-cta shadow-none transition hover:brightness-95"
+              className="mt-2 flex w-full items-center justify-center bg-transparent p-0 text-cta shadow-none transition hover:brightness-95"
               aria-expanded={expanded}
               aria-label={expanded ? "본문 접기" : "본문 더보기"}
             >
@@ -94,7 +85,19 @@ export function ReadingPassageBlock({
               )}
             </button>
           ) : null}
-        </div>
+
+          <div
+            className={
+              embedded
+                ? "mt-3 border-t border-[#e5eaf0] pt-3"
+                : "mt-3 border-t border-white/70 pt-3"
+            }
+          >
+            <p className="text-[16px] leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
+              {renderPassage(shown)}
+            </p>
+          </div>
+        </>
       ) : null}
     </div>
   );

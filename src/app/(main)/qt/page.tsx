@@ -32,7 +32,7 @@ export default function TodayQtPage() {
       <div className="mb-5 flex items-center gap-2.5">
         <Link
           href="/home"
-          aria-label="홈으로"
+          aria-label="오늘의 QT로"
           className="inline-flex items-center justify-center bg-transparent p-0 shadow-none"
         >
           <ArrowLeft size={22} strokeWidth={1.75} className="text-text-main" />
