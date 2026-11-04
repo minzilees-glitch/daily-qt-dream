@@ -53,7 +53,7 @@ export default function TodayQtPage() {
             showToast(res.message);
             if (res.ok) {
               window.setTimeout(() => {
-                router.push("/home#calendar");
+                router.push("/home");
               }, 650);
             }
           }}
