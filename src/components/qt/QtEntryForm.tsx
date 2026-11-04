@@ -39,10 +39,8 @@ export function QtEntryForm({
   return (
     <div className="space-y-7">
       <p className="text-[13px] leading-relaxed text-text-secondary">
-        묵상 · 구절 · 결단과 순종 · 기도제목을{" "}
-        <span className="font-bold text-text-main opacity-100">
-          전체 합쳐 {QT_MIN_TOTAL_CHARS}자 이상
-        </span>{" "}
+        묵상 · 구절 · 결단과 순종 · 기도제목을 전체 합쳐{" "}
+        <strong className="font-bold">최소</strong> {QT_MIN_TOTAL_CHARS}자 이상
         적어주세요.
         <span
           className={`ml-1.5 tabular-nums ${
@@ -147,17 +145,14 @@ function Field({
   disabled?: boolean;
   rows: number;
 }) {
-  const len = value.trim().length;
   return (
     <div>
-      <div className="mb-1.5 flex items-center justify-between gap-2">
-        <label htmlFor={id} className="text-[17px] font-semibold text-text-main">
-          {label}
-        </label>
-        <span className="text-[12px] tabular-nums text-text-secondary/70">
-          {len}자
-        </span>
-      </div>
+      <label
+        htmlFor={id}
+        className="mb-1.5 block text-[17px] font-semibold text-text-main"
+      >
+        {label}
+      </label>
       <textarea
         id={id}
         value={value}

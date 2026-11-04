@@ -38,6 +38,7 @@ export default function HomePage() {
 
   return (
     <div>
+      {/* Top-section-only wash — same pattern as 우리순; does not grow with scroll content. */}
       <section className="hero-gradient px-5 pb-6">
         <AppHeader
           light
@@ -47,22 +48,31 @@ export default function HomePage() {
           userName={currentUser.name}
           groupName={group?.name ?? "순"}
         />
+      </section>
 
-        <SoftCard className="animate-fade-up mt-7 space-y-5 !bg-white" padding="p-5">
-          <h2 className="flex items-center gap-1.5 text-[17px] font-semibold tracking-[0.04em] text-text-main">
-            <LightIcon
-              active={doneToday}
-              tone={doneToday ? "active" : "inactive"}
-              size={20}
-              justEarned={doneToday || lastEarnedDate === today}
-              label=""
+      <section className="animate-fade-up space-y-5 px-5 pb-8 pt-1">
+        <SoftCard className="space-y-5 !bg-white" padding="p-5">
+          <div className="space-y-4">
+            <h2 className="flex items-center gap-1.5 text-[17px] font-semibold tracking-[0.04em] text-text-main">
+              <LightIcon
+                active={doneToday}
+                tone={doneToday ? "active" : "inactive"}
+                size={20}
+                justEarned={doneToday || lastEarnedDate === today}
+                label=""
+              />
+              <span>
+                {doneToday
+                  ? "오늘의 말씀을 묵상했어요."
+                  : "오늘의 말씀이 기다리고 있어요."}
+              </span>
+            </h2>
+            <div
+              className="h-px w-full bg-[#e5eaf0] shadow-none"
+              role="separator"
+              aria-hidden
             />
-            <span>
-              {doneToday
-                ? "오늘의 말씀을 묵상했어요."
-                : "오늘의 말씀이 기다리고 있어요."}
-            </span>
-          </h2>
+          </div>
 
           <ReadingPassageBlock
             reading={reading}
@@ -71,9 +81,7 @@ export default function HomePage() {
             defaultExpanded
           />
         </SoftCard>
-      </section>
 
-      <section className="animate-fade-up space-y-5 px-5 pb-8 pt-1">
         <QtEntryForm
           key={`home-qt-${today}-${todayEntry?.updatedAt ?? "new"}`}
           initial={todayEntry}

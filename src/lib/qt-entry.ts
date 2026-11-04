@@ -33,7 +33,7 @@ export function isEmptyQtEntry(fields: QtEntryFields): boolean {
 
 export function validationMessage(fields: QtEntryFields): string | null {
   if (!isValidQtEntry(fields)) {
-    return "전체 합쳐 10자 이상 적어주세요.";
+    return "전체 합쳐 최소 10자 이상 적어주세요.";
   }
   return null;
 }

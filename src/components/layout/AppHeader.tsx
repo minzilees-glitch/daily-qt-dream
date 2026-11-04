@@ -6,7 +6,7 @@ export function AppHeader({
   title,
   subtitle,
   light = false,
-  /** Home: 「오늘은」 + large date, profile photo change top-right. */
+  /** Home: 「오늘은」 + large date; avatar / name / 순 stacked top-right. */
   homeLayout = false,
   dateLabel,
   userName,
@@ -48,8 +48,9 @@ export function AppHeader({
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2.5 pt-0.5">
-          <div className="min-w-0 text-right">
+        <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
+          {showAvatar ? <ProfileAvatarButton light={light} /> : null}
+          <div className="min-w-0 max-w-[7.5rem] text-center">
             <p
               className={`truncate text-[14px] font-semibold tracking-tight ${
                 light ? "text-white" : "text-text-main"
@@ -65,7 +66,6 @@ export function AppHeader({
               {groupName}
             </p>
           </div>
-          {showAvatar ? <ProfileAvatarButton light={light} /> : null}
         </div>
       </header>
     );
