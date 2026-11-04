@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
-import { QT_MIN_CHARS, fieldsFromEntry } from "@/lib/qt-entry";
+import {
+  QT_MIN_TOTAL_CHARS,
+  fieldsFromEntry,
+  totalTrimmedLength,
+} from "@/lib/qt-entry";
 import type { QtEntry } from "@/types";
 
 export function QtEntryForm({
@@ -22,18 +26,33 @@ export function QtEntryForm({
   const seed = fieldsFromEntry(initial);
   const [meditation, setMeditation] = useState(seed.meditation);
   const [verse, setVerse] = useState(seed.verse);
+  const [decisionObedience, setDecisionObedience] = useState(
+    seed.decisionObedience,
+  );
   const [prayer, setPrayer] = useState(seed.prayer);
   const [busy, setBusy] = useState(false);
 
-  const fields = { meditation, verse, prayer };
+  const fields = { meditation, verse, decisionObedience, prayer };
+  const totalLen = totalTrimmedLength(fields);
   const locked = disabled || busy;
 
   return (
     <div className="space-y-7">
-            <p className="text-[13px] leading-relaxed text-text-secondary">
-        묵상 · 구절 · 기도제목 중 하나 이상을{" "}
-        <span className="font-bold text-text-main opacity-100">20자 이상</span>{" "}
+      <p className="text-[13px] leading-relaxed text-text-secondary">
+        묵상 · 구절 · 결단과 순종 · 기도제목을{" "}
+        <span className="font-bold text-text-main opacity-100">
+          전체 합쳐 {QT_MIN_TOTAL_CHARS}자 이상
+        </span>{" "}
         적어주세요.
+        <span
+          className={`ml-1.5 tabular-nums ${
+            totalLen >= QT_MIN_TOTAL_CHARS
+              ? "text-text-main"
+              : "text-text-secondary/70"
+          }`}
+        >
+          (지금 {totalLen}자)
+        </span>
       </p>
 
       <Field
@@ -53,6 +72,15 @@ export function QtEntryForm({
         disabled={locked}
         rows={3}
         onChange={setVerse}
+      />
+      <Field
+        id="decisionObedience"
+        label="오늘 나의 결단과 순종"
+        placeholder="오늘 결단하고 순종할 것을 적어보세요."
+        value={decisionObedience}
+        disabled={locked}
+        rows={3}
+        onChange={setDecisionObedience}
       />
       <Field
         id="prayer"
@@ -126,11 +154,7 @@ function Field({
         <label htmlFor={id} className="text-[17px] font-semibold text-text-main">
           {label}
         </label>
-        <span
-          className={`text-[12px] tabular-nums ${
-            len >= QT_MIN_CHARS ? "text-text-main" : "text-text-secondary/70"
-          }`}
-        >
+        <span className="text-[12px] tabular-nums text-text-secondary/70">
           {len}자
         </span>
       </div>

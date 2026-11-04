@@ -1,39 +1,50 @@
 import type { QtEntry, QtEntryFields } from "@/types";
 
-export const QT_MIN_CHARS = 20;
+/** Combined trimmed length of all QT fields must be ≥ this. */
+export const QT_MIN_TOTAL_CHARS = 10;
 
 export function trimFields(fields: QtEntryFields): QtEntryFields {
   return {
     meditation: fields.meditation.trim(),
     verse: fields.verse.trim(),
+    decisionObedience: fields.decisionObedience.trim(),
     prayer: fields.prayer.trim(),
   };
 }
 
-/** At least one field must be ≥ QT_MIN_CHARS after trim. */
-export function isValidQtEntry(fields: QtEntryFields): boolean {
+export function totalTrimmedLength(fields: QtEntryFields): number {
   const t = trimFields(fields);
   return (
-    t.meditation.length >= QT_MIN_CHARS ||
-    t.verse.length >= QT_MIN_CHARS ||
-    t.prayer.length >= QT_MIN_CHARS
+    t.meditation.length +
+    t.verse.length +
+    t.decisionObedience.length +
+    t.prayer.length
   );
 }
 
+/** All QT text fields combined (trimmed) must be ≥ QT_MIN_TOTAL_CHARS. */
+export function isValidQtEntry(fields: QtEntryFields): boolean {
+  return totalTrimmedLength(fields) >= QT_MIN_TOTAL_CHARS;
+}
+
 export function isEmptyQtEntry(fields: QtEntryFields): boolean {
-  const t = trimFields(fields);
-  return !t.meditation && !t.verse && !t.prayer;
+  return totalTrimmedLength(fields) === 0;
 }
 
 export function validationMessage(fields: QtEntryFields): string | null {
-  if (isEmptyQtEntry(fields) || !isValidQtEntry(fields)) {
-    return "묵상 · 구절 · 기도제목 중 하나 이상을 20자 이상 적어주세요.";
+  if (!isValidQtEntry(fields)) {
+    return "전체 합쳐 10자 이상 적어주세요.";
   }
   return null;
 }
 
 export function emptyFields(): QtEntryFields {
-  return { meditation: "", verse: "", prayer: "" };
+  return {
+    meditation: "",
+    verse: "",
+    decisionObedience: "",
+    prayer: "",
+  };
 }
 
 export function fieldsFromEntry(entry?: QtEntry | null): QtEntryFields {
@@ -41,6 +52,7 @@ export function fieldsFromEntry(entry?: QtEntry | null): QtEntryFields {
   return {
     meditation: entry.meditation ?? "",
     verse: entry.verse ?? "",
+    decisionObedience: entry.decisionObedience ?? "",
     prayer: entry.prayer ?? "",
   };
 }
@@ -58,6 +70,7 @@ export function normalizeEntry(
     date: raw.date ?? "",
     meditation,
     verse: raw.verse ?? "",
+    decisionObedience: raw.decisionObedience ?? "",
     prayer: raw.prayer ?? "",
     updatedAt: raw.updatedAt ?? new Date().toISOString(),
   };

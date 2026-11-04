@@ -73,6 +73,7 @@ export default function HomePage() {
     !!todayEntry &&
     (todayEntry.meditation.trim().length > 0 ||
       todayEntry.verse.trim().length > 0 ||
+      todayEntry.decisionObedience.trim().length > 0 ||
       todayEntry.prayer.trim().length > 0);
 
   const hasQtOnDate = (date: string) =>
@@ -144,6 +145,16 @@ export default function HomePage() {
                   </p>
                   <p className="mt-1 whitespace-pre-wrap text-[18px] leading-relaxed text-text-main">
                     {todayEntry.verse}
+                  </p>
+                </div>
+              ) : null}
+              {todayEntry.decisionObedience.trim() ? (
+                <div>
+                  <p className="text-[15px] font-semibold text-text-main">
+                    오늘 나의 결단과 순종
+                  </p>
+                  <p className="mt-1 whitespace-pre-wrap text-[18px] leading-relaxed text-text-main">
+                    {todayEntry.decisionObedience}
                   </p>
                 </div>
               ) : null}

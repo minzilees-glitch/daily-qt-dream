@@ -32,13 +32,15 @@ export interface QtCompletion {
 
 /**
  * Daily QT entry. Completion requires saving with validation
- * (at least one field trimmed length ≥ 20).
+ * (combined trimmed length of all text fields ≥ 10).
  */
 export interface QtEntry {
   userId: UserId;
   date: string;
   meditation: string;
   verse: string;
+  /** 「오늘 나의 결단과 순종」 */
+  decisionObedience: string;
   prayer: string;
   updatedAt: string;
 }
@@ -82,5 +84,7 @@ export interface DayStatus {
 export interface QtEntryFields {
   meditation: string;
   verse: string;
+  /** 「오늘 나의 결단과 순종」 */
+  decisionObedience: string;
   prayer: string;
 }
