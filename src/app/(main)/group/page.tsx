@@ -61,6 +61,7 @@ export default function GroupPage() {
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
             light
+            capsule
           />
         </div>
         <div className="mt-5 animate-fade-up">

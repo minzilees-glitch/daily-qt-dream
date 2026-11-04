@@ -37,6 +37,7 @@ export default function RankingPage() {
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
             light
+            capsule
           />
         </div>
         <p className="mt-5 text-center text-[15px] leading-relaxed text-text-main">

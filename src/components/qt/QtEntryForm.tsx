@@ -39,7 +39,7 @@ export function QtEntryForm({
   return (
     <div className="space-y-7">
       <p className="text-[13px] leading-relaxed text-text-secondary">
-        묵상 · 구절 · 결단과 순종 · 기도제목을 전체 합쳐{" "}
+        구절 · 묵상 · 결단과 순종 · 기도제목을 전체 합쳐{" "}
         <strong className="font-bold">최소</strong> {QT_MIN_TOTAL_CHARS}자 이상
         적어주세요.
         <span
@@ -54,15 +54,6 @@ export function QtEntryForm({
       </p>
 
       <Field
-        id="meditation"
-        label="오늘 나의 묵상"
-        placeholder="오늘 말씀을 통해 받은 은혜를 적어보세요."
-        value={meditation}
-        disabled={locked}
-        rows={5}
-        onChange={setMeditation}
-      />
-      <Field
         id="verse"
         label="오늘 나의 마음에 남는 구절"
         placeholder="기억에 남는 구절을 적어보세요."
@@ -70,6 +61,15 @@ export function QtEntryForm({
         disabled={locked}
         rows={3}
         onChange={setVerse}
+      />
+      <Field
+        id="meditation"
+        label="오늘 나의 묵상"
+        placeholder="오늘 말씀을 통해 받은 은혜를 적어보세요."
+        value={meditation}
+        disabled={locked}
+        rows={5}
+        onChange={setMeditation}
       />
       <Field
         id="decisionObedience"
