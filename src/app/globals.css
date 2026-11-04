@@ -196,6 +196,11 @@ a {
   min-height: 13.5rem;
 }
 
+/* Home / history: hug header content so SoftCards & calendar are not shoved down. */
+.hero-gradient.hero-gradient-fit {
+  min-height: 0;
+}
+
 .soft-card {
   background: var(--ivory);
   border-radius: var(--radius-card);
