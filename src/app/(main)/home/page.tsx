@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { SoftCard } from "@/components/ui/SoftCard";
 import { LightIcon } from "@/components/ui/LightIcon";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { QtCalendar } from "@/components/qt/QtCalendar";
@@ -109,7 +108,7 @@ export default function HomePage() {
           groupName={group?.name ?? "순"}
         />
 
-        <SoftCard className="animate-fade-up mt-7 space-y-5 !bg-white" padding="p-6">
+        <div className="animate-fade-up mt-7 space-y-5">
           <h2 className="flex items-center gap-1.5 text-[17px] font-semibold tracking-[0.04em] text-text-main">
             <LightIcon
               active={doneToday}
@@ -193,11 +192,11 @@ export default function HomePage() {
               </>
             )}
           </Link>
-        </SoftCard>
+        </div>
       </section>
 
       <section className="space-y-4 px-5 pb-2 pt-1">
-        <SoftCard id="calendar" className="scroll-mt-6 space-y-3" padding="p-4">
+        <div id="calendar" className="scroll-mt-6 space-y-3">
           <MonthPicker
             value={calYm}
             onChange={(ym) => {
@@ -215,7 +214,7 @@ export default function HomePage() {
             onSelect={onSelectDate}
             justEarnedDate={lastEarnedDate}
           />
-        </SoftCard>
+        </div>
 
         {pastEmptyReading && selectedDate ? (
           <div className="animate-fade-up space-y-3">
