@@ -196,7 +196,7 @@ a {
   min-height: 13.5rem;
 }
 
-/* Landing home: hug header height so SoftCards are not shoved down by empty band. */
+/* Home / history: hug header content so SoftCards & calendar are not shoved down. */
 .hero-gradient.hero-gradient-fit {
   min-height: 0;
 }
