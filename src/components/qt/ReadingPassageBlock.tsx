@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { QtReadingRange } from "@/types";
 import { ReadingPassageHeader } from "@/components/qt/ReadingPassageHeader";
 
-const PREVIEW_CHARS = 140;
 /** Body is text-[16px]; verse nums are 1pt smaller. */
 const VERSE_NUM_CLASS = "text-[15px] opacity-60";
 
@@ -46,17 +45,13 @@ export function ReadingPassageBlock({
   defaultExpanded?: boolean;
   /**
    * When true (inside SoftCard): same surface as the card —
-   * no sky wash / nested panel; hairline divider before verse body.
+   * no sky wash / nested panel.
    */
   embedded?: boolean;
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const passage = reading.passage?.trim() ?? "";
-  const needsToggle = passage.length > PREVIEW_CHARS;
-  const shown = useMemo(() => {
-    if (expanded || !needsToggle) return passage;
-    return `${passage.slice(0, PREVIEW_CHARS).trimEnd()}…`;
-  }, [expanded, needsToggle, passage]);
+  const hasPassage = passage.length > 0;
 
   return (
     <div
@@ -68,35 +63,29 @@ export function ReadingPassageBlock({
     >
       <ReadingPassageHeader reading={reading} label={label} />
 
-      {passage ? (
+      {hasPassage ? (
         <>
-          {needsToggle ? (
-            <button
-              type="button"
-              onClick={() => setExpanded((v) => !v)}
-              className="mt-2 flex w-full items-center justify-center bg-transparent p-0 text-cta shadow-none transition hover:brightness-95"
-              aria-expanded={expanded}
-              aria-label={expanded ? "본문 접기" : "본문 더보기"}
-            >
-              {expanded ? (
-                <ChevronUp size={20} strokeWidth={2} aria-hidden />
-              ) : (
-                <ChevronDown size={20} strokeWidth={2} aria-hidden />
-              )}
-            </button>
-          ) : null}
-
-          <div
-            className={
-              embedded
-                ? "mt-3 border-t border-[#e5eaf0] pt-3"
-                : "mt-3 border-t border-white/70 pt-3"
-            }
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="mt-2 flex w-full items-center justify-center bg-transparent p-0 text-cta shadow-none transition hover:brightness-95"
+            aria-expanded={expanded}
+            aria-label={expanded ? "본문 접기" : "본문 더보기"}
           >
-            <p className="text-[16px] leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
-              {renderPassage(shown)}
-            </p>
-          </div>
+            {expanded ? (
+              <ChevronUp size={20} strokeWidth={2} aria-hidden />
+            ) : (
+              <ChevronDown size={20} strokeWidth={2} aria-hidden />
+            )}
+          </button>
+
+          {expanded ? (
+            <div className="mt-3">
+              <p className="text-[16px] leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
+                {renderPassage(passage)}
+              </p>
+            </div>
+          ) : null}
         </>
       ) : null}
     </div>
