@@ -38,11 +38,17 @@ export function ReadingPassageBlock({
   reading,
   label = "본문",
   defaultExpanded = false,
+  embedded = false,
 }: {
   reading: QtReadingRange;
   label?: string;
   /** When true, verse body starts fully expanded (나의 QT). */
   defaultExpanded?: boolean;
+  /**
+   * When true (inside SoftCard), sky wash is a band on one surface —
+   * no nested rounded card panel.
+   */
+  embedded?: boolean;
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const passage = reading.passage?.trim() ?? "";
@@ -53,7 +59,13 @@ export function ReadingPassageBlock({
   }, [expanded, needsToggle, passage]);
 
   return (
-    <div className="rounded-[20px] bg-sky-light px-4 py-4 shadow-none">
+    <div
+      className={
+        embedded
+          ? "-mx-6 bg-sky-light px-6 py-4 shadow-none"
+          : "rounded-[20px] bg-sky-light px-4 py-4 shadow-none"
+      }
+    >
       <ReadingPassageHeader reading={reading} label={label} />
 
       {passage ? (

@@ -123,10 +123,10 @@ export default function HomePage() {
                 : "오늘의 말씀이 기다리고 있어요."}
             </span>
           </h2>
-          <ReadingPassageBlock reading={reading} label="본문" />
+          <ReadingPassageBlock reading={reading} label="본문" embedded />
 
           {showTodayWriting && todayEntry ? (
-            <div className="space-y-7 rounded-[20px] bg-sky-light/70 px-4 py-4">
+            <div className="space-y-7">
               {todayEntry.meditation.trim() ? (
                 <div>
                   <p className="text-[15px] font-semibold text-text-main">
