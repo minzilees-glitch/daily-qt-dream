@@ -32,9 +32,7 @@ export function MonthPicker({
   const canNext = !max || next <= max;
   // Capsule mirrors 나의 QT `size="range"` metrics exactly.
   const isRange = size === "range" || capsule;
-  const labelClass = isRange
-    ? "text-[17px] font-semibold tracking-[0.02em]"
-    : "text-[25px] font-semibold tracking-[0.02em]";
+  const labelClass = isRange ? "type-month" : "type-month-lg";
   const chevronBox = isRange ? "h-8 w-8" : "h-9 w-9";
   const chevronIcon = isRange ? 18 : 22;
   // Capsule: black on ivory. Otherwise light = white on sky.

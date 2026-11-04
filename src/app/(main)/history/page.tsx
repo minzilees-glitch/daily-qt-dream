@@ -243,7 +243,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 미래 날짜는 완료할 수 없습니다.
               </p>
             ) : past ? (
-              <p className="mt-1 break-keep text-[13px] leading-relaxed text-text-secondary">
+              <p className="type-caption mt-1 break-keep text-text-secondary">
                 지난 큐티완료는 빛을 획득할 수 없습니다.
                 <br />
                 그러나 지난 큐티는 당신 심령에 남을거에요.

@@ -14,15 +14,15 @@ type Tone = "active" | "inactive" | "onDark" | "white" | "blue" | "sky";
 function toneColor(tone: Tone): string {
   switch (tone) {
     case "active":
-      return "#F5C518";
+      return "var(--light-yellow)";
     case "onDark":
-      return "#FFE066";
+      return "var(--light-yellow-soft)";
     case "white":
-      return "#FFFFFF";
+      return "var(--white)";
     case "blue":
-      return "#008CFF";
+      return "var(--cta)";
     case "sky":
-      return "#5FBCFC";
+      return "var(--sky)";
     case "inactive":
     default:
       return "#C2CAD2";

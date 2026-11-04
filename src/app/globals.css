@@ -1,22 +1,74 @@
 @import "tailwindcss";
 
 :root {
+  /* ——— Color ——— */
   --sky: #5fbcfc;
   --sky-secondary: #83aeee;
   --sky-light: #e8f3fb;
-  /* Primary CTA (buttons) — distinct from nav/chrome sky */
+  /* Primary CTA (buttons / nav / selected day) — distinct from chrome sky */
   --cta: #008cff;
   /* Surface swap (Phase 1 polish): page = white, cards = ivory */
   --ivory: #faf8f3;
   --white: #ffffff;
   --text-main: #243746;
   --text-secondary: #768896;
+  /* Light yellow (빛 icon active) — brand-used, previously hardcoded */
+  --light-yellow: #f5c518;
+  --light-yellow-soft: #ffe066;
+  --danger: #e35d5d;
+  --hairline: #e5eaf0;
+  --divider-strong: #d8dee6;
+  --page-chrome: #eef3f7;
+
+  /* ——— Gradients ——— */
   --gradient-hero: linear-gradient(180deg, #5fbcfc 0%, #d9edf9 58%, #ffffff 100%);
-  /* Shadows removed app-wide */
+  /* Decorative taller wash for /home + /history (see .hero-gradient-spread) */
+  --gradient-hero-spread: linear-gradient(
+    180deg,
+    #5fbcfc 0%,
+    #5fbcfc 16%,
+    #9fd4fc 45%,
+    #d9edf9 72%,
+    #ffffff 100%
+  );
+
+  /* ——— Typography (sizes already common in the app) ——— */
+  --fs-nav: 11px;
+  --fs-caption: 13px;
+  --fs-label: 14px;
+  --fs-body-sm: 15px;
+  --fs-body: 16px;
+  --fs-section: 17px;
+  --fs-body-lg: 18px;
+  --fs-stat: 19px;
+  --fs-display: 23px;
+  --fs-month-lg: 25px;
+  --fs-page: 26px;
+  --lh-relaxed: 1.625;
+  --tracking-title: 0.04em;
+  --tracking-label: 0.06em;
+  --tracking-month: 0.02em;
+
+  /* ——— Radii ——— */
+  --radius-day: 8px;
+  --radius-input: 12px;
+  --radius-card: 16px;
+  --radius-panel: 20px;
+  --radius-btn: 9999px;
+  --radius-shell: 32px;
+
+  /* ——— Spacing (light) ——— */
+  --space-page-x: 1.25rem; /* px-5 */
+  --space-card: 1.25rem; /* SoftCard p-5 */
+  --space-stack-sm: 1rem; /* space-y-4 */
+  --space-stack: 1.25rem; /* space-y-5 */
+  --space-stack-lg: 1.75rem; /* space-y-7 form fields */
+
+  /* ——— Effects: flat UI; bottom nav is the known exception ——— */
   --shadow-soft: none;
   --shadow-nav: none;
-  --radius-card: 16px;
-  --radius-btn: 9999px;
+  --shadow-nav-float: 0 10px 30px rgba(0, 60, 130, 0.42);
+
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 480px;
@@ -32,9 +84,93 @@
   --color-pure-white: var(--white);
   --color-text-main: var(--text-main);
   --color-text-secondary: var(--text-secondary);
+  --color-light-yellow: var(--light-yellow);
+  --color-light-yellow-soft: var(--light-yellow-soft);
+  --color-danger: var(--danger);
+  --color-hairline: var(--hairline);
+  --color-divider-strong: var(--divider-strong);
   --font-sans:
     "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR",
     sans-serif;
+  /* Font-size utilities: text-caption, text-page, … */
+  --text-nav: var(--fs-nav);
+  --text-caption: var(--fs-caption);
+  --text-label: var(--fs-label);
+  --text-body-sm: var(--fs-body-sm);
+  --text-body: var(--fs-body);
+  --text-section: var(--fs-section);
+  --text-body-lg: var(--fs-body-lg);
+  --text-stat: var(--fs-stat);
+  --text-display: var(--fs-display);
+  --text-month-lg: var(--fs-month-lg);
+  --text-page: var(--fs-page);
+  --tracking-title: 0.04em;
+  --tracking-label: 0.06em;
+  --tracking-month: 0.02em;
+  --radius-day: 8px;
+  --radius-input: 12px;
+  --radius-card: 16px;
+  --radius-panel: 20px;
+  --radius-pill: 9999px;
+  --radius-shell: 32px;
+}
+
+/* Role utilities — size + weight + tracking/leading bundled for shared chrome */
+.type-nav {
+  font-size: var(--fs-nav);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.type-caption {
+  font-size: var(--fs-caption);
+  font-weight: 400;
+  line-height: var(--lh-relaxed);
+}
+.type-label {
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+}
+.type-body-sm {
+  font-size: var(--fs-body-sm);
+  font-weight: 400;
+}
+.type-body {
+  font-size: var(--fs-body);
+  font-weight: 400;
+}
+.type-body-lg {
+  font-size: var(--fs-body-lg);
+  font-weight: 400;
+  line-height: var(--lh-relaxed);
+}
+.type-section {
+  font-size: var(--fs-section);
+  font-weight: 600;
+}
+.type-month {
+  font-size: var(--fs-section);
+  font-weight: 600;
+  letter-spacing: var(--tracking-month);
+}
+.type-month-lg {
+  font-size: var(--fs-month-lg);
+  font-weight: 600;
+  letter-spacing: var(--tracking-month);
+}
+.type-page-title {
+  font-size: var(--fs-page);
+  font-weight: 700;
+  letter-spacing: var(--tracking-title);
+}
+.type-display {
+  font-size: var(--fs-display);
+  font-weight: 700;
+  letter-spacing: var(--tracking-month);
+}
+.type-stat {
+  font-size: var(--fs-stat);
+  font-weight: 600;
 }
 
 /* Primary filled CTAs: CTA blue + white label/icons, pill, flat */
@@ -205,20 +341,13 @@ a {
   height: 22rem;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    #5fbcfc 0%,
-    #5fbcfc 16%,
-    #9fd4fc 45%,
-    #d9edf9 72%,
-    #ffffff 100%
-  );
+  background: var(--gradient-hero-spread);
 }
 
 .soft-card {
   background: var(--ivory);
   border-radius: var(--radius-card);
-  box-shadow: none;
+  box-shadow: var(--shadow-soft);
 }
 
 .phone-shell {

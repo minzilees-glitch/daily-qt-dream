@@ -28,8 +28,8 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
     <div className="space-y-7">
       {rows.map((row) => (
         <div key={row.label}>
-          <p className="text-[15px] font-semibold text-text-main">{row.label}</p>
-          <p className="mt-1 whitespace-pre-wrap text-[18px] leading-relaxed text-text-main">
+          <p className="type-body-sm font-semibold text-text-main">{row.label}</p>
+          <p className="type-body-lg mt-1 whitespace-pre-wrap text-text-main">
             {row.value}
           </p>
         </div>

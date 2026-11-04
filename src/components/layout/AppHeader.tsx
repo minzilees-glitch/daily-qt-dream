@@ -39,7 +39,7 @@ export function AppHeader({
             {title}
           </p>
           <p
-            className={`mt-1.5 text-[23px] font-bold leading-snug tracking-[0.02em] ${
+            className={`type-display mt-1.5 leading-snug ${
               light ? "text-white" : "text-text-main"
             }`}
             suppressHydrationWarning
