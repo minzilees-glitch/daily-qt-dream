@@ -153,7 +153,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     <div>
       <section className="hero-gradient px-5 pb-6">
         <PageTitle light>나의 QT</PageTitle>
-        <SoftCard className="mt-5 space-y-4 bg-ivory">
+        <div className="mt-5 space-y-4">
           <MonthPicker
             value={ym}
             onChange={(next) => {
@@ -165,7 +165,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             size="range"
           />
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-[16px] bg-white px-3 py-3 text-center">
+            <div className="rounded-[16px] bg-white/80 px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
               <div className="mt-1 flex justify-center">
                 <LightCount
@@ -176,7 +176,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 />
               </div>
             </div>
-            <div className="rounded-[16px] bg-white px-3 py-3 text-center">
+            <div className="rounded-[16px] bg-white/80 px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">집계 일수</StatLabel>
               <p className="mt-1 text-[19px] font-semibold text-text-main">
                 {stats.possible}일
@@ -208,10 +208,16 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               )}
             </button>
           </div>
-        </SoftCard>
+        </div>
       </section>
 
-      <section className="animate-fade-up space-y-4 px-5 pt-2">
+      <div
+        className="mx-5 h-2 bg-[#D8DEE6] shadow-none"
+        role="separator"
+        aria-hidden
+      />
+
+      <section className="animate-fade-up space-y-4 px-5 pt-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-1.5">
