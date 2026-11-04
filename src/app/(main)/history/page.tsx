@@ -212,7 +212,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       </section>
 
       <div
-        className="mx-5 h-2 bg-[#D8DEE6] shadow-none"
+        className="h-2 w-full bg-[#D8DEE6] shadow-none"
         role="separator"
         aria-hidden
       />
