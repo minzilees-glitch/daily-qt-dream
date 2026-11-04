@@ -46,7 +46,7 @@ export function ReadingPassageBlock({
   defaultExpanded?: boolean;
   /**
    * When true (inside SoftCard): same surface as the card —
-   * no sky wash / nested panel; hairline divider before verse body.
+   * no sky wash / nested panel.
    */
   embedded?: boolean;
 }) {
@@ -86,13 +86,7 @@ export function ReadingPassageBlock({
             </button>
           ) : null}
 
-          <div
-            className={
-              embedded
-                ? "mt-3 border-t border-[#e5eaf0] pt-3"
-                : "mt-3 border-t border-white/70 pt-3"
-            }
-          >
+          <div className="mt-3">
             <p className="text-[16px] leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
               {renderPassage(shown)}
             </p>
