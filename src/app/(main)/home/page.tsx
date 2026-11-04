@@ -195,7 +195,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="space-y-4 px-5 pb-2 pt-1">
+      <div
+        className="mx-5 h-2 bg-[#D8DEE6] shadow-none"
+        role="separator"
+        aria-hidden
+      />
+
+      <section className="space-y-4 px-5 pb-2 pt-5">
         <div id="calendar" className="scroll-mt-6 space-y-3">
           <MonthPicker
             value={calYm}
