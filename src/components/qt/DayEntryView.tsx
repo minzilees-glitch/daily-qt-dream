@@ -15,6 +15,7 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   const rows = [
     { label: "오늘 나의 묵상", value: entry.meditation },
     { label: "오늘 나의 마음에 남는 구절", value: entry.verse },
+    { label: "오늘 나의 결단과 순종", value: entry.decisionObedience },
     { label: "묵상 후 나의 기도제목", value: entry.prayer },
   ].filter((r) => r.value.trim().length > 0);
 

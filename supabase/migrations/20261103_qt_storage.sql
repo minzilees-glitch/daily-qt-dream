@@ -30,6 +30,7 @@ create table if not exists public.qt_entries (
   entry_date date not null,
   meditation text not null default '',
   verse text not null default '',
+  decision_obedience text not null default '',
   prayer text not null default '',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),

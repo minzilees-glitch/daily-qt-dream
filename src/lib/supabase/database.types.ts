@@ -67,6 +67,7 @@ export interface Database {
           entry_date: string;
           meditation: string;
           verse: string;
+          decision_obedience: string;
           prayer: string;
           created_at: string;
           updated_at: string;
@@ -77,6 +78,7 @@ export interface Database {
           entry_date: string;
           meditation?: string;
           verse?: string;
+          decision_obedience?: string;
           prayer?: string;
           created_at?: string;
           updated_at?: string;
@@ -87,6 +89,7 @@ export interface Database {
           entry_date?: string;
           meditation?: string;
           verse?: string;
+          decision_obedience?: string;
           prayer?: string;
           created_at?: string;
           updated_at?: string;

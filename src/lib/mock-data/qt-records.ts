@@ -29,6 +29,12 @@ const PRAYER_SAMPLES = [
   "말씀대로 살아갈 용기와 지혜를 구합니다.",
 ];
 
+const OBEDIENCE_SAMPLES = [
+  "오늘 만난 사람에게 먼저 인사하고 안부를 묻겠습니다.",
+  "말씀에서 받은 은혜를 가족에게 나누겠습니다.",
+  "불평 대신 감사로 하루를 마무리하겠습니다.",
+];
+
 /**
  * Generate QT completions for the last 3 calendar months (Seoul).
  * Participation rates vary by group so ranking is meaningful and verifiable.
@@ -66,7 +72,7 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
 }
 
 /**
- * Every completed day gets a valid QT entry (≥20 chars in at least one field).
+ * Every completed day gets a valid QT entry (combined trimmed fields ≥ 10 chars).
  * Others' entry text is never shown in group UI — only completion counts.
  */
 export function buildEntries(
@@ -86,29 +92,40 @@ export function buildEntries(
     const rng = mulberry32(5000 + idx * 13);
     const dates = byUser.get(user.id) ?? [];
     for (const date of dates) {
-      const mode = Math.floor(rng() * 3);
+      const mode = Math.floor(rng() * 4);
       const meditation = mode === 0 ? pick(rng, MEDITATION_SAMPLES) : "";
-      const verse = mode === 1 ? pick(rng, VERSE_SAMPLES) : mode === 0 && chance(rng, 0.4) ? pick(rng, VERSE_SAMPLES) : "";
-      const prayer =
+      const verse =
+        mode === 1
+          ? pick(rng, VERSE_SAMPLES)
+          : mode === 0 && chance(rng, 0.4)
+            ? pick(rng, VERSE_SAMPLES)
+            : "";
+      const decisionObedience =
         mode === 2
+          ? pick(rng, OBEDIENCE_SAMPLES)
+          : chance(rng, 0.25)
+            ? pick(rng, OBEDIENCE_SAMPLES)
+            : "";
+      const prayer =
+        mode === 3
           ? pick(rng, PRAYER_SAMPLES)
           : chance(rng, 0.3)
             ? pick(rng, PRAYER_SAMPLES)
             : "";
-      // Guarantee ≥20 in at least one field
-      const needsFill =
-        meditation.trim().length < 20 &&
-        verse.trim().length < 20 &&
-        prayer.trim().length < 20;
-      const med = needsFill ? pick(rng, MEDITATION_SAMPLES) : meditation;
-      const ver = verse;
-      const pra = prayer;
+      // Guarantee combined trimmed length ≥ 10
+      const total =
+        meditation.trim().length +
+        verse.trim().length +
+        decisionObedience.trim().length +
+        prayer.trim().length;
+      const med = total < 10 ? pick(rng, MEDITATION_SAMPLES) : meditation;
       entries.push({
         userId: user.id,
         date,
         meditation: med,
-        verse: ver,
-        prayer: pra,
+        verse,
+        decisionObedience,
+        prayer,
         updatedAt: `${date}T08:30:00+09:00`,
       });
     }

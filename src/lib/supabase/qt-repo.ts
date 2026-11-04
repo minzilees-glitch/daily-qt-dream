@@ -5,11 +5,15 @@ export type QtRepoResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
+const ENTRY_SELECT =
+  "user_id, entry_date, meditation, verse, decision_obedience, prayer, updated_at";
+
 function mapEntry(row: {
   user_id: string;
   entry_date: string;
   meditation: string;
   verse: string;
+  decision_obedience?: string | null;
   prayer: string;
   updated_at: string;
 }): QtEntry {
@@ -18,6 +22,7 @@ function mapEntry(row: {
     date: row.entry_date,
     meditation: row.meditation ?? "",
     verse: row.verse ?? "",
+    decisionObedience: row.decision_obedience ?? "",
     prayer: row.prayer ?? "",
     updatedAt: row.updated_at,
   };
@@ -32,7 +37,7 @@ export async function fetchUserQtEntries(
 
   const { data, error } = await sb
     .from("qt_entries")
-    .select("user_id, entry_date, meditation, verse, prayer, updated_at")
+    .select(ENTRY_SELECT)
     .eq("user_id", userId)
     .order("entry_date", { ascending: false });
 
@@ -98,12 +103,13 @@ export async function upsertQtEntry(
         entry_date: date,
         meditation: fields.meditation,
         verse: fields.verse,
+        decision_obedience: fields.decisionObedience,
         prayer: fields.prayer,
         updated_at: updatedAt,
       },
       { onConflict: "user_id,entry_date" },
     )
-    .select("user_id, entry_date, meditation, verse, prayer, updated_at")
+    .select(ENTRY_SELECT)
     .single();
 
   if (error) return { ok: false, error: error.message };
