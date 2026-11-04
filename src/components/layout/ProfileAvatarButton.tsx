@@ -110,7 +110,7 @@ export function ProfileAvatarButton({
 
       {open && preview ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-5"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-[var(--space-page-x)]"
           role="dialog"
           aria-modal="true"
           aria-label="프로필 사진 미리보기"
@@ -119,13 +119,13 @@ export function ProfileAvatarButton({
           }}
         >
           <div
-            className="w-full max-w-sm rounded-[var(--radius-md)] bg-white p-5 shadow-none"
+            className="w-full max-w-sm rounded-[var(--radius-md)] bg-white p-[var(--space-card)] shadow-none"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="type-body font-semibold text-text-main">
               프로필 사진 변경
             </p>
-            <div className="mt-4 flex justify-center">
+            <div className="mt-[var(--space-stack-sm)] flex justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={preview}
@@ -136,7 +136,7 @@ export function ProfileAvatarButton({
             {error ? (
               <p className="mt-3 text-center type-caption text-danger">{error}</p>
             ) : null}
-            <div className="mt-5 grid grid-cols-2 gap-2">
+            <div className="mt-[var(--space-stack)] grid grid-cols-2 gap-2">
               <button
                 type="button"
                 disabled={saving}

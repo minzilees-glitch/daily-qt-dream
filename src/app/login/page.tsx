@@ -19,19 +19,19 @@ export default function LoginPage() {
     <PhoneShell>
       <div className="hero-gradient relative flex min-h-[100dvh] flex-col px-6 pb-10 pt-[calc(48px+var(--safe-top))]">
         <div className="animate-fade-up flex flex-1 flex-col items-center justify-center text-center">
-          <BrandMark size={80} rounded={28} className="mb-6" />
+          <BrandMark size={80} className="mb-6" />
           <h1 className="type-display-xl text-text-main">
             드림 매일큐티
           </h1>
-          <p className="mt-3 max-w-[280px] type-body leading-relaxed text-text-main">
+          <p className="type-body-lg mt-3 max-w-[280px] text-text-main">
             매일의 Quiet Time을 기록하고,
             <br />
             우리 순과 함께 성장해요.
           </p>
         </div>
 
-        <div className="animate-fade-up space-y-4" style={{ animationDelay: "80ms" }}>
-          <div className="rounded-[var(--radius-md)] bg-ivory/85 p-5 shadow-none backdrop-blur">
+        <div className="animate-fade-up space-y-[var(--space-stack-sm)]" style={{ animationDelay: "80ms" }}>
+          <div className="soft-card bg-ivory/85 p-[var(--space-card)] backdrop-blur">
             <p className="mb-3 text-center type-caption font-semibold uppercase tracking-[0.14em] text-sky">
               Prototype · Test Login
             </p>

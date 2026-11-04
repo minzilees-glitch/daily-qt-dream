@@ -16,10 +16,10 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
       {rows.map((row) => (
         <li
           key={row.groupId}
-          className={`flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-5 transition ${
+          className={`soft-card flex items-center gap-3 px-4 py-5 transition ${
             row.isMine
               ? "bg-sky/20 ring-1 ring-sky/20"
-              : "bg-ivory shadow-none"
+              : ""
           }`}
         >
           <div className="flex w-10 flex-col items-center">

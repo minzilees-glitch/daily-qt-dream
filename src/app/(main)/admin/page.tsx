@@ -46,9 +46,9 @@ export default function AdminPage() {
 
   if (!currentUser.isAdmin) {
     return (
-      <div className="px-5 pt-10 text-center">
+      <div className="px-[var(--space-page-x)] pt-10 text-center">
         <p className="text-text-main">관리자만 접근할 수 있습니다.</p>
-        <Link href="/me" className="mt-4 inline-block text-sky">
+        <Link href="/me" className="mt-[var(--space-stack-sm)] inline-block text-sky">
           마이페이지로
         </Link>
       </div>
@@ -88,7 +88,7 @@ export default function AdminPage() {
   const clearSelection = () => setSelected(new Set());
 
   return (
-    <div className="px-5 pt-[calc(16px+var(--safe-top))]">
+    <div className="px-[var(--space-page-x)] pt-[calc(16px+var(--safe-top))]">
       <div className="mb-5 flex items-center gap-3">
         <Link
           href="/me"
@@ -124,14 +124,14 @@ export default function AdminPage() {
       </div>
 
       {tab === "batch" ? (
-        <div className="animate-fade-up space-y-4">
-          <SoftCard padding="p-4">
+        <div className="animate-fade-up space-y-[var(--space-stack-sm)]">
+          <SoftCard padding="p-[var(--space-stack-sm)]">
             <p className="type-body-sm font-semibold text-text-main">순 일괄 배정</p>
             <p className="mt-1 type-caption text-text-secondary">
               멤버가 스스로 순에 가입하지 않습니다. 관리자가 아래에서 여러 명을
               선택한 뒤 목표 순으로 한 번에 배정합니다.
             </p>
-            <label className="mt-4 block type-caption text-text-secondary">
+            <label className="mt-[var(--space-stack-sm)] block type-caption text-text-secondary">
               배정할 순
               <select
                 className="mt-1 w-full rounded-[var(--radius-sm)] bg-sky-light px-3 py-2.5 type-body-sm text-text-main focus:outline-none focus:ring-2 focus:ring-sky"
@@ -184,7 +184,7 @@ export default function AdminPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="이름 또는 순 검색"
-            className="w-full rounded-[var(--radius-md)] border-0 bg-ivory px-4 py-3 type-body-sm shadow-none focus:outline-none focus:ring-2 focus:ring-sky"
+            className="w-full rounded-[var(--radius-input)] border-0 bg-ivory px-4 py-3 type-body-sm shadow-none focus:outline-none focus:ring-2 focus:ring-sky"
           />
           <p className="type-caption text-text-secondary">
             전체 {users.length}명 · 검색 {filteredUsers.length}명 · 선택{" "}
@@ -198,7 +198,7 @@ export default function AdminPage() {
               return (
                 <li key={user.id}>
                   <label
-                    className={`soft-card flex cursor-pointer items-center gap-3 p-4 transition ${
+                    className={`soft-card flex cursor-pointer items-center gap-3 p-[var(--space-stack-sm)] transition ${
                       checked ? "ring-1 ring-sky/50" : ""
                     }`}
                   >
@@ -242,7 +242,7 @@ export default function AdminPage() {
           {groups.map((group) => {
             const members = users.filter((u) => u.groupId === group.id);
             return (
-              <SoftCard key={group.id} padding="p-4">
+              <SoftCard key={group.id} padding="p-[var(--space-stack-sm)]">
                 <p className="font-semibold text-text-main">{group.name}</p>
                 <p className="type-caption text-text-secondary">{members.length}명</p>
                 <label className="mt-3 block type-caption text-text-secondary">
@@ -269,7 +269,7 @@ export default function AdminPage() {
       ) : null}
 
       {tab === "awards" ? (
-        <div className="animate-fade-up space-y-4">
+        <div className="animate-fade-up space-y-[var(--space-stack-sm)]">
           <SoftCard className="space-y-3">
             <MonthPicker
               value={ym}
@@ -277,7 +277,7 @@ export default function AdminPage() {
               min={addMonths(currentYearMonth(), -2)}
               max={currentYearMonth()}
             />
-            <div className="rounded-[var(--radius-md)] bg-sky-light px-4 py-4">
+            <div className="soft-card bg-sky-light px-4 py-4">
               <div className="flex items-center gap-2 text-sky">
                 <Trophy size={18} strokeWidth={1.75} />
                 <p className="type-body-sm font-semibold">

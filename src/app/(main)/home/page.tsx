@@ -39,7 +39,7 @@ export default function HomePage() {
   return (
     <div>
       {/* Top-section-only wash — same pattern as 우리순; does not grow with scroll content. */}
-      <section className="hero-gradient-spread px-5 pb-6">
+      <section className="hero-gradient-spread px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
         <AppHeader
           light
           homeLayout
@@ -50,10 +50,10 @@ export default function HomePage() {
         />
       </section>
 
-      <section className="animate-fade-up space-y-5 px-5 pb-8 pt-1">
-        <SoftCard className="space-y-5 !bg-white" padding="p-5">
-          <div className="space-y-4">
-            <h2 className="flex items-center gap-1.5 type-section tracking-[var(--tracking-title)] text-text-main">
+      <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pb-[var(--space-section-pb)] pt-1">
+        <SoftCard className="space-y-[var(--space-stack)] !bg-white">
+          <div className="space-y-[var(--space-stack-sm)]">
+            <h2 className="flex items-center gap-1.5 type-section text-text-main">
               <LightIcon
                 active={doneToday}
                 tone={doneToday ? "active" : "inactive"}

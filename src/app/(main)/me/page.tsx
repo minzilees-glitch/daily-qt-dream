@@ -54,9 +54,9 @@ export default function MePage() {
 
   return (
     <div>
-      <section className="hero-gradient px-5 pb-6">
+      <section className="hero-gradient px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
         <PageTitle light>마이페이지</PageTitle>
-        <div className="mt-5">
+        <div className="mt-[var(--space-stack)]">
           <SoftCard className="animate-fade-up bg-ivory">
             <div className="flex items-center gap-4">
               <ProfileAvatarButton size={56} fallback="initial" />
@@ -71,7 +71,7 @@ export default function MePage() {
                 </p>
               </div>
             </div>
-            <div className="mt-5 grid grid-cols-2 gap-3">
+            <div className="mt-[var(--space-stack)] grid grid-cols-2 gap-3">
               <div className="rounded-[var(--radius-md)] bg-white px-3 py-3 text-center">
                 <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
                 <div className="mt-1 flex justify-center">
@@ -98,7 +98,7 @@ export default function MePage() {
         </div>
       </section>
 
-      <section className="animate-fade-up space-y-5 px-5 pt-1">
+      <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pt-1">
         <SoftCard className="bg-ivory">
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h2 className="type-section text-text-main">
@@ -114,7 +114,7 @@ export default function MePage() {
         <div className="space-y-2">
           <button
             type="button"
-            className="soft-card flex w-full items-center justify-between p-4 text-left"
+            className="soft-card flex w-full items-center justify-between p-[var(--space-stack-sm)] text-left"
           >
             <span className="flex items-center gap-3 type-body font-medium">
               <Settings size={18} className="text-sky" strokeWidth={1.75} />
@@ -126,7 +126,7 @@ export default function MePage() {
           {currentUser.isAdmin ? (
             <Link
               href="/admin"
-              className="soft-card flex items-center justify-between p-4"
+              className="soft-card flex items-center justify-between p-[var(--space-stack-sm)]"
             >
               <span className="flex items-center gap-3 type-body font-medium">
                 <Shield size={18} className="text-sky" strokeWidth={1.75} />

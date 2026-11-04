@@ -10,7 +10,7 @@ export function ReadingRangeMilestone({
   label?: string;
 }) {
   return (
-    <div className="rounded-[var(--radius-md)] bg-sky-light px-4 py-4 shadow-none">
+    <div className="soft-card bg-sky-light px-4 py-4">
       <ReadingPassageHeader reading={reading} label={label} />
     </div>
   );

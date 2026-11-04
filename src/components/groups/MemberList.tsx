@@ -12,7 +12,7 @@ export function MemberList({
       {items.map(({ user, days }) => (
         <li
           key={user.id}
-          className="flex items-center justify-between rounded-[var(--radius-md)] bg-ivory px-4 py-3 shadow-none"
+          className="soft-card flex items-center justify-between px-4 py-3"
         >
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-light type-body-sm font-semibold text-sky">

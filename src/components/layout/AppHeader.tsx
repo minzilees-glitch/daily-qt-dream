@@ -32,14 +32,14 @@ export function AppHeader({
       >
         <div className="min-w-0 flex-1">
           <p
-            className={`type-body-sm font-medium tracking-[0.04em] ${
+            className={`type-body-sm font-medium ${
               light ? "text-white/80" : "text-sky"
             }`}
           >
             {title}
           </p>
           <p
-            className={`type-display mt-1.5 leading-snug ${
+            className={`type-display mt-1.5 ${
               light ? "text-white" : "text-text-main"
             }`}
             suppressHydrationWarning
@@ -50,16 +50,16 @@ export function AppHeader({
 
         <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
           {showAvatar ? <ProfileAvatarButton light={light} /> : null}
-          <div className="min-w-0 max-w-[7.5rem] text-center leading-tight">
+          <div className="min-w-0 max-w-[7.5rem] text-center">
             <p
-              className={`truncate type-label font-semibold tracking-tight ${
+              className={`truncate type-label ${
                 light ? "text-white" : "text-text-main"
               }`}
             >
               {userName}
             </p>
             <p
-              className={`mt-0 truncate type-caption leading-tight ${
+              className={`mt-0 truncate type-caption ${
                 light ? "text-white/80" : "text-text-secondary"
               }`}
             >

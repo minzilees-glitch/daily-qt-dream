@@ -24,6 +24,12 @@
   --muted: #c2cad2; /* LightIcon inactive */
   --medal-gold: #e8b923; /* ranking trophy 1위 */
   --medal-silver: #a8b0b8; /* ranking trophy 2위 */
+  /* SkyWalkers / illustration palette (reusable scene colors) */
+  --skywalker-sand: #f4e8d8;
+  --skywalker-sand-edge: #d9c4a8;
+  --skywalker-wood: #c4a574;
+  --skywalker-blue: #5f8fcf;
+  --skywalker-skin: #f2c9a8;
 
   /* ——— Gradients ——— */
   --gradient-hero: linear-gradient(180deg, #5fbcfc 0%, #d9edf9 58%, #ffffff 100%);
@@ -48,7 +54,6 @@
   --fs-body-lg: 18px;
   --fs-stat: 19px;
   --fs-display: 23px;
-  --fs-month-lg: 25px;
   --fs-page: 26px;
   --fs-display-xl: 33px; /* login hero */
   --lh-relaxed: 1.625;
@@ -56,9 +61,10 @@
   --tracking-label: 0.06em;
   --tracking-month: 0.02em;
 
-  /* ——— Radii: only 12 / 20 / 32 (+ pill) ——— */
+  /* ——— Radii: 12 / 20 / 32 (+ pill) + BrandMark 28 ——— */
   --radius-sm: 12px;
   --radius-md: 20px;
+  --radius-brand: 28px; /* BrandMark tile */
   --radius-lg: 32px;
   --radius-pill: 9999px;
   /* Semantic aliases */
@@ -69,12 +75,15 @@
   --radius-shell: var(--radius-lg);
   --radius-btn: var(--radius-pill);
 
-  /* ——— Spacing (light) ——— */
-  --space-page-x: 1.25rem; /* px-5 */
-  --space-card: 1.25rem; /* SoftCard p-5 */
-  --space-stack-sm: 1rem; /* space-y-4 */
-  --space-stack: 1.25rem; /* space-y-5 */
+  /* ——— Spacing ——— */
+  --space-page-x: 1.25rem; /* page horizontal = former px-5 */
+  --space-card: 1.25rem; /* SoftCard / modal pad = former p-5 */
+  --space-control-x: 1.25rem; /* button / control horizontal pad */
+  --space-stack-sm: 1rem; /* space-y-4 / mt-4 */
+  --space-stack: 1.25rem; /* space-y-5 / mt-5 */
   --space-stack-lg: 1.75rem; /* space-y-7 form fields */
+  --space-hero-pb: 1.5rem; /* hero section pb-6 */
+  --space-section-pb: 2rem; /* content section pb-8 */
 
   /* ——— Effects: flat UI; bottom nav is the known exception ——— */
   --shadow-soft: none;
@@ -105,6 +114,11 @@
   --color-muted: var(--muted);
   --color-medal-gold: var(--medal-gold);
   --color-medal-silver: var(--medal-silver);
+  --color-skywalker-sand: var(--skywalker-sand);
+  --color-skywalker-sand-edge: var(--skywalker-sand-edge);
+  --color-skywalker-wood: var(--skywalker-wood);
+  --color-skywalker-blue: var(--skywalker-blue);
+  --color-skywalker-skin: var(--skywalker-skin);
   --font-sans:
     "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR",
     sans-serif;
@@ -119,7 +133,6 @@
   --text-body-lg: var(--fs-body-lg);
   --text-stat: var(--fs-stat);
   --text-display: var(--fs-display);
-  --text-month-lg: var(--fs-month-lg);
   --text-page: var(--fs-page);
   --text-display-xl: var(--fs-display-xl);
   --tracking-title: 0.04em;
@@ -127,6 +140,7 @@
   --tracking-month: 0.02em;
   --radius-sm: 12px;
   --radius-md: 20px;
+  --radius-brand: 28px;
   --radius-lg: 32px;
   --radius-day: 12px;
   --radius-input: 12px;
@@ -174,12 +188,7 @@
   font-weight: 600;
 }
 .type-month {
-  font-size: var(--fs-section);
-  font-weight: 600;
-  letter-spacing: var(--tracking-month);
-}
-.type-month-lg {
-  font-size: var(--fs-month-lg);
+  font-size: var(--fs-section); /* 17px — sole month-label role; color only varies */
   font-weight: 600;
   letter-spacing: var(--tracking-month);
 }

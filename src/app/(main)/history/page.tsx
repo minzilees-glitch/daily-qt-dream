@@ -71,7 +71,7 @@ function FitDateTitle({ text }: { text: string }) {
     <div ref={wrapRef} className="min-w-0 flex-1 overflow-hidden">
       <h2
         ref={textRef}
-        className="whitespace-nowrap font-semibold tracking-[0.02em] text-text-main"
+        className="type-month whitespace-nowrap text-text-main"
         style={{ fontSize: DATE_TITLE_MAX_PX }}
         suppressHydrationWarning
       >
@@ -152,9 +152,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   return (
     <div>
       {/* Top-section-only wash — same pattern as 우리순; calendar stays below so gradient does not stretch. */}
-      <section className="hero-gradient-spread px-5 pb-6">
+      <section className="hero-gradient-spread px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
         <PageTitle light>나의 QT</PageTitle>
-        <div className="mt-4">
+        <div className="mt-[var(--space-stack-sm)]">
           <MonthPicker
             value={ym}
             onChange={(next) => {
@@ -163,14 +163,13 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             }}
             min={minYm}
             max={maxYm}
-            size="range"
             light
           />
         </div>
       </section>
 
-      <section className="animate-fade-up space-y-4 px-5 pt-1">
-        <div className="space-y-4">
+      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pt-1">
+        <div className="space-y-[var(--space-stack-sm)]">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-[var(--radius-md)] bg-ivory px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
@@ -224,7 +223,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         aria-hidden
       />
 
-      <section className="animate-fade-up space-y-4 px-5 pt-5">
+      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pt-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-1.5">
@@ -358,7 +357,7 @@ export default function HistoryPage() {
   return (
     <Suspense
       fallback={
-        <div className="px-5 pt-16 text-center type-body-sm text-text-secondary">
+        <div className="px-[var(--space-page-x)] pt-16 text-center type-body-sm text-text-secondary">
           기록을 불러오는 중…
         </div>
       }

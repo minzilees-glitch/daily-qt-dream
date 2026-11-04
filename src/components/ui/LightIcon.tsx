@@ -247,7 +247,7 @@ export function LightIcon({
         <span
           id={tipId}
           role="tooltip"
-          className="absolute left-1/2 top-full z-30 mt-2 w-max max-w-[220px] -translate-x-1/2 rounded-[var(--radius-sm)] bg-text-main px-3 py-2 text-center type-caption font-medium leading-snug text-white shadow-none"
+          className="absolute left-1/2 top-full z-30 mt-2 w-max max-w-[220px] -translate-x-1/2 rounded-[var(--radius-sm)] bg-text-main px-3 py-2 text-center type-caption font-medium text-white shadow-none"
         >
           {tipText}
         </span>

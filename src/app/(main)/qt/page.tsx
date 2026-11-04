@@ -28,7 +28,7 @@ export default function TodayQtPage() {
   };
 
   return (
-    <div className="px-5 pt-[calc(20px+var(--safe-top))]">
+    <div className="px-[var(--space-page-x)] pt-[calc(20px+var(--safe-top))]">
       <div className="mb-5 flex items-center gap-2.5">
         <Link
           href="/home"
@@ -42,7 +42,7 @@ export default function TodayQtPage() {
         </p>
       </div>
 
-      <div className="animate-fade-up space-y-5">
+      <div className="animate-fade-up space-y-[var(--space-stack)]">
         <ReadingRangeCard reading={reading} defaultExpanded />
 
         <QtEntryForm

@@ -25,7 +25,7 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-[var(--space-stack-lg)]">
       {rows.map((row) => (
         <div key={row.label}>
           <p className="type-body-sm font-semibold text-text-main">{row.label}</p>

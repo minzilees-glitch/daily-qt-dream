@@ -58,7 +58,7 @@ export function ReadingPassageBlock({
       className={
         embedded
           ? "shadow-none"
-          : "rounded-[var(--radius-md)] bg-sky-light px-4 py-4 shadow-none"
+          : "soft-card bg-sky-light px-4 py-4"
       }
     >
       <ReadingPassageHeader reading={reading} label={label} />
@@ -81,7 +81,7 @@ export function ReadingPassageBlock({
 
           {expanded ? (
             <div className="mt-3">
-              <p className="type-body leading-[1.8] tracking-tight text-text-main whitespace-pre-wrap">
+              <p className="type-body leading-[1.8] text-text-main whitespace-pre-wrap">
                 {renderPassage(passage)}
               </p>
             </div>

@@ -37,7 +37,7 @@ export function QtEntryForm({
   const locked = disabled || busy;
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-[var(--space-stack-lg)]">
       <p className="type-caption text-text-secondary">
         구절 · 묵상 · 결단과 순종 · 기도제목을 전체 합쳐{" "}
         <strong className="font-bold">최소</strong> {QT_MIN_TOTAL_CHARS}자 이상

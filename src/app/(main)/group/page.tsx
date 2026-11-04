@@ -52,19 +52,18 @@ export default function GroupPage() {
 
   return (
     <div>
-      <section className="hero-gradient px-5 pb-6">
+      <section className="hero-gradient px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
         <PageTitle light>우리 순</PageTitle>
-        <div className="mt-4">
+        <div className="mt-[var(--space-stack-sm)]">
           <MonthPicker
             value={ym}
             onChange={setYm}
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
-            size="range"
             capsule
           />
         </div>
-        <div className="mt-5 animate-fade-up">
+        <div className="mt-[var(--space-stack)] animate-fade-up">
           <SkyWalkers
             members={members}
             memberCount={myRank?.memberCount ?? 0}
@@ -74,7 +73,7 @@ export default function GroupPage() {
         </div>
       </section>
 
-      <section className="animate-fade-up space-y-5 px-5 pt-1">
+      <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pt-1">
         <SoftCard>
           <h2 className="mb-3 type-section text-text-main">
             우리순 요일별 참여
