@@ -462,7 +462,7 @@ export function SkyWalkers({
   return (
     <div
       ref={cardRef}
-      className="soft-card sky-group-card relative overflow-hidden"
+      className="sky-group-card relative overflow-hidden rounded-[var(--radius-md)]"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
