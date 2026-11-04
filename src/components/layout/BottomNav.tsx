@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { BookOpen, Heart, Home, Trophy, UserRound } from "lucide-react";
 
 const TABS = [
-  { href: "/home", label: "홈", icon: Home },
+  { href: "/home", label: "오늘의 QT", icon: Home },
   { href: "/history", label: "나의 QT", icon: BookOpen },
   { href: "/group", label: "우리 순", icon: Heart },
   { href: "/ranking", label: "랭킹", icon: Trophy },
