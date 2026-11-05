@@ -1,4 +1,7 @@
+"use client";
+
 import { StatLabel } from "@/components/ui/StatLabel";
+import { LightIcon } from "@/components/ui/LightIcon";
 
 type Day = {
   weekday: number;
@@ -6,6 +9,10 @@ type Day = {
   count: number;
   possible: number;
 };
+
+/** Vessel 빛 size; adjacent icons may overlap by up to 20%. */
+const VESSEL_LIGHT_SIZE = 14;
+const VESSEL_LIGHT_OVERLAP = Math.round(VESSEL_LIGHT_SIZE * 0.2);
 
 function GlassLightVessel({
   count,
@@ -30,9 +37,19 @@ function GlassLightVessel({
         {/* Specular rim */}
         <span className="week-glass-vessel-sheen pointer-events-none absolute inset-0" />
         {empty ? null : (
-          <div className="relative z-[1] flex w-full flex-col-reverse items-center gap-[3px] pb-0.5">
+          <div
+            className="relative z-[1] flex w-full flex-col-reverse items-center pb-0.5"
+            style={{ gap: `-${VESSEL_LIGHT_OVERLAP}px` }}
+          >
             {Array.from({ length: count }, (_, i) => (
-              <span key={i} className="week-glass-light" />
+              <LightIcon
+                key={i}
+                active
+                size={VESSEL_LIGHT_SIZE}
+                rays={false}
+                label=""
+                className="shadow-none"
+              />
             ))}
           </div>
         )}
