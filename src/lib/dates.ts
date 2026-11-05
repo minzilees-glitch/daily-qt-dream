@@ -66,6 +66,13 @@ export function addMonths(yearMonth: string, delta: number): string {
   return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
+/** Shift a Seoul civil YYYY-MM-DD by `delta` days (can cross months). */
+export function addDays(ymd: string, delta: number): string {
+  const { year, month, day } = parseYmd(ymd);
+  const d = new Date(Date.UTC(year, month - 1, day + delta));
+  return formatYmd(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
+}
+
 export function yearMonthOf(ymd: string): string {
   return ymd.slice(0, 7);
 }

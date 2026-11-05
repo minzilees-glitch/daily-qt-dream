@@ -88,6 +88,8 @@
   --space-stack-lg: 1.75rem; /* space-y-7 form fields */
   --space-hero-pb: 1.5rem; /* hero section pb-6 */
   --space-section-pb: 2rem; /* content section pb-8 */
+  /* Tab page titles (PageTitle / AppHeader) — was 12px; subtle bump */
+  --space-title-pt: 18px;
 
   /* ——— Effects: flat UI; bottom nav is the known exception ——— */
   --shadow-soft: none;

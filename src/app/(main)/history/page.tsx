@@ -196,6 +196,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             onSelect={selectDate}
             collapsed={!calendarExpanded}
             justEarnedDate={lastEarnedDate}
+            minYearMonth={minYm}
+            maxYearMonth={maxYm}
           />
           <div className="flex justify-center">
             <button
