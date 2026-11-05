@@ -19,7 +19,6 @@ import {
   currentYearMonth,
   parseYmd,
   todaySeoul,
-  yearWeekProgress,
 } from "@/lib/dates";
 import { LightCount } from "@/components/ui/LightIcon";
 import {
@@ -41,7 +40,6 @@ export default function MePage() {
   const lightSet = buildLightSet(completions);
   const ym = currentYearMonth();
   const year = parseYmd(todaySeoul()).year;
-  const { weeksStarted, currentWeek } = yearWeekProgress(todaySeoul());
   const month = userMonthStats(currentUser.id, ym, set, lightSet);
   const weekdayPart = userWeekdayParticipation(
     currentUser.id,
@@ -105,7 +103,7 @@ export default function MePage() {
               내가 잘 지키는 요일
             </h2>
             <span className="text-label font-medium text-text-secondary">
-              {year}년 누적 기준 {weeksStarted}개 주 중에 {currentWeek}번째 주
+              {year}년 누적 기준
             </span>
           </div>
           <WeekdayParticipation days={weekdayPart} showPossible={false} />

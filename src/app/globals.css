@@ -8,7 +8,8 @@
   /* Primary CTA (buttons / nav / selected day) — distinct from chrome sky */
   --cta: #008cff;
   /* Surface swap (Phase 1 polish): page = white, cards = ivory */
-  --ivory: #faf8f3;
+  /* Slightly warmer / more yellow than #faf8f3 */
+  --ivory: #faf5e6;
   --white: #ffffff;
   --text-main: #243746;
   --text-secondary: #768896;
@@ -57,6 +58,7 @@
   --fs-page: 27px;
   --fs-display-xl: 34px; /* login hero */
   --lh-relaxed: 1.625;
+  --lh-caption: 1.35; /* notices / type-caption — tighter than body-lg */
   --lh-page-title: 1.15;
   --tracking-title: 0.01em; /* page titles — was 0.04em */
   --tracking-label: 0.06em;
@@ -168,7 +170,7 @@
 .type-caption {
   font-size: var(--fs-caption);
   font-weight: 400;
-  line-height: var(--lh-relaxed);
+  line-height: var(--lh-caption);
 }
 /* Caption/notice emphasis: bold + main ink @ 100% opacity (inside muted captions) */
 .type-caption-em,
@@ -417,25 +419,8 @@ a {
   stroke: currentColor;
 }
 
-/*
- * Raised-center dock silhouette (hump for home CTA).
- * Mask keeps backdrop-filter clipped to the pill+hump shape.
- */
-.nav-dock-shape {
-  border: none;
-  border-radius: 0;
-  /* viewBox 0 0 360 72 — center hump ~x 140–220 */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 72' preserveAspectRatio='none'%3E%3Cpath d='M28 26h108c6 0 10-1 14-6 8-12 18-18 30-18s22 6 30 18c4 5 8 6 14 6h108c14 0 28 10 28 24v6c0 14-14 24-28 24H28C14 72 0 62 0 48v-6c0-14 14-16 28-16z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 72' preserveAspectRatio='none'%3E%3Cpath d='M28 26h108c6 0 10-1 14-6 8-12 18-18 30-18s22 6 30 18c4 5 8 6 14 6h108c14 0 28 10 28 24v6c0 14-14 24-28 24H28C14 72 0 62 0 48v-6c0-14 14-16 28-16z'/%3E%3C/svg%3E");
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-}
 .nav-dock-home {
-  /* Center CTA circle — product blue, not ref pink */
+  /* Center CTA circle — sits barely above the glass pill */
   border: 2px solid rgba(255, 255, 255, 0.45);
 }
 

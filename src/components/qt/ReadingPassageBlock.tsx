@@ -79,6 +79,17 @@ export function ReadingPassageBlock({
             )}
           </button>
 
+          {/* Full-bleed hairline inside SoftCard / passage frame (breaks padding) */}
+          <div
+            className={
+              embedded
+                ? "-mx-[var(--space-card)] mt-2 h-px bg-divider shadow-none"
+                : "-mx-4 mt-2 h-px bg-divider shadow-none"
+            }
+            role="separator"
+            aria-hidden
+          />
+
           {expanded ? (
             <div className="mt-3">
               <p className="type-body leading-[1.8] text-text-main whitespace-pre-wrap">

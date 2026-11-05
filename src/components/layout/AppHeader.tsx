@@ -50,16 +50,16 @@ export function AppHeader({
 
         <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
           {showAvatar ? <ProfileAvatarButton light={light} /> : null}
-          <div className="min-w-0 max-w-[7.5rem] text-center">
+          <div className="min-w-0 max-w-[7.5rem] text-center leading-none">
             <p
-              className={`truncate type-label ${
+              className={`truncate type-label leading-none ${
                 light ? "text-white" : "text-text-main"
               }`}
             >
               {userName}
             </p>
             <p
-              className={`mt-0 truncate type-caption ${
+              className={`mt-0.5 truncate type-caption leading-none ${
                 light ? "text-white/80" : "text-text-secondary"
               }`}
             >
