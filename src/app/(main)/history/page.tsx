@@ -223,7 +223,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         aria-hidden
       />
 
-      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pt-5">
+      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pt-10">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-1.5">

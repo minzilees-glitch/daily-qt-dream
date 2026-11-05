@@ -92,8 +92,8 @@ export function ReadingPassageBlock({
       <ReadingPassageHeader
         reading={reading}
         label={label}
-        afterLabel={divider}
         trailing={toggle}
+        afterTitle={divider}
       />
 
       {hasPassage && expanded ? (

@@ -52,8 +52,10 @@ export default function HomePage() {
 
       <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pb-[var(--space-section-pb)] pt-1">
         <SoftCard className="space-y-[var(--space-stack)] overflow-hidden !bg-white">
-          {/* Brand CTA blue title band — passage body stays white */}
-          <div className="-mx-[var(--space-card)] -mt-[var(--space-card)] bg-cta px-[var(--space-card)] pb-[var(--space-stack-sm)] pt-[var(--space-card)]">
+          {/* CTA blue title band — avoid .bg-cta pill radius; keep SoftCard top chrome */}
+          <div
+            className="-mx-[var(--space-card)] -mt-[var(--space-card)] bg-[var(--cta)] px-[var(--space-card)] pb-[var(--space-stack-sm)] pt-[var(--space-card)] text-white"
+          >
             <h2 className="flex items-center gap-1.5 type-section text-white">
               <LightIcon
                 active={doneToday}

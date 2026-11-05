@@ -7,22 +7,21 @@ export function ReadingPassageHeader({
   reading,
   label = "본문",
   trailing,
-  /** When set, render this between label and title row (e.g. full-bleed divider). */
-  afterLabel,
+  /** When set, render this after the title row (e.g. full-bleed divider below). */
+  afterTitle,
 }: {
   reading: QtReadingRange;
   label?: string | null;
   trailing?: ReactNode;
-  afterLabel?: ReactNode;
+  afterTitle?: ReactNode;
 }) {
   return (
     <>
       {label ? (
         <StatLabel className="text-text-secondary">{label}</StatLabel>
       ) : null}
-      {afterLabel}
       <div
-        className={`flex items-start gap-2 ${label || afterLabel ? "mt-3" : "mt-1"}`}
+        className={`flex items-start gap-2 ${label ? "mt-3" : "mt-1"}`}
       >
         <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5 type-section text-text-main">
           <span>{reading.range}</span>
@@ -36,6 +35,7 @@ export function ReadingPassageHeader({
           <div className="ml-auto shrink-0 self-center">{trailing}</div>
         ) : null}
       </div>
+      {afterTitle}
     </>
   );
 }
