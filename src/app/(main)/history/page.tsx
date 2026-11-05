@@ -153,7 +153,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     <div>
       {/* Top-section-only wash — same pattern as 우리순; calendar stays below so gradient does not stretch. */}
       <section className="hero-gradient-spread px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
-        <PageTitle light>나의 QT</PageTitle>
+        <PageTitle light>나의 QT들</PageTitle>
         <div className="mt-[var(--space-stack-sm)]">
           <MonthPicker
             value={ym}
