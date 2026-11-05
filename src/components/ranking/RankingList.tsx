@@ -27,14 +27,14 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
               <Trophy
                 size={22}
                 strokeWidth={1.75}
-                color="var(--medal-gold)"
+                className="text-medal-gold"
                 aria-label="1위"
               />
             ) : row.rank === 2 ? (
               <Trophy
                 size={22}
                 strokeWidth={1.75}
-                color="var(--medal-silver)"
+                className="text-medal-silver"
                 aria-label="2위"
               />
             ) : (
