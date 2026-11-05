@@ -40,7 +40,9 @@ export function QtEntryForm({
     <div className="space-y-[var(--space-stack-lg)]">
       <p className="type-caption text-text-secondary">
         구절 · 묵상 · 결단과 순종 · 기도제목을 전체 합쳐{" "}
-        <strong className="font-bold">최소</strong> {QT_MIN_TOTAL_CHARS}자 이상
+        <strong className="type-caption-em">
+          최소 {QT_MIN_TOTAL_CHARS}자 이상
+        </strong>{" "}
         적어주세요.
         <span
           className={`ml-1.5 tabular-nums ${
