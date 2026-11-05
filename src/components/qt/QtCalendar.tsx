@@ -126,20 +126,35 @@ export function QtCalendar({
                 className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible touch-pan-y transition"
               >
                 <span
-                  className={`mx-auto flex h-full w-[calc(100%-2px)] flex-col items-center justify-center gap-1 rounded-[var(--radius-day)] py-2 text-center ${
+                  className={`relative mx-auto flex h-full w-[calc(100%-2px)] flex-col items-center justify-center gap-1 py-2 text-center ${
                     selected
-                      ? "bg-cta !text-white shadow-none"
+                      ? "!text-white"
                       : isToday
-                        ? "bg-cta/18 text-cta group-hover:bg-cta/24"
+                        ? "text-cta"
                         : done
-                          ? "bg-white text-text-main"
+                          ? "text-text-main"
                           : future
                             ? "text-text-secondary/40"
-                            : "text-text-main group-hover:bg-white/70"
+                            : "text-text-main"
                   }`}
                 >
+                  {/* Selection / light-active fill — 2px up vs date copy */}
                   <span
-                    className={`text-center text-label leading-none font-medium tabular-nums ${
+                    aria-hidden
+                    className={`pointer-events-none absolute inset-x-0 top-[-2px] bottom-[2px] rounded-[var(--radius-day)] ${
+                      selected
+                        ? "bg-cta shadow-none"
+                        : isToday
+                          ? "bg-cta/18 group-hover:bg-cta/24"
+                          : done
+                            ? "bg-white"
+                            : future
+                              ? ""
+                              : "group-hover:bg-white/70"
+                    }`}
+                  />
+                  <span
+                    className={`relative z-[1] text-center text-label leading-none font-medium tabular-nums ${
                       selected
                         ? ""
                         : isToday
@@ -152,7 +167,7 @@ export function QtCalendar({
                     {day}
                   </span>
                   {done ? (
-                    <span className="mx-auto flex h-5 w-5 shrink-0 items-center justify-center overflow-visible">
+                    <span className="relative z-[1] mx-auto flex h-5 w-5 shrink-0 -translate-y-[2px] items-center justify-center overflow-visible">
                       <LightIcon
                         tone="active"
                         size={16}
@@ -161,7 +176,7 @@ export function QtCalendar({
                       />
                     </span>
                   ) : (
-                    <span className="mx-auto h-5 w-5 shrink-0" />
+                    <span className="relative z-[1] mx-auto h-5 w-5 shrink-0 -translate-y-[2px]" />
                   )}
                 </span>
               </button>
