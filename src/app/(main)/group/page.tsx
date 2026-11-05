@@ -6,14 +6,16 @@ import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { DayParticipation } from "@/components/groups/DayParticipation";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
+import { WeekParticipationTable } from "@/components/groups/WeekParticipationTable";
 import { SkyWalkers } from "@/components/groups/SkyWalkers";
 import { useApp } from "@/lib/app-context";
-import { addMonths, currentYearMonth } from "@/lib/dates";
+import { addMonths, currentYearMonth, todaySeoul } from "@/lib/dates";
 import {
   buildCompletionSet,
   computeGroupRanking,
   groupDayParticipation,
-  groupWeekdayParticipation,
+  groupThisWeekMemberParticipation,
+  groupThisWeekWeekdayParticipation,
 } from "@/lib/stats";
 
 export default function GroupPage() {
@@ -43,11 +45,18 @@ export default function GroupPage() {
   );
   const myRank = ranking.find((r) => r.groupId === currentUser.groupId);
   const dayPart = groupDayParticipation(currentUser.groupId, users, ym, set);
-  const weekdayPart = groupWeekdayParticipation(
+  const today = todaySeoul();
+  const weekBars = groupThisWeekWeekdayParticipation(
     currentUser.groupId,
     users,
-    ym,
     set,
+    today,
+  );
+  const weekMembers = groupThisWeekMemberParticipation(
+    currentUser.groupId,
+    users,
+    set,
+    today,
   );
 
   return (
@@ -60,7 +69,7 @@ export default function GroupPage() {
             onChange={setYm}
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
-            capsule
+            light
           />
         </div>
         <div className="mt-[var(--space-stack)] animate-fade-up">
@@ -76,9 +85,16 @@ export default function GroupPage() {
       <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pt-1">
         <SoftCard>
           <h2 className="mb-3 type-section text-text-main">
-            우리순 요일별 참여
+            우리순의 이번주 참여
           </h2>
-          <WeekdayParticipation days={weekdayPart} />
+          <WeekdayParticipation
+            days={weekBars}
+            showCount={false}
+            showPossible={false}
+          />
+          <div className="mt-[var(--space-stack)]">
+            <WeekParticipationTable rows={weekMembers} />
+          </div>
         </SoftCard>
 
         <SoftCard>

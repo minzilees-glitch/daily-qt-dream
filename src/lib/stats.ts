@@ -4,7 +4,11 @@ import type {
   QtCompletion,
   User,
 } from "@/types";
-import { rankingScopeDays, todaySeoul } from "@/lib/dates";
+import {
+  rankingScopeDays,
+  todaySeoul,
+  weekDatesMonFirst,
+} from "@/lib/dates";
 
 export function completionSetKey(userId: string, date: string): string {
   return `${userId}|${date}`;
@@ -188,6 +192,65 @@ export function groupDayParticipation(
       completionSet.has(completionSetKey(m.id, date)),
     ).length,
   }));
+}
+
+/** This week (Mon–Sun) member rows: per-day done + count. */
+export function groupThisWeekMemberParticipation(
+  groupId: string,
+  users: User[],
+  completionSet: Set<string>,
+  today: string = todaySeoul(),
+): {
+  user: User;
+  days: boolean[];
+  count: number;
+}[] {
+  const week = weekDatesMonFirst(today);
+  const members = users
+    .filter((u) => u.groupId === groupId)
+    .sort((a, b) => {
+      if (a.isLeader !== b.isLeader) return a.isLeader ? -1 : 1;
+      return a.name.localeCompare(b.name, "ko");
+    });
+
+  return members.map((user) => {
+    const days = week.map(
+      (date) =>
+        date <= today && completionSet.has(completionSetKey(user.id, date)),
+    );
+    return {
+      user,
+      days,
+      count: days.filter(Boolean).length,
+    };
+  });
+}
+
+/** This week Mon–Sun group counts (bars). Future weekdays: possible=0. */
+export function groupThisWeekWeekdayParticipation(
+  groupId: string,
+  users: User[],
+  completionSet: Set<string>,
+  today: string = todaySeoul(),
+): { weekday: number; label: string; count: number; possible: number }[] {
+  const labels = ["월", "화", "수", "목", "금", "토", "일"];
+  const week = weekDatesMonFirst(today);
+  const members = users.filter((u) => u.groupId === groupId);
+  const total = members.length;
+
+  return week.map((date, weekday) => {
+    const future = date > today;
+    return {
+      weekday,
+      label: labels[weekday]!,
+      count: future
+        ? 0
+        : members.filter((m) =>
+            completionSet.has(completionSetKey(m.id, date)),
+          ).length,
+      possible: future ? 0 : total,
+    };
+  });
 }
 
 /** Mon–Sun aggregate participation for a group in a month. */

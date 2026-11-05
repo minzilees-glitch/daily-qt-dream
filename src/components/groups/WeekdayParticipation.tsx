@@ -3,15 +3,18 @@ import { StatLabel } from "@/components/ui/StatLabel";
 export function WeekdayParticipation({
   days,
   showPossible = true,
+  /** Count above each bar. Default true; 우리순 이번주 chart hides it. */
+  showCount = true,
 }: {
   days: { weekday: number; label: string; count: number; possible: number }[];
-  /** Per-bar `/{possible}` under each weekday. Default true (우리순). */
+  /** Per-bar `/{possible}` under each weekday. Default true. */
   showPossible?: boolean;
+  showCount?: boolean;
 }) {
-  if (days.length === 0 || days.every((d) => d.possible === 0)) {
+  if (days.length === 0 || days.every((d) => d.possible === 0 && d.count === 0)) {
     return (
       <p className="py-6 text-center type-body-sm text-text-secondary">
-        이번 달 참여 데이터가 아직 없습니다.
+        이번 주 참여 데이터가 아직 없습니다.
       </p>
     );
   }
@@ -28,13 +31,23 @@ export function WeekdayParticipation({
             className="flex flex-col items-center gap-1.5"
             title={`${d.label}: ${d.count}/${d.possible}`}
           >
-            <p className="type-label font-semibold tabular-nums text-text-main">
-              {d.count}
-            </p>
+            {showCount ? (
+              <p className="type-label font-semibold tabular-nums text-text-main">
+                {d.count}
+              </p>
+            ) : (
+              <span className="h-0 w-full" aria-hidden />
+            )}
             <div className="flex h-16 w-8 items-end overflow-hidden rounded-full bg-sky-light">
               <div
                 className="w-full rounded-full bg-sky transition-all"
-                style={{ height: `${Math.max(10, ratio * 100)}%` }}
+                style={{
+                  height:
+                    d.possible === 0 && d.count === 0
+                      ? "10%"
+                      : `${Math.max(10, ratio * 100)}%`,
+                  opacity: d.possible === 0 && d.count === 0 ? 0.35 : 1,
+                }}
               />
             </div>
             <StatLabel as="span" className="text-text-secondary">
