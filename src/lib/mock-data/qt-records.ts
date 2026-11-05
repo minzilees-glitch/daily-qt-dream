@@ -47,8 +47,9 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
 
   const groupRate = new Map<string, number>();
   const groups = [...new Set(users.map((u) => u.groupId))];
+  // Baseline: descending by group id order so ranks stay distinct.
   groups.forEach((gid, i) => {
-    groupRate.set(gid, 0.88 - i * 0.015);
+    groupRate.set(gid, 0.72 - i * 0.012);
   });
 
   users.forEach((user, idx) => {
@@ -68,7 +69,88 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
     }
   });
 
+  // Demo ranking UI: 사랑순 1위 (gold), 믿음순 2위 (silver) for current month.
+  enforceDemoPodium(users, records, today, "g-01", "g-05");
+
   return records;
+}
+
+/** Pad/trim current-month lights so `firstId` ranks 1 and `secondId` ranks 2 alone. */
+function enforceDemoPodium(
+  users: User[],
+  records: QtCompletion[],
+  today: string,
+  firstId: string,
+  secondId: string,
+): void {
+  const ym = currentYearMonth();
+  const dates = rankingScopeDays(ym, today);
+  if (dates.length === 0) return;
+
+  const key = (userId: string, date: string) => `${userId}|${date}`;
+  const present = new Set(
+    records.filter((c) => c.completed).map((c) => key(c.userId, c.date)),
+  );
+  const membersOf = (gid: string) => users.filter((u) => u.groupId === gid);
+
+  const countGroup = (gid: string) => {
+    let n = 0;
+    for (const u of membersOf(gid)) {
+      for (const d of dates) {
+        if (present.has(key(u.id, d))) n += 1;
+      }
+    }
+    return n;
+  };
+
+  const addOne = (gid: string): boolean => {
+    for (const u of membersOf(gid)) {
+      for (const d of dates) {
+        const k = key(u.id, d);
+        if (present.has(k)) continue;
+        present.add(k);
+        records.push({ userId: u.id, date: d, completed: true });
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const removeOne = (gid: string): boolean => {
+    for (const u of [...membersOf(gid)].reverse()) {
+      for (const d of [...dates].reverse()) {
+        const k = key(u.id, d);
+        if (!present.has(k)) continue;
+        present.delete(k);
+        const idx = records.findIndex(
+          (c) => c.userId === u.id && c.date === d && c.completed,
+        );
+        if (idx >= 0) records.splice(idx, 1);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const othersMax = () => {
+    let max = 0;
+    for (const gid of new Set(users.map((u) => u.groupId))) {
+      if (gid === firstId || gid === secondId) continue;
+      max = Math.max(max, countGroup(gid));
+    }
+    return max;
+  };
+
+  // 2nd place: above every other group (except 1st), with a clear gap.
+  while (countGroup(secondId) <= othersMax()) {
+    if (!addOne(secondId)) break;
+  }
+  // 1st place: strictly above 2nd.
+  while (countGroup(firstId) <= countGroup(secondId)) {
+    if (!addOne(firstId)) {
+      if (!removeOne(secondId)) break;
+    }
+  }
 }
 
 /**
