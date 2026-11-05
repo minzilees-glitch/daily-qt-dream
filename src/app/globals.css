@@ -170,7 +170,7 @@
 .type-caption {
   font-size: var(--fs-caption);
   font-weight: 400;
-  line-height: var(--lh-relaxed);
+  line-height: var(--lh-caption);
 }
 /* Caption/notice emphasis: bold + main ink @ 100% opacity (inside muted captions) */
 .type-caption-em,
