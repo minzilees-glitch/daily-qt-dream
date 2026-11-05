@@ -257,7 +257,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 aria-label="더보기"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory text-text-main shadow-none"
+                className="flex h-10 w-10 items-center justify-center bg-transparent text-text-main shadow-none"
               >
                 <MoreHorizontal size={18} strokeWidth={1.75} />
               </button>
