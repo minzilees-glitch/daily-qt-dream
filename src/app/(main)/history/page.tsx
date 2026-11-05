@@ -163,7 +163,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             }}
             min={minYm}
             max={maxYm}
-            capsule
+            light
           />
         </div>
       </section>
