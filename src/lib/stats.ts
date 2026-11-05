@@ -194,38 +194,6 @@ export function groupDayParticipation(
   }));
 }
 
-/** This week (Mon–Sun) member rows: per-day done + count. */
-export function groupThisWeekMemberParticipation(
-  groupId: string,
-  users: User[],
-  completionSet: Set<string>,
-  today: string = todaySeoul(),
-): {
-  user: User;
-  days: boolean[];
-  count: number;
-}[] {
-  const week = weekDatesMonFirst(today);
-  const members = users
-    .filter((u) => u.groupId === groupId)
-    .sort((a, b) => {
-      if (a.isLeader !== b.isLeader) return a.isLeader ? -1 : 1;
-      return a.name.localeCompare(b.name, "ko");
-    });
-
-  return members.map((user) => {
-    const days = week.map(
-      (date) =>
-        date <= today && completionSet.has(completionSetKey(user.id, date)),
-    );
-    return {
-      user,
-      days,
-      count: days.filter(Boolean).length,
-    };
-  });
-}
-
 /** This week Mon–Sun group counts (bars). Future weekdays: possible=0. */
 export function groupThisWeekWeekdayParticipation(
   groupId: string,

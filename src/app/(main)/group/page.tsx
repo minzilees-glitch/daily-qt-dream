@@ -6,7 +6,6 @@ import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { DayParticipation } from "@/components/groups/DayParticipation";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
-import { WeekParticipationTable } from "@/components/groups/WeekParticipationTable";
 import { SkyWalkers } from "@/components/groups/SkyWalkers";
 import { useApp } from "@/lib/app-context";
 import { addMonths, currentYearMonth, todaySeoul } from "@/lib/dates";
@@ -14,7 +13,6 @@ import {
   buildCompletionSet,
   computeGroupRanking,
   groupDayParticipation,
-  groupThisWeekMemberParticipation,
   groupThisWeekWeekdayParticipation,
 } from "@/lib/stats";
 
@@ -52,12 +50,6 @@ export default function GroupPage() {
     set,
     today,
   );
-  const weekMembers = groupThisWeekMemberParticipation(
-    currentUser.groupId,
-    users,
-    set,
-    today,
-  );
 
   return (
     <div>
@@ -89,12 +81,10 @@ export default function GroupPage() {
           </h2>
           <WeekdayParticipation
             days={weekBars}
+            variant="glass"
             showCount={false}
             showPossible={false}
           />
-          <div className="mt-[var(--space-stack)]">
-            <WeekParticipationTable rows={weekMembers} />
-          </div>
         </SoftCard>
 
         <SoftCard>

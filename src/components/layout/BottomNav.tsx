@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Heart, Trophy, UserRound, type LucideIcon } from "lucide-react";
+import { Files, Trophy, UserRound, Users, type LucideIcon } from "lucide-react";
 import { LightIcon } from "@/components/ui/LightIcon";
 
 type SideTab = {
@@ -11,10 +11,10 @@ type SideTab = {
   icon: LucideIcon;
 };
 
-/** Left of center home: 나의 QT, 우리 순 */
+/** Left of center home: 나의 QT들, 우리 순 */
 const LEFT_TABS: SideTab[] = [
-  { href: "/history", label: "나의 QT", icon: BookOpen },
-  { href: "/group", label: "우리 순", icon: Heart },
+  { href: "/history", label: "나의 QT들", icon: Files },
+  { href: "/group", label: "우리 순", icon: Users },
 ];
 
 /** Right of center home: 랭킹, 마이페이지 */
