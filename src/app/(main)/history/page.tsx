@@ -168,7 +168,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         </div>
       </section>
 
-      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pt-1">
+      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pb-3 pt-1">
         <div className="space-y-[var(--space-stack-sm)]">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-[var(--radius-md)] bg-ivory px-3 py-3 text-center">
