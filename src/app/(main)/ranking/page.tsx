@@ -36,7 +36,7 @@ export default function RankingPage() {
             onChange={setYm}
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
-            light
+            capsule
           />
         </div>
         <p className="type-caption mt-[var(--space-stack)] text-center text-text-main">
