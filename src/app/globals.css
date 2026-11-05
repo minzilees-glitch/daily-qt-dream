@@ -18,7 +18,8 @@
   --light-yellow-soft: #ffe066;
   --danger: #e35d5d;
   /* All dividers (1px hairlines + thick bars) share this color; height varies. */
-  --divider: #e5eaf0;
+  /* Slightly darker than #e5eaf0 — still soft; sole hairline/divider token */
+  --divider: #dce3eb;
   --hairline: var(--divider);
   --divider-strong: var(--divider); /* legacy alias — same color as --divider */
   --page-chrome: #eef3f7;

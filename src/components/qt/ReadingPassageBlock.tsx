@@ -65,6 +65,17 @@ export function ReadingPassageBlock({
 
       {hasPassage ? (
         <>
+          {/* Full-bleed hairline ABOVE accordion chevron (inside SoftCard frame) */}
+          <div
+            className={
+              embedded
+                ? "-mx-[var(--space-card)] mt-3 h-px bg-divider shadow-none"
+                : "-mx-4 mt-3 h-px bg-divider shadow-none"
+            }
+            role="separator"
+            aria-hidden
+          />
+
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
@@ -78,17 +89,6 @@ export function ReadingPassageBlock({
               <ChevronDown size={20} strokeWidth={2} aria-hidden />
             )}
           </button>
-
-          {/* Full-bleed hairline inside SoftCard / passage frame (breaks padding) */}
-          <div
-            className={
-              embedded
-                ? "-mx-[var(--space-card)] mt-2 h-px bg-divider shadow-none"
-                : "-mx-4 mt-2 h-px bg-divider shadow-none"
-            }
-            role="separator"
-            aria-hidden
-          />
 
           {expanded ? (
             <div className="mt-3">
