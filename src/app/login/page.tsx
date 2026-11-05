@@ -17,7 +17,7 @@ export default function LoginPage() {
 
   return (
     <PhoneShell>
-      <div className="hero-gradient relative flex min-h-[100dvh] flex-col px-6 pb-10 pt-[calc(48px+var(--safe-top))]">
+      <div className="relative flex min-h-[100dvh] flex-col bg-white px-6 pb-10 pt-[calc(48px+var(--safe-top))]">
         <div className="animate-fade-up flex flex-1 flex-col items-center justify-center text-center">
           <BrandMark size={80} className="mb-6" />
           <h1 className="type-display-xl text-text-main">

@@ -51,8 +51,9 @@ export default function HomePage() {
       </section>
 
       <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pb-[var(--space-section-pb)] pt-1">
-        <SoftCard className="space-y-[var(--space-stack)] !bg-white">
-          <div className="space-y-[var(--space-stack-sm)]">
+        <SoftCard className="space-y-[var(--space-stack)] overflow-hidden !bg-white">
+          {/* Ivory header band for title only — passage body stays white */}
+          <div className="-mx-[var(--space-card)] -mt-[var(--space-card)] bg-ivory px-[var(--space-card)] pb-[var(--space-stack-sm)] pt-[var(--space-card)]">
             <h2 className="flex items-center gap-1.5 type-section text-text-main">
               <LightIcon
                 active={doneToday}
@@ -67,11 +68,6 @@ export default function HomePage() {
                   : "오늘의 말씀이 기다리고 있어요."}
               </span>
             </h2>
-            <div
-              className="h-px w-full bg-divider shadow-none"
-              role="separator"
-              aria-hidden
-            />
           </div>
 
           <ReadingPassageBlock

@@ -39,7 +39,7 @@ function parseDateParam(raw: string | null): string | null {
 }
 
 const DATE_TITLE_MAX_PX = 24; /* matches --fs-display */
-const DATE_TITLE_MIN_PX = 14; /* matches --fs-caption */
+const DATE_TITLE_MIN_PX = 15; /* matches --fs-caption */
 
 /** Single-line title that shrinks to the largest font size that still fits. */
 function FitDateTitle({ text }: { text: string }) {
@@ -163,7 +163,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             }}
             min={minYm}
             max={maxYm}
-            capsule
+            light
           />
         </div>
       </section>
