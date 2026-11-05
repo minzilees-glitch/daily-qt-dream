@@ -69,17 +69,15 @@ export function ReadingPassageBlock({
     </button>
   ) : null;
 
-  const divider = hasPassage ? (
-    <div
-      className={
-        embedded
-          ? "-mx-[var(--space-card)] mt-3 h-px bg-divider shadow-none"
-          : "-mx-4 mt-3 h-px bg-divider shadow-none"
-      }
-      role="separator"
-      aria-hidden
-    />
-  ) : null;
+  /* Home SoftCard (embedded): no divider under title row. History keeps it. */
+  const divider =
+    hasPassage && !embedded ? (
+      <div
+        className="-mx-4 mt-3 h-px bg-divider shadow-none"
+        role="separator"
+        aria-hidden
+      />
+    ) : null;
 
   return (
     <div

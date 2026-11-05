@@ -168,7 +168,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         </div>
       </section>
 
-      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pt-1">
+      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pb-3 pt-1">
         <div className="space-y-[var(--space-stack-sm)]">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-[var(--radius-md)] bg-ivory px-3 py-3 text-center">
@@ -196,6 +196,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             onSelect={selectDate}
             collapsed={!calendarExpanded}
             justEarnedDate={lastEarnedDate}
+            minYearMonth={minYm}
+            maxYearMonth={maxYm}
           />
           <div className="flex justify-center">
             <button
@@ -218,7 +220,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       </section>
 
       <div
-        className="h-2 w-full bg-divider shadow-none"
+        className="h-px w-full bg-divider shadow-none"
         role="separator"
         aria-hidden
       />
@@ -257,7 +259,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 aria-label="더보기"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory text-text-main shadow-none"
+                className="flex h-10 w-10 items-center justify-center bg-transparent text-text-main shadow-none"
               >
                 <MoreHorizontal size={18} strokeWidth={1.75} />
               </button>

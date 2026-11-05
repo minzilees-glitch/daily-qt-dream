@@ -13,7 +13,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     <PhoneShell>
       <AuthGate>
         <div className="phone-scroll">
-          <div className={hideNav ? "pb-[var(--space-section-pb)]" : "pb-[calc(80px+var(--safe-bottom))]"}>
+          <div className={hideNav ? "pb-[var(--space-section-pb)]" : "pb-[calc(72px+var(--safe-bottom))]"}>
             {children}
           </div>
         </div>

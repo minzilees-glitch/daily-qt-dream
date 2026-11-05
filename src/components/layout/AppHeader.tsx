@@ -26,7 +26,7 @@ export function AppHeader({
   if (homeLayout) {
     return (
       <header
-        className={`flex items-start justify-between gap-3 pt-[calc(12px+var(--safe-top))] ${
+        className={`flex items-start justify-between gap-3 pt-[calc(var(--space-title-pt)+var(--safe-top))] ${
           light ? "text-white" : "text-text-main"
         }`}
       >
@@ -74,7 +74,7 @@ export function AppHeader({
   if (!showAvatar) {
     return (
       <div
-        className="pt-[calc(12px+var(--safe-top))]"
+        className="pt-[calc(var(--space-title-pt)+var(--safe-top))]"
         aria-hidden
       />
     );
@@ -82,7 +82,7 @@ export function AppHeader({
 
   return (
     <header
-      className={`flex items-center justify-end pt-[calc(12px+var(--safe-top))] ${
+      className={`flex items-center justify-end pt-[calc(var(--space-title-pt)+var(--safe-top))] ${
         light ? "text-white" : "text-text-main"
       }`}
     >
