@@ -48,7 +48,7 @@ npm start
 | `/login` | 테스트 로그인 |
 | `/home` | 오늘의 QT · 본문 + 작성 |
 | `/qt` | 오늘의 QT 작성 · 완료 |
-| `/history` | 나의 QT 월간 캘린더 |
+| `/history` | 나의 QT들 월간 캘린더 |
 | `/group` | 우리 순 참여 현황 |
 | `/ranking` | 전체 순 월간 랭킹 |
 | `/me` | 마이페이지 |
