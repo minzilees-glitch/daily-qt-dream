@@ -218,7 +218,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       </section>
 
       <div
-        className="h-2 w-full bg-divider shadow-none"
+        className="h-px w-full bg-divider shadow-none"
         role="separator"
         aria-hidden
       />
