@@ -53,6 +53,34 @@ export function ReadingPassageBlock({
   const passage = reading.passage?.trim() ?? "";
   const hasPassage = passage.length > 0;
 
+  const toggle = hasPassage ? (
+    <button
+      type="button"
+      onClick={() => setExpanded((v) => !v)}
+      className="inline-flex items-center justify-center bg-transparent p-0 text-cta shadow-none transition hover:brightness-95"
+      aria-expanded={expanded}
+      aria-label={expanded ? "본문 접기" : "본문 더보기"}
+    >
+      {expanded ? (
+        <ChevronUp size={20} strokeWidth={2} aria-hidden />
+      ) : (
+        <ChevronDown size={20} strokeWidth={2} aria-hidden />
+      )}
+    </button>
+  ) : null;
+
+  const divider = hasPassage ? (
+    <div
+      className={
+        embedded
+          ? "-mx-[var(--space-card)] mt-3 h-px bg-divider shadow-none"
+          : "-mx-4 mt-3 h-px bg-divider shadow-none"
+      }
+      role="separator"
+      aria-hidden
+    />
+  ) : null;
+
   return (
     <div
       className={
@@ -61,43 +89,19 @@ export function ReadingPassageBlock({
           : "soft-card bg-sky-light px-4 py-4"
       }
     >
-      <ReadingPassageHeader reading={reading} label={label} />
+      <ReadingPassageHeader
+        reading={reading}
+        label={label}
+        afterLabel={divider}
+        trailing={toggle}
+      />
 
-      {hasPassage ? (
-        <>
-          {/* Full-bleed hairline ABOVE accordion chevron (inside SoftCard frame) */}
-          <div
-            className={
-              embedded
-                ? "-mx-[var(--space-card)] mt-3 h-px bg-divider shadow-none"
-                : "-mx-4 mt-3 h-px bg-divider shadow-none"
-            }
-            role="separator"
-            aria-hidden
-          />
-
-          <button
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            className="mt-2 flex w-full items-center justify-center bg-transparent p-0 text-cta shadow-none transition hover:brightness-95"
-            aria-expanded={expanded}
-            aria-label={expanded ? "본문 접기" : "본문 더보기"}
-          >
-            {expanded ? (
-              <ChevronUp size={20} strokeWidth={2} aria-hidden />
-            ) : (
-              <ChevronDown size={20} strokeWidth={2} aria-hidden />
-            )}
-          </button>
-
-          {expanded ? (
-            <div className="mt-3">
-              <p className="type-body leading-[1.8] text-text-main whitespace-pre-wrap">
-                {renderPassage(passage)}
-              </p>
-            </div>
-          ) : null}
-        </>
+      {hasPassage && expanded ? (
+        <div className="mt-3">
+          <p className="type-body leading-[1.8] text-text-main whitespace-pre-wrap">
+            {renderPassage(passage)}
+          </p>
+        </div>
       ) : null}
     </div>
   );
