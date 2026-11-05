@@ -420,11 +420,6 @@ a {
   stroke: currentColor;
 }
 
-.nav-dock-home {
-  /* Center CTA circle — sits barely above the glass pill */
-  border: 2px solid rgba(255, 255, 255, 0.45);
-}
-
 /* Shared MonthPicker ivory capsule — solid (no glass / sheen) */
 .month-capsule {
   border-radius: var(--radius-pill);
