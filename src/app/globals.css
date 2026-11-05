@@ -34,16 +34,29 @@
   --skywalker-skin: #f2c9a8;
 
   /* ——— Gradients ——— */
-  --gradient-hero: linear-gradient(180deg, #5fbcfc 0%, #d9edf9 58%, #ffffff 100%);
+  /* Wide soft blue (blurred via ::before layers — not a hard color block) */
+  --gradient-hero: linear-gradient(
+    180deg,
+    #5fbcfc 0%,
+    #7ec8fc 28%,
+    #b5e0fc 55%,
+    #e3f2fb 78%,
+    #f3f8fc 100%
+  );
   /* Decorative taller wash for /home + /history (see .hero-gradient-spread) */
   --gradient-hero-spread: linear-gradient(
     180deg,
     #5fbcfc 0%,
-    #5fbcfc 16%,
-    #9fd4fc 45%,
-    #d9edf9 72%,
-    #ffffff 100%
+    #5fbcfc 22%,
+    #8fd0fc 48%,
+    #c5e6fb 72%,
+    #eef6fb 100%
   );
+  /* App-wide atmosphere behind glass SoftCards */
+  --wash-blur: 56px;
+  --wash-blue-core: rgba(95, 188, 252, 0.9);
+  --wash-blue-mid: rgba(0, 140, 255, 0.38);
+  --wash-blue-soft: rgba(131, 174, 238, 0.45);
 
   /* ——— Typography (scale +1pt from prior 11…33) ——— */
   --fs-nav: 12px;
@@ -91,7 +104,7 @@
   /* Tab page titles (PageTitle / AppHeader) — was 12px; subtle bump */
   --space-title-pt: 18px;
 
-  /* ——— Effects: flat UI; bottom nav is the known exception ——— */
+  /* ——— Effects: glass frames + nav; soft wash behind ——— */
   --shadow-soft: none;
   --shadow-nav: none;
   --shadow-nav-float: 0 10px 30px rgba(0, 60, 130, 0.42);
@@ -99,6 +112,13 @@
   --nav-glass-bg: rgba(0, 140, 255, 0.52);
   --nav-glass-border: rgba(255, 255, 255, 0.28);
   --nav-glass-blur: 18px;
+  /* SoftCard / primary frames — translucent frosted glass (align with nav language) */
+  --frame-glass-bg: rgba(255, 255, 255, 0.42);
+  --frame-glass-border: rgba(255, 255, 255, 0.5);
+  --frame-glass-blur: 20px;
+  --frame-glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 8px 24px rgba(0, 70, 140, 0.06);
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
@@ -376,11 +396,28 @@ a {
 }
 
 .hero-gradient {
+  position: relative;
+  z-index: 0;
+  background: transparent;
+}
+
+/* Soft wide hero wash (group / ranking / me) — heavily blurred */
+.hero-gradient::before {
+  content: "";
+  position: absolute;
+  inset-inline: -18%;
+  top: -12%;
+  height: 18rem;
+  z-index: -1;
+  pointer-events: none;
   background: var(--gradient-hero);
+  filter: blur(var(--wash-blur));
+  opacity: 0.95;
+  transform: scale(1.08);
 }
 
 /*
- * Home / history only: paint a taller blue wash behind content via an
+ * Home / history only: taller blue wash behind content via an
  * absolute layer so SoftCards / calendar are not pushed down (no min-height).
  */
 .hero-gradient-spread {
@@ -392,20 +429,35 @@ a {
 .hero-gradient-spread::before {
   content: "";
   position: absolute;
-  inset-inline: 0;
-  top: 0;
-  /* Extends below the content-sized header into the page without affecting flow. */
-  height: 22rem;
+  /* Spill wider than the content column for a diffuse atmosphere */
+  inset-inline: -22%;
+  top: -10%;
+  height: 34rem;
   z-index: -1;
   pointer-events: none;
   background: var(--gradient-hero-spread);
+  filter: blur(var(--wash-blur));
+  opacity: 0.92;
+  transform: scale(1.12);
 }
 
-/* Primary content frames — solid ivory (no glass) */
-.soft-card {
-  background: var(--ivory);
+/* Primary content frames — frosted translucent glass */
+.soft-card,
+.frame-glass {
+  background: var(--frame-glass-bg);
+  border: 1px solid var(--frame-glass-border);
   border-radius: var(--radius-card);
+  box-shadow: var(--frame-glass-shadow);
+  backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.25);
+  -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.25);
+}
+/* SkyWalkers photo card keeps opaque scene fill — not ivory glass */
+.soft-card.sky-group-card {
+  background: #9fd0f5;
+  border: none;
   box-shadow: var(--shadow-soft);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* Bottom nav capsule — translucent sky/CTA glass + blur; float shadow stays */
@@ -422,11 +474,14 @@ a {
   stroke: currentColor;
 }
 
-/* Shared MonthPicker ivory capsule — solid (no glass / sheen) */
+/* Shared MonthPicker capsule — same frosted language as SoftCard */
 .month-capsule {
   border-radius: var(--radius-pill);
-  background: var(--ivory);
-  box-shadow: none;
+  background: var(--frame-glass-bg);
+  border: 1px solid var(--frame-glass-border);
+  box-shadow: var(--frame-glass-shadow);
+  backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.25);
+  -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.25);
   overflow: hidden;
 }
 
@@ -439,11 +494,42 @@ a {
   position: relative;
   /* Contain position:fixed nav inside the phone column (mobile + desktop mock) */
   transform: translateZ(0);
-  background: var(--white);
+  /* Soft blue-tinted base so glass SoftCards have atmosphere to blur */
+  background: #eaf5fb;
   overflow: hidden;
 }
 
+/* App-wide diffused blue atmosphere (heavily blurred, edge-to-edge) */
+.phone-shell::before {
+  content: "";
+  position: absolute;
+  inset: -28% -40%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 85% 60% at 50% -8%,
+      var(--wash-blue-core) 0%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 8% 40%,
+      var(--wash-blue-mid) 0%,
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 65% 45% at 92% 55%,
+      var(--wash-blue-soft) 0%,
+      transparent 60%
+    ),
+    linear-gradient(180deg, #5fbcfc 0%, #a8d9fc 40%, #eaf5fb 78%, #f5fafc 100%);
+  filter: blur(var(--wash-blur));
+  opacity: 0.9;
+}
+
 .phone-scroll {
+  position: relative;
+  z-index: 1;
   height: 100%;
   overflow-x: hidden;
   overflow-y: auto;

@@ -171,7 +171,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pb-3 pt-1">
         <div className="space-y-[var(--space-stack-sm)]">
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-[var(--radius-md)] bg-ivory px-3 py-3 text-center">
+            <div className="frame-glass px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
               <div className="mt-1 flex justify-center">
                 <LightCount
@@ -182,7 +182,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 />
               </div>
             </div>
-            <div className="rounded-[var(--radius-md)] bg-ivory px-3 py-3 text-center">
+            <div className="frame-glass px-3 py-3 text-center">
               <StatLabel className="text-text-secondary">집계 일수</StatLabel>
               <p className="mt-1 type-stat text-text-main">
                 {stats.possible}일
