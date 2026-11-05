@@ -111,13 +111,14 @@
   --nav-glass-bg: rgba(0, 140, 255, 0.52);
   --nav-glass-border: rgba(255, 255, 255, 0.28);
   --nav-glass-blur: 18px;
-  /* SoftCard / primary frames — translucent frosted glass (align with nav language) */
-  --frame-glass-bg: rgba(255, 255, 255, 0.42);
-  --frame-glass-border: rgba(255, 255, 255, 0.5);
-  --frame-glass-blur: 20px;
+  /* SoftCard / primary frames — clearer frosted glass (more glass-like) */
+  --frame-glass-bg: rgba(255, 255, 255, 0.28);
+  --frame-glass-border: rgba(255, 255, 255, 0.68);
+  --frame-glass-blur: 32px;
   --frame-glass-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 8px 24px rgba(0, 70, 140, 0.06);
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(95, 188, 252, 0.08),
+    0 10px 28px rgba(0, 70, 140, 0.08);
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
@@ -447,8 +448,8 @@ a {
   border: 1px solid var(--frame-glass-border);
   border-radius: var(--radius-card);
   box-shadow: var(--frame-glass-shadow);
-  backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.25);
-  -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.25);
+  backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.45);
+  -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.45);
 }
 /* SkyWalkers photo card keeps opaque scene fill — not ivory glass */
 .soft-card.sky-group-card {
@@ -479,8 +480,8 @@ a {
   background: var(--frame-glass-bg);
   border: 1px solid var(--frame-glass-border);
   box-shadow: var(--frame-glass-shadow);
-  backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.25);
-  -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.25);
+  backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.45);
+  -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.45);
   overflow: hidden;
 }
 
