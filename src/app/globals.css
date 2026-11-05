@@ -34,29 +34,28 @@
   --skywalker-skin: #f2c9a8;
 
   /* ——— Gradients ——— */
-  /* Wide soft blue (blurred via ::before layers — not a hard color block) */
+  /* Soft blue (blurred via ::before — pulled back vs #61 extreme spread) */
   --gradient-hero: linear-gradient(
     180deg,
     #5fbcfc 0%,
-    #7ec8fc 28%,
-    #b5e0fc 55%,
-    #e3f2fb 78%,
+    #8fd0fc 32%,
+    #d0ebfb 62%,
     #f3f8fc 100%
   );
-  /* Decorative taller wash for /home + /history (see .hero-gradient-spread) */
+  /* Decorative wash for /home + /history (see .hero-gradient-spread) */
   --gradient-hero-spread: linear-gradient(
     180deg,
     #5fbcfc 0%,
-    #5fbcfc 22%,
-    #8fd0fc 48%,
-    #c5e6fb 72%,
-    #eef6fb 100%
+    #5fbcfc 14%,
+    #9fd4fc 40%,
+    #d9edf9 68%,
+    #f3f8fc 100%
   );
-  /* App-wide atmosphere behind glass SoftCards */
-  --wash-blur: 56px;
-  --wash-blue-core: rgba(95, 188, 252, 0.9);
-  --wash-blue-mid: rgba(0, 140, 255, 0.38);
-  --wash-blue-soft: rgba(131, 174, 238, 0.45);
+  /* App-wide atmosphere behind glass SoftCards — milder than #61 */
+  --wash-blur: 36px;
+  --wash-blue-core: rgba(95, 188, 252, 0.72);
+  --wash-blue-mid: rgba(0, 140, 255, 0.22);
+  --wash-blue-soft: rgba(131, 174, 238, 0.28);
 
   /* ——— Typography (scale +1pt from prior 11…33) ——— */
   --fs-nav: 12px;
@@ -401,19 +400,19 @@ a {
   background: transparent;
 }
 
-/* Soft wide hero wash (group / ranking / me) — heavily blurred */
+/* Soft hero wash (group / ranking / me) — blurred, contained */
 .hero-gradient::before {
   content: "";
   position: absolute;
-  inset-inline: -18%;
-  top: -12%;
-  height: 18rem;
+  inset-inline: -6%;
+  top: -6%;
+  height: 14rem;
   z-index: -1;
   pointer-events: none;
   background: var(--gradient-hero);
   filter: blur(var(--wash-blur));
-  opacity: 0.95;
-  transform: scale(1.08);
+  opacity: 0.85;
+  transform: scale(1.02);
 }
 
 /*
@@ -429,16 +428,16 @@ a {
 .hero-gradient-spread::before {
   content: "";
   position: absolute;
-  /* Spill wider than the content column for a diffuse atmosphere */
-  inset-inline: -22%;
-  top: -10%;
-  height: 34rem;
+  /* Mild spill past the content column — less extreme than #61 */
+  inset-inline: -8%;
+  top: -4%;
+  height: 24rem;
   z-index: -1;
   pointer-events: none;
   background: var(--gradient-hero-spread);
   filter: blur(var(--wash-blur));
-  opacity: 0.92;
-  transform: scale(1.12);
+  opacity: 0.82;
+  transform: scale(1.03);
 }
 
 /* Primary content frames — frosted translucent glass */
@@ -499,32 +498,32 @@ a {
   overflow: hidden;
 }
 
-/* App-wide diffused blue atmosphere (heavily blurred, edge-to-edge) */
+/* App-wide diffused blue atmosphere — tighter footprint than #61 */
 .phone-shell::before {
   content: "";
   position: absolute;
-  inset: -28% -40%;
+  inset: -10% -12%;
   z-index: 0;
   pointer-events: none;
   background:
     radial-gradient(
-      ellipse 85% 60% at 50% -8%,
+      ellipse 70% 42% at 50% -4%,
       var(--wash-blue-core) 0%,
-      transparent 68%
-    ),
-    radial-gradient(
-      ellipse 70% 50% at 8% 40%,
-      var(--wash-blue-mid) 0%,
       transparent 62%
     ),
     radial-gradient(
-      ellipse 65% 45% at 92% 55%,
-      var(--wash-blue-soft) 0%,
-      transparent 60%
+      ellipse 48% 32% at 12% 28%,
+      var(--wash-blue-mid) 0%,
+      transparent 58%
     ),
-    linear-gradient(180deg, #5fbcfc 0%, #a8d9fc 40%, #eaf5fb 78%, #f5fafc 100%);
+    radial-gradient(
+      ellipse 44% 28% at 88% 42%,
+      var(--wash-blue-soft) 0%,
+      transparent 55%
+    ),
+    linear-gradient(180deg, #5fbcfc 0%, #b8dffc 28%, #eaf5fb 58%, #f5fafc 100%);
   filter: blur(var(--wash-blur));
-  opacity: 0.9;
+  opacity: 0.72;
 }
 
 .phone-scroll {
