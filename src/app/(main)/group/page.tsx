@@ -81,6 +81,7 @@ export default function GroupPage() {
           </h2>
           <WeekdayParticipation
             days={weekBars}
+            variant="glass"
             showCount={false}
             showPossible={false}
           />
