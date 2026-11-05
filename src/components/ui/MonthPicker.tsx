@@ -10,7 +10,7 @@ export function MonthPicker({
   max,
   monthOnly = false,
   light = false,
-  /** Ivory mirrored capsule; black ink (overrides `light`). Shared by 나의 QT / 우리순 / 랭킹. */
+  /** Glass month-capsule chrome; black ink (overrides `light`). Shared by 나의 QT들 / 우리순 / 랭킹. */
   capsule = false,
 }: {
   value: string;
