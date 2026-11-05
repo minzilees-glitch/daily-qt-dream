@@ -70,7 +70,7 @@ export default function MePage() {
               </div>
             </div>
             <div className="mt-[var(--space-stack)] grid grid-cols-2 gap-3">
-              <div className="rounded-[var(--radius-md)] bg-white px-3 py-3 text-center">
+              <div className="frame-glass px-3 py-3 text-center">
                 <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
                 <div className="mt-1 flex justify-center">
                   <LightCount
@@ -81,7 +81,7 @@ export default function MePage() {
                   />
                 </div>
               </div>
-              <div className="rounded-[var(--radius-md)] bg-white px-3 py-3 text-center">
+              <div className="frame-glass px-3 py-3 text-center">
                 <StatLabel className="text-text-secondary">{year}년 누적</StatLabel>
                 <div className="mt-1 flex justify-center">
                   <LightCount

@@ -277,7 +277,7 @@ export default function AdminPage() {
               min={addMonths(currentYearMonth(), -2)}
               max={currentYearMonth()}
             />
-            <div className="soft-card bg-sky-light px-4 py-4">
+            <div className="soft-card px-4 py-4">
               <div className="flex items-center gap-2 text-sky">
                 <Trophy size={18} strokeWidth={1.75} />
                 <p className="type-body-sm font-semibold">

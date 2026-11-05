@@ -84,7 +84,7 @@ export function ReadingPassageBlock({
       className={
         embedded
           ? "shadow-none"
-          : "soft-card bg-sky-light px-4 py-4"
+          : "soft-card px-4 py-4"
       }
     >
       <ReadingPassageHeader
