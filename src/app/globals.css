@@ -107,9 +107,9 @@
   --shadow-soft: none;
   --shadow-nav: none;
   --shadow-nav-float: 0 10px 30px rgba(0, 60, 130, 0.42);
-  /* Icon-only bottom nav: frosted CTA-tinted glass (not opaque solid) */
-  --nav-glass-bg: rgba(0, 140, 255, 0.4);
-  --nav-glass-border: rgba(255, 255, 255, 0.45);
+  /* Icon-only bottom nav: dark blue capsule */
+  --nav-glass-bg: #27466b;
+  --nav-glass-border: rgba(255, 255, 255, 0.18);
   --nav-glass-blur: 28px;
   /* SoftCard / primary frames — stronger frosted glass than #62 */
   --frame-glass-bg: rgba(255, 255, 255, 0.16);
