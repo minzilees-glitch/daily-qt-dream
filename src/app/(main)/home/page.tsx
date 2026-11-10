@@ -6,6 +6,7 @@ import { LightIcon } from "@/components/ui/LightIcon";
 import { Toast } from "@/components/ui/Toast";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
 import { ReadingPassageBlock } from "@/components/qt/ReadingPassageBlock";
+import { HomePremiumShell } from "@/components/qt/HomePremiumShell";
 import { useApp } from "@/lib/app-context";
 import { getReadingForDate } from "@/lib/mock-data";
 import { formatDisplayDate } from "@/lib/dates";
@@ -36,10 +37,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="premium-qt-root premium-home-root">
-      {/* ~70% of viewport: sky header band + white scripture (form peeks below). */}
-      <div className="premium-home-top">
-        <div className="premium-home-header-band">
+    <>
+      <HomePremiumShell
+        header={
           <AppHeader
             homeLayout
             title="오늘은"
@@ -62,9 +62,8 @@ export default function HomePage() {
               </div>
             }
           />
-        </div>
-
-        <div className="premium-home-passage">
+        }
+        passage={
           <ReadingPassageBlock
             reading={reading}
             label="오늘의 말씀"
@@ -72,32 +71,25 @@ export default function HomePage() {
             collapsible={false}
             inkTitle
           />
-        </div>
-      </div>
-
-      {/* White sheet — peeks ~30% at default scroll; form-only. */}
-      <section className="premium-qt-sheet premium-home-form-sheet">
-        <div className="premium-qt-sheet-handles" aria-hidden>
-          <span />
-          <span />
-        </div>
-        <QtEntryForm
-          key={`home-qt-${today}`}
-          initial={todayEntry}
-          onSave={async (fields) => {
-            try {
-              const res = await saveEntry(today, fields);
-              showToast(res.message);
-            } catch (err) {
-              const detail =
-                err instanceof Error ? err.message : "알 수 없는 오류";
-              showToast(`저장 실패: ${detail}`);
-            }
-          }}
-        />
-      </section>
-
+        }
+        sheet={
+          <QtEntryForm
+            key={`home-qt-${today}`}
+            initial={todayEntry}
+            onSave={async (fields) => {
+              try {
+                const res = await saveEntry(today, fields);
+                showToast(res.message);
+              } catch (err) {
+                const detail =
+                  err instanceof Error ? err.message : "알 수 없는 오류";
+                showToast(`저장 실패: ${detail}`);
+              }
+            }}
+          />
+        }
+      />
       <Toast message={toast} />
-    </div>
+    </>
   );
 }

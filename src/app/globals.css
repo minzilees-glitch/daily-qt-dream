@@ -723,19 +723,45 @@ a {
   animation: premium-crossfade 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Home: fixed 70/30 split so form sheet always peeks ~30% at scroll 0. */
+/* Home shell: short = flush under passage; long = peek + drag-up sheet. */
 .premium-home-root {
   background: var(--color-white);
+}
+
+.premium-home-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-home-shell--short {
+  height: auto;
+  min-height: calc(100dvh - 72px - var(--safe-bottom));
+  overflow: visible;
+}
+
+.premium-home-shell--long {
+  height: calc(100dvh - 72px - var(--safe-bottom));
+  max-height: calc(100dvh - 72px - var(--safe-bottom));
+  overflow: hidden;
 }
 
 .premium-home-top {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  height: calc((100dvh - 72px - var(--safe-bottom)) * 0.7);
-  overflow: hidden;
-  /* Sky behind passage so top corner radius reads like `.premium-qt-sheet`. */
+  /* Sky behind passage so sheet radius / shadow can read against it. */
   background: var(--color-sky);
+}
+
+.premium-home-shell--short .premium-home-top {
+  height: auto;
+  overflow: visible;
+}
+
+.premium-home-shell--long .premium-home-top {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .premium-home-header-band {
@@ -790,15 +816,10 @@ a {
 }
 
 .premium-home-passage {
-  flex: 1 1 auto;
-  min-height: 0;
   margin-top: 0.25rem;
   padding-inline: var(--space-page-x);
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   border-radius: 0;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -809,8 +830,47 @@ a {
     0 -1px 4px 0 rgba(39, 70, 107, 0.12);
 }
 
+.premium-home-shell--short .premium-home-passage {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.premium-home-shell--long .premium-home-passage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .premium-home-form-sheet {
-  min-height: calc((100dvh - 72px - var(--safe-bottom)) * 0.3 + 10rem);
+  flex: 0 0 auto;
+  z-index: 3;
+}
+
+.premium-home-shell--short .premium-home-form-sheet {
+  /* Sit flush under passage content (still overlaps slightly for radius). */
+  min-height: 0;
+}
+
+.premium-home-shell--long .premium-home-form-sheet {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Height set inline from peek + drag rise. */
+  min-height: 0;
+}
+
+.premium-qt-sheet-handles--drag {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  padding-top: 0.35rem;
+  padding-bottom: 1rem;
+}
+
+.premium-qt-sheet-handles--drag:active {
+  cursor: grabbing;
 }
 
 @keyframes premium-select-pop {
