@@ -9,12 +9,22 @@ export function ReadingPassageHeader({
   trailing,
   /** When set, render this after the title row (e.g. full-bleed divider below). */
   afterTitle,
+  /** Range + title use `--color-ink-blue`. */
+  inkTitle = false,
 }: {
   reading: QtReadingRange;
   label?: string | null;
   trailing?: ReactNode;
   afterTitle?: ReactNode;
+  inkTitle?: boolean;
 }) {
+  const rangeClass = inkTitle
+    ? "text-[var(--color-ink-blue)]"
+    : "text-text-main";
+  const titleClass = inkTitle
+    ? "type-body-sm font-medium text-[var(--color-ink-blue)] opacity-80"
+    : "type-body-sm font-medium text-text-secondary";
+
   return (
     <>
       {label ? (
@@ -23,12 +33,12 @@ export function ReadingPassageHeader({
       <div
         className={`flex items-start gap-2 ${label ? "mt-3" : "mt-1"}`}
       >
-        <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5 type-section text-text-main">
+        <p
+          className={`flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5 type-section ${rangeClass}`}
+        >
           <span>{reading.range}</span>
           {reading.title ? (
-            <span className="type-body-sm font-medium text-text-secondary">
-              {reading.title}
-            </span>
+            <span className={titleClass}>{reading.title}</span>
           ) : null}
         </p>
         {trailing ? (

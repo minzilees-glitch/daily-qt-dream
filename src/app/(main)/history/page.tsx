@@ -295,8 +295,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               key={selected}
               reading={reading}
               label="본문"
-              defaultExpanded
               embedded
+              collapsible={false}
+              inkTitle
             />
           )}
 

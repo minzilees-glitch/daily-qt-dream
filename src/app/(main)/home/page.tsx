@@ -69,7 +69,8 @@ export default function HomePage() {
             reading={reading}
             label="본문"
             embedded
-            defaultExpanded
+            collapsible={false}
+            inkTitle
           />
         </div>
       </div>
