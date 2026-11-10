@@ -689,6 +689,18 @@ a {
   padding-inline: var(--space-page-x);
   padding-bottom: var(--space-stack-sm);
   background: #c2e5f0;
+  color: #27466b;
+}
+
+.premium-home-header-band .type-page-title,
+.premium-home-header-band .type-section,
+.premium-home-header-band .type-body-sm,
+.premium-home-header-band .type-label,
+.premium-home-header-band .type-caption,
+.premium-home-header-band .text-sky,
+.premium-home-header-band .text-text-main,
+.premium-home-header-band .text-text-secondary {
+  color: #27466b !important;
 }
 
 .premium-home-passage {
