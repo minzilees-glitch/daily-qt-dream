@@ -48,17 +48,17 @@ export default function HomePage() {
             groupName={group?.name ?? "순"}
             status={
               <div className="flex items-center gap-1.5">
+                <p className="type-section font-normal text-text-main">
+                  {doneToday
+                    ? "오늘의 큐티를 완료했어요"
+                    : "오늘의 큐티를 아직 안했어요"}
+                </p>
                 <LightIcon
                   active={doneToday}
                   size={20}
                   justEarned={doneToday || lastEarnedDate === today}
                   label=""
                 />
-                <p className="type-section text-text-main">
-                  {doneToday
-                    ? "오늘의 큐티를 완료했어요"
-                    : "오늘의 큐티를 아직 안했어요"}
-                </p>
               </div>
             }
           />
