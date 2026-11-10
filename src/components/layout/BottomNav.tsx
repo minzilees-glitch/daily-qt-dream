@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Files, Trophy, UserRound, Users, type LucideIcon } from "lucide-react";
+import {
+  CalendarDays,
+  Trophy,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { LightIcon } from "@/components/ui/LightIcon";
 
 type Tab = {
@@ -16,7 +22,7 @@ type Tab = {
 /** Equal-priority row: home first (no raised center). */
 const TABS: Tab[] = [
   { href: "/home", label: "오늘의 QT", light: true },
-  { href: "/history", label: "나의 QT들", icon: Files },
+  { href: "/history", label: "나의 QT들", icon: CalendarDays },
   { href: "/group", label: "우리 순", icon: Users },
   { href: "/ranking", label: "랭킹", icon: Trophy },
   { href: "/me", label: "마이페이지", icon: UserRound },

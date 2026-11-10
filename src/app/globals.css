@@ -922,11 +922,22 @@ a {
 }
 
 .premium-home-header-band {
+  position: relative;
+  z-index: 2;
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
   padding-bottom: var(--space-stack-sm);
   background: var(--color-sky);
   color: var(--color-ink-blue);
+  /*
+   * Header owns the seam shadow (cast DOWN onto gray passage).
+   * Previous upward box-shadow on `.premium-home-passage` painted into the
+   * gray parent gap / got clipped by long-mode `overflow: hidden` on
+   * `.premium-home-top`, so the lift looked inverted or cut off.
+   */
+  box-shadow:
+    0 4px 12px 0 rgba(0, 9, 23, 0.16),
+    0 1px 4px 0 rgba(31, 62, 98, 0.12);
 }
 
 .premium-home-header-band .type-page-title,
@@ -972,16 +983,17 @@ a {
 }
 
 .premium-home-passage {
-  margin-top: 0.25rem;
+  position: relative;
+  z-index: 1;
+  /* Flush under sky header — no gray margin strip that ate the old upward cast. */
+  margin-top: 0;
   padding-inline: var(--space-page-x);
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
   background: var(--color-gray); /* #f2f2f2 */
-  /* Tighter, darker lift onto sky header only — not `.premium-qt-sheet`. */
-  box-shadow:
-    0 -4px 12px 0 rgba(0, 9, 23, 0.16),
-    0 -1px 4px 0 rgba(31, 62, 98, 0.12);
+  /* Seam shadow lives on `.premium-home-header-band` — do not double-cast. */
+  box-shadow: none;
 }
 
 .premium-home-shell--short .premium-home-passage {
