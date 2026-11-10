@@ -462,7 +462,7 @@ export function SkyWalkers({
   return (
     <div
       ref={cardRef}
-      className="sky-group-card relative overflow-hidden rounded-[var(--radius-md)]"
+      className="sky-group-card relative overflow-hidden"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -513,11 +513,11 @@ export function SkyWalkers({
 
       <div ref={statsRef} className="relative z-10 px-4 pb-2 pt-4">
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+          <div className="sky-stat-tile bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순은</StatLabel>
             <p className="mt-1 type-stat text-white">{memberCount}명</p>
           </div>
-          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+          <div className="sky-stat-tile bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순 현재</StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount
@@ -528,7 +528,7 @@ export function SkyWalkers({
               />
             </div>
           </div>
-          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
+          <div className="sky-stat-tile bg-white/25 px-2 py-3 backdrop-blur-[2px]">
             <StatLabel className="text-white/85">우리순 순위</StatLabel>
             <p className="mt-1 type-stat text-white">{rankLabel}</p>
           </div>
