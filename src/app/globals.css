@@ -676,8 +676,8 @@ a {
   /* Overlap content above so 36px TL/TR corners sit on top (not under a square edge). */
   margin-top: -1.25rem;
   min-height: calc(100dvh - 280px);
-  padding: 0.75rem var(--space-page-x)
-    calc(1.5rem + var(--safe-bottom));
+  padding: 1.35rem var(--space-page-x)
+    calc(1.5rem + var(--safe-bottom)); /* extra top padding inside sheet */
   border-radius: 36px 36px 0 0;
   background: var(--premium-sheet);
   color: var(--text-main);
@@ -724,6 +724,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
+  /* 30px sheet gap reads as passage gray, not page white. */
+  background: var(--color-gray);
 }
 
 .premium-home-shell--long {
@@ -836,9 +838,11 @@ a {
 }
 
 .premium-home-shell--short .premium-home-form-sheet {
-  /* 30px air between passage body end and sheet top (override sheet overlap). */
+  /* 30px gray air between passage body end and sheet top. */
   margin-top: 30px;
   min-height: 0;
+  /* Extra top inset beyond shared sheet padding. */
+  padding-top: 1.6rem;
 }
 
 .premium-home-shell--long .premium-home-form-sheet {
