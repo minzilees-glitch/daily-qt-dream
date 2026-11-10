@@ -688,20 +688,7 @@ a {
     drop-shadow(0 -2px 5px rgba(39, 70, 107, 0.05));
 }
 
-.premium-qt-sheet-handles {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  padding: 0.15rem 0 0.85rem;
-}
-
-.premium-qt-sheet-handles span {
-  display: block;
-  width: 4px;
-  height: 18px;
-  border-radius: 9999px;
-  background: var(--divider);
-}
+/* Legacy handle bars removed — home long-mode uses an invisible drag strip. */
 
 .premium-cal-day-selected {
   background: var(--cta);
@@ -861,15 +848,16 @@ a {
   min-height: 0;
 }
 
-.premium-qt-sheet-handles--drag {
+/* Invisible hit target at top of home sheet (long / peek mode). */
+.premium-home-sheet-drag {
+  height: 28px;
+  margin: 0 0 0.35rem;
   cursor: grab;
   touch-action: none;
   user-select: none;
-  padding-top: 0.35rem;
-  padding-bottom: 1rem;
 }
 
-.premium-qt-sheet-handles--drag:active {
+.premium-home-sheet-drag:active {
   cursor: grabbing;
 }
 

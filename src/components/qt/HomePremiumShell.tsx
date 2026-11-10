@@ -153,18 +153,17 @@ export function HomePremiumShell({
             : undefined
         }
       >
-        <div
-          ref={handleRef}
-          className={`premium-qt-sheet-handles${mode === "long" ? " premium-qt-sheet-handles--drag" : ""}`}
-          aria-hidden
-          onPointerDown={onHandlePointerDown}
-          onPointerMove={onHandlePointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-        >
-          <span />
-          <span />
-        </div>
+        {mode === "long" ? (
+          <div
+            ref={handleRef}
+            className="premium-home-sheet-drag"
+            aria-hidden
+            onPointerDown={onHandlePointerDown}
+            onPointerMove={onHandlePointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          />
+        ) : null}
         {sheet}
       </section>
     </div>

@@ -208,11 +208,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       </header>
 
       <section className="premium-qt-sheet">
-        <div className="premium-qt-sheet-handles" aria-hidden>
-          <span />
-          <span />
-        </div>
-
         <div
           key={selected}
           className="premium-content-crossfade space-y-[var(--space-stack-sm)]"
