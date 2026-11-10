@@ -143,8 +143,8 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 480px;
 
-  /* ——— Premium QT calendar (나의 QT들) — gray calendar + white sheet ——— */
-  --premium-cal-bg: var(--color-gray);
+  /* ——— Premium QT calendar (나의 QT들) — sky calendar + white sheet ——— */
+  --premium-cal-bg: var(--color-sky);
   --premium-sheet: var(--color-white);
 }
 
@@ -505,6 +505,7 @@ a {
 .soft-card.sky-group-card {
   background: #9fd0f5;
   border: none;
+  border-radius: 0 !important;
   box-shadow: var(--shadow-soft);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -618,11 +619,11 @@ a {
 .sky-group-card {
   min-height: 360px;
   background: #9fd0f5;
-  border-radius: 0;
+  border-radius: 0 !important;
 }
 
 .sky-group-card .sky-stat-tile {
-  border-radius: 0;
+  border-radius: 0 !important;
 }
 
 .sky-walkers-stage {
@@ -655,7 +656,7 @@ a {
   }
 }
 
-/* ——— Premium QT calendar page (gray calendar + brand CTA) ——— */
+/* ——— Premium QT calendar page (sky calendar + brand CTA) ——— */
 .premium-qt-root {
   position: relative;
   z-index: 1;
@@ -672,7 +673,18 @@ a {
   z-index: 1;
   padding: calc(var(--space-title-pt) + var(--safe-top)) var(--space-page-x)
     1.25rem;
-  background: var(--premium-cal-bg);
+  background: var(--color-sky);
+  color: var(--color-ink-blue);
+  border-radius: 0 !important;
+}
+
+.premium-qt-header .type-month,
+.premium-qt-header .type-caption,
+.premium-qt-header .type-body-sm,
+.premium-qt-header .text-text-main,
+.premium-qt-header .text-text-secondary,
+.premium-qt-header .text-black {
+  color: var(--color-ink-blue) !important;
 }
 
 .premium-qt-sheet {
@@ -683,7 +695,8 @@ a {
   min-height: calc(100dvh - 280px);
   padding: 24px var(--space-page-x)
     calc(1.5rem + var(--safe-bottom));
-  border-radius: 36px 36px 0 0;
+  /* Default square — rounded top only for home + 나의 QT들 (rules below). */
+  border-radius: 0 !important;
   background: var(--premium-sheet);
   color: var(--text-main);
   /* Shape-following lift: filter tracks border-radius; keep prior soft opacity. */
@@ -691,6 +704,23 @@ a {
   filter:
     drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
     drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
+}
+
+/* Rounded sheet top: home form sheet + 나의 QT들 only. */
+.premium-home-form-sheet,
+.premium-qt-root:has(> .premium-qt-header) > .premium-qt-sheet {
+  border-radius: 36px 36px 0 0 !important;
+}
+
+/*
+ * 우리순 / 랭킹 / 마이페이지: square header→body seam (like home passage).
+ * No TL/TR radius on the lower sheet.
+ */
+.premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet {
+  margin-top: 0;
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
 }
 
 /* Legacy handle bars removed — home long-mode uses an invisible drag strip. */
@@ -723,6 +753,7 @@ a {
     1.25rem;
   background: var(--color-sky);
   color: var(--color-ink-blue);
+  border-radius: 0 !important;
 }
 
 .premium-tab-title {
@@ -770,9 +801,28 @@ a {
   color: var(--color-ink-blue);
 }
 
-/* Only `.premium-qt-sheet` keeps rounded top corners — panels/rows are square. */
+/*
+ * Square edges for panels / rows / seams on secondary tabs.
+ * Rounded top is reserved for home + 나의 QT들 `.premium-qt-sheet` only.
+ * Excludes pills, avatars, CTAs, calendar day cells.
+ */
+.premium-qt-root
+  :is(
+    .premium-stat-tile,
+    .premium-list-row,
+    .premium-rank-row,
+    .premium-panel,
+    .premium-tab-header,
+    .sky-group-card,
+    .sky-stat-tile,
+    .premium-home-passage,
+    .premium-home-passage > *
+  ) {
+  border-radius: 0 !important;
+}
+
 .premium-stat-tile {
-  border-radius: 0;
+  border-radius: 0 !important;
   background: var(--color-gray);
   padding: 0.75rem;
   text-align: center;
@@ -784,7 +834,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  border-radius: 0;
+  border-radius: 0 !important;
   background: var(--color-gray);
   padding: var(--space-stack-sm);
   text-align: left;
@@ -799,7 +849,7 @@ a {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  border-radius: 0;
+  border-radius: 0 !important;
   background: var(--color-gray);
   padding: 1.15rem 1rem;
   box-shadow: none;
@@ -912,7 +962,7 @@ a {
 
 .premium-home-passage,
 .premium-home-passage > * {
-  /* Header/body seam is square — only `.premium-qt-sheet` keeps rounded top. */
+  /* Header/body seam is square — rounded top lives on home form sheet only. */
   border-radius: 0 !important;
 }
 
