@@ -148,7 +148,7 @@ export function ProfileAvatarButton({
               <button
                 type="button"
                 disabled={saving}
-                className="btn-cta bg-cta rounded-full px-4 py-3 type-body-sm font-semibold !text-white disabled:opacity-50"
+                className="btn-cta bg-cta rounded-full px-4 py-3 type-body-sm font-semibold !text-[var(--color-sky)] disabled:opacity-50"
                 onClick={() => void onSave()}
               >
                 {saving ? "저장 중…" : "저장"}

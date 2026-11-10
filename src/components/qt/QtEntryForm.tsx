@@ -149,7 +149,10 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="type-section mb-1.5 block text-text-main">
+      <label
+        htmlFor={id}
+        className="type-section mb-1.5 block text-[20px] text-text-main"
+      >
         {label}
       </label>
       <textarea

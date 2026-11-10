@@ -48,7 +48,7 @@ export default function HomePage() {
             groupName={group?.name ?? "순"}
             status={
               <div className="flex items-center gap-1.5">
-                <p className="type-section font-normal text-text-main">
+                <p className="home-status-line type-section text-text-main">
                   {doneToday
                     ? "오늘의 큐티를 완료했어요"
                     : "오늘의 큐티를 아직 안했어요"}

@@ -36,14 +36,14 @@ export function AppHeader({
       >
         <div className="min-w-0 flex-1">
           <p
-            className={`type-body-sm font-medium ${
+            className={`home-header-label font-medium ${
               light ? "text-white/80" : "text-sky"
             }`}
           >
             {title}
           </p>
           <p
-            className={`type-page-title mt-1.5 ${
+            className={`type-page-title mt-1 ${
               light ? "text-white" : "text-text-main"
             }`}
             suppressHydrationWarning

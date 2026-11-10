@@ -127,7 +127,7 @@
   --shadow-nav: none;
   --shadow-nav-float: 0 10px 30px rgba(0, 60, 130, 0.42);
   /* Icon-only bottom nav: dark blue capsule */
-  --nav-glass-bg: var(--color-ink-blue);
+  --nav-glass-bg: var(--color-black);
   --nav-glass-border: rgba(255, 255, 255, 0.18);
   --nav-glass-blur: 28px;
   /* SoftCard / primary frames — stronger frosted glass than #62 */
@@ -282,17 +282,17 @@
   font-weight: 600;
 }
 
-/* Primary filled CTAs: CTA blue + white label/icons, pill, flat */
+/* Primary filled CTAs: black fill + sky label/icons, pill, flat */
 .bg-cta,
 .btn-cta {
-  background-color: var(--cta) !important;
-  color: #ffffff !important;
+  background-color: var(--color-black) !important;
+  color: var(--color-sky) !important;
   box-shadow: none !important;
   border-radius: 9999px;
 }
 .bg-cta svg,
 .btn-cta svg {
-  color: #ffffff !important;
+  color: var(--color-sky) !important;
   stroke: currentColor;
 }
 
@@ -639,7 +639,9 @@ a {
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   background: var(--premium-cal-bg);
   color: var(--text-main);
-  overflow: hidden;
+  /* Allow sheet drop-shadow to paint above the rounded top (was clipping to a hard line). */
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .premium-qt-header {
@@ -653,16 +655,19 @@ a {
 .premium-qt-sheet {
   position: relative;
   z-index: 2;
-  margin-top: 0.25rem;
+  /* Overlap content above so 36px TL/TR corners sit on top (not under a square edge). */
+  margin-top: -1.25rem;
   min-height: calc(100dvh - 280px);
   padding: 0.75rem var(--space-page-x)
     calc(1.5rem + var(--safe-bottom));
   border-radius: 36px 36px 0 0;
   background: var(--premium-sheet);
   color: var(--text-main);
-  box-shadow:
-    0 -12px 36px 2px rgba(0, 9, 23, 0.07),
-    0 -4px 16px 1px rgba(39, 70, 107, 0.05);
+  /* Shape-following lift: filter tracks border-radius; keep prior soft opacity. */
+  box-shadow: none;
+  filter:
+    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
+    drop-shadow(0 -2px 5px rgba(39, 70, 107, 0.05));
 }
 
 .premium-qt-sheet-handles {
@@ -745,6 +750,18 @@ a {
   font-size: 14px; /* type-caption 15px − 1pt */
   font-weight: 400;
   line-height: var(--lh-caption);
+}
+
+/* 「오늘은」 matches 사랑순 (.home-profile-group) size; keep medium weight. */
+.premium-home-header-band .home-header-label {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: var(--lh-caption);
+}
+
+/* Status under date: force regular even though .type-section is 600. */
+.premium-home-header-band .home-status-line {
+  font-weight: 400 !important;
 }
 
 .premium-home-passage,
