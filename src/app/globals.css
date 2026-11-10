@@ -295,10 +295,10 @@
   font-weight: 600;
 }
 
-/* Primary filled CTAs: sky fill + ink-blue label/icons, pill, flat */
+/* Primary filled CTAs: 소라 fill + ink-blue label/icons, pill, flat */
 .bg-cta,
 .btn-cta {
-  background-color: var(--color-sky) !important; /* #c2e5f0 */
+  background-color: var(--color-sora) !important; /* #4eb4d5 소라 */
   color: var(--color-ink-blue) !important; /* #1f3e62 */
   font-weight: 700;
   letter-spacing: 0.03em; /* slight tracking bump on CTA label */
