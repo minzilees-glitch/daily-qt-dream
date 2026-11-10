@@ -301,6 +301,7 @@
   background-color: var(--color-ink-blue) !important; /* #27466b */
   color: var(--color-sky) !important; /* #c2e5f0 — readable on ink-blue */
   font-weight: 700;
+  letter-spacing: 0.03em; /* slight tracking bump on CTA label */
   /* +2px vs former py-3.5 (14px) → 16px top/bottom */
   padding-top: 16px;
   padding-bottom: 16px;
