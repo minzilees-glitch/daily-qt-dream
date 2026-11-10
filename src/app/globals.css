@@ -282,11 +282,11 @@
   font-weight: 600;
 }
 
-/* Primary filled CTAs: black fill + sky label/icons, pill, flat */
+/* Primary filled CTAs: ink-blue fill + sky label/icons, pill, flat */
 .bg-cta,
 .btn-cta {
-  background-color: var(--color-black) !important;
-  color: var(--color-sky) !important;
+  background-color: var(--color-ink-blue) !important; /* #27466b */
+  color: var(--color-sky) !important; /* #c2e5f0 — readable on ink-blue */
   box-shadow: none !important;
   border-radius: 9999px;
 }
