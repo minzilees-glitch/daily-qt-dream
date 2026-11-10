@@ -18,9 +18,7 @@ export function ReadingPassageHeader({
   afterTitle?: ReactNode;
   inkTitle?: boolean;
 }) {
-  const rangeClass = inkTitle
-    ? "text-[var(--color-ink-blue)]"
-    : "text-text-main";
+  /* Secondary book title next to the range (not the range itself). */
   const titleClass = inkTitle
     ? "type-body-sm font-medium text-[var(--color-ink-blue)] opacity-80"
     : "type-body-sm font-medium text-text-secondary";
@@ -33,10 +31,11 @@ export function ReadingPassageHeader({
       <div
         className="mt-1 flex items-start gap-2"
       >
-        <p
-          className={`flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5 type-section text-[20px] ${rangeClass}`}
-        >
-          <span className="reading-passage-range">{reading.range}</span>
+        <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          {/* Match QtEntryForm field titles: type-section + 20px + text-main (600). */}
+          <span className="type-section text-[20px] text-text-main">
+            {reading.range}
+          </span>
           {reading.title ? (
             <span className={titleClass}>{reading.title}</span>
           ) : null}
