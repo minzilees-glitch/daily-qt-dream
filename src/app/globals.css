@@ -892,8 +892,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* 30px sheet gap reads as passage gray, not page white. */
-  background: var(--color-gray);
+  /* 30px sheet gap reads as passage sky, not page white. */
+  background: var(--color-sky);
 }
 
 .premium-home-shell--long {
@@ -906,8 +906,8 @@ a {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* Gray (not sky) so the passage→sheet junction has no sky-layer hairline. */
-  background: var(--color-gray);
+  /* Sky under passage so passage→sheet junction has no mismatched strip. */
+  background: var(--color-sky);
 }
 
 .premium-home-shell--short .premium-home-top {
@@ -927,19 +927,20 @@ a {
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
   padding-bottom: var(--space-stack-sm);
-  background: var(--color-sky);
-  color: var(--color-ink-blue);
+  background: var(--color-ink-blue); /* #1F3E62 */
+  color: var(--color-sky);
   /*
-   * Header owns the seam shadow (cast DOWN onto gray passage).
+   * Header owns the seam shadow (cast DOWN onto sky passage).
    * Previous upward box-shadow on `.premium-home-passage` painted into the
-   * gray parent gap / got clipped by long-mode `overflow: hidden` on
+   * parent gap / got clipped by long-mode `overflow: hidden` on
    * `.premium-home-top`, so the lift looked inverted or cut off.
    */
   box-shadow:
-    0 4px 12px 0 rgba(0, 9, 23, 0.16),
-    0 1px 4px 0 rgba(31, 62, 98, 0.12);
+    0 4px 12px 0 rgba(0, 9, 23, 0.28),
+    0 1px 4px 0 rgba(0, 9, 23, 0.18);
 }
 
+/* Light ink on dark header — override utility text colors. */
 .premium-home-header-band .type-page-title,
 .premium-home-header-band .type-section,
 .premium-home-header-band .type-body-sm,
@@ -947,8 +948,15 @@ a {
 .premium-home-header-band .type-caption,
 .premium-home-header-band .text-sky,
 .premium-home-header-band .text-text-main,
-.premium-home-header-band .text-text-secondary {
-  color: var(--color-ink-blue) !important;
+.premium-home-header-band .text-text-secondary,
+.premium-home-header-band .text-white,
+.premium-home-header-band .home-status-line {
+  color: var(--color-sky) !important;
+}
+
+.premium-home-header-band .home-header-label,
+.premium-home-header-band .home-profile-group {
+  color: color-mix(in srgb, var(--color-sky) 82%, transparent) !important;
 }
 
 /* Home profile name/group: 1pt smaller than type-label / type-caption */
@@ -985,15 +993,25 @@ a {
 .premium-home-passage {
   position: relative;
   z-index: 1;
-  /* Flush under sky header — no gray margin strip that ate the old upward cast. */
+  /* Flush under ink-blue header — no mismatched strip under the seam. */
   margin-top: 0;
   padding-inline: var(--space-page-x);
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
-  background: var(--color-gray); /* #f2f2f2 */
+  background: var(--color-sky); /* #c2e5f0 */
+  color: var(--color-ink-blue);
   /* Seam shadow lives on `.premium-home-header-band` — do not double-cast. */
   box-shadow: none;
+}
+
+.premium-home-passage .text-text-main,
+.premium-home-passage .text-text-secondary,
+.premium-home-passage .type-section,
+.premium-home-passage .type-body,
+.premium-home-passage .type-body-sm,
+.premium-home-passage .type-caption {
+  color: var(--color-ink-blue) !important;
 }
 
 .premium-home-shell--short .premium-home-passage {
