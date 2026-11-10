@@ -34,9 +34,9 @@ export function ReadingPassageHeader({
         className="mt-1 flex items-start gap-2"
       >
         <p
-          className={`flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5 type-section ${rangeClass}`}
+          className={`flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5 type-section text-[20px] ${rangeClass}`}
         >
-          <span>{reading.range}</span>
+          <span className="reading-passage-range">{reading.range}</span>
           {reading.title ? (
             <span className={titleClass}>{reading.title}</span>
           ) : null}
