@@ -287,6 +287,7 @@
 .btn-cta {
   background-color: var(--color-ink-blue) !important; /* #27466b */
   color: var(--color-sky) !important; /* #c2e5f0 — readable on ink-blue */
+  font-weight: 700;
   box-shadow: none !important;
   border-radius: 9999px;
 }
