@@ -9,8 +9,7 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react";
-import { PageTitle } from "@/components/layout/PageTitle";
+import { CalendarDays, MoreHorizontal } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
@@ -150,45 +149,39 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   };
 
   return (
-    <div>
-      {/* Top-section-only wash — same pattern as 우리순; calendar stays below so gradient does not stretch. */}
-      <section className="hero-gradient-spread px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
-        <PageTitle light>나의 QT들</PageTitle>
-        <div className="mt-[var(--space-stack-sm)]">
-          <MonthPicker
-            value={ym}
-            onChange={(next) => {
-              setYm(next);
-              setCalendarExpanded(false);
-            }}
-            min={minYm}
-            max={maxYm}
-            capsule
-          />
-        </div>
-      </section>
-
-      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pb-3 pt-1">
-        <div className="space-y-[var(--space-stack-sm)]">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="frame-glass px-3 py-3 text-center">
-              <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
-              <div className="mt-1 flex justify-center">
-                <LightCount
-                  lights={stats.lights}
-                  size={18}
-                  rays={false}
-                  textClassName="type-stat text-text-main"
-                />
-              </div>
-            </div>
-            <div className="frame-glass px-3 py-3 text-center">
-              <StatLabel className="text-text-secondary">집계 일수</StatLabel>
-              <p className="mt-1 type-stat text-text-main">
-                {stats.possible}일
-              </p>
+    <div className="premium-qt-root">
+      <header className="premium-qt-header">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="type-caption font-medium text-white/55">나의 QT들</p>
+            <div className="mt-1">
+              <MonthPicker
+                value={ym}
+                onChange={(next) => {
+                  setYm(next);
+                  setCalendarExpanded(false);
+                }}
+                min={minYm}
+                max={maxYm}
+                light
+                align="start"
+              />
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setCalendarExpanded((v) => !v)}
+            className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/8 text-white transition hover:bg-white/14"
+            aria-expanded={calendarExpanded}
+            aria-label={
+              calendarExpanded ? "주간 달력 보기" : "전체 달 보기"
+            }
+          >
+            <CalendarDays size={20} strokeWidth={1.75} />
+          </button>
+        </div>
+
+        <div className="mt-5">
           <QtCalendar
             yearMonth={ym}
             completedDates={completedDates}
@@ -199,134 +192,136 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             minYearMonth={minYm}
             maxYearMonth={maxYm}
           />
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={() => setCalendarExpanded((v) => !v)}
-              className="flex h-8 w-8 items-center justify-center text-text-secondary transition hover:text-text-main"
-              aria-expanded={calendarExpanded}
-              aria-label={
-                calendarExpanded ? "최근 2주만 보기" : "전체 달 보기"
-              }
-            >
-              {calendarExpanded ? (
-                <ChevronUp size={20} strokeWidth={1.75} />
-              ) : (
-                <ChevronDown size={20} strokeWidth={1.75} />
-              )}
-            </button>
+        </div>
+      </header>
+
+      <section className="premium-qt-sheet">
+        <div className="premium-qt-sheet-handles" aria-hidden>
+          <span />
+          <span />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2.5">
+          <div className="premium-stat-chip">
+            <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
+            <div className="mt-1 flex justify-center">
+              <LightCount
+                lights={stats.lights}
+                size={18}
+                rays={false}
+                textClassName="type-stat text-text-main"
+              />
+            </div>
+          </div>
+          <div className="premium-stat-chip">
+            <StatLabel className="text-text-secondary">집계 일수</StatLabel>
+            <p className="mt-1 type-stat text-text-main">{stats.possible}일</p>
           </div>
         </div>
-      </section>
 
-      <div
-        className="h-px w-full bg-divider shadow-none"
-        role="separator"
-        aria-hidden
-      />
-
-      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pt-10">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="flex min-w-0 items-center gap-1.5">
-              <span className="shrink-0">
-                <LightIcon
-                  active={selectedCompleted}
-                  future={future}
-                  size={28}
-                  justEarned={selectedCompleted && !future}
-                />
-              </span>
-              <FitDateTitle text={formatDisplayDate(selected)} />
+        <div
+          key={selected}
+          className="premium-content-crossfade mt-5 space-y-[var(--space-stack-sm)]"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex min-w-0 items-center gap-1.5">
+                <span className="shrink-0">
+                  <LightIcon
+                    active={selectedCompleted}
+                    future={future}
+                    size={28}
+                    justEarned={selectedCompleted && !future}
+                  />
+                </span>
+                <FitDateTitle text={formatDisplayDate(selected)} />
+              </div>
+              {future ? (
+                <p className="mt-1 type-body-sm text-text-secondary">
+                  미래 날짜는 완료할 수 없습니다.
+                </p>
+              ) : past ? (
+                <p className="type-caption mt-1 break-keep text-text-secondary">
+                  지난 큐티완료는 빛을 획득할 수 없습니다.
+                  <br />
+                  그러나 지난 큐티는 당신 심령에 남을거에요.
+                </p>
+              ) : null}
             </div>
-            {future ? (
-              <p className="mt-1 type-body-sm text-text-secondary">
-                미래 날짜는 완료할 수 없습니다.
-              </p>
-            ) : past ? (
-              <p className="type-caption mt-1 break-keep text-text-secondary">
-                지난 큐티완료는 빛을 획득할 수 없습니다.
-                <br />
-                그러나 지난 큐티는 당신 심령에 남을거에요.
-              </p>
+
+            {!future ? (
+              <div className="relative shrink-0" ref={menuRef}>
+                <button
+                  type="button"
+                  aria-label="더보기"
+                  aria-expanded={menuOpen}
+                  onClick={() => setMenuOpen((v) => !v)}
+                  className="flex h-10 w-10 items-center justify-center bg-transparent text-text-main shadow-none"
+                >
+                  <MoreHorizontal size={18} strokeWidth={1.75} />
+                </button>
+                {menuOpen ? (
+                  <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+                    <button
+                      type="button"
+                      className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setEditing(true);
+                      }}
+                    >
+                      수정
+                    </button>
+                    <button
+                      type="button"
+                      className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
+                      disabled={!hasEntry && !selectedCompleted}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setConfirmOpen(true);
+                      }}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             ) : null}
           </div>
 
-          {!future ? (
-            <div className="relative shrink-0" ref={menuRef}>
-              <button
-                type="button"
-                aria-label="더보기"
-                aria-expanded={menuOpen}
-                onClick={() => setMenuOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center bg-transparent text-text-main shadow-none"
-              >
-                <MoreHorizontal size={18} strokeWidth={1.75} />
-              </button>
-              {menuOpen ? (
-                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-none">
-                  <button
-                    type="button"
-                    className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setEditing(true);
-                    }}
-                  >
-                    수정
-                  </button>
-                  <button
-                    type="button"
-                    className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
-                    disabled={!hasEntry && !selectedCompleted}
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setConfirmOpen(true);
-                    }}
-                  >
-                    삭제
-                  </button>
-                </div>
-              ) : null}
+          {future ? (
+            <div className="premium-pastel-card premium-pastel-sky">
+              <ReadingRangeMilestone
+                key={selected}
+                reading={reading}
+                label="본문"
+                embedded
+              />
             </div>
-          ) : null}
-        </div>
-
-        {future ? (
-          <ReadingRangeMilestone key={selected} reading={reading} label="본문" />
-        ) : (
-          <ReadingPassageBlock key={selected} reading={reading} label="본문" defaultExpanded />
-        )}
-
-        {!future && editing ? (
-          <QtEntryForm
-            key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
-            initial={selectedEntry}
-            onSave={async (fields) => {
-              try {
-                const res = await saveEntry(selected, fields);
-                showToast(res.message);
-                if (res.ok) setEditing(false);
-              } catch (err) {
-                const detail =
-                  err instanceof Error ? err.message : "알 수 없는 오류";
-                showToast(`저장 실패: ${detail}`);
-              }
-            }}
-          />
-        ) : null}
-
-        {!future && !editing ? (
-          hasEntry || selectedCompleted ? (
-            <DayEntryView entry={selectedEntry} />
           ) : (
+            <div className="premium-pastel-card premium-pastel-sky !p-0 overflow-hidden">
+              <div className="px-4 py-4">
+                <ReadingPassageBlock
+                  key={selected}
+                  reading={reading}
+                  label="본문"
+                  defaultExpanded
+                  embedded
+                />
+              </div>
+            </div>
+          )}
+
+          {!future && editing ? (
             <QtEntryForm
-              key={`hist-new-${selected}`}
-              initial={null}
+              key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
+              pastel
+              initial={selectedEntry}
               onSave={async (fields) => {
                 try {
                   const res = await saveEntry(selected, fields);
                   showToast(res.message);
+                  if (res.ok) setEditing(false);
                 } catch (err) {
                   const detail =
                     err instanceof Error ? err.message : "알 수 없는 오류";
@@ -334,8 +329,30 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 }
               }}
             />
-          )
-        ) : null}
+          ) : null}
+
+          {!future && !editing ? (
+            hasEntry || selectedCompleted ? (
+              <DayEntryView entry={selectedEntry} />
+            ) : (
+              <QtEntryForm
+                key={`hist-new-${selected}`}
+                pastel
+                initial={null}
+                onSave={async (fields) => {
+                  try {
+                    const res = await saveEntry(selected, fields);
+                    showToast(res.message);
+                  } catch (err) {
+                    const detail =
+                      err instanceof Error ? err.message : "알 수 없는 오류";
+                    showToast(`저장 실패: ${detail}`);
+                  }
+                }}
+              />
+            )
+          ) : null}
+        </div>
       </section>
 
       <ConfirmModal

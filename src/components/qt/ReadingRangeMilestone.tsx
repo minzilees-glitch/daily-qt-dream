@@ -5,12 +5,15 @@ import { ReadingPassageHeader } from "@/components/qt/ReadingPassageHeader";
 export function ReadingRangeMilestone({
   reading,
   label = "본문",
+  embedded = false,
 }: {
   reading: QtReadingRange;
   label?: string;
+  /** When true, skip SoftCard chrome (pastel / parent panel). */
+  embedded?: boolean;
 }) {
   return (
-    <div className="soft-card px-4 py-4">
+    <div className={embedded ? "shadow-none" : "soft-card px-4 py-4"}>
       <ReadingPassageHeader reading={reading} label={label} />
     </div>
   );

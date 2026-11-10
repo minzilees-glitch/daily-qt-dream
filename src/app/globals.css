@@ -123,6 +123,23 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 480px;
+
+  /* ——— Premium QT calendar (나의 QT들) ——— */
+  --premium-navy: #16181d;
+  --premium-navy-lift: #1e2229;
+  --premium-ink: #1c2430;
+  --premium-sheet: #ffffff;
+  --premium-dot: #f3b6c4;
+  --premium-peach: #ffe4c8;
+  --premium-peach-ink: #9a5a2a;
+  --premium-mint: #d8f0df;
+  --premium-mint-ink: #3d7a55;
+  --premium-rose: #f8d7e2;
+  --premium-rose-ink: #9a4a66;
+  --premium-lilac: #e4ddf8;
+  --premium-lilac-ink: #5c4d8f;
+  --premium-sky: #d7ebfb;
+  --premium-sky-ink: #3a6f96;
 }
 
 @theme inline {
@@ -596,6 +613,175 @@ a {
   }
 
   .sky-light-drift {
+    animation: none;
+  }
+}
+
+/* ——— Premium QT calendar page ——— */
+.premium-qt-root {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100dvh - 72px - var(--safe-bottom));
+  background: var(--premium-navy);
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.premium-qt-root::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 11rem;
+  pointer-events: none;
+  opacity: 0.35;
+  background:
+    repeating-linear-gradient(
+      -28deg,
+      transparent 0 18px,
+      rgba(255, 255, 255, 0.035) 18px 20px
+    ),
+    radial-gradient(
+      ellipse 55% 80% at 88% 8%,
+      rgba(255, 255, 255, 0.07),
+      transparent 70%
+    );
+}
+
+.premium-qt-header {
+  position: relative;
+  z-index: 1;
+  padding: calc(var(--space-title-pt) + var(--safe-top)) var(--space-page-x)
+    1.25rem;
+}
+
+.premium-qt-sheet {
+  position: relative;
+  z-index: 2;
+  margin-top: 0.25rem;
+  min-height: calc(100dvh - 280px);
+  padding: 0.75rem var(--space-page-x)
+    calc(1.5rem + var(--safe-bottom));
+  border-radius: 36px 36px 0 0;
+  background: var(--premium-sheet);
+  color: var(--text-main);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.22);
+}
+
+.premium-qt-sheet-handles {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.15rem 0 0.85rem;
+}
+
+.premium-qt-sheet-handles span {
+  display: block;
+  width: 4px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #e6e8ec;
+}
+
+.premium-cal-day-selected {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(236, 240, 245, 0.92) 100%
+  );
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+  animation: premium-select-pop 0.42s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+
+.premium-cal-glow {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 0 0 6px rgba(255, 255, 255, 0.12),
+    0 8px 20px rgba(0, 0, 0, 0.2);
+  animation: premium-select-pop 0.42s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+
+.premium-cal-month-anim {
+  animation: premium-month-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.premium-content-crossfade {
+  animation: premium-crossfade 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.premium-pastel-card {
+  border-radius: 22px;
+  padding: 1rem 1.1rem;
+}
+
+.premium-pastel-peach {
+  background: var(--premium-peach);
+  color: var(--premium-peach-ink);
+}
+.premium-pastel-mint {
+  background: var(--premium-mint);
+  color: var(--premium-mint-ink);
+}
+.premium-pastel-rose {
+  background: var(--premium-rose);
+  color: var(--premium-rose-ink);
+}
+.premium-pastel-lilac {
+  background: var(--premium-lilac);
+  color: var(--premium-lilac-ink);
+}
+.premium-pastel-sky {
+  background: var(--premium-sky);
+  color: var(--premium-sky-ink);
+}
+
+.premium-stat-chip {
+  border-radius: 18px;
+  background: #f4f6f8;
+  padding: 0.85rem 0.75rem;
+  text-align: center;
+}
+
+@keyframes premium-select-pop {
+  0% {
+    transform: scale(0.86);
+    opacity: 0.65;
+  }
+  70% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes premium-month-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes premium-crossfade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-cal-day-selected,
+  .premium-cal-glow,
+  .premium-cal-month-anim,
+  .premium-content-crossfade {
     animation: none;
   }
 }

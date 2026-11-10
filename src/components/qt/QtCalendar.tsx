@@ -7,6 +7,7 @@ import {
   formatYmd,
   isFutureDate,
   todaySeoul,
+  weekDatesMonFirst,
   weekdayIndexMonFirst,
   yearMonthOf,
 } from "@/lib/dates";
@@ -18,7 +19,7 @@ const TOUCH_THRESHOLD = 40;
 
 /**
  * Build Mon-first month grid, then optionally collapse to ~2 recent weeks.
- * Collapsed: 2 week-rows around the focus date within the viewed month
+ * Collapsed (legacy helper): 2 week-rows around the focus date within the viewed month
  * (capped at today for the current month).
  */
 function buildWeekRows(yearMonth: string): (number | null)[][] {
@@ -85,7 +86,7 @@ export function QtCalendar({
   completedDates,
   selectedDate,
   onSelect,
-  /** When true, only render ~2 recent weeks (accordion collapsed). */
+  /** When true, render a single premium week strip (accordion collapsed). */
   collapsed = false,
   /** Date that just earned a light — one-shot ray burst on that cell. */
   justEarnedDate = null,
@@ -110,10 +111,6 @@ export function QtCalendar({
       : yearMonth === yearMonthOf(today)
         ? today
         : formatYmd(y, m, daysInMonth(y, m));
-  const allRows = buildWeekRows(yearMonth);
-  const rows = collapsed
-    ? collapsedWeekRows(yearMonth, allRows, today, focusDate)
-    : allRows;
 
   const rootRef = useRef<HTMLDivElement>(null);
   const wheelAccRef = useRef(0);
@@ -181,9 +178,11 @@ export function QtCalendar({
     if (end == null) return;
     const dy = end - start;
     if (Math.abs(dy) < TOUCH_THRESHOLD) return;
-    // Finger up → next week (same as wheel down); finger down → previous week
     stepWeek(dy < 0 ? 1 : -1);
   };
+
+  const weekDates = weekDatesMonFirst(focusDate);
+  const allRows = buildWeekRows(yearMonth);
 
   return (
     <div
@@ -193,21 +192,14 @@ export function QtCalendar({
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      <div className="mb-2 grid grid-cols-7 gap-2 text-center type-micro text-text-secondary">
-        {WEEKDAYS.map((d) => (
-          <div key={d} className="py-1">
-            {d}
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 gap-2 overflow-visible touch-pan-y">
-        {rows.flatMap((row, ri) =>
-          row.map((day, ci) => {
-            const idx = ri * 7 + ci;
-            if (day == null) {
-              return <div key={`e-${yearMonth}-${idx}`} className="aspect-square" />;
-            }
-            const date = formatYmd(y, m, day);
+      {collapsed ? (
+        <div
+          key={`week-${weekDates[0]}`}
+          className="premium-cal-month-anim grid grid-cols-7 gap-1.5"
+        >
+          {weekDates.map((date, i) => {
+            const day = Number(date.slice(8, 10));
+            const inMonth = yearMonthOf(date) === yearMonth;
             const done = completedDates.has(date);
             const future = isFutureDate(date, today);
             const selected = selectedDate === date;
@@ -221,67 +213,135 @@ export function QtCalendar({
                 onClick={() => onSelect?.(date)}
                 aria-label={`${date}${done ? ", 완료" : ""}`}
                 aria-pressed={selected}
-                className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible touch-pan-y transition"
+                className={`premium-cal-day relative flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-[22px] px-1 py-2 transition ${
+                  selected ? "premium-cal-day-selected" : ""
+                } ${!inMonth ? "opacity-40" : ""}`}
               >
                 <span
-                  className={`relative mx-auto flex h-full w-[calc(100%-2px)] flex-col items-center justify-center gap-1 py-2 text-center ${
+                  className={`type-micro ${
                     selected
-                      ? "!text-white"
-                      : isToday
-                        ? "text-cta"
-                        : done
-                          ? "text-text-main"
-                          : future
-                            ? "text-text-secondary/40"
-                            : "text-text-main"
+                      ? "font-semibold text-[var(--premium-ink)]"
+                      : "text-white/45"
                   }`}
                 >
-                  {/* Selection / light-active fill — 2px up vs date copy */}
-                  <span
-                    aria-hidden
-                    className={`pointer-events-none absolute inset-x-0 top-[-2px] bottom-[2px] rounded-[var(--radius-day)] ${
-                      selected
-                        ? "bg-cta shadow-none"
-                        : isToday
-                          ? "bg-cta/18 group-hover:bg-cta/24"
-                          : done
-                            ? "bg-white"
-                            : future
-                              ? ""
-                              : "group-hover:bg-white/70"
-                    }`}
-                  />
-                  <span
-                    className={`relative z-[1] text-center text-label leading-none font-medium tabular-nums ${
-                      selected
-                        ? ""
-                        : isToday
-                          ? "font-semibold text-cta"
-                          : done
-                            ? "text-sky"
-                            : ""
-                    }`}
-                  >
-                    {day}
-                  </span>
+                  {WEEKDAYS[i]}
+                </span>
+                <span
+                  className={`relative z-[1] text-[17px] font-semibold tabular-nums leading-none ${
+                    selected
+                      ? "text-[var(--premium-ink)]"
+                      : isToday
+                        ? "text-white"
+                        : future
+                          ? "text-white/35"
+                          : "text-white"
+                  }`}
+                >
+                  {day}
+                </span>
+                <span className="relative z-[1] flex h-4 w-4 items-center justify-center">
                   {done ? (
-                    <span className="relative z-[1] mx-auto flex h-5 w-5 shrink-0 -translate-y-[2px] items-center justify-center overflow-visible">
-                      <LightIcon
-                        tone="active"
-                        size={16}
-                        label="빛 수집됨"
-                        justEarned={justEarnedDate === date}
-                      />
-                    </span>
-                  ) : (
-                    <span className="relative z-[1] mx-auto h-5 w-5 shrink-0 -translate-y-[2px]" />
-                  )}
+                    <LightIcon
+                      tone={selected ? "active" : "white"}
+                      size={14}
+                      rays={false}
+                      label="빛 수집됨"
+                      justEarned={justEarnedDate === date}
+                    />
+                  ) : selected ? (
+                    <span
+                      className="h-1.5 w-1.5 rounded-full bg-[var(--premium-ink)]/35"
+                      aria-hidden
+                    />
+                  ) : null}
                 </span>
               </button>
             );
-          }),
-        )}
-      </div>
+          })}
+        </div>
+      ) : (
+        <div key={`month-${yearMonth}`} className="premium-cal-month-anim">
+          <div className="mb-2 grid grid-cols-7 gap-1 text-center type-micro text-white/40">
+            {WEEKDAYS.map((d) => (
+              <div key={d} className="py-1">
+                {d}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-y-1 gap-x-1 overflow-visible touch-pan-y">
+            {allRows.flatMap((row, ri) =>
+              row.map((day, ci) => {
+                const idx = ri * 7 + ci;
+                if (day == null) {
+                  return (
+                    <div
+                      key={`e-${yearMonth}-${idx}`}
+                      className="aspect-square"
+                    />
+                  );
+                }
+                const date = formatYmd(y, m, day);
+                const done = completedDates.has(date);
+                const future = isFutureDate(date, today);
+                const selected = selectedDate === date;
+                const isToday = date === today;
+
+                return (
+                  <button
+                    key={date}
+                    type="button"
+                    disabled={future && !onSelect}
+                    onClick={() => onSelect?.(date)}
+                    aria-label={`${date}${done ? ", 완료" : ""}`}
+                    aria-pressed={selected}
+                    className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible touch-pan-y"
+                  >
+                    <span
+                      className={`relative flex h-[42px] w-[42px] flex-col items-center justify-center rounded-full transition ${
+                        selected ? "premium-cal-glow" : ""
+                      }`}
+                    >
+                      <span
+                        className={`relative z-[1] text-center text-[15px] leading-none font-semibold tabular-nums ${
+                          selected
+                            ? "text-[var(--premium-ink)]"
+                            : isToday
+                              ? "text-white"
+                              : future
+                                ? "text-white/30"
+                                : "text-white"
+                        }`}
+                      >
+                        {day}
+                      </span>
+                      {done ? (
+                        <span className="relative z-[1] mt-0.5 flex h-3.5 w-3.5 items-center justify-center">
+                          <span
+                            className="absolute h-1.5 w-1.5 rounded-full bg-[var(--premium-dot)]"
+                            aria-hidden
+                          />
+                          <span className="sr-only">빛 수집됨</span>
+                          {justEarnedDate === date ? (
+                            <LightIcon
+                              tone="active"
+                              size={14}
+                              justEarned
+                              label=""
+                              className="absolute"
+                            />
+                          ) : null}
+                        </span>
+                      ) : (
+                        <span className="mt-0.5 h-3.5 w-3.5" aria-hidden />
+                      )}
+                    </span>
+                  </button>
+                );
+              }),
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
