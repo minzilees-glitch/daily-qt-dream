@@ -15,7 +15,7 @@ import { LightIcon } from "@/components/ui/LightIcon";
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
 const WHEEL_THRESHOLD = 48;
-const TOUCH_THRESHOLD = 40;
+const SWIPE_THRESHOLD = 40;
 
 /**
  * Build Mon-first month grid, then optionally collapse to ~2 recent weeks.
@@ -114,8 +114,12 @@ export function QtCalendar({
 
   const rootRef = useRef<HTMLDivElement>(null);
   const wheelAccRef = useRef(0);
-  const touchStartY = useRef<number | null>(null);
-  const touchMoved = useRef(false);
+  const swipeRef = useRef<{
+    active: boolean;
+    startX: number;
+    startY: number;
+    moved: boolean;
+  }>({ active: false, startX: 0, startY: 0, moved: false });
 
   const stepWeek = useCallback(
     (direction: -1 | 1) => {
@@ -140,14 +144,19 @@ export function QtCalendar({
     ],
   );
 
+  /* Horizontal wheel / trackpad: one threshold → one week. */
   useEffect(() => {
     const el = rootRef.current;
-    if (!el || !onSelect) return;
+    if (!el || !onSelect || !collapsed) return;
 
     const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+      const absX = Math.abs(e.deltaX);
+      const absY = Math.abs(e.deltaY);
+      // Prefer horizontal; allow vertical-as-horizontal when shift-held.
+      const delta = absX >= absY || e.shiftKey ? (e.shiftKey ? e.deltaY : e.deltaX) : 0;
+      if (delta === 0) return;
       e.preventDefault();
-      wheelAccRef.current += e.deltaY;
+      wheelAccRef.current += delta;
       if (Math.abs(wheelAccRef.current) < WHEEL_THRESHOLD) return;
       const dir: -1 | 1 = wheelAccRef.current > 0 ? 1 : -1;
       wheelAccRef.current = 0;
@@ -156,29 +165,44 @@ export function QtCalendar({
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, [onSelect, stepWeek]);
+  }, [collapsed, onSelect, stepWeek]);
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0]?.clientY ?? null;
-    touchMoved.current = false;
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!collapsed) return;
+    swipeRef.current = {
+      active: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      moved: false,
+    };
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (touchStartY.current == null) return;
-    const yPos = e.touches[0]?.clientY;
-    if (yPos == null) return;
-    if (Math.abs(yPos - touchStartY.current) > 12) touchMoved.current = true;
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const swipe = swipeRef.current;
+    if (!swipe.active) return;
+    const dx = e.clientX - swipe.startX;
+    const dy = e.clientY - swipe.startY;
+    if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
+      swipe.moved = true;
+    }
   };
 
-  const onTouchEnd = (e: React.TouchEvent) => {
-    const start = touchStartY.current;
-    touchStartY.current = null;
-    if (start == null || !touchMoved.current) return;
-    const end = e.changedTouches[0]?.clientY;
-    if (end == null) return;
-    const dy = end - start;
-    if (Math.abs(dy) < TOUCH_THRESHOLD) return;
-    stepWeek(dy < 0 ? 1 : -1);
+  const endSwipe = (e: React.PointerEvent<HTMLDivElement>) => {
+    const swipe = swipeRef.current;
+    if (!swipe.active) return;
+    swipe.active = false;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
+    if (!swipe.moved) return;
+    const dx = e.clientX - swipe.startX;
+    const dy = e.clientY - swipe.startY;
+    if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
+    // Swipe left (dx < 0) → next week; swipe right → previous week.
+    stepWeek(dx < 0 ? 1 : -1);
   };
 
   const weekDates = weekDatesMonFirst(focusDate);
@@ -187,15 +211,17 @@ export function QtCalendar({
   return (
     <div
       ref={rootRef}
-      className="touch-pan-y"
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
+      className={collapsed ? "touch-pan-x select-none" : "touch-pan-y"}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endSwipe}
+      onPointerCancel={endSwipe}
     >
       {collapsed ? (
         <div
           key={`week-${weekDates[0]}`}
           className="premium-cal-month-anim grid grid-cols-7 gap-1.5"
+          aria-label="주간 달력 — 좌우로 밀면 일주일씩 이동합니다"
         >
           {weekDates.map((date, i) => {
             const day = Number(date.slice(8, 10));
@@ -210,7 +236,13 @@ export function QtCalendar({
                 key={date}
                 type="button"
                 disabled={future && !onSelect}
-                onClick={() => onSelect?.(date)}
+                onClick={(ev) => {
+                  if (swipeRef.current.moved) {
+                    ev.preventDefault();
+                    return;
+                  }
+                  onSelect?.(date);
+                }}
                 aria-label={`${date}${done ? ", 완료" : ""}`}
                 aria-pressed={selected}
                 className={`premium-cal-day relative flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-[22px] px-1 py-2 transition ${
