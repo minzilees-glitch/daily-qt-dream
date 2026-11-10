@@ -747,6 +747,13 @@ a {
   line-height: var(--lh-caption);
 }
 
+.premium-home-passage,
+.premium-home-passage > * {
+  /* Force square top — override stale sheet/card radius or SoftCard chrome. */
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
 .premium-home-passage {
   flex: 1 1 auto;
   min-height: 0;
@@ -757,7 +764,9 @@ a {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  border-radius: 0; /* square top; sheet keeps the round corners */
+  border-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
   background: var(--color-gray); /* #f2f2f2 */
   /* Soft lift onto the sky header above (keep light opacity / modest blur). */
   box-shadow:
