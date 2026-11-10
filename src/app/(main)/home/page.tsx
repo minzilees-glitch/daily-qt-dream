@@ -36,32 +36,34 @@ export default function HomePage() {
   };
 
   return (
-    <div className="premium-qt-root">
-      {/* ~70% of viewport: header + status + scripture (form peeks below). */}
+    <div className="premium-qt-root premium-home-root">
+      {/* ~70% of viewport: sky header band + white scripture (form peeks below). */}
       <div className="premium-home-top">
-        <AppHeader
-          homeLayout
-          title="오늘은"
-          dateLabel={formatDisplayDate(today)}
-          userName={currentUser.name}
-          groupName={group?.name ?? "순"}
-        />
-
-        <div className="mt-[var(--space-stack-sm)] flex items-center gap-2">
-          <LightIcon
-            active={doneToday}
-            size={22}
-            justEarned={doneToday || lastEarnedDate === today}
-            label=""
+        <div className="premium-home-header-band">
+          <AppHeader
+            homeLayout
+            title="오늘은"
+            dateLabel={formatDisplayDate(today)}
+            userName={currentUser.name}
+            groupName={group?.name ?? "순"}
           />
-          <p className="type-section text-text-main">
-            {doneToday
-              ? "오늘의 큐티를 완료했어요"
-              : "오늘의 큐티를 아직 안했어요"}
-          </p>
+
+          <div className="mt-[var(--space-stack-sm)] flex items-center gap-2">
+            <LightIcon
+              active={doneToday}
+              size={22}
+              justEarned={doneToday || lastEarnedDate === today}
+              label=""
+            />
+            <p className="type-section text-text-main">
+              {doneToday
+                ? "오늘의 큐티를 완료했어요"
+                : "오늘의 큐티를 아직 안했어요"}
+            </p>
+          </div>
         </div>
 
-        <div className="premium-home-passage mt-[var(--space-stack)]">
+        <div className="premium-home-passage">
           <ReadingPassageBlock
             reading={reading}
             label="본문"

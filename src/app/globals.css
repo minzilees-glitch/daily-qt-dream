@@ -671,23 +671,36 @@ a {
 }
 
 /* Home: fixed 70/30 split so form sheet always peeks ~30% at scroll 0. */
+.premium-home-root {
+  background: #ffffff;
+}
+
 .premium-home-top {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: calc((100dvh - 72px - var(--safe-bottom)) * 0.7);
-  padding-inline: var(--space-page-x);
-  padding-bottom: 0.75rem;
-  background: var(--premium-cal-bg);
   overflow: hidden;
+  background: #ffffff;
+}
+
+.premium-home-header-band {
+  flex: 0 0 auto;
+  padding-inline: var(--space-page-x);
+  padding-bottom: var(--space-stack-sm);
+  background: #c2e5f0;
 }
 
 .premium-home-passage {
   flex: 1 1 auto;
   min-height: 0;
+  padding-inline: var(--space-page-x);
+  padding-top: var(--space-stack);
+  padding-bottom: 0.75rem;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  background: #ffffff;
 }
 
 .premium-home-form-sheet {
