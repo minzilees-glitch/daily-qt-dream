@@ -695,8 +695,7 @@ a {
   min-height: calc(100dvh - 280px);
   padding: 24px var(--space-page-x)
     calc(1.5rem + var(--safe-bottom));
-  /* Default square — rounded top only for home + 나의 QT들 (rules below). */
-  border-radius: 0 !important;
+  border-radius: 36px 36px 0 0 !important;
   background: var(--premium-sheet);
   color: var(--text-main);
   /* Shape-following lift: filter tracks border-radius; keep prior soft opacity. */
@@ -706,21 +705,27 @@ a {
     drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
 }
 
-/* Rounded sheet top: home form sheet + 나의 QT들 only. */
-.premium-home-form-sheet,
-.premium-qt-root:has(> .premium-qt-header) > .premium-qt-sheet {
-  border-radius: 36px 36px 0 0 !important;
-}
-
 /*
- * 우리순 / 랭킹 / 마이페이지: square header→body seam (like home passage).
- * No TL/TR radius on the lower sheet.
+ * 우리순 / 랭킹 / 마이페이지: keep rounded sheet top, drop sheet + panel shadows.
+ * Home + 나의 QT들 keep the drop-shadow above.
  */
 .premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet {
-  margin-top: 0;
-  border-radius: 0 !important;
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+.premium-qt-root:has(> .premium-tab-header)
+  :is(
+    .premium-stat-tile,
+    .premium-list-row,
+    .premium-rank-row,
+    .premium-panel,
+    .sky-group-card,
+    .sky-stat-tile,
+    .soft-card
+  ) {
+  box-shadow: none !important;
+  filter: none !important;
 }
 
 /* Legacy handle bars removed — home long-mode uses an invisible drag strip. */
@@ -803,7 +808,7 @@ a {
 
 /*
  * Square edges for panels / rows / seams on secondary tabs.
- * Rounded top is reserved for home + 나의 QT들 `.premium-qt-sheet` only.
+ * Sheet top stays rounded; shadows stripped separately above.
  * Excludes pills, avatars, CTAs, calendar day cells.
  */
 .premium-qt-root
@@ -962,7 +967,7 @@ a {
 
 .premium-home-passage,
 .premium-home-passage > * {
-  /* Header/body seam is square — rounded top lives on home form sheet only. */
+  /* Header/body seam is square — rounded top lives on `.premium-qt-sheet`. */
   border-radius: 0 !important;
 }
 
