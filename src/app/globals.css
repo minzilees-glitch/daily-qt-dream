@@ -738,8 +738,8 @@ a {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* Sky behind passage so sheet radius / shadow can read against it. */
-  background: var(--color-sky);
+  /* Gray (not sky) so the passage→sheet junction has no sky-layer hairline. */
+  background: var(--color-gray);
 }
 
 .premium-home-shell--short .premium-home-top {
@@ -822,6 +822,11 @@ a {
 .premium-home-shell--short .premium-home-passage {
   flex: 0 0 auto;
   overflow: visible;
+  /*
+   * 30px gap lives INSIDE the gray passage (plus sheet overlap pull),
+   * so there is no sibling margin strip / layer seam hairline.
+   */
+  padding-bottom: calc(0.75rem + 30px + 1.25rem);
 }
 
 .premium-home-shell--long .premium-home-passage {
@@ -836,14 +841,12 @@ a {
   flex: 0 0 auto;
   z-index: 3;
   padding-top: 24px; /* same for short + long */
-  /* Home: kill upward drop-shadow — it painted a hard line into the gray gap. */
-  filter: none !important;
-  box-shadow: none !important;
+  /* Restore shared sheet drop-shadow from `.premium-qt-sheet` (do not null it). */
 }
 
 .premium-home-shell--short .premium-home-form-sheet {
-  /* 30px gray air between passage body end and sheet top. */
-  margin-top: 30px;
+  /* Nest into passage gray padding — keep 30px visible gap, no separate spacer. */
+  margin-top: -1.25rem;
   min-height: 0;
 }
 
@@ -851,10 +854,8 @@ a {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* Height set inline from peek + drag rise. */
+  /* Height set inline from peek + drag rise; keep default sheet overlap. */
   min-height: 0;
-  /* Long peek: avoid negative overlap creating a sky/gray seam above the sheet. */
-  margin-top: 0;
 }
 
 /* Invisible hit target at top of home sheet (long / peek mode). */
