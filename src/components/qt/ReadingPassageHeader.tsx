@@ -31,7 +31,7 @@ export function ReadingPassageHeader({
         <StatLabel className="text-text-secondary">{label}</StatLabel>
       ) : null}
       <div
-        className={`flex items-start gap-2 ${label ? "mt-3" : "mt-1"}`}
+        className="mt-1 flex items-start gap-2"
       >
         <p
           className={`flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5 type-section ${rangeClass}`}
