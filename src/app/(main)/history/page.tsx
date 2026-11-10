@@ -167,7 +167,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 align="start"
               />
               <div
-                className="inline-flex items-center gap-1 rounded-full bg-sky-light px-2.5 py-1"
+                className="inline-flex items-center"
                 title="이번달 내가 모은 빛"
                 aria-label={`이번달 내가 모은 빛 ${stats.lights}`}
               >

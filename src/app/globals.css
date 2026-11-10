@@ -124,7 +124,8 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 480px;
 
-  /* ——— Premium QT calendar (나의 QT들) — white + brand sky/CTA only ——— */
+  /* ——— Premium QT calendar (나의 QT들) — gray calendar + white sheet ——— */
+  --premium-cal-bg: #f2f2f2;
   --premium-sheet: #ffffff;
 }
 
@@ -603,12 +604,12 @@ a {
   }
 }
 
-/* ——— Premium QT calendar page (white + brand sky/CTA) ——— */
+/* ——— Premium QT calendar page (gray calendar + brand CTA) ——— */
 .premium-qt-root {
   position: relative;
   z-index: 1;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
-  background: #ffffff;
+  background: var(--premium-cal-bg);
   color: var(--text-main);
   overflow: hidden;
 }
@@ -618,7 +619,7 @@ a {
   z-index: 1;
   padding: calc(var(--space-title-pt) + var(--safe-top)) var(--space-page-x)
     1.25rem;
-  background: #ffffff;
+  background: var(--premium-cal-bg);
 }
 
 .premium-qt-sheet {
