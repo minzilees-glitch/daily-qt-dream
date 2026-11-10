@@ -270,7 +270,7 @@
   color: var(--text-main);
 }
 .type-month {
-  font-size: var(--fs-section); /* 18px — sole month-label role; color only varies */
+  font-size: 20px; /* was --fs-section 18px; +2pt for calendar month label */
   font-weight: 600;
   letter-spacing: var(--tracking-month);
 }
