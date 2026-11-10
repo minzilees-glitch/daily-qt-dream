@@ -111,7 +111,7 @@
   --radius-btn: var(--radius-pill);
 
   /* ——— Spacing ——— */
-  --space-page-x: 1.25rem; /* page horizontal = former px-5 */
+  --space-page-x: 32px; /* page horizontal gutters */
   --space-card: 1.25rem; /* SoftCard / modal pad = former p-5 */
   --space-control-x: 1.25rem; /* button / control horizontal pad */
   --space-stack-sm: 1rem; /* space-y-4 / mt-4 */
@@ -676,8 +676,8 @@ a {
   /* Overlap content above so 36px TL/TR corners sit on top (not under a square edge). */
   margin-top: -1.25rem;
   min-height: calc(100dvh - 280px);
-  padding: 1.35rem var(--space-page-x)
-    calc(1.5rem + var(--safe-bottom)); /* extra top padding inside sheet */
+  padding: 32px var(--space-page-x)
+    calc(1.5rem + var(--safe-bottom));
   border-radius: 36px 36px 0 0;
   background: var(--premium-sheet);
   color: var(--text-main);
@@ -835,17 +835,16 @@ a {
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
+  padding-top: 32px; /* same for short + long; no rem drift */
+  /* Home: kill upward drop-shadow — it painted a hard line into the gray gap. */
+  filter: none !important;
+  box-shadow: none !important;
 }
 
 .premium-home-shell--short .premium-home-form-sheet {
   /* 30px gray air between passage body end and sheet top. */
   margin-top: 30px;
   min-height: 0;
-  /* Extra top inset beyond shared sheet padding. */
-  padding-top: 1.6rem;
-  /* No upward drop-shadow/hairline painting into the gray gap. */
-  filter: none;
-  box-shadow: none;
 }
 
 .premium-home-shell--long .premium-home-form-sheet {
@@ -854,6 +853,8 @@ a {
   -webkit-overflow-scrolling: touch;
   /* Height set inline from peek + drag rise. */
   min-height: 0;
+  /* Long peek: avoid negative overlap creating a sky/gray seam above the sheet. */
+  margin-top: 0;
 }
 
 /* Invisible hit target at top of home sheet (long / peek mode). */
