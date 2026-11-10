@@ -17,8 +17,8 @@ export function PrimaryButton({
     variant === "primary"
       ? "btn-cta bg-cta font-bold !text-[var(--color-sky)] shadow-none hover:brightness-105 [&_svg]:!text-[var(--color-sky)]"
       : variant === "soft"
-        ? "bg-sky-light text-text-main"
-        : "bg-transparent text-text-secondary hover:text-text-main";
+        ? "bg-sky-light font-semibold text-text-main"
+        : "bg-transparent font-semibold text-text-secondary hover:text-text-main";
 
   return (
     <button className={`${base} ${styles} ${className}`} {...rest}>
