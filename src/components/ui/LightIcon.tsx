@@ -14,9 +14,9 @@ type Tone = "active" | "inactive" | "onDark" | "white" | "blue" | "sky";
 function toneColor(tone: Tone): string {
   switch (tone) {
     case "active":
-      return "var(--light-yellow)";
+      return "var(--color-yellow)"; /* #FBCC58 */
     case "onDark":
-      return "var(--light-yellow-soft)";
+      return "var(--color-yellow)"; /* #FBCC58 — same token on dark surfaces */
     case "white":
       return "var(--white)";
     case "blue":

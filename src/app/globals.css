@@ -10,7 +10,7 @@
   --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
   --color-black: #000917; /* 검정 */
   --color-chick: #eeefc7; /* 병아리 */
-  --color-yellow: #fbcc58; /* 노랑 */
+  --color-yellow: #fbcc58; /* 노랑 — light-icon / palette yellow */
   /* Korean aliases */
   --색-화이트: var(--color-white);
   --색-그레이: var(--color-gray);
@@ -32,9 +32,9 @@
   --white: var(--color-white);
   --text-main: #243746;
   --text-secondary: #768896;
-  /* Light yellow (빛 icon active) — brand-used, previously hardcoded */
+  /* 빛 icon yellows — both tones pin to palette #FBCC58 */
   --light-yellow: var(--color-yellow);
-  --light-yellow-soft: #ffe066;
+  --light-yellow-soft: var(--color-yellow);
   --danger: #e35d5d;
   /* All dividers (1px hairlines + thick bars) share this color; height varies. */
   /* Slightly darker than #e5eaf0 — still soft; sole hairline/divider token */
@@ -143,8 +143,8 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 480px;
 
-  /* ——— Premium QT calendar (나의 QT들) — sky calendar + white sheet ——— */
-  --premium-cal-bg: var(--color-sky);
+  /* ——— Premium QT calendar (나의 QT들) — ink-blue calendar + white sheet ——— */
+  --premium-cal-bg: var(--color-ink-blue);
   --premium-sheet: var(--color-white);
 }
 
@@ -157,7 +157,7 @@
   --color-ink-blue: #1f3e62;
   --color-black: #000917;
   --color-chick: #eeefc7;
-  --color-yellow: #fbcc58;
+  --color-yellow: #fbcc58; /* #FBCC58 light-icon / palette yellow */
   /* Legacy vivid sky chrome for existing text-sky / bg-sky-light patterns */
   --color-sky-chrome: var(--sky);
   --color-sky-secondary: var(--sky-secondary);
@@ -656,7 +656,7 @@ a {
   }
 }
 
-/* ——— Premium QT calendar page (sky calendar + brand CTA) ——— */
+/* ——— Premium QT calendar page (ink-blue calendar + brand CTA) ——— */
 .premium-qt-root {
   position: relative;
   z-index: 1;
@@ -673,18 +673,36 @@ a {
   z-index: 1;
   padding: calc(var(--space-title-pt) + var(--safe-top)) var(--space-page-x)
     1.25rem;
-  background: var(--color-sky);
-  color: var(--color-ink-blue);
+  background: var(--color-ink-blue); /* #1F3E62 */
+  color: var(--color-sky);
   border-radius: 0 !important;
 }
 
+/* Light ink on dark calendar header — month, day nums, captions. */
 .premium-qt-header .type-month,
 .premium-qt-header .type-caption,
 .premium-qt-header .type-body-sm,
+.premium-qt-header .type-micro,
 .premium-qt-header .text-text-main,
 .premium-qt-header .text-text-secondary,
 .premium-qt-header .text-black {
-  color: var(--color-ink-blue) !important;
+  color: var(--color-sky) !important;
+}
+
+/* Future / muted day nums on dark calendar. */
+.premium-qt-header .premium-cal-day .opacity-40,
+.premium-qt-header button:disabled {
+  opacity: 0.45;
+}
+
+/* Today accent stays 소라 on the dark calendar. */
+.premium-qt-header .text-cta {
+  color: var(--color-sora) !important;
+}
+
+.premium-qt-header svg {
+  color: var(--color-sky);
+  stroke: currentColor;
 }
 
 .premium-qt-sheet {
@@ -892,8 +910,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* 30px sheet gap reads as passage sky, not page white. */
-  background: var(--color-sky);
+  /* 30px sheet gap reads as passage ink-blue, not page white. */
+  background: var(--color-ink-blue);
 }
 
 .premium-home-shell--long {
@@ -906,8 +924,8 @@ a {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* Sky under passage so passage→sheet junction has no mismatched strip. */
-  background: var(--color-sky);
+  /* Ink-blue under passage so passage→sheet junction has no mismatched strip. */
+  background: var(--color-ink-blue);
 }
 
 .premium-home-shell--short .premium-home-top {
@@ -927,20 +945,20 @@ a {
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
   padding-bottom: var(--space-stack-sm);
-  background: var(--color-ink-blue); /* #1F3E62 */
-  color: var(--color-sky);
+  background: var(--color-sky); /* #c2e5f0 */
+  color: var(--color-ink-blue);
   /*
-   * Header owns the seam shadow (cast DOWN onto sky passage).
+   * Header owns the seam shadow (cast DOWN onto ink-blue passage).
    * Previous upward box-shadow on `.premium-home-passage` painted into the
    * parent gap / got clipped by long-mode `overflow: hidden` on
    * `.premium-home-top`, so the lift looked inverted or cut off.
    */
   box-shadow:
-    0 4px 12px 0 rgba(0, 9, 23, 0.28),
-    0 1px 4px 0 rgba(0, 9, 23, 0.18);
+    0 4px 12px 0 rgba(0, 9, 23, 0.22),
+    0 1px 4px 0 rgba(31, 62, 98, 0.16);
 }
 
-/* Light ink on dark header — override utility text colors. */
+/* Ink text on sky header — override utility text colors. */
 .premium-home-header-band .type-page-title,
 .premium-home-header-band .type-section,
 .premium-home-header-band .type-body-sm,
@@ -951,12 +969,12 @@ a {
 .premium-home-header-band .text-text-secondary,
 .premium-home-header-band .text-white,
 .premium-home-header-band .home-status-line {
-  color: var(--color-sky) !important;
+  color: var(--color-ink-blue) !important;
 }
 
 .premium-home-header-band .home-header-label,
 .premium-home-header-band .home-profile-group {
-  color: color-mix(in srgb, var(--color-sky) 82%, transparent) !important;
+  color: color-mix(in srgb, var(--color-ink-blue) 78%, transparent) !important;
 }
 
 /* Home profile name/group: 1pt smaller than type-label / type-caption */
@@ -993,25 +1011,36 @@ a {
 .premium-home-passage {
   position: relative;
   z-index: 1;
-  /* Flush under ink-blue header — no mismatched strip under the seam. */
+  /* Flush under sky header — no mismatched strip under the seam. */
   margin-top: 0;
   padding-inline: var(--space-page-x);
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
-  background: var(--color-sky); /* #c2e5f0 */
-  color: var(--color-ink-blue);
+  background: var(--color-ink-blue); /* #1F3E62 */
+  color: var(--color-sky);
   /* Seam shadow lives on `.premium-home-header-band` — do not double-cast. */
   box-shadow: none;
 }
 
+/* Light reading text on dark ink-blue passage. */
 .premium-home-passage .text-text-main,
 .premium-home-passage .text-text-secondary,
 .premium-home-passage .type-section,
 .premium-home-passage .type-body,
 .premium-home-passage .type-body-sm,
-.premium-home-passage .type-caption {
-  color: var(--color-ink-blue) !important;
+.premium-home-passage .type-caption,
+.premium-home-passage .reading-passage-range,
+.premium-home-passage [class*="text-[var(--color-ink-blue)]"] {
+  color: var(--color-sky) !important;
+}
+
+.premium-home-passage .opacity-80 {
+  opacity: 0.85;
+}
+
+.premium-home-passage .opacity-60 {
+  opacity: 0.7;
 }
 
 .premium-home-shell--short .premium-home-passage {

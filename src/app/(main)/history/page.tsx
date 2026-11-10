@@ -172,7 +172,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   lights={stats.lights}
                   size={16}
                   rays={false}
-                  textClassName="type-body-sm font-semibold tabular-nums text-text-main"
+                  tone="onDark"
+                  textClassName="type-body-sm font-semibold tabular-nums text-[var(--color-sky)]"
                 />
               </div>
             </div>
@@ -180,7 +181,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           <button
             type="button"
             onClick={() => setCalendarExpanded((v) => !v)}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-light text-text-main transition hover:bg-sky/20"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/15 text-[var(--color-sky)] transition hover:bg-white/25"
             aria-expanded={calendarExpanded}
             aria-label={
               calendarExpanded ? "주간 달력 보기" : "전체 달 보기"
