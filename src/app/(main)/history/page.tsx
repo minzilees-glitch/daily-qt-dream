@@ -152,10 +152,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       <header className="premium-qt-header">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="type-caption font-medium text-text-secondary">
-              나의 QT들
-            </p>
-            <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <MonthPicker
                 value={ym}
                 onChange={(next) => {
@@ -183,7 +180,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           <button
             type="button"
             onClick={() => setCalendarExpanded((v) => !v)}
-            className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-light text-text-main transition hover:bg-sky/20"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-light text-text-main transition hover:bg-sky/20"
             aria-expanded={calendarExpanded}
             aria-label={
               calendarExpanded ? "주간 달력 보기" : "전체 달 보기"
@@ -193,7 +190,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           </button>
         </div>
 
-        <div className="mt-5">
+        <div className="mt-5 pb-6">
           <QtCalendar
             yearMonth={ym}
             completedDates={completedDates}
