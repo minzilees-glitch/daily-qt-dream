@@ -2,19 +2,38 @@
 
 :root {
   /* ——— Color ——— */
+  /* User palette (premium QT) — English + Korean aliases */
+  --color-white: #ffffff; /* 화이트 */
+  --color-gray: #f2f2f2; /* 그레이 */
+  --color-sky: #c2e5f0; /* 하늘 */
+  --color-sora: #4eb4d5; /* 소라 */
+  --color-ink-blue: #27466b; /* 잉크블루 / 어두운 파란색 */
+  --color-black: #000917; /* 검정 */
+  --color-chick: #eeefc7; /* 병아리 */
+  --color-yellow: #fbcc58; /* 노랑 */
+  /* Korean aliases */
+  --색-화이트: var(--color-white);
+  --색-그레이: var(--color-gray);
+  --색-하늘: var(--color-sky);
+  --색-소라: var(--color-sora);
+  --색-잉크블루: var(--color-ink-blue);
+  --색-검정: var(--color-black);
+  --색-병아리: var(--color-chick);
+  --색-노랑: var(--color-yellow);
+
+  /* Legacy / product tokens — keep names; wire to palette where they match */
   --sky: #5fbcfc;
   --sky-secondary: #83aeee;
   --sky-light: #e8f3fb;
   /* Primary CTA (buttons / nav / selected day) — distinct from chrome sky */
   --cta: #008cff;
   /* Surface swap (Phase 1 polish): page = white, cards = ivory */
-  /* Surface swap (Phase 1 polish): page = white, cards = ivory */
   --ivory: #faf8f3;
-  --white: #ffffff;
+  --white: var(--color-white);
   --text-main: #243746;
   --text-secondary: #768896;
   /* Light yellow (빛 icon active) — brand-used, previously hardcoded */
-  --light-yellow: #f5c518;
+  --light-yellow: var(--color-yellow);
   --light-yellow-soft: #ffe066;
   --danger: #e35d5d;
   /* All dividers (1px hairlines + thick bars) share this color; height varies. */
@@ -68,7 +87,7 @@
   --fs-body-lg: 19px;
   --fs-stat: 20px;
   --fs-display: 24px;
-  --fs-page: 27px;
+  --fs-page: 24px;
   --fs-display-xl: 34px; /* login hero */
   --lh-relaxed: 1.625;
   --lh-caption: 1.35; /* notices / type-caption — tighter than body-lg */
@@ -108,7 +127,7 @@
   --shadow-nav: none;
   --shadow-nav-float: 0 10px 30px rgba(0, 60, 130, 0.42);
   /* Icon-only bottom nav: dark blue capsule */
-  --nav-glass-bg: #27466b;
+  --nav-glass-bg: var(--color-ink-blue);
   --nav-glass-border: rgba(255, 255, 255, 0.18);
   --nav-glass-blur: 28px;
   /* SoftCard / primary frames — stronger frosted glass than #62 */
@@ -125,17 +144,26 @@
   --phone-max: 480px;
 
   /* ——— Premium QT calendar (나의 QT들) — gray calendar + white sheet ——— */
-  --premium-cal-bg: #f2f2f2;
-  --premium-sheet: #ffffff;
+  --premium-cal-bg: var(--color-gray);
+  --premium-sheet: var(--color-white);
 }
 
 @theme inline {
-  --color-sky: var(--sky);
+  /* User palette utilities (hex — avoid circular var() in @theme) */
+  --color-white: #ffffff;
+  --color-gray: #f2f2f2;
+  --color-sky: #c2e5f0; /* soft sky (home header); vivid product sky remains --sky */
+  --color-sora: #4eb4d5;
+  --color-ink-blue: #27466b;
+  --color-black: #000917;
+  --color-chick: #eeefc7;
+  --color-yellow: #fbcc58;
+  /* Legacy vivid sky chrome for existing text-sky / bg-sky-light patterns */
+  --color-sky-chrome: var(--sky);
   --color-sky-secondary: var(--sky-secondary);
   --color-sky-light: var(--sky-light);
   --color-cta: var(--cta);
   --color-ivory: var(--ivory);
-  --color-white: #ffffff;
   --color-pure-white: var(--white);
   --color-text-main: var(--text-main);
   --color-text-secondary: var(--text-secondary);
@@ -672,7 +700,7 @@ a {
 
 /* Home: fixed 70/30 split so form sheet always peeks ~30% at scroll 0. */
 .premium-home-root {
-  background: #ffffff;
+  background: var(--color-white);
 }
 
 .premium-home-top {
@@ -681,15 +709,15 @@ a {
   flex-direction: column;
   height: calc((100dvh - 72px - var(--safe-bottom)) * 0.7);
   overflow: hidden;
-  background: #ffffff;
+  background: var(--color-white);
 }
 
 .premium-home-header-band {
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
   padding-bottom: var(--space-stack-sm);
-  background: #c2e5f0;
-  color: #27466b;
+  background: var(--color-sky);
+  color: var(--color-ink-blue);
 }
 
 .premium-home-header-band .type-page-title,
@@ -700,7 +728,20 @@ a {
 .premium-home-header-band .text-sky,
 .premium-home-header-band .text-text-main,
 .premium-home-header-band .text-text-secondary {
-  color: #27466b !important;
+  color: var(--color-ink-blue) !important;
+}
+
+/* Home profile name/group: 1pt smaller than type-label / type-caption */
+.premium-home-header-band .home-profile-name {
+  font-size: 14px; /* type-label 15px − 1pt */
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+}
+
+.premium-home-header-band .home-profile-group {
+  font-size: 14px; /* type-caption 15px − 1pt */
+  font-weight: 400;
+  line-height: var(--lh-caption);
 }
 
 .premium-home-passage {
@@ -712,7 +753,7 @@ a {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  background: #ffffff;
+  background: var(--color-white);
 }
 
 .premium-home-form-sheet {

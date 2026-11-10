@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
 
 export function AppHeader({
@@ -12,6 +13,8 @@ export function AppHeader({
   userName,
   groupName,
   showAvatar = true,
+  /** Home: status row rendered tight under the date (left column). */
+  status,
 }: {
   title?: string;
   subtitle?: string;
@@ -22,6 +25,7 @@ export function AppHeader({
   groupName?: string;
   /** When false, hide top-right profile avatar (e.g. history/group/ranking). */
   showAvatar?: boolean;
+  status?: ReactNode;
 }) {
   if (homeLayout) {
     return (
@@ -46,20 +50,21 @@ export function AppHeader({
           >
             {dateLabel}
           </p>
+          {status ? <div className="mt-1">{status}</div> : null}
         </div>
 
         <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
           {showAvatar ? <ProfileAvatarButton light={light} /> : null}
           <div className="min-w-0 max-w-[7.5rem] text-center leading-none">
             <p
-              className={`truncate type-label leading-none ${
+              className={`home-profile-name truncate leading-none ${
                 light ? "text-white" : "text-text-main"
               }`}
             >
               {userName}
             </p>
             <p
-              className={`mt-0.5 truncate type-caption leading-none ${
+              className={`home-profile-group mt-0.5 truncate leading-none ${
                 light ? "text-white/80" : "text-text-secondary"
               }`}
             >
