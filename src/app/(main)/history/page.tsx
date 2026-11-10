@@ -287,14 +287,14 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             <ReadingRangeMilestone
               key={selected}
               reading={reading}
-              label="본문"
+              label="오늘의 말씀"
               embedded
             />
           ) : (
             <ReadingPassageBlock
               key={selected}
               reading={reading}
-              label="본문"
+              label="오늘의 말씀"
               embedded
               collapsible={false}
               inkTitle

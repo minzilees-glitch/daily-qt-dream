@@ -67,7 +67,7 @@ export default function HomePage() {
         <div className="premium-home-passage">
           <ReadingPassageBlock
             reading={reading}
-            label="본문"
+            label="오늘의 말씀"
             embedded
             collapsible={false}
             inkTitle

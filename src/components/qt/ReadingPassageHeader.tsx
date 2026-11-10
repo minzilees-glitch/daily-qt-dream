@@ -5,7 +5,7 @@ import { StatLabel } from "@/components/ui/StatLabel";
 /** Shared 본문 header: label + range/title (optional trailing on title row). */
 export function ReadingPassageHeader({
   reading,
-  label = "본문",
+  label = "오늘의 말씀",
   trailing,
   /** When set, render this after the title row (e.g. full-bleed divider below). */
   afterTitle,

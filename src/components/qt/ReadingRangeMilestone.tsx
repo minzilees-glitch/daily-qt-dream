@@ -4,7 +4,7 @@ import { ReadingPassageHeader } from "@/components/qt/ReadingPassageHeader";
 /** Compact sky-wash milestone: same 본문 header as today card; no verse body (future). */
 export function ReadingRangeMilestone({
   reading,
-  label = "본문",
+  label = "오늘의 말씀",
   embedded = false,
 }: {
   reading: QtReadingRange;

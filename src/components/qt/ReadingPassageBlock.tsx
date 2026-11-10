@@ -35,7 +35,7 @@ function renderPassage(text: string): ReactNode {
 /** Soft sky-wash 본문: shared header + optional scripture accordion. */
 export function ReadingPassageBlock({
   reading,
-  label = "본문",
+  label = "오늘의 말씀",
   defaultExpanded = false,
   embedded = false,
   /** When false, always show full passage with no chevron toggle (Home / 나의 QT들). */
