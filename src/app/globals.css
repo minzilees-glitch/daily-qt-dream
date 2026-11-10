@@ -843,6 +843,9 @@ a {
   min-height: 0;
   /* Extra top inset beyond shared sheet padding. */
   padding-top: 1.6rem;
+  /* No upward drop-shadow/hairline painting into the gray gap. */
+  filter: none;
+  box-shadow: none;
 }
 
 .premium-home-shell--long .premium-home-form-sheet {
