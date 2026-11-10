@@ -711,7 +711,8 @@ a {
   flex-direction: column;
   height: calc((100dvh - 72px - var(--safe-bottom)) * 0.7);
   overflow: hidden;
-  background: var(--color-white);
+  /* Sky behind passage so top corner radius reads like `.premium-qt-sheet`. */
+  background: var(--color-sky);
 }
 
 .premium-home-header-band {
@@ -749,12 +750,14 @@ a {
 .premium-home-passage {
   flex: 1 1 auto;
   min-height: 0;
+  margin-top: 0.25rem;
   padding-inline: var(--space-page-x);
   padding-top: var(--space-stack);
   padding-bottom: 0.75rem;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  border-radius: 36px 36px 0 0; /* match `.premium-qt-sheet` */
   background: var(--color-white);
 }
 
