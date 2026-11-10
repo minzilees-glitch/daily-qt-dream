@@ -836,7 +836,8 @@ a {
 }
 
 .premium-home-shell--short .premium-home-form-sheet {
-  /* Sit flush under passage content (still overlaps slightly for radius). */
+  /* 30px air between passage body end and sheet top (override sheet overlap). */
+  margin-top: 30px;
   min-height: 0;
 }
 
