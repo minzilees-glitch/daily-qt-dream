@@ -757,7 +757,7 @@ a {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  border-radius: 36px 36px 0 0; /* match `.premium-qt-sheet` */
+  border-radius: 0; /* square top; sheet keeps the round corners */
   background: var(--color-gray); /* #f2f2f2 */
   /* Soft lift onto the sky header above (keep light opacity / modest blur). */
   box-shadow:
