@@ -256,6 +256,19 @@
   font-size: var(--fs-section);
   font-weight: 600;
 }
+
+/* Arbitrary Tailwind text-[Npx] loses to .type-section — force sizes here. */
+.qt-field-title {
+  font-size: 20px !important;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.reading-passage-range {
+  font-size: 22px !important; /* field title 20px + 2pt */
+  font-weight: 600;
+  color: var(--text-main);
+}
 .type-month {
   font-size: var(--fs-section); /* 18px — sole month-label role; color only varies */
   font-weight: 600;

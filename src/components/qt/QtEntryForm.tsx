@@ -151,7 +151,7 @@ function Field({
     <div>
       <label
         htmlFor={id}
-        className="type-section mb-1.5 block text-[20px] text-text-main"
+        className="qt-field-title mb-1.5 block"
       >
         {label}
       </label>

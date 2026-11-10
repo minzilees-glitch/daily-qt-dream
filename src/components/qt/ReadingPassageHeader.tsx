@@ -32,8 +32,8 @@ export function ReadingPassageHeader({
         className="mt-1 flex items-start gap-2"
       >
         <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          {/* Same as field titles but +2pt: type-section + 22px + text-main (600). */}
-          <span className="type-section text-[22px] text-text-main">
+          {/* 22px via .reading-passage-range — text-[22px] loses to .type-section. */}
+          <span className="reading-passage-range">
             {reading.range}
           </span>
           {reading.title ? (
