@@ -92,7 +92,7 @@
   --lh-relaxed: 1.625;
   --lh-caption: 1.35; /* notices / type-caption — tighter than body-lg */
   --lh-page-title: 1.15;
-  --tracking-title: 0.01em; /* page titles — was 0.04em */
+  --tracking-title: 0.04em; /* page titles / type-page-title */
   --tracking-label: 0.06em;
   --tracking-month: 0.02em;
 
@@ -197,7 +197,7 @@
   --text-display: var(--fs-display);
   --text-page: var(--fs-page);
   --text-display-xl: var(--fs-display-xl);
-  --tracking-title: 0.01em;
+  --tracking-title: 0.04em;
   --tracking-label: 0.06em;
   --tracking-month: 0.02em;
   --radius-sm: 12px;
@@ -660,7 +660,9 @@ a {
   border-radius: 36px 36px 0 0;
   background: var(--premium-sheet);
   color: var(--text-main);
-  box-shadow: 0 -1px 0 var(--divider);
+  box-shadow:
+    0 -10px 32px rgba(0, 9, 23, 0.22),
+    0 -2px 8px rgba(39, 70, 107, 0.16);
 }
 
 .premium-qt-sheet-handles {
