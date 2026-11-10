@@ -1,8 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { PageTitle } from "@/components/layout/PageTitle";
-import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { DayParticipation } from "@/components/groups/DayParticipation";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
@@ -52,16 +50,16 @@ export default function GroupPage() {
   );
 
   return (
-    <div>
-      <section className="hero-gradient px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
-        <PageTitle light>우리 순</PageTitle>
+    <div className="premium-qt-root">
+      <header className="premium-tab-header">
+        <h1 className="premium-tab-title">우리 순</h1>
         <div className="mt-[var(--space-stack-sm)]">
           <MonthPicker
             value={ym}
             onChange={setYm}
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
-            capsule
+            align="start"
           />
         </div>
         <div className="mt-[var(--space-stack)] animate-fade-up">
@@ -72,26 +70,22 @@ export default function GroupPage() {
             rankLabel={`${myRank?.rank ?? "-"}위`}
           />
         </div>
-      </section>
+      </header>
 
-      <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pt-1">
-        <SoftCard>
-          <h2 className="mb-3 type-section text-text-main">
-            우리순의 이번주 참여
-          </h2>
+      <section className="premium-qt-sheet">
+        <div className="premium-panel animate-fade-up">
+          <h2 className="premium-panel-title">우리순의 이번주 참여</h2>
           <WeekdayParticipation
             days={weekBars}
             showCount={false}
             showPossible={false}
           />
-        </SoftCard>
+        </div>
 
-        <SoftCard>
-          <h2 className="mb-3 type-section text-text-main">
-            우리순 날짜별 참여
-          </h2>
+        <div className="premium-panel animate-fade-up">
+          <h2 className="premium-panel-title">우리순 날짜별 참여</h2>
           <DayParticipation days={dayPart} />
-        </SoftCard>
+        </div>
       </section>
     </div>
   );
