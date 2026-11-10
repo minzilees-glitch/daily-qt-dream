@@ -16,15 +16,12 @@ export function QtEntryForm({
   onClear,
   disabled,
   showClear,
-  /** Soft pastel field panels (나의 QT들 sheet). */
-  pastel = false,
 }: {
   initial?: QtEntry | null;
   onSave: (fields: QtEntryFields) => void | Promise<void>;
   onClear?: () => void | Promise<void>;
   disabled?: boolean;
   showClear?: boolean;
-  pastel?: boolean;
 }) {
   const seed = fieldsFromEntry(initial);
   const [meditation, setMeditation] = useState(seed.meditation);
@@ -38,10 +35,6 @@ export function QtEntryForm({
   const fields = { meditation, verse, decisionObedience, prayer };
   const totalLen = totalTrimmedLength(fields);
   const locked = disabled || busy;
-
-  const fieldTone = pastel
-    ? (["peach", "mint", "rose", "lilac"] as const)
-    : null;
 
   return (
     <div className="space-y-[var(--space-stack-lg)]">
@@ -70,7 +63,6 @@ export function QtEntryForm({
         disabled={locked}
         rows={3}
         onChange={setVerse}
-        tone={fieldTone?.[0]}
       />
       <Field
         id="meditation"
@@ -80,7 +72,6 @@ export function QtEntryForm({
         disabled={locked}
         rows={5}
         onChange={setMeditation}
-        tone={fieldTone?.[1]}
       />
       <Field
         id="decisionObedience"
@@ -90,7 +81,6 @@ export function QtEntryForm({
         disabled={locked}
         rows={3}
         onChange={setDecisionObedience}
-        tone={fieldTone?.[2]}
       />
       <Field
         id="prayer"
@@ -100,7 +90,6 @@ export function QtEntryForm({
         disabled={locked}
         rows={3}
         onChange={setPrayer}
-        tone={fieldTone?.[3]}
       />
 
       <PrimaryButton
@@ -149,7 +138,6 @@ function Field({
   onChange,
   disabled,
   rows,
-  tone,
 }: {
   id: string;
   label: string;
@@ -158,23 +146,10 @@ function Field({
   onChange: (v: string) => void;
   disabled?: boolean;
   rows: number;
-  tone?: "peach" | "mint" | "rose" | "lilac";
 }) {
-  const wrapClass = tone
-    ? `premium-pastel-card premium-pastel-${tone} !py-3.5`
-    : "";
-  const areaClass = tone
-    ? "type-body w-full resize-none rounded-[var(--radius-input)] border-0 bg-white/55 px-3.5 py-3 text-text-main shadow-none placeholder:text-text-secondary/55 focus:outline-none focus:ring-2 focus:ring-sky/50 disabled:opacity-60"
-    : "type-body w-full resize-none rounded-[var(--radius-input)] border-0 bg-ivory px-4 py-3.5 text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60";
-
   return (
-    <div className={wrapClass}>
-      <label
-        htmlFor={id}
-        className={`mb-1.5 block text-text-main ${
-          tone ? "type-body-sm font-semibold" : "type-section"
-        }`}
-      >
+    <div>
+      <label htmlFor={id} className="type-section mb-1.5 block text-text-main">
         {label}
       </label>
       <textarea
@@ -184,7 +159,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
-        className={areaClass}
+        className="type-body w-full resize-none rounded-[var(--radius-input)] border-0 bg-ivory px-4 py-3.5 text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
       />
     </div>
   );

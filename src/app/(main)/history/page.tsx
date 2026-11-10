@@ -10,7 +10,6 @@ import {
 } from "react";
 import { useSearchParams } from "next/navigation";
 import { CalendarDays, MoreHorizontal } from "lucide-react";
-import { StatLabel } from "@/components/ui/StatLabel";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
@@ -152,9 +151,11 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     <div className="premium-qt-root">
       <header className="premium-qt-header">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="type-caption font-medium text-white/55">나의 QT들</p>
-            <div className="mt-1">
+          <div className="min-w-0 flex-1">
+            <p className="type-caption font-medium text-text-secondary">
+              나의 QT들
+            </p>
+            <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2">
               <MonthPicker
                 value={ym}
                 onChange={(next) => {
@@ -163,15 +164,26 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 }}
                 min={minYm}
                 max={maxYm}
-                light
                 align="start"
               />
+              <div
+                className="inline-flex items-center gap-1 rounded-full bg-sky-light px-2.5 py-1"
+                title="이번달 내가 모은 빛"
+                aria-label={`이번달 내가 모은 빛 ${stats.lights}`}
+              >
+                <LightCount
+                  lights={stats.lights}
+                  size={16}
+                  rays={false}
+                  textClassName="type-body-sm font-semibold tabular-nums text-text-main"
+                />
+              </div>
             </div>
           </div>
           <button
             type="button"
             onClick={() => setCalendarExpanded((v) => !v)}
-            className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/8 text-white transition hover:bg-white/14"
+            className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-light text-text-main transition hover:bg-sky/20"
             aria-expanded={calendarExpanded}
             aria-label={
               calendarExpanded ? "주간 달력 보기" : "전체 달 보기"
@@ -201,27 +213,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           <span />
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5">
-          <div className="premium-stat-chip">
-            <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
-            <div className="mt-1 flex justify-center">
-              <LightCount
-                lights={stats.lights}
-                size={18}
-                rays={false}
-                textClassName="type-stat text-text-main"
-              />
-            </div>
-          </div>
-          <div className="premium-stat-chip">
-            <StatLabel className="text-text-secondary">집계 일수</StatLabel>
-            <p className="mt-1 type-stat text-text-main">{stats.possible}일</p>
-          </div>
-        </div>
-
         <div
           key={selected}
-          className="premium-content-crossfade mt-5 space-y-[var(--space-stack-sm)]"
+          className="premium-content-crossfade space-y-[var(--space-stack-sm)]"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
@@ -290,32 +284,25 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           </div>
 
           {future ? (
-            <div className="premium-pastel-card premium-pastel-sky">
-              <ReadingRangeMilestone
-                key={selected}
-                reading={reading}
-                label="본문"
-                embedded
-              />
-            </div>
+            <ReadingRangeMilestone
+              key={selected}
+              reading={reading}
+              label="본문"
+              embedded
+            />
           ) : (
-            <div className="premium-pastel-card premium-pastel-sky !p-0 overflow-hidden">
-              <div className="px-4 py-4">
-                <ReadingPassageBlock
-                  key={selected}
-                  reading={reading}
-                  label="본문"
-                  defaultExpanded
-                  embedded
-                />
-              </div>
-            </div>
+            <ReadingPassageBlock
+              key={selected}
+              reading={reading}
+              label="본문"
+              defaultExpanded
+              embedded
+            />
           )}
 
           {!future && editing ? (
             <QtEntryForm
               key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
-              pastel
               initial={selectedEntry}
               onSave={async (fields) => {
                 try {
@@ -337,7 +324,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             ) : (
               <QtEntryForm
                 key={`hist-new-${selected}`}
-                pastel
                 initial={null}
                 onSave={async (fields) => {
                   try {

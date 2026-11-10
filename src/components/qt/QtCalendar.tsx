@@ -220,8 +220,8 @@ export function QtCalendar({
                 <span
                   className={`type-micro ${
                     selected
-                      ? "font-semibold text-[var(--premium-ink)]"
-                      : "text-white/45"
+                      ? "font-semibold text-white"
+                      : "text-text-secondary"
                   }`}
                 >
                   {WEEKDAYS[i]}
@@ -229,12 +229,12 @@ export function QtCalendar({
                 <span
                   className={`relative z-[1] text-[17px] font-semibold tabular-nums leading-none ${
                     selected
-                      ? "text-[var(--premium-ink)]"
+                      ? "text-white"
                       : isToday
-                        ? "text-white"
+                        ? "text-cta"
                         : future
-                          ? "text-white/35"
-                          : "text-white"
+                          ? "text-text-secondary/40"
+                          : "text-text-main"
                   }`}
                 >
                   {day}
@@ -242,7 +242,7 @@ export function QtCalendar({
                 <span className="relative z-[1] flex h-4 w-4 items-center justify-center">
                   {done ? (
                     <LightIcon
-                      tone={selected ? "active" : "white"}
+                      tone={selected ? "white" : "active"}
                       size={14}
                       rays={false}
                       label="빛 수집됨"
@@ -250,7 +250,7 @@ export function QtCalendar({
                     />
                   ) : selected ? (
                     <span
-                      className="h-1.5 w-1.5 rounded-full bg-[var(--premium-ink)]/35"
+                      className="h-1.5 w-1.5 rounded-full bg-white/55"
                       aria-hidden
                     />
                   ) : null}
@@ -261,7 +261,7 @@ export function QtCalendar({
         </div>
       ) : (
         <div key={`month-${yearMonth}`} className="premium-cal-month-anim">
-          <div className="mb-2 grid grid-cols-7 gap-1 text-center type-micro text-white/40">
+          <div className="mb-2 grid grid-cols-7 gap-1 text-center type-micro text-text-secondary">
             {WEEKDAYS.map((d) => (
               <div key={d} className="py-1">
                 {d}
@@ -304,32 +304,25 @@ export function QtCalendar({
                       <span
                         className={`relative z-[1] text-center text-[15px] leading-none font-semibold tabular-nums ${
                           selected
-                            ? "text-[var(--premium-ink)]"
+                            ? "text-white"
                             : isToday
-                              ? "text-white"
+                              ? "text-cta"
                               : future
-                                ? "text-white/30"
-                                : "text-white"
+                                ? "text-text-secondary/40"
+                                : "text-text-main"
                         }`}
                       >
                         {day}
                       </span>
                       {done ? (
                         <span className="relative z-[1] mt-0.5 flex h-3.5 w-3.5 items-center justify-center">
-                          <span
-                            className="absolute h-1.5 w-1.5 rounded-full bg-[var(--premium-dot)]"
-                            aria-hidden
+                          <LightIcon
+                            tone={selected ? "white" : "active"}
+                            size={12}
+                            rays={false}
+                            label="빛 수집됨"
+                            justEarned={justEarnedDate === date}
                           />
-                          <span className="sr-only">빛 수집됨</span>
-                          {justEarnedDate === date ? (
-                            <LightIcon
-                              tone="active"
-                              size={14}
-                              justEarned
-                              label=""
-                              className="absolute"
-                            />
-                          ) : null}
                         </span>
                       ) : (
                         <span className="mt-0.5 h-3.5 w-3.5" aria-hidden />

@@ -1,12 +1,5 @@
 import type { QtEntry } from "@/types";
 
-const PASTEL_TONES = [
-  "premium-pastel-peach",
-  "premium-pastel-mint",
-  "premium-pastel-rose",
-  "premium-pastel-lilac",
-] as const;
-
 export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   if (!entry) {
     return (
@@ -32,16 +25,11 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   }
 
   return (
-    <div className="space-y-3">
-      {rows.map((row, i) => (
-        <div
-          key={row.label}
-          className={`premium-pastel-card ${PASTEL_TONES[i % PASTEL_TONES.length]}`}
-        >
-          <p className="type-body-sm font-semibold text-text-main/80">
-            {row.label}
-          </p>
-          <p className="type-body-lg mt-1.5 whitespace-pre-wrap text-text-main">
+    <div className="space-y-[var(--space-stack-lg)]">
+      {rows.map((row) => (
+        <div key={row.label}>
+          <p className="type-body-sm font-semibold text-text-main">{row.label}</p>
+          <p className="type-body-lg mt-1 whitespace-pre-wrap text-text-main">
             {row.value}
           </p>
         </div>
