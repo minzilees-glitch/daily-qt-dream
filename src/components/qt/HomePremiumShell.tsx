@@ -14,6 +14,10 @@ const NAV_CHROME_PX = 72;
 const PEEK_RATIO = 0.3;
 /** Extra form room so the sheet isn't only the peek strip. */
 const PEEK_EXTRA_PX = 160;
+/** Ignore padding when classifying — short-mode adds ~62px bottom pad that
+ *  would otherwise inflate scrollHeight and flip long↔short forever. */
+const MODE_HYSTERESIS_PX = 28;
+const MEASURE_DEBOUNCE_MS = 80;
 
 type Mode = "short" | "long";
 
@@ -41,13 +45,29 @@ export function HomePremiumShell({
   const [peekH, setPeekH] = useState(280);
   const [maxRise, setMaxRise] = useState(240);
 
+  const modeRef = useRef<Mode>(mode);
+  const riseRef = useRef(rise);
+  const peekHRef = useRef(peekH);
+  const maxRiseRef = useRef(maxRise);
+  const draggingRef = useRef(false);
+  const settledRef = useRef(false);
+  const debounceRef = useRef<number | null>(null);
+  const lastStableModeRef = useRef<Mode | null>(null);
+
+  modeRef.current = mode;
+  riseRef.current = rise;
+  peekHRef.current = peekH;
+  maxRiseRef.current = maxRise;
+
   const dragRef = useRef<{
     pointerId: number;
     startY: number;
     startRise: number;
   } | null>(null);
 
-  const measure = useCallback(() => {
+  const measureNow = useCallback(() => {
+    if (draggingRef.current) return;
+
     const passageEl = passageRef.current;
     const topEl = topRef.current;
     if (!passageEl || !topEl) return;
@@ -65,48 +85,105 @@ export function HomePremiumShell({
       ".premium-home-header-band",
     ) as HTMLElement | null;
     const headerH = headerBand?.offsetHeight ?? 120;
-    /* Space the passage may occupy before we treat content as “long”. */
     const passageBudget = available - nextPeek + 20 - headerH;
-    const contentH = passageEl.scrollHeight;
-    const nextMode: Mode = contentH > passageBudget + 8 ? "long" : "short";
+
+    /* Content height only — strip vertical padding so short-mode gap padding
+     * cannot push scrollHeight over the long threshold (feedback loop). */
+    const cs = getComputedStyle(passageEl);
+    const padY =
+      (Number.parseFloat(cs.paddingTop) || 0) +
+      (Number.parseFloat(cs.paddingBottom) || 0);
+    const contentH = Math.max(0, passageEl.scrollHeight - padY);
+
     const nextMaxRise = Math.max(
       80,
       Math.round(available - nextPeek - headerH - 24),
     );
 
-    setPeekH(nextPeek);
-    setMaxRise(nextMaxRise);
-    setMode((prev) => {
-      if (prev !== nextMode) setRise(0);
-      return nextMode;
-    });
-    setRise((r) => Math.min(r, nextMaxRise));
+    if (nextPeek !== peekHRef.current) setPeekH(nextPeek);
+    if (nextMaxRise !== maxRiseRef.current) setMaxRise(nextMaxRise);
+
+    /* After two consistent reads, freeze mode until viewport resize.
+     * Still refresh peek/maxRise above so drag limits stay sane. */
+    if (settledRef.current && lastStableModeRef.current) {
+      const clamped = Math.min(riseRef.current, nextMaxRise);
+      if (clamped !== riseRef.current) setRise(clamped);
+      return;
+    }
+
+    const prev = modeRef.current;
+    let nextMode: Mode;
+    if (prev === "long") {
+      /* Hysteresis: harder to leave long than to enter it. */
+      nextMode =
+        contentH < passageBudget - MODE_HYSTERESIS_PX ? "short" : "long";
+    } else {
+      nextMode =
+        contentH > passageBudget + MODE_HYSTERESIS_PX ? "long" : "short";
+    }
+
+    if (nextMode !== prev) {
+      setMode(nextMode);
+      setRise(0);
+    } else {
+      const clamped = Math.min(riseRef.current, nextMaxRise);
+      if (clamped !== riseRef.current) setRise(clamped);
+    }
+
+    if (lastStableModeRef.current === nextMode) {
+      settledRef.current = true;
+    } else {
+      lastStableModeRef.current = nextMode;
+      settledRef.current = false;
+    }
   }, []);
 
+  const scheduleMeasure = useCallback(() => {
+    if (debounceRef.current != null) {
+      window.clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = window.setTimeout(() => {
+      debounceRef.current = null;
+      measureNow();
+    }, MEASURE_DEBOUNCE_MS);
+  }, [measureNow]);
+
   useLayoutEffect(() => {
-    measure();
-  }, [measure]);
+    measureNow();
+  }, [measureNow]);
 
   useEffect(() => {
     const passageEl = passageRef.current;
     if (!passageEl) return;
-    const ro = new ResizeObserver(() => measure());
+    const ro = new ResizeObserver(() => {
+      if (draggingRef.current) return;
+      scheduleMeasure();
+    });
     ro.observe(passageEl);
-    window.addEventListener("resize", measure);
+    const onResize = () => {
+      settledRef.current = false;
+      lastStableModeRef.current = null;
+      scheduleMeasure();
+    };
+    window.addEventListener("resize", onResize);
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", measure);
+      window.removeEventListener("resize", onResize);
+      if (debounceRef.current != null) {
+        window.clearTimeout(debounceRef.current);
+      }
     };
-  }, [measure]);
+  }, [scheduleMeasure]);
 
   const onHandlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (mode !== "long") return;
+    if (modeRef.current !== "long") return;
     if (e.button !== 0 && e.pointerType === "mouse") return;
     handleRef.current?.setPointerCapture(e.pointerId);
+    draggingRef.current = true;
     dragRef.current = {
       pointerId: e.pointerId,
       startY: e.clientY,
-      startRise: rise,
+      startRise: riseRef.current,
     };
   };
 
@@ -114,7 +191,10 @@ export function HomePremiumShell({
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== e.pointerId) return;
     const dy = drag.startY - e.clientY; /* drag up → rise */
-    const next = Math.min(maxRise, Math.max(0, drag.startRise + dy));
+    const next = Math.min(
+      maxRiseRef.current,
+      Math.max(0, drag.startRise + dy),
+    );
     setRise(next);
   };
 
@@ -122,6 +202,7 @@ export function HomePremiumShell({
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== e.pointerId) return;
     dragRef.current = null;
+    draggingRef.current = false;
     try {
       handleRef.current?.releasePointerCapture(e.pointerId);
     } catch {
