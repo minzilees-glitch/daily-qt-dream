@@ -670,6 +670,30 @@ a {
   animation: premium-crossfade 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Home: fixed 70/30 split so form sheet always peeks ~30% at scroll 0. */
+.premium-home-top {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: calc((100dvh - 72px - var(--safe-bottom)) * 0.7);
+  padding-inline: var(--space-page-x);
+  padding-bottom: 0.75rem;
+  background: var(--premium-cal-bg);
+  overflow: hidden;
+}
+
+.premium-home-passage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.premium-home-form-sheet {
+  min-height: calc((100dvh - 72px - var(--safe-bottom)) * 0.3 + 10rem);
+}
+
 @keyframes premium-select-pop {
   0% {
     transform: scale(0.86);

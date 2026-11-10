@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { SoftCard } from "@/components/ui/SoftCard";
 import { LightIcon } from "@/components/ui/LightIcon";
 import { Toast } from "@/components/ui/Toast";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
@@ -37,49 +36,47 @@ export default function HomePage() {
   };
 
   return (
-    <div>
-      {/* Top-section-only wash — same pattern as 우리순; does not grow with scroll content. */}
-      <section className="hero-gradient-spread px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
+    <div className="premium-qt-root">
+      {/* ~70% of viewport: header + status + scripture (form peeks below). */}
+      <div className="premium-home-top">
         <AppHeader
-          light
           homeLayout
           title="오늘은"
           dateLabel={formatDisplayDate(today)}
           userName={currentUser.name}
           groupName={group?.name ?? "순"}
         />
-      </section>
 
-      <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pb-[var(--space-section-pb)] pt-1">
-        <SoftCard className="space-y-[var(--space-stack)] overflow-hidden">
-          {/* CTA blue title band — avoid .bg-cta pill radius; keep SoftCard top chrome */}
-          <div
-            className="-mx-[var(--space-card)] -mt-[var(--space-card)] bg-[var(--cta)] px-[var(--space-card)] pb-[var(--space-stack-sm)] pt-[var(--space-card)] text-white"
-          >
-            <h2 className="flex items-center gap-1.5 type-section text-white">
-              <LightIcon
-                active={doneToday}
-                tone={doneToday ? "active" : "white"}
-                size={20}
-                justEarned={doneToday || lastEarnedDate === today}
-                label=""
-              />
-              <span>
-                {doneToday
-                  ? "오늘의 말씀을 묵상했어요."
-                  : "오늘의 말씀이 기다리고 있어요."}
-              </span>
-            </h2>
-          </div>
+        <div className="mt-[var(--space-stack-sm)] flex items-center gap-2">
+          <LightIcon
+            active={doneToday}
+            size={22}
+            justEarned={doneToday || lastEarnedDate === today}
+            label=""
+          />
+          <p className="type-section text-text-main">
+            {doneToday
+              ? "오늘의 큐티를 완료했어요"
+              : "오늘의 큐티를 아직 안했어요"}
+          </p>
+        </div>
 
+        <div className="premium-home-passage mt-[var(--space-stack)]">
           <ReadingPassageBlock
             reading={reading}
             label="본문"
             embedded
             defaultExpanded
           />
-        </SoftCard>
+        </div>
+      </div>
 
+      {/* White sheet — peeks ~30% at default scroll; form-only. */}
+      <section className="premium-qt-sheet premium-home-form-sheet">
+        <div className="premium-qt-sheet-handles" aria-hidden>
+          <span />
+          <span />
+        </div>
         <QtEntryForm
           key={`home-qt-${today}`}
           initial={todayEntry}
