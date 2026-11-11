@@ -782,13 +782,14 @@ a {
 }
 
 /*
- * 나의 QT들 sheet: white body. Sky is ONLY the passage band (date + 말씀).
- * QT hint + fields sit on solid white — not translucent over sky.
+ * 나의 QT들 sheet: top pad + grabber + passage share one mint wash;
+ * QT hint + fields sit on solid white below.
  * !important: beat earlier `.premium-qt-sheet` / sky sheet rules.
  */
 .premium-qt-root:has(> .premium-qt-header)
   > .premium-qt-sheet.premium-qt-sheet--history {
-  background: #ffffff !important;
+  /* Same as .premium-history-passage — no white band above 말씀. */
+  background: color-mix(in srgb, var(--color-mint) 30%, white) !important;
   display: flex;
   flex-direction: column;
   /* Keep shared .premium-qt-sheet padding-top (28px); only clear bottom. */
@@ -802,12 +803,12 @@ a {
   flex-direction: column;
 }
 
-/* Date + passage: sky band below shared sheet top pad + grabber. */
+/* Date + passage: same mint wash as sheet top (pad + grabber). */
 .premium-history-passage {
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
   padding: 0 var(--space-page-x) var(--space-stack);
-  background: color-mix(in srgb, var(--color-mint) 30%, transparent) !important;
+  background: color-mix(in srgb, var(--color-mint) 30%, white) !important;
   box-sizing: border-box;
 }
 
