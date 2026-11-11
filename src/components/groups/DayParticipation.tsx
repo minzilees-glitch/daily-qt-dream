@@ -82,7 +82,7 @@ export function DayParticipation({
           >
             <div className="flex h-16 w-8 items-end overflow-hidden rounded-full bg-sky-light">
               <div
-                className="w-full rounded-full bg-[var(--color-sora)] transition-all"
+                className="w-full rounded-full bg-[var(--color-ink-blue)] transition-all"
                 style={{ height: `${Math.max(8, ratio * 100)}%` }}
               />
             </div>
