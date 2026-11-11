@@ -206,7 +206,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
       <section className="premium-qt-sheet premium-qt-sheet--history">
         <div key={selected} className="premium-content-crossfade flex flex-col">
-          <div className="space-y-[var(--space-stack-sm)]">
+          <div className="premium-history-passage space-y-[var(--space-stack-sm)]">
             <div className="flex items-start justify-between gap-3 pt-3">
               <div className="min-w-0 flex-1">
                 <div className="flex min-w-0 items-center gap-2">

@@ -729,37 +729,54 @@ a {
   stroke: currentColor;
 }
 
-/* 나의 QT들: passage stays sky; QT form/entry band is white. */
-.premium-qt-root:has(> .premium-qt-header) > .premium-qt-sheet {
-  background: var(--color-sky); /* #CAEBF2 */
-}
-
-.premium-qt-sheet.premium-qt-sheet--history {
+/*
+ * 나의 QT들 sheet: white body. Sky is ONLY the passage band (date + 말씀).
+ * QT hint + fields sit on solid white — not translucent over sky.
+ * !important: beat earlier `.premium-qt-sheet` / sky sheet rules.
+ */
+.premium-qt-root:has(> .premium-qt-header)
+  > .premium-qt-sheet.premium-qt-sheet--history {
+  background: #ffffff !important;
   display: flex;
   flex-direction: column;
+  padding-top: 0;
   padding-bottom: 0;
-}
-
-.premium-qt-sheet.premium-qt-sheet--history:not(:has(.premium-history-qt)) {
-  padding-bottom: calc(1.5rem + var(--safe-bottom));
 }
 
 .premium-qt-sheet.premium-qt-sheet--history > .premium-content-crossfade {
   flex: 1 1 auto;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-/* From 「QT는 전체 합쳐…」 / entry fields downward — white edge-to-edge. */
+/* Date + passage: sky band under the rounded sheet top. */
+.premium-history-passage {
+  margin-inline: calc(-1 * var(--space-page-x));
+  width: calc(100% + 2 * var(--space-page-x));
+  padding: 20px var(--space-page-x) var(--space-stack);
+  background: #caebf2 !important; /* --color-sky */
+  border-radius: 36px 36px 0 0;
+  box-sizing: border-box;
+}
+
+/* From 「QT는 전체 합쳐…」 / entry fields downward — solid white. */
 .premium-history-qt {
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
-  margin-top: var(--space-stack-sm);
   flex: 1 1 auto;
   min-height: 0;
   padding: var(--space-stack) var(--space-page-x)
     calc(1.5rem + var(--safe-bottom));
-  background: var(--color-white);
+  background: #ffffff !important;
   box-sizing: border-box;
+}
+
+/* Future-only (no QT band): keep bottom pad on the sky passage. */
+.premium-qt-sheet.premium-qt-sheet--history:not(:has(.premium-history-qt))
+  .premium-history-passage {
+  padding-bottom: calc(var(--space-stack) + 1.5rem + var(--safe-bottom));
+  flex: 1 1 auto;
 }
 
 .premium-qt-sheet {
