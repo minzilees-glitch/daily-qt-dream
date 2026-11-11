@@ -755,7 +755,7 @@ a {
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
   padding: 20px var(--space-page-x) var(--space-stack);
-  background: #caebf2 !important; /* --color-sky */
+  background: color-mix(in srgb, var(--color-sky) 50%, transparent) !important;
   border-radius: 36px 36px 0 0;
   box-sizing: border-box;
 }
