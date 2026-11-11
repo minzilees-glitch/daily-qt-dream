@@ -1009,6 +1009,16 @@ a {
   background: var(--color-sky); /* sheet-ear seam matches header */
 }
 
+/* 랭킹 header: 소라색. */
+.premium-tab-header.premium-tab-header--ranking {
+  background: var(--color-sora); /* #94DEEE */
+  color: var(--color-ink-blue);
+}
+
+.premium-qt-root:has(> .premium-tab-header--ranking) {
+  background: var(--color-sora); /* sheet-ear seam matches header */
+}
+
 .premium-tab-title {
   margin: 0;
   font-size: var(--fs-page);
