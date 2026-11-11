@@ -50,7 +50,7 @@ export default function MePage() {
 
   return (
     <div className="premium-qt-root">
-      <header className="premium-tab-header">
+      <header className="premium-tab-header premium-tab-header--me">
         <h1 className="premium-tab-title">마이페이지</h1>
         <div className="mt-[var(--space-stack)] animate-fade-up">
           <div className="flex items-center gap-4">
@@ -67,7 +67,7 @@ export default function MePage() {
             </div>
           </div>
           <div className="mt-[var(--space-stack)] grid grid-cols-2 gap-3">
-            <div className="premium-stat-tile">
+            <div className="premium-stat-tile bg-white/50 backdrop-blur-[2px]">
               <StatLabel className="text-text-secondary">
                 이번달 내가 모은 빛
               </StatLabel>
@@ -80,7 +80,7 @@ export default function MePage() {
                 />
               </div>
             </div>
-            <div className="premium-stat-tile">
+            <div className="premium-stat-tile bg-white/50 backdrop-blur-[2px]">
               <StatLabel className="text-text-secondary">{year}년 누적</StatLabel>
               <div className="mt-1 flex justify-center">
                 <LightCount

@@ -826,8 +826,12 @@ a {
     drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05)) !important;
 }
 
-/* Extra air under 랭킹 header before the overlapping sheet. */
-.premium-tab-header.premium-tab-header--ranking {
+/*
+ * Extra air under header before overlapping sheet.
+ * 1.25rem (20px) base + --space-stack-sm (16px) = 36px total bottom pad.
+ */
+.premium-tab-header.premium-tab-header--ranking,
+.premium-tab-header.premium-tab-header--me {
   padding-bottom: calc(1.25rem + var(--space-stack-sm));
 }
 
@@ -919,8 +923,12 @@ a {
   color: var(--color-ink-blue) !important;
 }
 
+/* Match SkyWalkers dashboard tiles: 8px radius + white/50. */
 .premium-tab-header .premium-stat-tile {
-  background: color-mix(in srgb, var(--color-white) 55%, transparent);
+  border-radius: 8px !important;
+  background: rgb(255 255 255 / 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .premium-tab-header .premium-stat-tile .text-text-secondary,
@@ -981,14 +989,15 @@ a {
   border-radius: 0 !important;
 }
 
-/* SkyWalkers dashboard tiles keep 8px radius (exempt from square-edge sweep). */
-.premium-qt-root .sky-stat-tile {
+/* SkyWalkers + 마이페이지 dashboard tiles keep 8px (exempt from square-edge). */
+.premium-qt-root .sky-stat-tile,
+.premium-qt-root .premium-stat-tile {
   border-radius: 8px !important;
 }
 
 .premium-stat-tile {
-  border-radius: 0 !important;
-  background: var(--color-gray);
+  border-radius: 8px !important;
+  background: rgb(255 255 255 / 0.5);
   padding: 0.75rem;
   text-align: center;
 }
