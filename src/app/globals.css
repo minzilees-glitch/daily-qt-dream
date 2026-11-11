@@ -1354,8 +1354,8 @@ a {
   /* Pull up over the header so rounded top sits on sky chrome. */
   margin-top: -1.25rem;
   padding-inline: var(--space-page-x);
-  /* Match .premium-qt-sheet top pad; grabber-row handles pill placement. */
-  padding-top: 28px;
+  /* Top pad without grabber; keep sheet-like air above 「오늘의 말씀」. */
+  padding-top: calc(var(--space-stack) + 6px);
   padding-bottom: 0.75rem;
   border-radius: 36px 36px 0 0 !important;
   background: var(--color-mint); /* #CAEBF2 */
