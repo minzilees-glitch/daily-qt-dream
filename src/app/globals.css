@@ -290,23 +290,35 @@ html[data-sky-mode="밤모드"] {
   font-size: var(--fs-caption) !important; /* 16px */
 }
 
-/* QT textareas: notebook lines under every row (scrolls with text). */
+/* QT textareas: notebook lines under every row.
+ * Avoid background-attachment:local — WebKit often paints nothing on <textarea>. */
 .qt-lined-field {
-  --qt-line: 1.75em;
-  line-height: var(--qt-line);
-  background-color: transparent;
+  /* 19px body × 1.75 ≈ 33.25 → lock px so gradient matches line boxes. */
+  --qt-line: 33px;
+  font-size: var(--fs-body);
+  line-height: var(--qt-line) !important;
+  padding: 0 !important;
+  margin: 0;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none;
+  resize: none;
+  overflow: auto;
+  background-color: transparent !important;
   background-image: repeating-linear-gradient(
     to bottom,
     transparent 0,
     transparent calc(var(--qt-line) - 1px),
-    var(--divider) calc(var(--qt-line) - 1px),
-    var(--divider) var(--qt-line)
-  );
-  background-size: 100% var(--qt-line);
-  background-attachment: local;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
+    color-mix(in srgb, var(--color-ink-blue) 42%, white) calc(var(--qt-line) - 1px),
+    color-mix(in srgb, var(--color-ink-blue) 42%, white) var(--qt-line)
+  ) !important;
+  background-size: 100% var(--qt-line) !important;
+  background-repeat: repeat-y !important;
+  background-position: 0 0 !important;
+  background-attachment: scroll !important;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
 }
 
 .reading-passage-range {

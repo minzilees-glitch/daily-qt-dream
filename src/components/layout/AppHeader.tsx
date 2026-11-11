@@ -7,11 +7,11 @@ export function AppHeader({
   title,
   subtitle,
   light = false,
-  /** Home: 「오늘은」 + large date; avatar / name / 순 stacked top-right. */
+  /** Home: 「오늘은」 + large date; avatar only top-right (no name/순 labels). */
   homeLayout = false,
   dateLabel,
-  userName,
-  groupName,
+  userName: _userName,
+  groupName: _groupName,
   showAvatar = true,
   /** Home: status row rendered tight under the date (left column). */
   status,
@@ -53,25 +53,11 @@ export function AppHeader({
           {status ? <div className="mt-1">{status}</div> : null}
         </div>
 
-        <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
-          {showAvatar ? <ProfileAvatarButton light={light} /> : null}
-          <div className="min-w-0 max-w-[7.5rem] text-center leading-none">
-            <p
-              className={`home-profile-name truncate leading-none ${
-                light ? "text-white" : "text-text-main"
-              }`}
-            >
-              {userName}
-            </p>
-            <p
-              className={`home-profile-group mt-0.5 truncate leading-none ${
-                light ? "text-white/80" : "text-text-secondary"
-              }`}
-            >
-              {groupName}
-            </p>
+        {showAvatar ? (
+          <div className="flex shrink-0 items-start pt-0.5">
+            <ProfileAvatarButton light={light} />
           </div>
-        </div>
+        ) : null}
       </header>
     );
   }
