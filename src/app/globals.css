@@ -259,14 +259,14 @@
 
 /* Arbitrary Tailwind text-[Npx] loses to .type-section — force sizes here. */
 .qt-field-title {
-  font-size: 22px !important;
+  font-size: 21px !important; /* was 22; −1pt */
   font-weight: 600;
   color: var(--text-main);
 }
 
 /* 우리순 graph section titles — 1pt under field title. */
 .qt-field-title--sm {
-  font-size: 21px !important;
+  font-size: 20px !important;
 }
 
 /* Home QT validation hint + all similar instructional notices. */
