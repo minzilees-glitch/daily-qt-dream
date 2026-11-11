@@ -162,7 +162,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
-        className="type-body w-full resize-none rounded-[var(--radius-input)] border-0 bg-[color-mix(in_srgb,var(--color-sky)_20%,transparent)] px-4 py-3.5 text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
+        className="type-body w-full resize-none rounded-[var(--radius-input)] border-0 bg-[color-mix(in_srgb,var(--color-mint)_20%,transparent)] px-4 py-3.5 text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
       />
     </div>
   );
