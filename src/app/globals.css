@@ -1260,8 +1260,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* Solid mint — matches home passage. */
-  background: var(--color-mint); /* #CAEBF2 */
+  /* Mint 30% wash — matches home passage sheet. */
+  background: color-mix(in srgb, var(--color-mint) 30%, white);
 }
 
 .premium-home-shell--long {
@@ -1357,8 +1357,8 @@ a {
   /* Top pad without grabber; keep sheet-like air above 「오늘의 말씀」. */
   padding-top: calc(var(--space-stack) + 6px);
   padding-bottom: 0.75rem;
-  border-radius: 36px 36px 0 0 !important;
-  background: var(--color-mint); /* #CAEBF2 */
+  border-radius: 36px 36px 0 0 !important; /* no grabber; round + shadow only */
+  background: color-mix(in srgb, var(--color-mint) 30%, white);
   color: var(--color-ink-blue);
   box-shadow: none;
   filter:
