@@ -129,7 +129,8 @@ function buildSkySparks(
 
   return {
     sparks,
-    capped: total > SKY_LIGHT_HARD_MAX || sparks.length < Math.min(total, show),
+    /* True only if placement failed for some icons (crowding), not a count cap. */
+    capped: sparks.length < show,
   };
 }
 
