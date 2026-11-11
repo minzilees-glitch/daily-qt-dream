@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { weekdaySunFirst } from "@/lib/dates";
 
 export function DayParticipation({
   days,
@@ -74,20 +75,29 @@ export function DayParticipation({
       {days.map((d) => {
         const ratio = d.total === 0 ? 0 : d.count / d.total;
         const dayNum = Number(d.date.slice(8));
+        const isSunday = weekdaySunFirst(d.date) === 0;
         return (
           <div
             key={d.date}
             className="flex w-11 shrink-0 snap-start flex-col items-center gap-1.5"
             title={`${d.date}: ${d.count}/${d.total}`}
           >
-            {/* Track: light sky tint · Fill: sky · Labels: black */}
+            {/* Track: light sky tint · Fill: sky · Labels: black (Sunday red) */}
             <div className="flex h-20 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sky)_32%,white)]">
               <div
                 className="w-full rounded-full bg-[var(--color-sky)] transition-all"
                 style={{ height: `${Math.max(8, ratio * 100)}%` }}
               />
             </div>
-            <span className="type-label text-[var(--color-black)]">{dayNum}</span>
+            <span
+              className={`type-label ${
+                isSunday
+                  ? "text-[var(--color-danger)]"
+                  : "text-[var(--color-black)]"
+              }`}
+            >
+              {dayNum}
+            </span>
           </div>
         );
       })}

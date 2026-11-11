@@ -2,14 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  ChevronRight,
-  LogOut,
-  Settings,
-  Shield,
-} from "lucide-react";
-import { StatLabel } from "@/components/ui/StatLabel";
-import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
+import { ChevronRight, LogOut, Shield } from "lucide-react";
+import { MeSky } from "@/components/me/MeSky";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
 import { useApp } from "@/lib/app-context";
@@ -18,7 +12,6 @@ import {
   parseYmd,
   todaySeoul,
 } from "@/lib/dates";
-import { LightCount } from "@/components/ui/LightIcon";
 import {
   buildCompletionSet,
   buildLightSet,
@@ -45,52 +38,28 @@ export default function MePage() {
     set,
     todaySeoul(),
   );
-  // On-time lights this year (past backfills excluded).
+  // On-time lights this year (past backfills excluded) — also drives sky sparks.
   const yearDays = userYearLights(currentUser.id, year, lightSet, todaySeoul());
+
+  const groupLabel = [
+    group?.name ?? "-",
+    currentUser.isLeader ? "순장" : null,
+    currentUser.isAdmin ? "관리자" : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <div className="premium-qt-root">
       <header className="premium-tab-header premium-tab-header--me">
         <h1 className="premium-tab-title">마이페이지</h1>
-        <div className="mt-[var(--space-stack)] animate-fade-up">
-          <div className="flex items-center gap-4">
-            <ProfileAvatarButton size={56} fallback="initial" />
-            <div className="min-w-0">
-              <p className="truncate type-stat text-[var(--color-ink-blue)]">
-                {currentUser.name}
-              </p>
-              <p className="type-body-sm text-[var(--color-ink-blue)] opacity-75">
-                {group?.name ?? "-"}
-                {currentUser.isLeader ? " · 순장" : ""}
-                {currentUser.isAdmin ? " · 관리자" : ""}
-              </p>
-            </div>
-          </div>
-          <div className="mt-[var(--space-stack)] grid grid-cols-2 gap-3">
-            <div className="premium-stat-tile bg-white/50 backdrop-blur-[2px]">
-              <StatLabel className="text-text-secondary">
-                이번달 내가 모은 빛
-              </StatLabel>
-              <div className="mt-1 flex justify-center">
-                <LightCount
-                  lights={month.lights}
-                  size={18}
-                  rays={false}
-                  textClassName="type-stat text-text-main"
-                />
-              </div>
-            </div>
-            <div className="premium-stat-tile bg-white/50 backdrop-blur-[2px]">
-              <StatLabel className="text-text-secondary">{year}년 누적</StatLabel>
-              <div className="mt-1 flex justify-center">
-                <LightCount
-                  lights={yearDays}
-                  size={18}
-                  textClassName="type-stat text-text-main"
-                />
-              </div>
-            </div>
-          </div>
+        <div className="sky-walkers-bleed mt-2 animate-fade-up">
+          <MeSky
+            monthLights={month.lights}
+            yearLights={yearDays}
+            yearLabel={String(year)}
+            groupLabel={groupLabel}
+          />
         </div>
       </header>
 
@@ -105,22 +74,8 @@ export default function MePage() {
           <WeekdayParticipation days={weekdayPart} showPossible={false} />
         </div>
 
-        <div className="premium-panel space-y-2 me-sheet-tail">
-          <button type="button" className="premium-list-row">
-            <span className="flex items-center gap-3 type-body font-medium text-text-main">
-              <Settings
-                size={18}
-                className="text-[var(--color-ink-blue)]"
-                strokeWidth={1.75}
-              />
-              계정 설정
-              <span className="type-caption font-normal text-text-secondary">
-                (준비 중)
-              </span>
-            </span>
-            <ChevronRight size={18} className="text-text-secondary" />
-          </button>
-          {currentUser.isAdmin ? (
+        {currentUser.isAdmin ? (
+          <div className="premium-panel space-y-2 me-sheet-tail">
             <Link href="/admin" className="premium-list-row">
               <span className="flex items-center gap-3 type-body font-medium text-text-main">
                 <Shield
@@ -132,8 +87,8 @@ export default function MePage() {
               </span>
               <ChevronRight size={18} className="text-text-secondary" />
             </Link>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
 
         <div className="premium-panel me-sheet-foot">
           <PrimaryButton
