@@ -715,7 +715,7 @@ a {
   /* Overlap content above so 36px TL/TR corners sit on top (not under a square edge). */
   margin-top: -1.25rem;
   min-height: calc(100dvh - 280px);
-  padding: 24px var(--space-page-x)
+  padding: 20px var(--space-page-x)
     calc(1.5rem + var(--safe-bottom));
   border-radius: 36px 36px 0 0 !important;
   background: var(--premium-sheet);
@@ -1071,7 +1071,7 @@ a {
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
-  padding-top: 24px; /* same for short + long */
+  padding-top: 20px; /* same for short + long */
   /* Restore shared sheet drop-shadow from `.premium-qt-sheet` (do not null it). */
 }
 
