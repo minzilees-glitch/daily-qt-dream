@@ -134,7 +134,9 @@ export function ProfileAvatarButton({
               />
             </div>
             {error ? (
-              <p className="mt-3 text-center type-caption text-danger">{error}</p>
+              <p className="qt-validation-hint mt-3 text-center type-caption text-danger">
+                {error}
+              </p>
             ) : null}
             <div className="mt-[var(--space-stack)] grid grid-cols-2 gap-2">
               <button

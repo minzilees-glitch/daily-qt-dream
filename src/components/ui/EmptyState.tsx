@@ -14,7 +14,7 @@ export function EmptyState({
       {icon ? <div className="mb-2 text-sky">{icon}</div> : null}
       <p className="type-section text-text-main">{title}</p>
       {description ? (
-        <p className="type-caption max-w-xs text-text-secondary">
+        <p className="qt-validation-hint type-caption max-w-xs text-text-secondary">
           {description}
         </p>
       ) : null}

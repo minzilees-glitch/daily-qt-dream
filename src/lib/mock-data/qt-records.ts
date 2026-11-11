@@ -69,8 +69,8 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
     }
   });
 
-  // Demo ranking UI: 사랑순 1위 (gold), 믿음순 2위 (silver) for current month.
-  enforceDemoPodium(users, records, today, "g-01", "g-05");
+  // Demo ranking UI: 믿음순 1위 (gold), 사랑순 2위 (silver) for current month.
+  enforceDemoPodium(users, records, today, "g-05", "g-01");
 
   return records;
 }

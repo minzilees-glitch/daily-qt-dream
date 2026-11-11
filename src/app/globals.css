@@ -79,7 +79,7 @@
   /* ——— Typography (scale +1pt from prior 11…33) ——— */
   --fs-nav: 12px;
   --fs-micro: 13px; /* calendar weekday headers, tiny chrome */
-  --fs-caption: 15px;
+  --fs-caption: 16px; /* hint / notice captions — matches .qt-validation-hint */
   --fs-label: 15px;
   --fs-body-sm: 18px;
   --fs-body: 19px;
@@ -264,8 +264,9 @@
   color: var(--text-main);
 }
 
+/* Home QT validation hint + all similar instructional notices. */
 .qt-validation-hint {
-  font-size: 16px !important;
+  font-size: var(--fs-caption) !important; /* 16px */
 }
 
 .reading-passage-range {
@@ -985,7 +986,7 @@ a {
 }
 
 .premium-home-header-band .home-profile-group {
-  font-size: 14px; /* type-caption 15px − 1pt */
+  font-size: 14px; /* type-caption 16px − 2pt */
   font-weight: 400;
   line-height: var(--lh-caption);
 }

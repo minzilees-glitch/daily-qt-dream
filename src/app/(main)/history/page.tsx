@@ -37,7 +37,7 @@ function parseDateParam(raw: string | null): string | null {
 }
 
 const DATE_TITLE_MAX_PX = 24; /* matches --fs-display */
-const DATE_TITLE_MIN_PX = 15; /* matches --fs-caption */
+const DATE_TITLE_MIN_PX = 16; /* matches --fs-caption */
 
 /** Single-line title that shrinks to the largest font size that still fits. */
 function FitDateTitle({ text }: { text: string }) {
@@ -227,7 +227,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   미래 날짜는 완료할 수 없습니다.
                 </p>
               ) : past ? (
-                <p className="type-caption mt-1 break-keep text-text-secondary">
+                <p className="qt-validation-hint type-caption mt-1 break-keep text-text-secondary">
                   지난 큐티완료는 빛을 획득할 수 없습니다.
                   <br />
                   그러나 지난 큐티는 당신 심령에 남을거에요.

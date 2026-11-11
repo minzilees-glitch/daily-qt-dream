@@ -56,7 +56,7 @@ export function ConfirmModal({
           {title}
         </h2>
         {description ? (
-          <p className="type-caption mt-2 break-keep break-words text-text-secondary">
+          <p className="qt-validation-hint type-caption mt-2 break-keep break-words text-text-secondary">
             {description}
           </p>
         ) : null}

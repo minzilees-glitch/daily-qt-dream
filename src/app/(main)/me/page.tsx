@@ -148,7 +148,7 @@ export default function MePage() {
             로그아웃
           </PrimaryButton>
 
-          <p className="mt-[var(--space-stack-sm)] text-center type-caption text-text-secondary">
+          <p className="qt-validation-hint mt-[var(--space-stack-sm)] text-center type-caption text-text-secondary">
             로그인 세션은 이 브라우저 localStorage에 저장됩니다. QT 기록은
             Supabase가 설정되면 DB에 저장되고, 없으면 로컬로 대체됩니다.
           </p>
