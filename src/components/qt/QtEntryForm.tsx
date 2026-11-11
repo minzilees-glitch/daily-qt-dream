@@ -162,7 +162,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
-        className="type-body w-full resize-none rounded-none border-0 border-b border-[var(--divider)] bg-transparent px-0 py-2.5 text-text-main shadow-none placeholder:text-text-secondary/60 focus:border-[var(--color-ink-blue)] focus:outline-none focus:ring-0 disabled:opacity-60"
+        className="qt-lined-field type-body w-full resize-none px-0 py-0 text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:ring-0 disabled:opacity-60"
       />
     </div>
   );
