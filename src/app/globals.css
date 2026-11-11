@@ -729,9 +729,37 @@ a {
   stroke: currentColor;
 }
 
-/* 나의 QT들: passage/body sheet sits on sky. */
+/* 나의 QT들: passage stays sky; QT form/entry band is white. */
 .premium-qt-root:has(> .premium-qt-header) > .premium-qt-sheet {
   background: var(--color-sky); /* #CAEBF2 */
+}
+
+.premium-qt-sheet.premium-qt-sheet--history {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+.premium-qt-sheet.premium-qt-sheet--history:not(:has(.premium-history-qt)) {
+  padding-bottom: calc(1.5rem + var(--safe-bottom));
+}
+
+.premium-qt-sheet.premium-qt-sheet--history > .premium-content-crossfade {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* From 「QT는 전체 합쳐…」 / entry fields downward — white edge-to-edge. */
+.premium-history-qt {
+  margin-inline: calc(-1 * var(--space-page-x));
+  width: calc(100% + 2 * var(--space-page-x));
+  margin-top: var(--space-stack-sm);
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: var(--space-stack) var(--space-page-x)
+    calc(1.5rem + var(--safe-bottom));
+  background: var(--color-white);
+  box-sizing: border-box;
 }
 
 .premium-qt-sheet {

@@ -204,124 +204,104 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         </div>
       </header>
 
-      <section className="premium-qt-sheet">
-        <div
-          key={selected}
-          className="premium-content-crossfade space-y-[var(--space-stack-sm)]"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="flex min-w-0 items-center gap-1.5">
-                <span className="shrink-0">
-                  <LightIcon
-                    active={selectedCompleted}
-                    future={future}
-                    size={28}
-                    justEarned={selectedCompleted && !future}
-                  />
-                </span>
-                <FitDateTitle text={formatDisplayDate(selected)} />
+      <section className="premium-qt-sheet premium-qt-sheet--history">
+        <div key={selected} className="premium-content-crossfade flex flex-col">
+          <div className="space-y-[var(--space-stack-sm)]">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <span className="shrink-0">
+                    <LightIcon
+                      active={selectedCompleted}
+                      future={future}
+                      size={28}
+                      justEarned={selectedCompleted && !future}
+                    />
+                  </span>
+                  <FitDateTitle text={formatDisplayDate(selected)} />
+                </div>
+                {future ? (
+                  <p className="mt-1 type-body-sm text-text-secondary">
+                    미래 날짜는 완료할 수 없습니다.
+                  </p>
+                ) : past ? (
+                  <p className="qt-validation-hint type-caption mt-1 break-keep text-text-secondary">
+                    지난 큐티완료는 빛을 획득할 수 없습니다.
+                    <br />
+                    그러나 지난 큐티는 당신 심령에 남을거에요.
+                  </p>
+                ) : null}
               </div>
-              {future ? (
-                <p className="mt-1 type-body-sm text-text-secondary">
-                  미래 날짜는 완료할 수 없습니다.
-                </p>
-              ) : past ? (
-                <p className="qt-validation-hint type-caption mt-1 break-keep text-text-secondary">
-                  지난 큐티완료는 빛을 획득할 수 없습니다.
-                  <br />
-                  그러나 지난 큐티는 당신 심령에 남을거에요.
-                </p>
+
+              {!future ? (
+                <div className="relative shrink-0" ref={menuRef}>
+                  <button
+                    type="button"
+                    aria-label="더보기"
+                    aria-expanded={menuOpen}
+                    onClick={() => setMenuOpen((v) => !v)}
+                    className="flex h-10 w-10 items-center justify-center bg-transparent text-text-main shadow-none"
+                  >
+                    <MoreHorizontal size={18} strokeWidth={1.75} />
+                  </button>
+                  {menuOpen ? (
+                    <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+                      <button
+                        type="button"
+                        className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          setEditing(true);
+                        }}
+                      >
+                        수정
+                      </button>
+                      <button
+                        type="button"
+                        className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
+                        disabled={!hasEntry && !selectedCompleted}
+                        onClick={() => {
+                          setMenuOpen(false);
+                          setConfirmOpen(true);
+                        }}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
               ) : null}
             </div>
 
-            {!future ? (
-              <div className="relative shrink-0" ref={menuRef}>
-                <button
-                  type="button"
-                  aria-label="더보기"
-                  aria-expanded={menuOpen}
-                  onClick={() => setMenuOpen((v) => !v)}
-                  className="flex h-10 w-10 items-center justify-center bg-transparent text-text-main shadow-none"
-                >
-                  <MoreHorizontal size={18} strokeWidth={1.75} />
-                </button>
-                {menuOpen ? (
-                  <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-                    <button
-                      type="button"
-                      className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        setEditing(true);
-                      }}
-                    >
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
-                      disabled={!hasEntry && !selectedCompleted}
-                      onClick={() => {
-                        setMenuOpen(false);
-                        setConfirmOpen(true);
-                      }}
-                    >
-                      삭제
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+            {future ? (
+              <ReadingRangeMilestone
+                key={selected}
+                reading={reading}
+                label="오늘의 말씀"
+                embedded
+              />
+            ) : (
+              <ReadingPassageBlock
+                key={selected}
+                reading={reading}
+                label="오늘의 말씀"
+                embedded
+                collapsible={false}
+                inkTitle
+              />
+            )}
           </div>
 
-          {future ? (
-            <ReadingRangeMilestone
-              key={selected}
-              reading={reading}
-              label="오늘의 말씀"
-              embedded
-            />
-          ) : (
-            <ReadingPassageBlock
-              key={selected}
-              reading={reading}
-              label="오늘의 말씀"
-              embedded
-              collapsible={false}
-              inkTitle
-            />
-          )}
-
           {!future && editing ? (
-            <QtEntryForm
-              key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
-              initial={selectedEntry}
-              onSave={async (fields) => {
-                try {
-                  const res = await saveEntry(selected, fields);
-                  showToast(res.message);
-                  if (res.ok) setEditing(false);
-                } catch (err) {
-                  const detail =
-                    err instanceof Error ? err.message : "알 수 없는 오류";
-                  showToast(`저장 실패: ${detail}`);
-                }
-              }}
-            />
-          ) : null}
-
-          {!future && !editing ? (
-            hasEntry || selectedCompleted ? (
-              <DayEntryView entry={selectedEntry} />
-            ) : (
+            <div className="premium-history-qt">
               <QtEntryForm
-                key={`hist-new-${selected}`}
-                initial={null}
+                key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
+                initial={selectedEntry}
                 onSave={async (fields) => {
                   try {
                     const res = await saveEntry(selected, fields);
                     showToast(res.message);
+                    if (res.ok) setEditing(false);
                   } catch (err) {
                     const detail =
                       err instanceof Error ? err.message : "알 수 없는 오류";
@@ -329,7 +309,30 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   }
                 }}
               />
-            )
+            </div>
+          ) : null}
+
+          {!future && !editing ? (
+            <div className="premium-history-qt">
+              {hasEntry || selectedCompleted ? (
+                <DayEntryView entry={selectedEntry} />
+              ) : (
+                <QtEntryForm
+                  key={`hist-new-${selected}`}
+                  initial={null}
+                  onSave={async (fields) => {
+                    try {
+                      const res = await saveEntry(selected, fields);
+                      showToast(res.message);
+                    } catch (err) {
+                      const detail =
+                        err instanceof Error ? err.message : "알 수 없는 오류";
+                      showToast(`저장 실패: ${detail}`);
+                    }
+                  }}
+                />
+              )}
+            </div>
           ) : null}
         </div>
       </section>
