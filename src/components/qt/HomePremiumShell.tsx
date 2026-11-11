@@ -14,6 +14,8 @@ const NAV_CHROME_PX = 72;
 const PEEK_RATIO = 0.3;
 /** Extra form room so the sheet isn't only the peek strip. */
 const PEEK_EXTRA_PX = 160;
+/** Absolute floor for long-mode sheet height (grabber + a sliver of content). */
+const MIN_SHEET_PX = 88;
 /** Ignore padding when classifying — short-mode adds ~62px bottom pad that
  *  would otherwise inflate scrollHeight and flip long↔short forever. */
 const MODE_HYSTERESIS_PX = 28;
@@ -44,11 +46,14 @@ export function HomePremiumShell({
   const [rise, setRise] = useState(0);
   const [peekH, setPeekH] = useState(280);
   const [maxRise, setMaxRise] = useState(240);
+  /** Negative floor so sheet can drag below default peek. */
+  const [minRise, setMinRise] = useState(0);
 
   const modeRef = useRef<Mode>(mode);
   const riseRef = useRef(rise);
   const peekHRef = useRef(peekH);
   const maxRiseRef = useRef(maxRise);
+  const minRiseRef = useRef(minRise);
   const draggingRef = useRef(false);
   const settledRef = useRef(false);
   const debounceRef = useRef<number | null>(null);
@@ -58,6 +63,7 @@ export function HomePremiumShell({
   riseRef.current = rise;
   peekHRef.current = peekH;
   maxRiseRef.current = maxRise;
+  minRiseRef.current = minRise;
 
   const dragRef = useRef<{
     pointerId: number;
@@ -99,14 +105,20 @@ export function HomePremiumShell({
       80,
       Math.round(available - nextPeek - headerH - 24),
     );
+    /* Allow dragging below default peek down to MIN_SHEET_PX. */
+    const nextMinRise = Math.min(0, MIN_SHEET_PX - nextPeek);
 
     if (nextPeek !== peekHRef.current) setPeekH(nextPeek);
     if (nextMaxRise !== maxRiseRef.current) setMaxRise(nextMaxRise);
+    if (nextMinRise !== minRiseRef.current) setMinRise(nextMinRise);
+
+    const clampRise = (r: number) =>
+      Math.min(nextMaxRise, Math.max(nextMinRise, r));
 
     /* After two consistent reads, freeze mode until viewport resize.
      * Still refresh peek/maxRise above so drag limits stay sane. */
     if (settledRef.current && lastStableModeRef.current) {
-      const clamped = Math.min(riseRef.current, nextMaxRise);
+      const clamped = clampRise(riseRef.current);
       if (clamped !== riseRef.current) setRise(clamped);
       return;
     }
@@ -126,7 +138,7 @@ export function HomePremiumShell({
       setMode(nextMode);
       setRise(0);
     } else {
-      const clamped = Math.min(riseRef.current, nextMaxRise);
+      const clamped = clampRise(riseRef.current);
       if (clamped !== riseRef.current) setRise(clamped);
     }
 
@@ -190,10 +202,10 @@ export function HomePremiumShell({
   const onHandlePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== e.pointerId) return;
-    const dy = drag.startY - e.clientY; /* drag up → rise */
+    const dy = drag.startY - e.clientY; /* drag up → rise; down → negative */
     const next = Math.min(
       maxRiseRef.current,
-      Math.max(0, drag.startRise + dy),
+      Math.max(minRiseRef.current, drag.startRise + dy),
     );
     setRise(next);
   };
@@ -238,13 +250,19 @@ export function HomePremiumShell({
           <div
             ref={handleRef}
             className="premium-home-sheet-drag"
-            aria-hidden
+            aria-label="시트 높이 조절"
             onPointerDown={onHandlePointerDown}
             onPointerMove={onHandlePointerMove}
             onPointerUp={endDrag}
             onPointerCancel={endDrag}
-          />
-        ) : null}
+          >
+            <span className="premium-sheet-grabber" aria-hidden />
+          </div>
+        ) : (
+          <div className="premium-sheet-grabber-row" aria-hidden>
+            <span className="premium-sheet-grabber" />
+          </div>
+        )}
         {sheet}
       </section>
     </div>

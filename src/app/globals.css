@@ -944,7 +944,25 @@ a {
   filter: none !important;
 }
 
-/* Legacy handle bars removed — home long-mode uses an invisible drag strip. */
+/* Gray capsule grabber — Home + 나의 QT들 sheet tops. */
+.premium-sheet-grabber {
+  display: block;
+  width: 36px;
+  height: 5px;
+  border-radius: 9999px;
+  background: #c8cdd3;
+  margin-inline: auto;
+  flex-shrink: 0;
+}
+
+.premium-sheet-grabber-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
+  margin: -4px 0 0.35rem;
+  pointer-events: none;
+}
 
 .premium-cal-day-selected {
   background: var(--cta);
@@ -1332,10 +1350,13 @@ a {
   min-height: 0;
 }
 
-/* Invisible hit target at top of home sheet (long / peek mode). */
+/* Home long-mode drag strip + centered gray pill grabber. */
 .premium-home-sheet-drag {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 28px;
-  margin: 0 0 0.35rem;
+  margin: -4px 0 0.35rem;
   cursor: grab;
   touch-action: none;
   user-select: none;
