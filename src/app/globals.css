@@ -910,8 +910,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* 30px sheet gap reads as passage sky, not page bleed. */
-  background: var(--color-sky);
+  /* 30px sheet gap matches 50% sky passage fill. */
+  background: color-mix(in srgb, var(--color-sky) 50%, transparent);
 }
 
 .premium-home-shell--long {
@@ -924,8 +924,8 @@ a {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* Sky under passage so passage→sheet junction has no mismatched strip. */
-  background: var(--color-sky);
+  /* Match 50% sky passage so passage→sheet junction has no mismatched strip. */
+  background: color-mix(in srgb, var(--color-sky) 50%, transparent);
 }
 
 .premium-home-shell--short .premium-home-top {
@@ -1011,7 +1011,7 @@ a {
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
-  background: var(--color-sky); /* #c2e5f0 */
+  background: color-mix(in srgb, var(--color-sky) 50%, transparent); /* #c2e5f0 @ 50% */
   color: var(--color-ink-blue);
   /*
    * Upward cast onto the black header (passage above header in stacking).
