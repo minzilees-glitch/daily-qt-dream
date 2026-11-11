@@ -620,9 +620,15 @@ a {
   display: none;
 }
 
-/* Combined group sky card — photo image; no solid #sky fill behind it */
+/* Photo frame edge-to-edge in header; no solid sky color behind the image. */
+.sky-walkers-bleed {
+  margin-inline: calc(-1 * var(--space-page-x));
+  width: calc(100% + 2 * var(--space-page-x));
+}
+
 .sky-group-card {
   min-height: 360px;
+  width: 100%;
   background: transparent;
   border-radius: 0 !important;
 }
