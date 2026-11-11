@@ -715,8 +715,10 @@ a {
   /* Overlap content above so 36px TL/TR corners sit on top (not under a square edge). */
   margin-top: -1.25rem;
   min-height: calc(100dvh - 280px);
-  padding: 20px var(--space-page-x)
-    calc(1.5rem + var(--safe-bottom));
+  /* Top pad 20px on all tabs: home, 나의 QT들, 우리순, 랭킹, 마이페이지. */
+  padding-top: 20px;
+  padding-inline: var(--space-page-x);
+  padding-bottom: calc(1.5rem + var(--safe-bottom));
   border-radius: 36px 36px 0 0 !important;
   background: var(--premium-sheet);
   color: var(--text-main);
@@ -1071,7 +1073,7 @@ a {
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
-  padding-top: 20px; /* same for short + long */
+  padding-top: 20px; /* pin short + long to shared sheet top pad */
   /* Restore shared sheet drop-shadow from `.premium-qt-sheet` (do not null it). */
 }
 
