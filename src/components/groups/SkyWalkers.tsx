@@ -5,9 +5,6 @@ import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { User } from "@/types";
 
-/** Hard visual max for decorative sky lights. */
-const SKY_LIGHT_HARD_MAX = 64;
-
 /** Four discrete sizes (~11px baseline +5%): smaller / base / larger / largest. */
 const SKY_LIGHT_SIZES = [8.4, 10.5, 12.6, 14.7] as const;
 
@@ -85,10 +82,10 @@ function buildSkySparks(
   lights: number,
   band: SkyBandPx | null,
 ): { sparks: SkySpark[]; capped: boolean } {
-  const total = Math.max(0, Math.floor(lights));
-  const show = Math.min(total, SKY_LIGHT_HARD_MAX);
+  /* 1:1 with 「우리순 전체」 period lights (not memberCount). */
+  const show = Math.max(0, Math.floor(lights));
   if (!band || band.cardW < 8 || band.cardH < 8) {
-    return { sparks: [], capped: total > 0 };
+    return { sparks: [], capped: false };
   }
 
   const sparks: SkySpark[] = [];
@@ -454,10 +451,10 @@ export function SkyWalkers({
   }, [selectedId]);
 
   const visible = members.slice(0, 12);
-  /* Decorative stars track 우리순 member count (same as 「우리순은」 N명). */
+  /* Decorative stars = 「우리순 전체」 lights for the selected period. */
   const { sparks, capped } = useMemo(
-    () => buildSkySparks(memberCount, skyBand),
-    [memberCount, skyBand],
+    () => buildSkySparks(lights, skyBand),
+    [lights, skyBand],
   );
 
   return (
@@ -523,7 +520,7 @@ export function SkyWalkers({
             </p>
           </div>
           <div className="sky-stat-tile bg-white/50 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
-            <StatLabel className="text-[var(--color-ink-blue)]">우리순 현재</StatLabel>
+            <StatLabel className="text-[var(--color-ink-blue)]">우리순 전체</StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount
                 lights={lights}
