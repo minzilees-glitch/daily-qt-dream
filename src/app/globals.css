@@ -936,26 +936,20 @@ a {
 .premium-home-shell--long .premium-home-top {
   flex: 1 1 auto;
   min-height: 0;
-  overflow: hidden;
+  /* Visible so passage bottom shadow is not clipped; scroll lives on passage. */
+  overflow: visible;
 }
 
 .premium-home-header-band {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
   padding-bottom: var(--space-stack-sm);
   background: var(--color-sky); /* #c2e5f0 */
   color: var(--color-ink-blue);
-  /*
-   * Header owns the seam shadow (cast DOWN onto white passage).
-   * Previous upward box-shadow on `.premium-home-passage` painted into the
-   * parent gap / got clipped by long-mode `overflow: hidden` on
-   * `.premium-home-top`, so the lift looked inverted or cut off.
-   */
-  box-shadow:
-    0 4px 12px 0 rgba(0, 9, 23, 0.16),
-    0 1px 4px 0 rgba(31, 62, 98, 0.12);
+  /* No header→passage seam shadow — lift lives under the 말씀 panel. */
+  box-shadow: none;
 }
 
 /* Ink text on sky header — override utility text colors. */
@@ -1010,7 +1004,7 @@ a {
 
 .premium-home-passage {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   /* Flush under sky header — no mismatched strip under the seam. */
   margin-top: 0;
   padding-inline: var(--space-page-x);
@@ -1019,8 +1013,10 @@ a {
   border-radius: 0;
   background: var(--color-white);
   color: var(--color-ink-blue);
-  /* Seam shadow lives on `.premium-home-header-band` — do not double-cast. */
-  box-shadow: none;
+  /* Cast under the 말씀 panel (bottom edge), not between header and passage. */
+  box-shadow:
+    0 6px 16px 0 rgba(0, 9, 23, 0.14),
+    0 2px 5px 0 rgba(31, 62, 98, 0.1);
 }
 
 /* Dark reading text on white passage. */
