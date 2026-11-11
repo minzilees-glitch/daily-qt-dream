@@ -947,12 +947,12 @@ a {
   padding-inline: var(--space-page-x);
   /* Extra bottom pad so passage overlap does not cover header content. */
   padding-bottom: calc(var(--space-stack-sm) + 14px);
-  background: var(--color-sky); /* #c2e5f0 */
-  color: var(--color-ink-blue);
+  background: var(--color-black); /* #000917 */
+  color: var(--color-sky);
   box-shadow: none;
 }
 
-/* Ink text on sky header — override utility text colors. */
+/* Sky/light text on black header — override utility text colors. */
 .premium-home-header-band .type-page-title,
 .premium-home-header-band .type-section,
 .premium-home-header-band .type-body-sm,
@@ -963,12 +963,12 @@ a {
 .premium-home-header-band .text-text-secondary,
 .premium-home-header-band .text-white,
 .premium-home-header-band .home-status-line {
-  color: var(--color-ink-blue) !important;
+  color: var(--color-sky) !important;
 }
 
 .premium-home-header-band .home-header-label,
 .premium-home-header-band .home-profile-group {
-  color: color-mix(in srgb, var(--color-ink-blue) 78%, transparent) !important;
+  color: color-mix(in srgb, var(--color-sky) 78%, transparent) !important;
 }
 
 /* Home profile name/group: 1pt smaller than type-label / type-caption */
@@ -1004,17 +1004,17 @@ a {
 
 .premium-home-passage {
   position: relative;
-  z-index: 3; /* 말씀 sits on top of the sky header */
+  z-index: 3; /* 말씀 sits on top of the black header */
   /* Pull up over the header so the panel reads as layered on top. */
   margin-top: -14px;
   padding-inline: var(--space-page-x);
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
-  background: var(--color-gray); /* #f2f2f2 */
+  background: var(--color-gray); /* #f2f2f2 solid */
   color: var(--color-ink-blue);
   /*
-   * Upward cast onto the sky header (passage above header in stacking).
+   * Upward cast onto the black header (passage above header in stacking).
    * Soft downward residual keeps the panel from floating flat on the sheet.
    */
   box-shadow:
