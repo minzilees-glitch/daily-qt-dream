@@ -514,9 +514,9 @@ a {
   backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
   -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
 }
-/* SkyWalkers: photo bg, no solid sky color behind the image. */
+/* SkyWalkers / MeSky: cloud photo over solid 하늘색 fallback. */
 .soft-card.sky-group-card {
-  background: transparent;
+  background: var(--color-sky); /* #6DC2FF */
   border: none;
   border-radius: 0 !important;
   box-shadow: var(--shadow-soft);
@@ -645,7 +645,7 @@ a {
   width: 100%;
   /* Extra pad so absolute photo covers the sheet underlap / rounded ears. */
   padding-bottom: 36px;
-  background: transparent;
+  background: var(--color-sky); /* #6DC2FF — under cloud photo */
   border-radius: 0 !important;
 }
 
@@ -1292,18 +1292,11 @@ a {
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
-  /* Solid opaque sky — keeps upward seam shadow readable on the black header. */
-  /* Match 나의 QT들 passage: sky at 50%. */
+  /* Match 나의 QT들 passage wash — flat, no shadow. */
   background: color-mix(in srgb, var(--color-mint) 30%, transparent);
   color: var(--color-ink-blue);
-  /*
-   * Upward cast onto the black header (passage above header in stacking).
-   * Soft downward residual keeps the panel from floating flat on the sheet.
-   */
-  box-shadow:
-    0 -6px 16px 0 rgba(0, 9, 23, 0.14),
-    0 -2px 5px 0 rgba(31, 62, 98, 0.09),
-    0 4px 10px 0 rgba(0, 9, 23, 0.06);
+  box-shadow: none;
+  filter: none;
 }
 
 /* Dark reading text on sky passage. */
