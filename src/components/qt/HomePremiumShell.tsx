@@ -233,6 +233,9 @@ export function HomePremiumShell({
       <div ref={topRef} className="premium-home-top">
         <div className="premium-home-header-band">{header}</div>
         <div ref={passageRef} className="premium-home-passage">
+          <div className="premium-sheet-grabber-row" aria-hidden>
+            <span className="premium-sheet-grabber" />
+          </div>
           {passage}
         </div>
       </div>

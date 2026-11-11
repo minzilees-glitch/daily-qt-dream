@@ -1169,7 +1169,6 @@ a {
     .premium-panel,
     .premium-tab-header,
     .sky-group-card,
-    .premium-home-passage,
     .premium-home-passage > *
   ) {
   border-radius: 0 !important;
@@ -1296,8 +1295,8 @@ a {
   z-index: 1; /* sits under the 말씀 panel */
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
-  /* Extra bottom pad so passage overlap does not cover header content. */
-  padding-bottom: calc(var(--space-stack-sm) + 14px);
+  /* Extra bottom pad so passage sheet overlap does not cover header content. */
+  padding-bottom: calc(var(--space-stack-sm) + 1.25rem);
   /* 낮모드/밤모드 — same token as 우리순·랭킹·마이페이지 headers. */
   background: var(--sky-mode-fill);
   color: var(--sky-mode-ink);
@@ -1348,26 +1347,24 @@ a {
   font-weight: 400 !important;
 }
 
-.premium-home-passage,
-.premium-home-passage > * {
-  /* Header/body seam is square — rounded top lives on `.premium-qt-sheet`. */
-  border-radius: 0 !important;
-}
-
+/* Passage reads as a fixed mint drawer over the sky header (no drag). */
 .premium-home-passage {
   position: relative;
-  z-index: 3; /* 말씀 sits on top of the black header */
-  /* Pull up over the header so the panel reads as layered on top. */
-  margin-top: -14px;
+  z-index: 3;
+  /* Pull up over the header so rounded top sits on sky chrome. */
+  margin-top: -1.25rem;
   padding-inline: var(--space-page-x);
-  padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
+  /* Match .premium-qt-sheet top pad; grabber-row handles pill placement. */
+  padding-top: 28px;
   padding-bottom: 0.75rem;
-  border-radius: 0;
-  /* Solid mint body under sky header. */
+  border-radius: 36px 36px 0 0 !important;
   background: var(--color-mint); /* #CAEBF2 */
   color: var(--color-ink-blue);
   box-shadow: none;
-  filter: none;
+  filter:
+    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
+    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
+  pointer-events: auto;
 }
 
 /* Dark reading text on sky passage. */
