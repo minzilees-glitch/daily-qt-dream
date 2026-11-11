@@ -1,7 +1,10 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
+
+const HOME_AVATAR_MIN = 52;
+const HOME_AVATAR_MAX = 96;
 
 export function AppHeader({
   title,
@@ -27,6 +30,29 @@ export function AppHeader({
   showAvatar?: boolean;
   status?: ReactNode;
 }) {
+  const copyRef = useRef<HTMLDivElement>(null);
+  const [avatarSize, setAvatarSize] = useState(72);
+
+  useLayoutEffect(() => {
+    if (!homeLayout) return;
+    const el = copyRef.current;
+    if (!el) return;
+
+    const sync = () => {
+      const h = Math.round(el.getBoundingClientRect().height);
+      const next = Math.min(
+        HOME_AVATAR_MAX,
+        Math.max(HOME_AVATAR_MIN, h),
+      );
+      setAvatarSize((prev) => (prev === next ? prev : next));
+    };
+
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [homeLayout, dateLabel, status, title]);
+
   if (homeLayout) {
     return (
       <header
@@ -34,7 +60,7 @@ export function AppHeader({
           light ? "text-white" : "text-text-main"
         }`}
       >
-        <div className="min-w-0 flex-1">
+        <div ref={copyRef} className="min-w-0 flex-1">
           <p
             className={`home-header-label font-medium ${
               light ? "text-white/80" : "text-sky"
@@ -54,8 +80,8 @@ export function AppHeader({
         </div>
 
         {showAvatar ? (
-          <div className="flex shrink-0 items-start pt-0.5">
-            <ProfileAvatarButton light={light} />
+          <div className="flex shrink-0 items-start self-stretch">
+            <ProfileAvatarButton light={light} size={avatarSize} />
           </div>
         ) : null}
       </header>
