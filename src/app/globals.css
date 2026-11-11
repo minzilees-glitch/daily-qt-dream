@@ -1120,6 +1120,41 @@ a {
   }
 }
 
+/* Collapsed week strip: horizontal page turn when week steps. */
+.premium-cal-week-viewport {
+  overflow: hidden;
+}
+
+@keyframes premium-week-slide-next {
+  from {
+    opacity: 0.35;
+    transform: translateX(32%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes premium-week-slide-prev {
+  from {
+    opacity: 0.35;
+    transform: translateX(-32%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.premium-cal-week-slide-next {
+  animation: premium-week-slide-next 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.premium-cal-week-slide-prev {
+  animation: premium-week-slide-prev 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @keyframes premium-crossfade {
   from {
     opacity: 0;
@@ -1135,6 +1170,8 @@ a {
   .premium-cal-day-selected,
   .premium-cal-glow,
   .premium-cal-month-anim,
+  .premium-cal-week-slide-next,
+  .premium-cal-week-slide-prev,
   .premium-content-crossfade {
     animation: none;
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   addDays,
   daysInMonth,
@@ -114,6 +114,9 @@ export function QtCalendar({
 
   const rootRef = useRef<HTMLDivElement>(null);
   const wheelAccRef = useRef(0);
+  const weekKeyRef = useRef<string | null>(null);
+  const pendingSlideRef = useRef<"next" | "prev" | null>(null);
+  const [weekSlide, setWeekSlide] = useState<"next" | "prev" | null>(null);
   const swipeRef = useRef<{
     active: boolean;
     startX: number;
@@ -132,6 +135,8 @@ export function QtCalendar({
       const nextYm = yearMonthOf(next);
       if (minYearMonth && nextYm < minYearMonth) return;
       if (maxYearMonth && nextYm > maxYearMonth) return;
+      // next week enters from right; previous from left
+      pendingSlideRef.current = direction === 1 ? "next" : "prev";
       onSelect(next);
     },
     [
@@ -206,12 +211,37 @@ export function QtCalendar({
   };
 
   const weekDates = weekDatesMonFirst(focusDate);
+  const weekKey = weekDates[0] ?? focusDate;
   const allRows = buildWeekRows(yearMonth);
+
+  useEffect(() => {
+    if (!collapsed) {
+      weekKeyRef.current = weekKey;
+      setWeekSlide(null);
+      return;
+    }
+    const prev = weekKeyRef.current;
+    weekKeyRef.current = weekKey;
+    if (!prev || prev === weekKey) return;
+
+    const pending = pendingSlideRef.current;
+    pendingSlideRef.current = null;
+    if (pending) {
+      setWeekSlide(pending);
+      return;
+    }
+    // External date jump (month picker / day tap in another week).
+    setWeekSlide(weekKey > prev ? "next" : "prev");
+  }, [collapsed, weekKey]);
 
   return (
     <div
       ref={rootRef}
-      className={collapsed ? "touch-pan-x select-none" : "touch-pan-y"}
+      className={
+        collapsed
+          ? "premium-cal-week-viewport touch-pan-x select-none"
+          : "touch-pan-y"
+      }
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endSwipe}
@@ -219,8 +249,14 @@ export function QtCalendar({
     >
       {collapsed ? (
         <div
-          key={`week-${weekDates[0]}`}
-          className="premium-cal-month-anim grid grid-cols-7 gap-1.5"
+          key={`week-${weekKey}`}
+          className={`grid grid-cols-7 gap-1.5 ${
+            weekSlide === "next"
+              ? "premium-cal-week-slide-next"
+              : weekSlide === "prev"
+                ? "premium-cal-week-slide-prev"
+                : "premium-cal-month-anim"
+          }`}
           aria-label="주간 달력 — 좌우로 밀면 일주일씩 이동합니다"
         >
           {weekDates.map((date, i) => {
