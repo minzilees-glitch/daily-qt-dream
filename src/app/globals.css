@@ -998,7 +998,7 @@ a {
   justify-content: center;
   align-items: center;
   height: 20px;
-  margin: -4px 0 0.35rem;
+  margin: -10px 0 0.35rem; /* nudge pill slightly toward sheet top */
   pointer-events: none;
 }
 
@@ -1431,7 +1431,7 @@ a {
   justify-content: center;
   align-items: center;
   height: 28px;
-  margin: -4px 0 0.35rem;
+  margin: -10px 0 0.35rem; /* match grabber-row upward nudge */
   cursor: grab;
   touch-action: none;
   user-select: none;
