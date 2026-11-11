@@ -755,7 +755,7 @@ a {
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
   padding: 20px var(--space-page-x) var(--space-stack);
-  background: color-mix(in srgb, var(--color-sky) 50%, transparent) !important;
+  background: color-mix(in srgb, var(--color-sky) 30%, transparent) !important;
   border-radius: 36px 36px 0 0;
   box-sizing: border-box;
 }
@@ -1037,8 +1037,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* 30px sheet gap matches 50% sky passage fill. */
-  background: color-mix(in srgb, var(--color-sky) 50%, transparent);
+  /* 30px sheet gap matches 30% sky passage fill. */
+  background: color-mix(in srgb, var(--color-sky) 30%, transparent);
 }
 
 .premium-home-shell--long {
@@ -1051,8 +1051,8 @@ a {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* Match 50% sky passage so passage→sheet junction has no mismatched strip. */
-  background: color-mix(in srgb, var(--color-sky) 50%, transparent);
+  /* Match 30% sky passage so passage→sheet junction has no mismatched strip. */
+  background: color-mix(in srgb, var(--color-sky) 30%, transparent);
 }
 
 .premium-home-shell--short .premium-home-top {
@@ -1140,7 +1140,7 @@ a {
   border-radius: 0;
   /* Solid opaque sky — keeps upward seam shadow readable on the black header. */
   /* Match 나의 QT들 passage: sky at 50%. */
-  background: color-mix(in srgb, var(--color-sky) 50%, transparent);
+  background: color-mix(in srgb, var(--color-sky) 30%, transparent);
   color: var(--color-ink-blue);
   /*
    * Upward cast onto the black header (passage above header in stacking).
