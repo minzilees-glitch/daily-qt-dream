@@ -62,7 +62,7 @@ export default function GroupPage() {
             align="center"
           />
         </div>
-        <div className="sky-walkers-bleed mt-[var(--space-stack)] animate-fade-up">
+        <div className="sky-walkers-bleed mt-2 animate-fade-up">
           <SkyWalkers
             members={members}
             memberCount={myRank?.memberCount ?? 0}
