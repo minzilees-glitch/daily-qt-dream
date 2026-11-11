@@ -32,15 +32,16 @@ export function WeekdayParticipation({
             title={`${d.label}: ${d.count}/${d.possible}`}
           >
             {showCount ? (
-              <p className="type-label font-semibold tabular-nums text-text-main">
+              <p className="type-label font-semibold tabular-nums text-[var(--color-black)]">
                 {d.count}
               </p>
             ) : (
               <span className="h-0 w-full" aria-hidden />
             )}
-            <div className="flex h-16 w-8 items-end overflow-hidden rounded-full bg-sky-light">
+            {/* Track: ink-blue tint · Fill: sky · Labels: black */}
+            <div className="flex h-16 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-ink-blue)_16%,white)]">
               <div
-                className="w-full rounded-full bg-[var(--color-ink-blue)] transition-all"
+                className="w-full rounded-full bg-[var(--color-sky)] transition-all"
                 style={{
                   height:
                     d.possible === 0 && d.count === 0
@@ -50,11 +51,11 @@ export function WeekdayParticipation({
                 }}
               />
             </div>
-            <StatLabel as="span" className="text-text-secondary">
+            <StatLabel as="span" className="text-[var(--color-black)]">
               {d.label}
             </StatLabel>
             {showPossible ? (
-              <span className="type-nav tabular-nums text-text-secondary/80">
+              <span className="type-nav tabular-nums text-[var(--color-black)] opacity-70">
                 /{d.possible}
               </span>
             ) : null}
