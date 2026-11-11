@@ -277,7 +277,7 @@ html[data-sky-mode="밤모드"] {
 .qt-field-title {
   font-size: 18px !important; /* was 20; −2pt */
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-ink-blue); /* #1F3E62 */
 }
 
 /* 우리순 graph section titles — 1pt under field title. */
