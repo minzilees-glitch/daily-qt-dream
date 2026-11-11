@@ -59,7 +59,7 @@ export default function GroupPage() {
             onChange={setYm}
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
-            align="start"
+            align="center"
           />
         </div>
         <div className="sky-walkers-bleed mt-[var(--space-stack)] animate-fade-up">
