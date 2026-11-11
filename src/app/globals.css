@@ -310,8 +310,8 @@ html[data-sky-mode="밤모드"] {
     to bottom,
     transparent 0,
     transparent calc(var(--qt-line) - 1px),
-    color-mix(in srgb, var(--color-ink-blue) 42%, white) calc(var(--qt-line) - 1px),
-    color-mix(in srgb, var(--color-ink-blue) 42%, white) var(--qt-line)
+    color-mix(in srgb, var(--color-ink-blue) 28%, white) calc(var(--qt-line) - 1px),
+    color-mix(in srgb, var(--color-ink-blue) 28%, white) var(--qt-line)
   ) !important;
   background-size: 100% var(--qt-line) !important;
   background-repeat: repeat-y !important;
