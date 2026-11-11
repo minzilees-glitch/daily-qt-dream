@@ -259,7 +259,7 @@
 
 /* Arbitrary Tailwind text-[Npx] loses to .type-section — force sizes here. */
 .qt-field-title {
-  font-size: 20px !important;
+  font-size: 22px !important;
   font-weight: 600;
   color: var(--text-main);
 }
@@ -270,7 +270,7 @@
 }
 
 .reading-passage-range {
-  font-size: 22px !important; /* field title 20px + 2pt */
+  font-size: 22px !important; /* matches .qt-field-title */
   font-weight: 600;
   color: var(--text-main);
 }

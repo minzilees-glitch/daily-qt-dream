@@ -74,7 +74,7 @@ export default function GroupPage() {
 
       <section className="premium-qt-sheet">
         <div className="premium-panel animate-fade-up">
-          <h2 className="premium-panel-title">우리순의 이번주 참여</h2>
+          <h2 className="qt-field-title mb-3">우리순의 이번주 참여</h2>
           <WeekdayParticipation
             days={weekBars}
             showCount={false}
@@ -83,7 +83,7 @@ export default function GroupPage() {
         </div>
 
         <div className="premium-panel animate-fade-up">
-          <h2 className="premium-panel-title">우리순 날짜별 참여</h2>
+          <h2 className="qt-field-title mb-3">우리순 날짜별 참여</h2>
           <DayParticipation days={dayPart} />
         </div>
       </section>
