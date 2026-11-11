@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, LogOut } from "lucide-react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { useApp } from "@/lib/app-context";
 
 export default function MeSettingsPage() {
-  const { currentUser, groups } = useApp();
+  const { currentUser, groups, logout } = useApp();
+  const router = useRouter();
 
   if (!currentUser) return null;
 
@@ -45,6 +48,25 @@ export default function MeSettingsPage() {
         <div className="premium-panel animate-fade-up">
           <p className="type-body-sm text-text-secondary">
             프로필 사진을 눌러 변경할 수 있어요. 이름·순 변경은 준비 중입니다.
+          </p>
+        </div>
+
+        <div className="premium-panel me-sheet-foot">
+          <PrimaryButton
+            type="button"
+            className="w-full"
+            onClick={() => {
+              logout();
+              router.replace("/login");
+            }}
+          >
+            <LogOut size={18} strokeWidth={1.75} />
+            로그아웃
+          </PrimaryButton>
+
+          <p className="qt-validation-hint mt-[var(--space-stack-sm)] text-center type-caption text-text-secondary">
+            로그인 세션은 이 브라우저 localStorage에 저장됩니다. QT 기록은
+            Supabase가 설정되면 DB에 저장되고, 없으면 로컬로 대체됩니다.
           </p>
         </div>
       </section>

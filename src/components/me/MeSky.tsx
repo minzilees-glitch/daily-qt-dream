@@ -286,6 +286,9 @@ export function MeSky({
           </div>
         </div>
       </div>
+
+      {/* Explicit free-sky band under stats so year-lights aren’t cramped. */}
+      <div className="me-sky-stage relative z-10 w-full" aria-hidden />
     </div>
   );
 }

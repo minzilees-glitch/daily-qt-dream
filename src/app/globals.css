@@ -646,9 +646,14 @@ a {
   border-radius: 0 !important;
 }
 
-/* Mypage sky: same photo language, no walkers — shorter band under stats. */
+/* Mypage sky: same photo language, no walkers — taller free-sky band. */
 .sky-group-card.me-sky-card {
-  min-height: 268px;
+  min-height: 340px;
+}
+
+.me-sky-card .me-sky-stage {
+  height: 132px;
+  background: transparent;
 }
 
 .sky-group-card .sky-stat-tile {
@@ -848,14 +853,14 @@ a {
   flex-direction: column;
 }
 
-/* 마이페이지: push admin row / logout toward the bottom of the filled sheet. */
-.premium-qt-sheet.premium-qt-sheet--me > .me-sheet-tail,
-.premium-qt-sheet.premium-qt-sheet--me > .me-sheet-foot {
+/* 마이페이지: pin weekday chart to sheet bottom (no empty gap below). */
+.premium-qt-sheet.premium-qt-sheet--me > .me-weekday-panel {
   margin-top: auto;
 }
 
-.premium-qt-sheet.premium-qt-sheet--me > .me-sheet-tail + .me-sheet-foot {
-  margin-top: 0;
+/* 계정 설정: logout sits under profile detail at sheet bottom. */
+.premium-qt-sheet.premium-qt-sheet--me > .me-sheet-foot {
+  margin-top: auto;
 }
 
 /* 우리순 sheet: equal vertical halves for 이번주 / 날짜별. */

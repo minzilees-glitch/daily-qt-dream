@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ChevronRight, LogOut, Shield } from "lucide-react";
+import { ChevronRight, Shield } from "lucide-react";
 import { MeSky } from "@/components/me/MeSky";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
 import { useApp } from "@/lib/app-context";
 import {
@@ -21,8 +19,7 @@ import {
 } from "@/lib/stats";
 
 export default function MePage() {
-  const { currentUser, groups, completions, logout } = useApp();
-  const router = useRouter();
+  const { currentUser, groups, completions } = useApp();
 
   if (!currentUser) return null;
 
@@ -64,7 +61,7 @@ export default function MePage() {
       </header>
 
       <section className="premium-qt-sheet premium-qt-sheet--fill premium-qt-sheet--me">
-        <div className="premium-panel animate-fade-up">
+        <div className="premium-panel me-weekday-panel animate-fade-up">
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h2 className="premium-panel-title mb-0">내가 잘 지키는 요일</h2>
             <span className="type-caption font-medium text-text-secondary">
@@ -75,7 +72,7 @@ export default function MePage() {
         </div>
 
         {currentUser.isAdmin ? (
-          <div className="premium-panel space-y-2 me-sheet-tail">
+          <div className="premium-panel space-y-2">
             <Link href="/admin" className="premium-list-row">
               <span className="flex items-center gap-3 type-body font-medium text-text-main">
                 <Shield
@@ -89,25 +86,6 @@ export default function MePage() {
             </Link>
           </div>
         ) : null}
-
-        <div className="premium-panel me-sheet-foot">
-          <PrimaryButton
-            type="button"
-            className="w-full"
-            onClick={() => {
-              logout();
-              router.replace("/login");
-            }}
-          >
-            <LogOut size={18} strokeWidth={1.75} />
-            로그아웃
-          </PrimaryButton>
-
-          <p className="qt-validation-hint mt-[var(--space-stack-sm)] text-center type-caption text-text-secondary">
-            로그인 세션은 이 브라우저 localStorage에 저장됩니다. QT 기록은
-            Supabase가 설정되면 DB에 저장되고, 없으면 로컬로 대체됩니다.
-          </p>
-        </div>
       </section>
     </div>
   );
