@@ -738,6 +738,7 @@ a {
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   background: var(--premium-cal-bg);
   color: var(--text-main);
+  /* Allow sheet drop-shadow to paint above the rounded top. */
   overflow-x: hidden;
   overflow-y: visible;
 }
@@ -842,14 +843,17 @@ a {
   border-radius: 36px 36px 0 0 !important;
   background: var(--premium-sheet);
   color: var(--text-main);
-  /* No lift shadow between header and sheet (홈·나의QT·우리순·랭킹·마이페이지). */
+  /* Shape-following lift on the sheet itself (all tabs). */
   box-shadow: none;
-  filter: none;
+  filter:
+    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
+    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
 }
 
 /*
  * 우리순 / 랭킹 / 마이페이지: keep rounded sheet top.
  * Root matches sky header so calendar token does not peek at sheet ears.
+ * Inherit shared sheet drop-shadow from `.premium-qt-sheet` (do not null it).
  */
 .premium-qt-root:has(> .premium-tab-header) {
   display: flex;
@@ -859,8 +863,6 @@ a {
 }
 
 .premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet {
-  filter: none !important;
-  box-shadow: none !important;
   /* Content-sized by default — avoid tall empty gap under last section. */
   min-height: 0;
 }
@@ -1258,8 +1260,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* 30px sheet gap matches 30% sky passage fill. */
-  background: color-mix(in srgb, var(--color-mint) 30%, transparent);
+  /* Opaque mint wash (mix with white) — avoids translucent sky→mint “shadow” seam. */
+  background: color-mix(in srgb, var(--color-mint) 30%, white);
 }
 
 .premium-home-shell--long {
@@ -1272,8 +1274,8 @@ a {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* Match 30% sky passage so passage→sheet junction has no mismatched strip. */
-  background: color-mix(in srgb, var(--color-mint) 30%, transparent);
+  /* Continuous with header fill so sky↔passage edge is not a translucent band. */
+  background: var(--sky-mode-fill);
 }
 
 .premium-home-shell--short .premium-home-top {
@@ -1284,7 +1286,7 @@ a {
 .premium-home-shell--long .premium-home-top {
   flex: 1 1 auto;
   min-height: 0;
-  /* Visible so passage bottom shadow is not clipped; scroll lives on passage. */
+  /* Visible so sheet drop-shadow is not clipped; scroll lives on passage. */
   overflow: visible;
 }
 
@@ -1360,8 +1362,8 @@ a {
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
-  /* Match 나의 QT들 passage wash — flat, no shadow. */
-  background: color-mix(in srgb, var(--color-mint) 30%, transparent);
+  /* Opaque mint wash over sky header — no translucent blend that reads as a shadow. */
+  background: color-mix(in srgb, var(--color-mint) 30%, white);
   color: var(--color-ink-blue);
   box-shadow: none;
   filter: none;
@@ -1410,9 +1412,7 @@ a {
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
-  /* Inherit shared .premium-qt-sheet padding-top (28px); no home-only pin. */
-  box-shadow: none;
-  filter: none;
+  /* Inherit shared .premium-qt-sheet padding-top + sheet drop-shadow. */
 }
 
 .premium-home-shell--short .premium-home-form-sheet {
