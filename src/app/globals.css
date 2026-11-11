@@ -910,8 +910,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* 30px sheet gap reads as passage white, not page sky bleed. */
-  background: var(--color-white);
+  /* 30px sheet gap reads as passage gray, not page sky bleed. */
+  background: var(--color-gray);
 }
 
 .premium-home-shell--long {
@@ -924,8 +924,8 @@ a {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* White under passage so passage→sheet junction has no mismatched strip. */
-  background: var(--color-white);
+  /* Gray under passage so passage→sheet junction has no mismatched strip. */
+  background: var(--color-gray);
 }
 
 .premium-home-shell--short .premium-home-top {
@@ -1011,7 +1011,7 @@ a {
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
-  background: var(--color-white);
+  background: var(--color-gray); /* #f2f2f2 */
   color: var(--color-ink-blue);
   /*
    * Upward cast onto the sky header (passage above header in stacking).
@@ -1023,7 +1023,7 @@ a {
     0 4px 10px 0 rgba(0, 9, 23, 0.06);
 }
 
-/* Dark reading text on white passage. */
+/* Dark reading text on gray passage. */
 .premium-home-passage .text-text-main,
 .premium-home-passage .type-section,
 .premium-home-passage .type-body,
