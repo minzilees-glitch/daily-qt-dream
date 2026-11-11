@@ -89,11 +89,11 @@ export function ProfileAvatarButton({
           )}
         </span>
         <span
-          className={`absolute -bottom-0.5 -right-0.5 z-10 flex h-5 w-5 items-center justify-center rounded-full ${
+          className={`absolute -bottom-0.5 -right-0.5 z-10 flex h-6 w-6 items-center justify-center rounded-full ${
             light ? "bg-white/90 text-sky" : "bg-sky text-white"
           }`}
         >
-          <Camera size={12} strokeWidth={2.2} aria-hidden />
+          <Camera size={14} strokeWidth={2.2} aria-hidden />
         </span>
       </button>
 
