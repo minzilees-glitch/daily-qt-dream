@@ -87,7 +87,7 @@ export function DayParticipation({
                 style={{ height: `${Math.max(8, ratio * 100)}%` }}
               />
             </div>
-            <span className="type-micro text-[var(--color-black)]">{dayNum}</span>
+            <span className="type-label text-[var(--color-black)]">{dayNum}</span>
           </div>
         );
       })}
