@@ -152,8 +152,8 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 480px;
 
-  /* ——— Premium QT calendar (나의 QT들) — black calendar + sky sheet ——— */
-  --premium-cal-bg: var(--color-black);
+  /* ——— Premium QT calendar (나의 QT들) — 낮모드/밤모드 fill + white sheet ——— */
+  --premium-cal-bg: var(--sky-mode-fill);
   --premium-sheet: var(--color-white);
 }
 
@@ -748,12 +748,13 @@ a {
   z-index: 1;
   padding: calc(var(--space-title-pt) + var(--safe-top)) var(--space-page-x)
     1.25rem;
-  background: var(--color-black); /* #000917 */
-  color: var(--color-mint);
+  /* 낮모드 sky / 밤모드 black — same --sky-mode-fill as other headers. */
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
   border-radius: 0 !important;
 }
 
-/* Sky/light text on black calendar header — month, day nums, captions. */
+/* Calendar header copy follows 낮모드/밤모드 ink. */
 .premium-qt-header .type-month,
 .premium-qt-header .type-caption,
 .premium-qt-header .type-body-sm,
@@ -761,22 +762,22 @@ a {
 .premium-qt-header .text-text-main,
 .premium-qt-header .text-text-secondary,
 .premium-qt-header .text-black {
-  color: var(--color-mint) !important;
+  color: var(--sky-mode-ink) !important;
 }
 
-/* Future / muted day nums on black calendar. */
+/* Future / muted day nums on calendar chrome. */
 .premium-qt-header .premium-cal-day .opacity-40,
 .premium-qt-header button:disabled {
   opacity: 0.45;
 }
 
-/* Today accent stays 소라 on the black calendar. */
+/* Today accent stays 소라 on the calendar. */
 .premium-qt-header .text-cta {
   color: var(--color-sora) !important;
 }
 
 .premium-qt-header svg {
-  color: var(--color-mint);
+  color: var(--sky-mode-ink);
   stroke: currentColor;
 }
 
