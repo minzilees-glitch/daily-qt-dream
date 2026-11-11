@@ -454,9 +454,10 @@ export function SkyWalkers({
   }, [selectedId]);
 
   const visible = members.slice(0, 12);
+  /* Decorative stars track 우리순 member count (same as 「우리순은」 N명). */
   const { sparks, capped } = useMemo(
-    () => buildSkySparks(lights, skyBand),
-    [lights, skyBand],
+    () => buildSkySparks(memberCount, skyBand),
+    [memberCount, skyBand],
   );
 
   return (
