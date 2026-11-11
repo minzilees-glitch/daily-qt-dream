@@ -63,7 +63,7 @@ export default function MePage() {
       <section className="premium-qt-sheet premium-qt-sheet--me">
         <div className="premium-panel animate-fade-up">
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <h2 className="premium-panel-title mb-0">내가 잘 지키는 요일</h2>
+            <h2 className="premium-panel-title mb-0">나의 일주일</h2>
             <span className="type-caption font-medium text-text-secondary">
               {year}년 누적 기준
             </span>
