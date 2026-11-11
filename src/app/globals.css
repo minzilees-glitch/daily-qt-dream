@@ -823,8 +823,8 @@ a {
   /* Overlap content above so 36px TL/TR corners sit on top (not under a square edge). */
   margin-top: -1.25rem;
   min-height: calc(100dvh - 280px);
-  /* Top pad 24px on all tabs: home, 나의 QT들, 우리순, 랭킹, 마이페이지. */
-  padding-top: 24px;
+  /* Top pad 28px on all tabs: home, 나의 QT들, 우리순, 랭킹, 마이페이지. */
+  padding-top: 28px;
   padding-inline: var(--space-page-x);
   padding-bottom: calc(1.5rem + var(--safe-bottom));
   border-radius: 36px 36px 0 0 !important;
