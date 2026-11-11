@@ -804,7 +804,7 @@ a {
 
 /* Inactive/future dates: #F2F2F2 at 50% (don't inherit --sky-mode-ink). */
 .premium-qt-header .premium-cal-day-muted {
-  color: color-mix(in srgb, var(--muted) 50%, transparent) !important; /* #F2F2F2 @ 50% */
+  color: color-mix(in srgb, var(--muted) 70%, transparent) !important; /* #F2F2F2 @ 70% */
 }
 
 /* Today accent stays 소라 on the calendar. */
