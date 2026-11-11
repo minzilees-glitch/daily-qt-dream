@@ -649,13 +649,15 @@ a {
   border-radius: 0 !important;
 }
 
-/* Mypage sky: fills leftover viewport above content-fit bottom sheet. */
+/* Mypage sky: fills leftover viewport above content-fit bottom sheet.
+ * Slightly deeper underlap than base 36px so rounded sheet ears don't clip photo. */
 .sky-group-card.me-sky-card {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 280px;
   height: 100%;
+  padding-bottom: 44px;
 }
 
 .me-sky-card .me-sky-stage {
@@ -908,6 +910,7 @@ a {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  margin-bottom: -44px; /* match me-sky-card pad; sheet rounds sit over sky */
 }
 
 .premium-qt-root.premium-qt-root--me-sky > .premium-qt-sheet.premium-qt-sheet--me {
