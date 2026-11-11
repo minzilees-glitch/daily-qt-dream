@@ -36,8 +36,8 @@ function parseDateParam(raw: string | null): string | null {
   return raw;
 }
 
-const DATE_TITLE_MAX_PX = 24; /* matches --fs-display */
-const DATE_TITLE_MIN_PX = 16; /* matches --fs-caption */
+const DATE_TITLE_MAX_PX = 22; /* --fs-display 24 − 2pt */
+const DATE_TITLE_MIN_PX = 14; /* --fs-caption 16 − 2pt */
 
 /** Single-line title that shrinks to the largest font size that still fits. */
 function FitDateTitle({ text }: { text: string }) {
@@ -207,14 +207,14 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       <section className="premium-qt-sheet premium-qt-sheet--history">
         <div key={selected} className="premium-content-crossfade flex flex-col">
           <div className="space-y-[var(--space-stack-sm)]">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 pt-3">
               <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-center gap-1.5">
-                  <span className="shrink-0">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="shrink-0 self-center">
                     <LightIcon
                       active={selectedCompleted}
                       future={future}
-                      size={28}
+                      size={24}
                       justEarned={selectedCompleted && !future}
                     />
                   </span>
