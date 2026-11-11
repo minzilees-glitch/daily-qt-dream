@@ -50,7 +50,7 @@ export default function GroupPage() {
   );
 
   return (
-    <div className="premium-qt-root">
+    <div className="premium-qt-root premium-qt-root--group-sky">
       <header className="premium-tab-header premium-tab-header--group">
         <h1 className="premium-tab-title">우리 순</h1>
         <div className="mt-[var(--space-stack-sm)]">
@@ -72,8 +72,8 @@ export default function GroupPage() {
         </div>
       </header>
 
-      <section className="premium-qt-sheet premium-qt-sheet--fill">
-        <div className="premium-panel premium-panel--half animate-fade-up pt-6">
+      <section className="premium-qt-sheet premium-qt-sheet--group">
+        <div className="premium-panel animate-fade-up pt-6">
           <h2 className="qt-field-title qt-field-title--sm mb-5">
             우리순의 이번주 참여
           </h2>
@@ -84,7 +84,7 @@ export default function GroupPage() {
           />
         </div>
 
-        <div className="premium-panel premium-panel--half premium-panel--no-divider animate-fade-up">
+        <div className="premium-panel premium-panel--no-divider animate-fade-up">
           <h2 className="qt-field-title qt-field-title--sm mb-5">
             우리순 날짜별 참여
           </h2>

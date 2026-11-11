@@ -886,7 +886,7 @@ a {
   background: var(--color-sky); /* sheet-ear seam matches header */
 }
 
-/* 우리순: stretch sheet to fill remaining viewport. */
+/* Optional full-height sheet (unused by 우리순; kept for other tabs). */
 .premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet.premium-qt-sheet--fill {
   flex: 1 1 auto;
   min-height: 0;
@@ -922,18 +922,43 @@ a {
   margin-top: auto;
 }
 
-/* 우리순 sheet: equal vertical halves for 이번주 / 날짜별. */
-.premium-qt-sheet.premium-qt-sheet--fill > .premium-panel--half {
-  flex: 1 1 0;
+/*
+ * 우리순: content-fit bottom sheet (charts hug content);
+ * SkyWalkers header grows into leftover viewport (like mypage MeSky).
+ */
+.premium-qt-root.premium-qt-root--group-sky > .premium-tab-header--group {
+  flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
-.premium-qt-sheet.premium-qt-sheet--fill
-  > .premium-panel--half
-  + .premium-panel--half {
-  margin-top: 10px; /* 「날짜별 참여」 down 10px */
+.premium-qt-root.premium-qt-root--group-sky > .premium-tab-header--group .sky-walkers-bleed {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-qt-root.premium-qt-root--group-sky .sky-group-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+.premium-qt-root.premium-qt-root--group-sky .sky-walkers-stage {
+  flex: 1 1 auto;
+  min-height: 210px;
+}
+
+.premium-qt-root.premium-qt-root--group-sky > .premium-qt-sheet.premium-qt-sheet--group {
+  flex: 0 0 auto;
+}
+
+.premium-qt-sheet.premium-qt-sheet--group > .premium-panel + .premium-panel {
+  margin-top: 10px; /* 「날짜별 참여」 spacing */
   padding-top: 0;
 }
 

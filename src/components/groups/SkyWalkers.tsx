@@ -542,7 +542,7 @@ export function SkyWalkers({
 
       <div
         ref={stageRef}
-        className="sky-walkers-stage relative z-10 h-[210px] w-full overflow-hidden"
+        className="sky-walkers-stage relative z-10 min-h-[210px] w-full overflow-hidden"
         aria-label="순원들이 구름 위에서 걷고 차를 마시며 책을 읽는 장면"
       >
         <div ref={layerRef} className="absolute inset-0">
