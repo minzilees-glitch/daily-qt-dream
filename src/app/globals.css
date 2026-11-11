@@ -871,6 +871,15 @@ a {
   padding-bottom: calc(1.25rem + var(--space-stack-sm));
 }
 
+/* 마이페이지 header: 하늘색 (not mint). */
+.premium-tab-header.premium-tab-header--me {
+  background: var(--color-sky); /* #B4D7F0 */
+}
+
+.premium-qt-root:has(> .premium-tab-header--me) {
+  background: var(--color-sky); /* sheet-ear seam matches header */
+}
+
 /* 우리순: stretch sheet to fill remaining viewport. */
 .premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet.premium-qt-sheet--fill {
   flex: 1 1 auto;
