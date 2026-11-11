@@ -738,7 +738,6 @@ a {
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   background: var(--premium-cal-bg);
   color: var(--text-main);
-  /* Allow sheet drop-shadow to paint above the rounded top (was clipping to a hard line). */
   overflow-x: hidden;
   overflow-y: visible;
 }
@@ -843,17 +842,14 @@ a {
   border-radius: 36px 36px 0 0 !important;
   background: var(--premium-sheet);
   color: var(--text-main);
-  /* Shape-following lift: filter tracks border-radius; keep prior soft opacity. */
+  /* No lift shadow between header and sheet (홈·나의QT·우리순·랭킹·마이페이지). */
   box-shadow: none;
-  filter:
-    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
-    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
+  filter: none;
 }
 
 /*
  * 우리순 / 랭킹 / 마이페이지: keep rounded sheet top.
- * Root matches sky header so black calendar token does not peek at sheet ears.
- * Sheet drop-shadow off by default; ranking restores via --lift.
+ * Root matches sky header so calendar token does not peek at sheet ears.
  */
 .premium-qt-root:has(> .premium-tab-header) {
   display: flex;
@@ -867,14 +863,6 @@ a {
   box-shadow: none !important;
   /* Content-sized by default — avoid tall empty gap under last section. */
   min-height: 0;
-}
-
-/* Ranking (and opt-in): same upward sheet shadow as Home / 나의 QT들. */
-.premium-qt-root:has(> .premium-tab-header)
-  > .premium-qt-sheet.premium-qt-sheet--lift {
-  filter:
-    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
-    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05)) !important;
 }
 
 /*
@@ -1423,7 +1411,8 @@ a {
   flex: 0 0 auto;
   z-index: 3;
   /* Inherit shared .premium-qt-sheet padding-top (28px); no home-only pin. */
-  /* Restore shared sheet drop-shadow from `.premium-qt-sheet` (do not null it). */
+  box-shadow: none;
+  filter: none;
 }
 
 .premium-home-shell--short .premium-home-form-sheet {
