@@ -6,7 +6,7 @@
   --color-white: #ffffff; /* 화이트 */
   --color-gray: #f2f2f2; /* 그레이 */
   --color-mint: #caebf2; /* 민트 — former soft “sky” chrome */
-  --color-sky: #66aee2; /* 하늘색 */
+  --color-sky: #6dc2ff; /* 하늘색 */
   --color-sora: #94deee; /* 소라 */
   --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
   --color-black: #000917; /* 검정 */
@@ -155,7 +155,7 @@
   --color-white: #ffffff;
   --color-gray: #f2f2f2;
   --color-mint: #caebf2; /* 민트 — soft chrome (former --color-sky) */
-  --color-sky: #66aee2; /* 하늘색; brand chrome remains --sky #5FBCFC */
+  --color-sky: #6dc2ff; /* 하늘색; brand chrome remains --sky #5FBCFC */
   --color-sora: #94deee; /* 소라 #94DEEE */
   --color-ink-blue: #1f3e62;
   --color-black: #000917;
@@ -875,7 +875,7 @@ a {
 
 /* 마이페이지 header: 하늘색 (not mint). */
 .premium-tab-header.premium-tab-header--me {
-  background: var(--color-sky); /* #66AEE2 */
+  background: var(--color-sky); /* #6DC2FF */
 }
 
 .premium-tab-header.premium-tab-header--me .premium-tab-title {
@@ -1004,7 +1004,7 @@ a {
 
 /* 우리순 header: 하늘색 (match 마이페이지). */
 .premium-tab-header.premium-tab-header--group {
-  background: var(--color-sky); /* #66AEE2 */
+  background: var(--color-sky); /* #6DC2FF */
   color: var(--color-ink-blue);
 }
 
@@ -1014,7 +1014,7 @@ a {
 
 /* 랭킹 header: 하늘색 (우리순·마이페이지와 동일). */
 .premium-tab-header.premium-tab-header--ranking {
-  background: var(--color-sky); /* #66AEE2 */
+  background: var(--color-sky); /* #6DC2FF */
   color: var(--color-ink-blue);
 }
 
