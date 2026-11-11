@@ -743,6 +743,8 @@ a {
 .premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet {
   filter: none !important;
   box-shadow: none !important;
+  /* Content-sized — avoid tall empty gap under last section (e.g. 날짜별 참여). */
+  min-height: 0;
 }
 
 .premium-qt-root:has(> .premium-tab-header)
@@ -835,7 +837,7 @@ a {
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
   padding-inline: var(--space-page-x);
-  padding-bottom: var(--space-stack);
+  padding-bottom: 0.75rem; /* tight under chart; sheet bottom pad handles nav */
   border-top: none !important;
   background: var(--color-gray); /* #f2f2f2 */
 }
