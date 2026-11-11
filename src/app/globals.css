@@ -1333,8 +1333,8 @@ a {
   z-index: 1; /* sits under the 말씀 panel */
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
-  /* Extra bottom pad so passage sheet overlap does not cover header content. */
-  padding-bottom: calc(var(--space-stack-sm) + 1.25rem);
+  /* Tight under status line; keep 1.25rem for passage sheet overlap. */
+  padding-bottom: calc(0.35rem + 1.25rem);
   /* 낮모드/밤모드 — same token as 우리순·랭킹·마이페이지 headers. */
   background: var(--sky-mode-fill);
   color: var(--sky-mode-ink);
