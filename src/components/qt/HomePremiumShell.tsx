@@ -19,7 +19,7 @@ const MIN_SHEET_PX = 88;
 /** Sheet margin-top overlap into passage (1.25rem). */
 const SHEET_OVERLAP_PX = 20;
 /** Air kept under 본문 제목 (range + summary) when sheet is fully raised. */
-const TITLE_GAP_PX = 8;
+const TITLE_GAP_PX = 10;
 /** Ignore padding when classifying — short-mode adds ~62px bottom pad that
  *  would otherwise inflate scrollHeight and flip long↔short forever. */
 const MODE_HYSTERESIS_PX = 28;
@@ -105,20 +105,23 @@ export function HomePremiumShell({
       (Number.parseFloat(cs.paddingBottom) || 0);
     const contentH = Math.max(0, passageEl.scrollHeight - padY);
 
-    /* Cap rise so sheet top stops just under 본문 제목 (range + summary). */
+    /* Cap rise so sheet top sits just under 「범위 + 요약」(오늘의 말씀 stays visible). */
     const rangeEl = passageEl.querySelector(
       ".reading-passage-range",
     ) as HTMLElement | null;
     const titleRow = (rangeEl?.closest("p") ??
       rangeEl?.parentElement) as HTMLElement | null;
-    const padTop = Number.parseFloat(cs.paddingTop) || 0;
-    const titleH = titleRow?.offsetHeight ?? 28;
-    const titleKeep = Math.round(padTop + titleH + TITLE_GAP_PX);
+    let reservedTop = headerH + 72; /* fallback: header + label/title block */
+    if (titleRow) {
+      const topRect = topEl.getBoundingClientRect();
+      const titleRect = titleRow.getBoundingClientRect();
+      reservedTop = Math.round(
+        titleRect.bottom - topRect.top + TITLE_GAP_PX,
+      );
+    }
     const nextMaxRise = Math.max(
       0,
-      Math.round(
-        available - nextPeek - headerH - titleKeep + SHEET_OVERLAP_PX,
-      ),
+      Math.round(available - nextPeek - reservedTop + SHEET_OVERLAP_PX),
     );
     /* Allow dragging below default peek down to MIN_SHEET_PX. */
     const nextMinRise = Math.min(0, MIN_SHEET_PX - nextPeek);

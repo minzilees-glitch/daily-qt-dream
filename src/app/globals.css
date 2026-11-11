@@ -293,8 +293,8 @@ html[data-sky-mode="밤모드"] {
 /* QT textareas: notebook lines under every row.
  * Avoid background-attachment:local — WebKit often paints nothing on <textarea>. */
 .qt-lined-field {
-  /* 19px body × 1.75 ≈ 33.25 → lock px so gradient matches line boxes. */
-  --qt-line: 33px;
+  /* 19px body × ~1.9 ≈ 36 → lock px so gradient matches line boxes. */
+  --qt-line: 36px;
   font-size: var(--fs-body);
   line-height: var(--qt-line) !important;
   padding: 0 !important;
