@@ -264,6 +264,11 @@
   color: var(--text-main);
 }
 
+/* 우리순 graph section titles — 1pt under field title. */
+.qt-field-title--sm {
+  font-size: 21px !important;
+}
+
 /* Home QT validation hint + all similar instructional notices. */
 .qt-validation-hint {
   font-size: var(--fs-caption) !important; /* 16px */
