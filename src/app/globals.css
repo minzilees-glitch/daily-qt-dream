@@ -1306,12 +1306,13 @@ a {
   padding-inline: var(--space-page-x);
   /* Extra bottom pad so passage overlap does not cover header content. */
   padding-bottom: calc(var(--space-stack-sm) + 14px);
-  background: var(--color-black); /* #000917 */
-  color: var(--color-mint);
+  /* 낮모드/밤모드 — same token as 우리순·랭킹·마이페이지 headers. */
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
   box-shadow: none;
 }
 
-/* Sky/light text on black header — override utility text colors. */
+/* Header copy follows 낮모드/밤모드 ink. */
 .premium-home-header-band .type-page-title,
 .premium-home-header-band .type-section,
 .premium-home-header-band .type-body-sm,
@@ -1322,12 +1323,12 @@ a {
 .premium-home-header-band .text-text-secondary,
 .premium-home-header-band .text-white,
 .premium-home-header-band .home-status-line {
-  color: var(--color-mint) !important;
+  color: var(--sky-mode-ink) !important;
 }
 
 .premium-home-header-band .home-header-label,
 .premium-home-header-band .home-profile-group {
-  color: color-mix(in srgb, var(--color-mint) 78%, transparent) !important;
+  color: color-mix(in srgb, var(--sky-mode-ink) 78%, transparent) !important;
 }
 
 /* Home profile name/group: 1pt smaller than type-label / type-caption */
