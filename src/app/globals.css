@@ -1009,14 +1009,14 @@ a {
   background: var(--color-sky); /* sheet-ear seam matches header */
 }
 
-/* 랭킹 header: 소라색. */
+/* 랭킹 header: 하늘색 (우리순·마이페이지와 동일). */
 .premium-tab-header.premium-tab-header--ranking {
-  background: var(--color-sora); /* #94DEEE */
+  background: var(--color-sky); /* #66AEE2 */
   color: var(--color-ink-blue);
 }
 
 .premium-qt-root:has(> .premium-tab-header--ranking) {
-  background: var(--color-sora); /* sheet-ear seam matches header */
+  background: var(--color-sky); /* sheet-ear seam matches header */
 }
 
 .premium-tab-title {
