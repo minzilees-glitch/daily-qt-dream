@@ -19,7 +19,7 @@ const MIN_SHEET_PX = 88;
 /** Sheet margin-top overlap into passage (1.25rem). */
 const SHEET_OVERLAP_PX = 20;
 /** Air kept under 본문 제목 (range + summary) when sheet is fully raised. */
-const TITLE_GAP_PX = 10;
+const TITLE_GAP_PX = 20; /* was 10; +10 so sheet never clips title glyphs */
 /** Ignore padding when classifying — short-mode adds ~62px bottom pad that
  *  would otherwise inflate scrollHeight and flip long↔short forever. */
 const MODE_HYSTERESIS_PX = 28;
