@@ -800,13 +800,15 @@ a {
 }
 
 /*
- * 우리순 / 랭킹 / 마이페이지: keep rounded sheet top, drop sheet + panel shadows.
- * Home + 나의 QT들 keep the drop-shadow above.
+ * 우리순 / 랭킹 / 마이페이지: keep rounded sheet top.
+ * Root matches sky header so black calendar token does not peek at sheet ears.
+ * Sheet drop-shadow off by default; ranking restores via --lift.
  */
 .premium-qt-root:has(> .premium-tab-header) {
   display: flex;
   flex-direction: column;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
+  background: var(--color-sky); /* #CAEBF2 — seam under rounded sheet */
 }
 
 .premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet {
@@ -814,6 +816,19 @@ a {
   box-shadow: none !important;
   /* Content-sized by default — avoid tall empty gap under last section. */
   min-height: 0;
+}
+
+/* Ranking (and opt-in): same upward sheet shadow as Home / 나의 QT들. */
+.premium-qt-root:has(> .premium-tab-header)
+  > .premium-qt-sheet.premium-qt-sheet--lift {
+  filter:
+    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
+    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05)) !important;
+}
+
+/* Extra air under 랭킹 header before the overlapping sheet. */
+.premium-tab-header.premium-tab-header--ranking {
+  padding-bottom: calc(1.25rem + var(--space-stack-sm));
 }
 
 /* 우리순: stretch sheet to fill remaining viewport under SkyWalkers. */
@@ -1006,8 +1021,15 @@ a {
 }
 
 .premium-rank-row--mine {
-  background: color-mix(in srgb, var(--color-sora) 18%, var(--color-gray));
-  outline: 1px solid color-mix(in srgb, var(--color-sora) 35%, transparent);
+  background: var(--color-ink-blue); /* #1F3E62 */
+  outline: none;
+}
+
+.premium-rank-row--mine .type-body,
+.premium-rank-row--mine .type-body-sm,
+.premium-rank-row--mine .text-text-main,
+.premium-rank-row--mine .text-text-secondary {
+  color: var(--color-sky) !important;
 }
 
 .premium-mine-pill {
@@ -1015,12 +1037,12 @@ a {
   flex-shrink: 0;
   align-items: center;
   border-radius: 9999px;
-  background: var(--color-ink-blue);
+  background: var(--color-sky); /* #CAEBF2 */
   padding: 0.15rem 0.4rem;
   font-size: var(--fs-nav);
   font-weight: 700;
   line-height: 1;
-  color: var(--color-sky);
+  color: var(--color-ink-blue);
 }
 
 /* Home shell: short = flush under passage; long = peek + drag-up sheet. */

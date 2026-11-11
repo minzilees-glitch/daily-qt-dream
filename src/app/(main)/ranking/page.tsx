@@ -27,7 +27,7 @@ export default function RankingPage() {
 
   return (
     <div className="premium-qt-root">
-      <header className="premium-tab-header">
+      <header className="premium-tab-header premium-tab-header--ranking">
         <h1 className="premium-tab-title">랭킹</h1>
         <p className="qt-validation-hint type-caption mt-[var(--space-stack-sm)] text-text-secondary">
           QT를 당일에 완료한 날마다 빛 1개를 모읍니다. 순 전체 빛 수로 순위를
@@ -35,7 +35,7 @@ export default function RankingPage() {
         </p>
       </header>
 
-      <section className="premium-qt-sheet">
+      <section className="premium-qt-sheet premium-qt-sheet--lift">
         <div className="animate-fade-up">
           <div className="mb-[var(--space-stack)]">
             <MonthPicker
