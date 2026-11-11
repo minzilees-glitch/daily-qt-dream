@@ -998,7 +998,7 @@ a {
   justify-content: center;
   align-items: center;
   height: 20px;
-  margin: -10px 0 0.35rem; /* nudge pill slightly toward sheet top */
+  margin: -14px 0 0.35rem; /* nudge pill slightly toward sheet top */
   pointer-events: none;
 }
 
