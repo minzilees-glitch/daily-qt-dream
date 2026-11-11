@@ -11,12 +11,12 @@
   --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
   --color-black: #000917; /* 검정 */
   /*
-   * 낮모드 / 밤모드 chrome fill (Asia/Seoul).
-   * 낮모드 = 하늘색; 밤모드 (19:00–06:00) = 검정.
+   * 낮모드 / 밤모드 chrome (Asia/Seoul).
+   * 낮모드 fill = 하늘색, ink = 검정; 밤모드 (19:00–06:00) fill = 검정, ink = 흰/라이트.
    * Set by html[data-sky-mode]; see docs/preferences.md.
    */
   --sky-mode-fill: var(--color-sky);
-  --sky-mode-ink: var(--color-black);
+  --sky-mode-ink: var(--color-black); /* #000917 — 낮모드 헤더 글자 */
   --color-chick: #eeefc7; /* 병아리 */
   --color-yellow: #fbcc58; /* 노랑 — light-icon / palette yellow */
   /* Korean aliases */
@@ -157,10 +157,10 @@
   --premium-sheet: var(--color-white);
 }
 
-/* 밤모드 (19:00–06:00 Asia/Seoul): sky chrome → black; ink flips for contrast. */
+/* 밤모드 (19:00–06:00 Asia/Seoul): sky chrome → black; header ink → light. */
 html[data-sky-mode="밤모드"] {
   --sky-mode-fill: var(--color-black); /* #000917 */
-  --sky-mode-ink: var(--color-mint);
+  --sky-mode-ink: var(--color-white); /* readable on black chrome */
 }
 
 @theme inline {
@@ -1033,8 +1033,8 @@ a {
   z-index: 1;
   padding: calc(var(--space-title-pt) + var(--safe-top)) var(--space-page-x)
     1.25rem;
-  background: var(--color-mint);
-  color: var(--color-ink-blue);
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink); /* 낮모드 black / 밤모드 white */
   border-radius: 0 !important;
 }
 
@@ -1098,16 +1098,23 @@ a {
   font-weight: 600;
   letter-spacing: var(--tracking-title);
   line-height: var(--lh-page-title);
-  color: var(--color-ink-blue);
+  color: var(--sky-mode-ink);
 }
 
 .premium-tab-header .type-caption,
 .premium-tab-header .type-body-sm,
 .premium-tab-header .type-month,
+.premium-tab-header .qt-validation-hint,
 .premium-tab-header .text-text-main,
 .premium-tab-header .text-text-secondary,
-.premium-tab-header .text-black {
-  color: var(--color-ink-blue) !important;
+.premium-tab-header .text-black,
+.premium-tab-header .premium-tab-title {
+  color: var(--sky-mode-ink) !important;
+}
+
+.premium-tab-header svg {
+  color: var(--sky-mode-ink);
+  stroke: currentColor;
 }
 
 /* 마이페이지 dashboard tiles: 16px radius + white/50. */
