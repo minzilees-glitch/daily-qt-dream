@@ -1045,8 +1045,15 @@ a {
 
 .premium-cal-day-selected {
   background: var(--color-ink-blue); /* #1F3E62 */
+  border-radius: 9999px !important; /* capsule — softer than 22px block */
   box-shadow: none;
   animation: premium-select-pop 0.42s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+
+/* Selected weekday (월…일) stays white — beat .premium-qt-header .type-micro ink. */
+.premium-qt-header .premium-cal-day-selected .type-micro,
+.premium-qt-header .premium-cal-day-selected .text-white {
+  color: var(--color-white) !important;
 }
 
 .premium-cal-glow {
