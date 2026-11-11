@@ -915,6 +915,9 @@ a {
 
 .premium-qt-root.premium-qt-root--me-sky > .premium-qt-sheet.premium-qt-sheet--me {
   flex: 0 0 auto;
+  /* Flush white sheet through layout nav pad (same as 우리순). */
+  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
+  padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
 }
 
 /* 계정 설정: logout sits under profile detail at sheet bottom. */
@@ -955,6 +958,9 @@ a {
 
 .premium-qt-root.premium-qt-root--group-sky > .premium-qt-sheet.premium-qt-sheet--group {
   flex: 0 0 auto;
+  /* Pull white sheet through layout nav pad so it sits flush to the screen bottom. */
+  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
+  padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
 }
 
 .premium-qt-sheet.premium-qt-sheet--group > .premium-panel + .premium-panel {
