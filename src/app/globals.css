@@ -985,7 +985,7 @@ a {
 /* Gray capsule grabber — Home + 나의 QT들 sheet tops. */
 .premium-sheet-grabber {
   display: block;
-  width: 32px;
+  width: 28px;
   height: 5px;
   border-radius: 9999px;
   background: #c8cdd3;
