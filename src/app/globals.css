@@ -1260,8 +1260,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* Opaque mint wash (mix with white) — avoids translucent sky→mint “shadow” seam. */
-  background: color-mix(in srgb, var(--color-mint) 30%, white);
+  /* Solid mint — matches home passage. */
+  background: var(--color-mint); /* #CAEBF2 */
 }
 
 .premium-home-shell--long {
@@ -1362,8 +1362,8 @@ a {
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
-  /* Opaque mint wash over sky header — no translucent blend that reads as a shadow. */
-  background: color-mix(in srgb, var(--color-mint) 30%, white);
+  /* Solid mint body under sky header. */
+  background: var(--color-mint); /* #CAEBF2 */
   color: var(--color-ink-blue);
   box-shadow: none;
   filter: none;
