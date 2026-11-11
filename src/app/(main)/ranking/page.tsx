@@ -36,6 +36,9 @@ export default function RankingPage() {
       </header>
 
       <section className="premium-qt-sheet premium-qt-sheet--lift">
+        <div className="premium-sheet-grabber-row" aria-hidden>
+          <span className="premium-sheet-grabber" />
+        </div>
         <div className="animate-fade-up">
           <div className="mb-[var(--space-stack)]">
             <MonthPicker
