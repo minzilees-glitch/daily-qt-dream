@@ -620,21 +620,29 @@ a {
   display: none;
 }
 
-/* Photo frame edge-to-edge in header; no solid sky color behind the image. */
+/*
+ * Photo frame edge-to-edge in header; no solid sky color behind the image.
+ * Extend under the overlapping rounded sheet (36px radius) so corners don't clip.
+ */
 .sky-walkers-bleed {
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
+  margin-bottom: -36px;
+  position: relative;
+  z-index: 1;
 }
 
 .sky-group-card {
   min-height: 360px;
   width: 100%;
+  /* Extra pad so absolute photo covers the sheet underlap / rounded ears. */
+  padding-bottom: 36px;
   background: transparent;
   border-radius: 0 !important;
 }
 
 .sky-group-card .sky-stat-tile {
-  border-radius: 12px !important; /* dashboard windows */
+  border-radius: 10px !important; /* dashboard windows */
 }
 
 .sky-walkers-stage {
@@ -863,9 +871,9 @@ a {
   border-radius: 0 !important;
 }
 
-/* SkyWalkers dashboard tiles keep 12px radius (exempt from square-edge sweep). */
+/* SkyWalkers dashboard tiles keep 10px radius (exempt from square-edge sweep). */
 .premium-qt-root .sky-stat-tile {
-  border-radius: 12px !important;
+  border-radius: 10px !important;
 }
 
 .premium-stat-tile {

@@ -38,9 +38,9 @@ export function BottomNav() {
   return (
     <nav
       aria-label="하단 메뉴"
-      className="pointer-events-none absolute inset-x-0 bottom-0 z-40"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[calc(10px+var(--safe-bottom))]"
     >
-      <div className="nav-glass pointer-events-auto grid w-full grid-cols-5 gap-0.5 rounded-none border-x-0 border-b-0 px-1.5 pb-[calc(10px+var(--safe-bottom))] pt-1.5">
+      <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-1.5">
         {TABS.map(({ href, label, icon: Icon, light }) => {
           const active = isActive(pathname, href);
           return (

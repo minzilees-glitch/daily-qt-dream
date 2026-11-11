@@ -516,13 +516,13 @@ export function SkyWalkers({
       <div ref={statsRef} className="relative z-20 px-4 pb-2 pt-4">
         <div className="grid grid-cols-3 gap-2 text-center">
           {/* Semi-transparent white panels + ink/black type — readable on photo. */}
-          <div className="sky-stat-tile bg-white/75 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
+          <div className="sky-stat-tile bg-white/90 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
             <StatLabel className="text-[var(--color-ink-blue)]">우리순은</StatLabel>
             <p className="mt-1 type-stat text-[var(--color-black)]">
               {memberCount}명
             </p>
           </div>
-          <div className="sky-stat-tile bg-white/75 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
+          <div className="sky-stat-tile bg-white/90 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
             <StatLabel className="text-[var(--color-ink-blue)]">우리순 현재</StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount
@@ -533,7 +533,7 @@ export function SkyWalkers({
               />
             </div>
           </div>
-          <div className="sky-stat-tile bg-white/75 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
+          <div className="sky-stat-tile bg-white/90 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
             <StatLabel className="text-[var(--color-ink-blue)]">우리순 순위</StatLabel>
             <p className="mt-1 type-stat text-[var(--color-black)]">
               {rankLabel}
