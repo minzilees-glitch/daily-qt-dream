@@ -1,0 +1,9 @@
+# Design preferences
+
+## 낮모드 / 밤모드 (sky chrome)
+
+- Time zone: **Asia/Seoul**
+- **낮모드** (그 외 시간): headers + MeSky + SkyWalkers solid fill = `--color-sky` (`#6DC2FF`)
+- **밤모드** (19:00–06:00, 19:00 포함 · 06:00 제외): 같은 surfaces = `--color-black` (`#000917`)
+- Cloud photo on MeSky / SkyWalkers stays; only the solid fill / header / sheet-ear seam swap
+- Implementation: `html[data-sky-mode="낮모드"|"밤모드"]` → CSS `--sky-mode-fill` / `--sky-mode-ink` (`src/lib/sky-mode.ts`, `SkyModeSync`)

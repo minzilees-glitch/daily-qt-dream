@@ -57,6 +57,7 @@ npm start
 ## 참고
 
 - 날짜·집계 기준: **Asia/Seoul**
+- 낮모드 / 밤모드 sky chrome: 낮모드 = 하늘색, 밤모드(19:00–06:00 Seoul) = 검정 — see `docs/preferences.md`
 - 랭킹 참여율 = 순 전체 QT 완료 수 ÷ (인원 × 집계 일수) × 100
 - 이번 달은 오늘까지, 지난달은 전체 일수 기준
 

@@ -10,6 +10,13 @@
   --color-sora: #94deee; /* 소라 */
   --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
   --color-black: #000917; /* 검정 */
+  /*
+   * 낮모드 / 밤모드 chrome fill (Asia/Seoul).
+   * 낮모드 = 하늘색; 밤모드 (19:00–06:00) = 검정.
+   * Set by html[data-sky-mode]; see docs/preferences.md.
+   */
+  --sky-mode-fill: var(--color-sky);
+  --sky-mode-ink: var(--color-black);
   --color-chick: #eeefc7; /* 병아리 */
   --color-yellow: #fbcc58; /* 노랑 — light-icon / palette yellow */
   /* Korean aliases */
@@ -148,6 +155,12 @@
   /* ——— Premium QT calendar (나의 QT들) — black calendar + sky sheet ——— */
   --premium-cal-bg: var(--color-black);
   --premium-sheet: var(--color-white);
+}
+
+/* 밤모드 (19:00–06:00 Asia/Seoul): sky chrome → black; ink flips for contrast. */
+html[data-sky-mode="밤모드"] {
+  --sky-mode-fill: var(--color-black); /* #000917 */
+  --sky-mode-ink: var(--color-mint);
 }
 
 @theme inline {
@@ -514,9 +527,9 @@ a {
   backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
   -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
 }
-/* SkyWalkers / MeSky: cloud photo over solid 하늘색 fallback. */
+/* SkyWalkers / MeSky: cloud photo over 낮모드/밤모드 solid fill. */
 .soft-card.sky-group-card {
-  background: var(--color-sky); /* #6DC2FF */
+  background: var(--sky-mode-fill);
   border: none;
   border-radius: 0 !important;
   box-shadow: var(--shadow-soft);
@@ -645,7 +658,7 @@ a {
   width: 100%;
   /* Extra pad so absolute photo covers the sheet underlap / rounded ears. */
   padding-bottom: 36px;
-  background: var(--color-sky); /* #6DC2FF — under cloud photo */
+  background: var(--sky-mode-fill); /* under cloud photo */
   border-radius: 0 !important;
 }
 
@@ -872,17 +885,18 @@ a {
   padding-bottom: calc(1.25rem + var(--space-stack-sm));
 }
 
-/* 마이페이지 header: 하늘색 (not mint). */
+/* 마이페이지 header: 낮모드/밤모드 fill. */
 .premium-tab-header.premium-tab-header--me {
-  background: var(--color-sky); /* #6DC2FF */
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
 }
 
 .premium-tab-header.premium-tab-header--me .premium-tab-title {
-  color: var(--color-black); /* #000917 */
+  color: var(--sky-mode-ink);
 }
 
 .premium-qt-root:has(> .premium-tab-header--me) {
-  background: var(--color-sky); /* sheet-ear seam matches header */
+  background: var(--sky-mode-fill); /* sheet-ear seam matches header */
 }
 
 /* Optional full-height sheet (unused by 우리순; kept for other tabs). */
@@ -1032,17 +1046,17 @@ a {
   border-radius: 0 !important;
 }
 
-/* 우리순 header: 하늘색 (match 마이페이지). */
+/* 우리순 header: 낮모드/밤모드 fill (match 마이페이지). */
 .premium-tab-header.premium-tab-header--group {
-  background: var(--color-sky); /* #6DC2FF */
-  color: var(--color-black); /* #000917 — match 랭킹 */
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
 }
 
 .premium-qt-root:has(> .premium-tab-header--group) {
-  background: var(--color-sky); /* sheet-ear seam matches header */
+  background: var(--sky-mode-fill); /* sheet-ear seam matches header */
 }
 
-/* 우리순 header copy: all type black (title, month picker, etc.). */
+/* 우리순 header copy: follows 낮모드/밤모드 ink. */
 .premium-tab-header.premium-tab-header--group .premium-tab-title,
 .premium-tab-header.premium-tab-header--group .type-caption,
 .premium-tab-header.premium-tab-header--group .type-body-sm,
@@ -1051,25 +1065,25 @@ a {
 .premium-tab-header.premium-tab-header--group .text-text-main,
 .premium-tab-header.premium-tab-header--group .text-text-secondary,
 .premium-tab-header.premium-tab-header--group .text-black {
-  color: var(--color-black) !important; /* #000917 */
+  color: var(--sky-mode-ink) !important;
 }
 
 .premium-tab-header.premium-tab-header--group svg {
-  color: var(--color-black);
+  color: var(--sky-mode-ink);
   stroke: currentColor;
 }
 
-/* 랭킹 header: 하늘색 (우리순·마이페이지와 동일). */
+/* 랭킹 header: 낮모드/밤모드 fill (우리순·마이페이지와 동일). */
 .premium-tab-header.premium-tab-header--ranking {
-  background: var(--color-sky); /* #6DC2FF */
-  color: var(--color-black); /* #000917 */
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
 }
 
 .premium-qt-root:has(> .premium-tab-header--ranking) {
-  background: var(--color-sky); /* sheet-ear seam matches header */
+  background: var(--sky-mode-fill); /* sheet-ear seam matches header */
 }
 
-/* 랭킹 header copy: all type black. */
+/* 랭킹 header copy: follows 낮모드/밤모드 ink. */
 .premium-tab-header.premium-tab-header--ranking .premium-tab-title,
 .premium-tab-header.premium-tab-header--ranking .type-caption,
 .premium-tab-header.premium-tab-header--ranking .type-body-sm,
@@ -1078,11 +1092,11 @@ a {
 .premium-tab-header.premium-tab-header--ranking .text-text-main,
 .premium-tab-header.premium-tab-header--ranking .text-text-secondary,
 .premium-tab-header.premium-tab-header--ranking .text-black {
-  color: var(--color-black) !important; /* #000917 */
+  color: var(--sky-mode-ink) !important;
 }
 
 .premium-tab-header.premium-tab-header--ranking svg {
-  color: var(--color-black);
+  color: var(--sky-mode-ink);
   stroke: currentColor;
 }
 

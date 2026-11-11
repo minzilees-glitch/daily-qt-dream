@@ -22,7 +22,7 @@ export default function MeSettingsPage() {
           <Link
             href="/me"
             aria-label="마이페이지로"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--color-ink-blue)]"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--sky-mode-ink)]"
           >
             <ArrowLeft size={20} strokeWidth={1.75} />
           </Link>
