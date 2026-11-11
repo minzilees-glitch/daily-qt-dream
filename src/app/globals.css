@@ -777,7 +777,7 @@ a {
   background: #ffffff !important;
   display: flex;
   flex-direction: column;
-  padding-top: 0;
+  /* Keep shared .premium-qt-sheet padding-top (28px); only clear bottom. */
   padding-bottom: 0;
 }
 
@@ -788,13 +788,12 @@ a {
   flex-direction: column;
 }
 
-/* Date + passage: sky band under the rounded sheet top. */
+/* Date + passage: sky band below shared sheet top pad + grabber. */
 .premium-history-passage {
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
-  padding: 20px var(--space-page-x) var(--space-stack);
+  padding: 0 var(--space-page-x) var(--space-stack);
   background: color-mix(in srgb, var(--color-mint) 30%, transparent) !important;
-  border-radius: 36px 36px 0 0;
   box-sizing: border-box;
 }
 
@@ -1407,7 +1406,7 @@ a {
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
-  padding-top: 20px; /* pin short + long to shared sheet top pad */
+  /* Inherit shared .premium-qt-sheet padding-top (28px); no home-only pin. */
   /* Restore shared sheet drop-shadow from `.premium-qt-sheet` (do not null it). */
 }
 
@@ -1430,8 +1429,8 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 28px;
-  margin: -10px 0 0.35rem; /* match grabber-row upward nudge */
+  height: 20px; /* match .premium-sheet-grabber-row */
+  margin: -18px 0 0.35rem; /* match .premium-sheet-grabber-row */
   cursor: grab;
   touch-action: none;
   user-select: none;
