@@ -61,7 +61,7 @@ export function DayParticipation({
   return (
     <div
       ref={scrollerRef}
-      className="flex cursor-grab gap-2 overflow-x-auto pb-1 scrollbar-none active:cursor-grabbing touch-pan-x select-none"
+      className="day-part-scroller flex cursor-grab gap-2 overflow-x-auto pb-1 scrollbar-none active:cursor-grabbing touch-pan-x select-none"
       style={{ WebkitOverflowScrolling: "touch" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}

@@ -884,6 +884,17 @@ a {
   border-top: none !important;
 }
 
+/*
+ * 날짜별 graph: full-bleed horizontal scroll track (edge-to-edge under sheet).
+ * Inline padding mirrors page gutters so the resting start aligns with titles.
+ */
+.day-part-scroller {
+  margin-inline: calc(-1 * var(--space-page-x));
+  width: calc(100% + 2 * var(--space-page-x));
+  padding-inline: var(--space-page-x);
+  box-sizing: border-box;
+}
+
 .premium-panel-title {
   margin: 0 0 0.75rem;
   font-size: var(--fs-section);
