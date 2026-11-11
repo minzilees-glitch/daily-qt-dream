@@ -51,7 +51,7 @@ export default function GroupPage() {
 
   return (
     <div className="premium-qt-root">
-      <header className="premium-tab-header">
+      <header className="premium-tab-header premium-tab-header--group">
         <h1 className="premium-tab-title">우리 순</h1>
         <div className="mt-[var(--space-stack-sm)]">
           <MonthPicker

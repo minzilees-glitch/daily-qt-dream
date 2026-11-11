@@ -905,6 +905,31 @@ a {
   border-radius: 0 !important;
 }
 
+/* 우리순 header: ink-blue band. */
+.premium-tab-header.premium-tab-header--group {
+  background: var(--color-ink-blue); /* #1F3E62 */
+  color: var(--color-sky);
+}
+
+.premium-qt-root:has(> .premium-tab-header--group) {
+  background: var(--color-ink-blue); /* sheet-ear seam matches header */
+}
+
+.premium-tab-header--group .premium-tab-title,
+.premium-tab-header--group .type-caption,
+.premium-tab-header--group .type-body-sm,
+.premium-tab-header--group .type-month,
+.premium-tab-header--group .text-text-main,
+.premium-tab-header--group .text-text-secondary,
+.premium-tab-header--group .text-black {
+  color: var(--color-sky) !important;
+}
+
+.premium-tab-header--group svg {
+  color: var(--color-sky);
+  stroke: currentColor;
+}
+
 .premium-tab-title {
   margin: 0;
   font-size: var(--fs-page);
