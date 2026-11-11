@@ -46,7 +46,7 @@ export function ReadingPassageBlock({
   oneLineHeader = false,
 }: {
   reading: QtReadingRange;
-  label?: string;
+  label?: string | null;
   /** When true, verse body starts fully expanded (collapsible only). */
   defaultExpanded?: boolean;
   /**

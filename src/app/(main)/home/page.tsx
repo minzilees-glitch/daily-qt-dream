@@ -66,7 +66,7 @@ export default function HomePage() {
         passage={
           <ReadingPassageBlock
             reading={reading}
-            label="오늘의 말씀"
+            label={null}
             embedded
             collapsible={false}
             oneLineHeader
