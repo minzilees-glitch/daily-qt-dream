@@ -832,14 +832,9 @@ a {
   border-top: 1px solid var(--divider);
 }
 
-/* 우리순 「날짜별 참여」: no divider; gray section band edge-to-edge in sheet. */
-.premium-panel.premium-panel--gray-band {
-  margin-inline: calc(-1 * var(--space-page-x));
-  width: calc(100% + 2 * var(--space-page-x));
-  padding-inline: var(--space-page-x);
-  padding-bottom: 0.75rem; /* tight under chart; sheet bottom pad handles nav */
+/* 우리순 「날짜별 참여」: no divider; no gray band. */
+.premium-panel.premium-panel--no-divider {
   border-top: none !important;
-  background: var(--color-gray); /* #f2f2f2 */
 }
 
 .premium-panel-title {
