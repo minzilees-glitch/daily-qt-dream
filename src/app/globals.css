@@ -914,8 +914,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* 30px sheet gap matches solid gray passage fill. */
-  background: var(--color-gray);
+  /* 30px sheet gap matches solid sky passage fill. */
+  background: var(--color-sky);
 }
 
 .premium-home-shell--long {
@@ -928,8 +928,8 @@ a {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* Match solid gray passage so passage→sheet junction has no mismatched strip. */
-  background: var(--color-gray);
+  /* Match solid sky passage so passage→sheet junction has no mismatched strip. */
+  background: var(--color-sky);
 }
 
 .premium-home-shell--short .premium-home-top {
@@ -1015,8 +1015,8 @@ a {
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
-  /* Solid fill — transparent sky washed out the upward seam shadow. */
-  background: var(--color-gray); /* #f2f2f2 */
+  /* Solid opaque sky — keeps upward seam shadow readable on the black header. */
+  background: var(--color-sky); /* #c2e5f0 */
   color: var(--color-ink-blue);
   /*
    * Upward cast onto the black header (passage above header in stacking).
@@ -1028,7 +1028,7 @@ a {
     0 4px 10px 0 rgba(0, 9, 23, 0.06);
 }
 
-/* Dark reading text on gray passage. */
+/* Dark reading text on sky passage. */
 .premium-home-passage .text-text-main,
 .premium-home-passage .type-section,
 .premium-home-passage .type-body,
@@ -1054,7 +1054,7 @@ a {
   flex: 0 0 auto;
   overflow: visible;
   /*
-   * 30px gap lives INSIDE the gray passage (plus sheet overlap pull),
+   * 30px gap lives INSIDE the sky passage (plus sheet overlap pull),
    * so there is no sibling margin strip / layer seam hairline.
    */
   padding-bottom: calc(0.75rem + 30px + 1.25rem);
@@ -1076,7 +1076,7 @@ a {
 }
 
 .premium-home-shell--short .premium-home-form-sheet {
-  /* Nest into passage gray padding — keep 30px visible gap, no separate spacer. */
+  /* Nest into passage sky padding — keep 30px visible gap, no separate spacer. */
   margin-top: -1.25rem;
   min-height: 0;
 }
