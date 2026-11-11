@@ -47,7 +47,6 @@ export function WeekdayParticipation({
                     d.possible === 0 && d.count === 0
                       ? "10%"
                       : `${Math.max(10, ratio * 100)}%`,
-                  opacity: d.possible === 0 && d.count === 0 ? 0.35 : 1,
                 }}
               />
             </div>
