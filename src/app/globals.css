@@ -748,11 +748,25 @@ a {
  * 우리순 / 랭킹 / 마이페이지: keep rounded sheet top, drop sheet + panel shadows.
  * Home + 나의 QT들 keep the drop-shadow above.
  */
+.premium-qt-root:has(> .premium-tab-header) {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 72px - var(--safe-bottom));
+}
+
 .premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet {
   filter: none !important;
   box-shadow: none !important;
-  /* Content-sized — avoid tall empty gap under last section (e.g. 날짜별 참여). */
+  /* Content-sized by default — avoid tall empty gap under last section. */
   min-height: 0;
+}
+
+/* 우리순: stretch sheet to fill remaining viewport under SkyWalkers. */
+.premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet.premium-qt-sheet--fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .premium-qt-root:has(> .premium-tab-header)

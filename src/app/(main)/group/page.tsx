@@ -72,7 +72,7 @@ export default function GroupPage() {
         </div>
       </header>
 
-      <section className="premium-qt-sheet">
+      <section className="premium-qt-sheet premium-qt-sheet--fill">
         <div className="premium-panel animate-fade-up pt-6">
           <h2 className="qt-field-title mb-3">우리순의 이번주 참여</h2>
           <WeekdayParticipation
