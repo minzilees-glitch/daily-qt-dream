@@ -835,12 +835,17 @@ a {
   padding-bottom: calc(1.25rem + var(--space-stack-sm));
 }
 
-/* 우리순: stretch sheet to fill remaining viewport under SkyWalkers. */
+/* 우리순 / 마이페이지: stretch sheet to fill remaining viewport. */
 .premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet.premium-qt-sheet--fill {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+/* 마이페이지: push settings + logout toward the bottom of the filled sheet. */
+.premium-qt-sheet.premium-qt-sheet--me > .me-sheet-tail {
+  margin-top: auto;
 }
 
 /* 우리순 sheet: equal vertical halves for 이번주 / 날짜별. */

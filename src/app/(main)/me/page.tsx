@@ -94,7 +94,7 @@ export default function MePage() {
         </div>
       </header>
 
-      <section className="premium-qt-sheet">
+      <section className="premium-qt-sheet premium-qt-sheet--fill premium-qt-sheet--me">
         <div className="premium-panel animate-fade-up">
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h2 className="premium-panel-title mb-0">내가 잘 지키는 요일</h2>
@@ -105,7 +105,7 @@ export default function MePage() {
           <WeekdayParticipation days={weekdayPart} showPossible={false} />
         </div>
 
-        <div className="premium-panel space-y-2">
+        <div className="premium-panel space-y-2 me-sheet-tail">
           <button type="button" className="premium-list-row">
             <span className="flex items-center gap-3 type-body font-medium text-text-main">
               <Settings
@@ -135,7 +135,7 @@ export default function MePage() {
           ) : null}
         </div>
 
-        <div className="premium-panel">
+        <div className="premium-panel me-sheet-foot">
           <PrimaryButton
             type="button"
             className="w-full"
