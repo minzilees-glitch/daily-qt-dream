@@ -38,10 +38,14 @@ export function WeekdayParticipation({
             ) : (
               <span className="h-0 w-full" aria-hidden />
             )}
-            {/* Track: light sky tint · Fill: sky · Labels: black */}
+            {/* Track: light sky tint · Fill: sky (empty/future → mint) · Labels: black */}
             <div className="flex h-20 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sky)_32%,white)]">
               <div
-                className="w-full rounded-full bg-[var(--color-sky)] transition-all"
+                className={`w-full rounded-full transition-all ${
+                  d.possible === 0 && d.count === 0
+                    ? "bg-[var(--color-mint)]"
+                    : "bg-[var(--color-sky)]"
+                }`}
                 style={{
                   height:
                     d.possible === 0 && d.count === 0
