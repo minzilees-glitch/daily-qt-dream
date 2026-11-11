@@ -1260,8 +1260,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* Mint 30% wash — matches home passage sheet. */
-  background: color-mix(in srgb, var(--color-mint) 30%, white);
+  /* Mint 50% wash — matches home passage sheet. */
+  background: color-mix(in srgb, var(--color-mint) 50%, white);
 }
 
 .premium-home-shell--long {
@@ -1358,7 +1358,7 @@ a {
   padding-top: calc(var(--space-stack) + 6px);
   padding-bottom: 0.75rem;
   border-radius: 36px 36px 0 0 !important; /* no grabber; round + shadow only */
-  background: color-mix(in srgb, var(--color-mint) 30%, white);
+  background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-ink-blue);
   box-shadow: none;
   filter:
