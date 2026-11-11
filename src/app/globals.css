@@ -977,14 +977,14 @@ a {
   border-radius: 0 !important;
 }
 
-/* 우리순 header: ink-blue band. */
+/* 우리순 header: 하늘색 (match 마이페이지). */
 .premium-tab-header.premium-tab-header--group {
-  background: var(--color-ink-blue); /* #1F3E62 */
-  color: var(--color-mint);
+  background: var(--color-sky); /* #B4D7F0 */
+  color: var(--color-ink-blue);
 }
 
 .premium-qt-root:has(> .premium-tab-header--group) {
-  background: var(--color-ink-blue); /* sheet-ear seam matches header */
+  background: var(--color-sky); /* sheet-ear seam matches header */
 }
 
 .premium-tab-title {
@@ -1003,23 +1003,6 @@ a {
 .premium-tab-header .text-text-secondary,
 .premium-tab-header .text-black {
   color: var(--color-ink-blue) !important;
-}
-
-/* After sky-header ink rules so 우리순 month label stays white on ink-blue. */
-.premium-tab-header.premium-tab-header--group .premium-tab-title,
-.premium-tab-header.premium-tab-header--group .type-caption,
-.premium-tab-header.premium-tab-header--group .type-body-sm,
-.premium-tab-header.premium-tab-header--group .type-month,
-.premium-tab-header.premium-tab-header--group .text-text-main,
-.premium-tab-header.premium-tab-header--group .text-text-secondary,
-.premium-tab-header.premium-tab-header--group .text-black,
-.premium-tab-header.premium-tab-header--group .text-white {
-  color: #ffffff !important;
-}
-
-.premium-tab-header.premium-tab-header--group svg {
-  color: #ffffff;
-  stroke: currentColor;
 }
 
 /* 마이페이지 dashboard tiles: 16px radius + white/50. */
