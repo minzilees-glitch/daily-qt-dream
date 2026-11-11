@@ -18,6 +18,8 @@ export function AppHeader({
   showAvatar = true,
   /** Home: status row rendered tight under the date (left column). */
   status,
+  /** Home: sits on the date line right after the weekday (e.g. light icon). */
+  dateAccessory,
 }: {
   title?: string;
   subtitle?: string;
@@ -29,6 +31,7 @@ export function AppHeader({
   /** When false, hide top-right profile avatar (e.g. history/group/ranking). */
   showAvatar?: boolean;
   status?: ReactNode;
+  dateAccessory?: ReactNode;
 }) {
   const copyRef = useRef<HTMLDivElement>(null);
   const [avatarSize, setAvatarSize] = useState(72);
@@ -53,7 +56,7 @@ export function AppHeader({
     const ro = new ResizeObserver(sync);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [homeLayout, dateLabel, status, title]);
+  }, [homeLayout, dateLabel, dateAccessory, status, title]);
 
   if (homeLayout) {
     return (
@@ -70,14 +73,17 @@ export function AppHeader({
           >
             {title}
           </p>
-          <p
-            className={`type-page-title mt-1 ${
-              light ? "text-white" : "text-text-main"
-            }`}
-            suppressHydrationWarning
-          >
-            {dateLabel}
-          </p>
+          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5">
+            <p
+              className={`type-page-title min-w-0 ${
+                light ? "text-white" : "text-text-main"
+              }`}
+              suppressHydrationWarning
+            >
+              {dateLabel}
+            </p>
+            {dateAccessory}
+          </div>
           {status ? <div className="mt-1">{status}</div> : null}
         </div>
 
