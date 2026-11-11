@@ -40,7 +40,7 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
             )}
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
-            <p className="min-w-0 truncate type-body font-semibold text-text-main">
+            <p className="min-w-0 truncate type-body font-bold text-text-main">
               {row.groupName}
             </p>
             {row.isMine ? (
