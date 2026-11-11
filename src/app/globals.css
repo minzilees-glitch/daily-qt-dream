@@ -923,9 +923,9 @@ a {
   color: var(--color-ink-blue) !important;
 }
 
-/* Match SkyWalkers dashboard tiles: 8px radius + white/50. */
+/* 마이페이지 dashboard tiles: 16px radius + white/50. */
 .premium-tab-header .premium-stat-tile {
-  border-radius: 8px !important;
+  border-radius: 16px !important;
   background: rgb(255 255 255 / 0.5);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
@@ -989,17 +989,35 @@ a {
   border-radius: 0 !important;
 }
 
-/* SkyWalkers + 마이페이지 dashboard tiles keep 8px (exempt from square-edge). */
-.premium-qt-root .sky-stat-tile,
-.premium-qt-root .premium-stat-tile {
+/* SkyWalkers keep 8px; 마이페이지 stat tiles 16px (exempt from square-edge). */
+.premium-qt-root .sky-stat-tile {
   border-radius: 8px !important;
 }
 
+.premium-qt-root .premium-stat-tile {
+  border-radius: 16px !important;
+}
+
 .premium-stat-tile {
-  border-radius: 8px !important;
+  border-radius: 16px !important;
   background: rgb(255 255 255 / 0.5);
   padding: 0.75rem;
   text-align: center;
+}
+
+/* 마이페이지 「내가 잘 지키는 요일」: frame full-bleed to screen edges. */
+.me-weekday-bleed {
+  margin-inline: calc(-1 * var(--space-page-x));
+  width: calc(100% + 2 * var(--space-page-x));
+  box-sizing: border-box;
+}
+
+.me-weekday-bleed > :first-child {
+  padding-inline: var(--space-page-x); /* title row stays inset */
+}
+
+.me-weekday-bleed .grid {
+  padding-inline: 0; /* bars reach sheet edges */
 }
 
 .premium-list-row {
