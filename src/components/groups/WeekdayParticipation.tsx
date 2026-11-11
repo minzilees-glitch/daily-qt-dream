@@ -51,7 +51,14 @@ export function WeekdayParticipation({
                 }}
               />
             </div>
-            <StatLabel as="span" className="text-[var(--color-black)]">
+            <StatLabel
+              as="span"
+              className={
+                d.label === "일"
+                  ? "text-[var(--color-danger)]"
+                  : "text-[var(--color-black)]"
+              }
+            >
               {d.label}
             </StatLabel>
             {showPossible ? (

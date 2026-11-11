@@ -95,7 +95,7 @@ export default function MePage() {
       </header>
 
       <section className="premium-qt-sheet">
-        <div className="premium-panel me-weekday-bleed animate-fade-up">
+        <div className="premium-panel animate-fade-up">
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h2 className="premium-panel-title mb-0">내가 잘 지키는 요일</h2>
             <span className="type-caption font-medium text-text-secondary">

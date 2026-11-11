@@ -1030,21 +1030,6 @@ a {
   text-align: center;
 }
 
-/* 마이페이지 「내가 잘 지키는 요일」: frame full-bleed to screen edges. */
-.me-weekday-bleed {
-  margin-inline: calc(-1 * var(--space-page-x));
-  width: calc(100% + 2 * var(--space-page-x));
-  box-sizing: border-box;
-}
-
-.me-weekday-bleed > :first-child {
-  padding-inline: var(--space-page-x); /* title row stays inset */
-}
-
-.me-weekday-bleed .grid {
-  padding-inline: 0; /* bars reach sheet edges */
-}
-
 .premium-list-row {
   display: flex;
   width: 100%;
