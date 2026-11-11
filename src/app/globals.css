@@ -51,7 +51,7 @@
   --hairline: var(--divider);
   --divider-strong: var(--divider); /* legacy alias — same color as --divider */
   --page-chrome: #eef3f7;
-  --muted: #c2cad2; /* LightIcon inactive */
+  --muted: #f2f2f2; /* LightIcon inactive */
   --medal-gold: #e8b923; /* ranking trophy 1위 */
   --medal-silver: #a8b0b8; /* ranking trophy 2위 */
   /* SkyWalkers / illustration palette (reusable scene colors) */
@@ -804,7 +804,7 @@ a {
 
 /* 낮모드: inactive/future dates = gray (don't inherit black --sky-mode-ink). */
 .premium-qt-header .premium-cal-day-muted {
-  color: var(--muted) !important; /* #C2CAD2 */
+  color: var(--muted) !important; /* #F2F2F2 */
 }
 html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: color-mix(in srgb, var(--color-white) 42%, transparent) !important;
