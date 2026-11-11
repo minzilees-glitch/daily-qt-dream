@@ -634,7 +634,7 @@ a {
 }
 
 .sky-group-card .sky-stat-tile {
-  border-radius: 0 !important;
+  border-radius: 12px !important; /* dashboard windows */
 }
 
 .sky-walkers-stage {
@@ -850,11 +850,15 @@ a {
     .premium-panel,
     .premium-tab-header,
     .sky-group-card,
-    .sky-stat-tile,
     .premium-home-passage,
     .premium-home-passage > *
   ) {
   border-radius: 0 !important;
+}
+
+/* SkyWalkers dashboard tiles keep 12px radius (exempt from square-edge sweep). */
+.premium-qt-root .sky-stat-tile {
+  border-radius: 12px !important;
 }
 
 .premium-stat-tile {
