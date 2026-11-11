@@ -5,8 +5,8 @@
   /* User palette (premium QT) — English + Korean aliases */
   --color-white: #ffffff; /* 화이트 */
   --color-gray: #f2f2f2; /* 그레이 */
-  --color-sky: #c2e5f0; /* 하늘 */
-  --color-sora: #4eb4d5; /* 소라 */
+  --color-sky: #97e6ff; /* 하늘 */
+  --color-sora: #00a8dd; /* 소라 */
   --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
   --color-black: #000917; /* 검정 */
   --color-chick: #eeefc7; /* 병아리 */
@@ -152,8 +152,8 @@
   /* User palette utilities (hex — avoid circular var() in @theme) */
   --color-white: #ffffff;
   --color-gray: #f2f2f2;
-  --color-sky: #c2e5f0; /* soft sky (home header); vivid product sky remains --sky */
-  --color-sora: #4eb4d5;
+  --color-sky: #97e6ff; /* soft sky (home header); vivid product sky remains --sky */
+  --color-sora: #00a8dd;
   --color-ink-blue: #1f3e62;
   --color-black: #000917;
   --color-chick: #eeefc7;
@@ -298,7 +298,7 @@
 /* Primary filled CTAs: 소라 fill + ink-blue label/icons, pill, flat */
 .bg-cta,
 .btn-cta {
-  background-color: var(--color-sora) !important; /* #4eb4d5 소라 */
+  background-color: var(--color-sora) !important; /* #00A8DD 소라 */
   color: var(--color-ink-blue) !important; /* #1f3e62 */
   font-weight: 700;
   letter-spacing: 0.03em; /* slight tracking bump on CTA label */
@@ -945,7 +945,7 @@ a {
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
   padding-bottom: var(--space-stack-sm);
-  background: var(--color-sky); /* #c2e5f0 */
+  background: var(--color-sky); /* #97E6FF */
   color: var(--color-ink-blue);
   /*
    * Header owns the seam shadow (cast DOWN onto ink-blue passage).
