@@ -802,12 +802,9 @@ a {
   opacity: 0.45;
 }
 
-/* 낮모드: inactive/future dates = gray (don't inherit black --sky-mode-ink). */
+/* Inactive/future dates: #F2F2F2 at 50% (don't inherit --sky-mode-ink). */
 .premium-qt-header .premium-cal-day-muted {
-  color: var(--muted) !important; /* #F2F2F2 */
-}
-html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
-  color: color-mix(in srgb, var(--color-white) 42%, transparent) !important;
+  color: color-mix(in srgb, var(--muted) 50%, transparent) !important; /* #F2F2F2 @ 50% */
 }
 
 /* Today accent stays 소라 on the calendar. */
