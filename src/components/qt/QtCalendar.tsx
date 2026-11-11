@@ -301,7 +301,7 @@ export function QtCalendar({
                       : isToday
                         ? "text-cta"
                         : future
-                          ? "text-text-secondary/40"
+                          ? "premium-cal-day-muted"
                           : "text-text-main"
                   }`}
                 >
@@ -376,7 +376,7 @@ export function QtCalendar({
                             : isToday
                               ? "text-cta"
                               : future
-                                ? "text-text-secondary/40"
+                                ? "premium-cal-day-muted"
                                 : "text-text-main"
                         }`}
                       >
