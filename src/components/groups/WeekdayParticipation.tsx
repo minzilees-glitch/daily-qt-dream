@@ -38,10 +38,10 @@ export function WeekdayParticipation({
             ) : (
               <span className="h-0 w-full" aria-hidden />
             )}
-            {/* Track: light mint tint · Fill: mint · Labels: black */}
-            <div className="flex h-20 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-mint)_32%,white)]">
+            {/* Track: light sora tint · Fill: sora · Labels: black */}
+            <div className="flex h-20 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sora)_32%,white)]">
               <div
-                className="w-full rounded-full bg-[var(--color-mint)] transition-all"
+                className="w-full rounded-full bg-[var(--color-sora)] transition-all"
                 style={{
                   height:
                     d.possible === 0 && d.count === 0

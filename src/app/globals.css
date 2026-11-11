@@ -7,7 +7,7 @@
   --color-gray: #f2f2f2; /* 그레이 */
   --color-mint: #caebf2; /* 민트 — former soft “sky” chrome */
   --color-sky: #66aee2; /* 하늘색 */
-  --color-sora: #00a8dd; /* 소라 */
+  --color-sora: #94deee; /* 소라 */
   --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
   --color-black: #000917; /* 검정 */
   --color-chick: #eeefc7; /* 병아리 */
@@ -156,7 +156,7 @@
   --color-gray: #f2f2f2;
   --color-mint: #caebf2; /* 민트 — soft chrome (former --color-sky) */
   --color-sky: #66aee2; /* 하늘색; brand chrome remains --sky #5FBCFC */
-  --color-sora: #00a8dd;
+  --color-sora: #94deee; /* 소라 #94DEEE */
   --color-ink-blue: #1f3e62;
   --color-black: #000917;
   --color-chick: #eeefc7;
