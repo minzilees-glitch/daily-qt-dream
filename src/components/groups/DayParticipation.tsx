@@ -80,10 +80,10 @@ export function DayParticipation({
             className="flex w-11 shrink-0 snap-start flex-col items-center gap-1.5"
             title={`${d.date}: ${d.count}/${d.total}`}
           >
-            {/* Track: gray · Fill: yellow · Labels: black */}
+            {/* Track: gray · Fill: sky · Labels: black */}
             <div className="flex h-16 w-8 items-end overflow-hidden rounded-full bg-[var(--color-gray)]">
               <div
-                className="w-full rounded-full bg-[var(--color-yellow)] transition-all"
+                className="w-full rounded-full bg-[var(--color-sky)] transition-all"
                 style={{ height: `${Math.max(8, ratio * 100)}%` }}
               />
             </div>

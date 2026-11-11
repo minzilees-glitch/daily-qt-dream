@@ -512,26 +512,31 @@ export function SkyWalkers({
         ) : null}
       </div>
 
-      <div ref={statsRef} className="relative z-10 px-4 pb-2 pt-4">
+      <div ref={statsRef} className="relative z-20 px-4 pb-2 pt-4">
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="sky-stat-tile bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <StatLabel className="text-white/85">우리순은</StatLabel>
-            <p className="mt-1 type-stat text-white">{memberCount}명</p>
+          {/* Opaque white panels + ink/black type — readable on black sky and light clouds. */}
+          <div className="sky-stat-tile bg-white px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)]">
+            <StatLabel className="text-[var(--color-ink-blue)]">우리순은</StatLabel>
+            <p className="mt-1 type-stat text-[var(--color-black)]">
+              {memberCount}명
+            </p>
           </div>
-          <div className="sky-stat-tile bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <StatLabel className="text-white/85">우리순 현재</StatLabel>
+          <div className="sky-stat-tile bg-white px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)]">
+            <StatLabel className="text-[var(--color-ink-blue)]">우리순 현재</StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount
                 lights={lights}
                 size={18}
-                tone="onDark"
-                textClassName="type-stat text-white"
+                tone="active"
+                textClassName="type-stat text-[var(--color-black)]"
               />
             </div>
           </div>
-          <div className="sky-stat-tile bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <StatLabel className="text-white/85">우리순 순위</StatLabel>
-            <p className="mt-1 type-stat text-white">{rankLabel}</p>
+          <div className="sky-stat-tile bg-white px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)]">
+            <StatLabel className="text-[var(--color-ink-blue)]">우리순 순위</StatLabel>
+            <p className="mt-1 type-stat text-[var(--color-black)]">
+              {rankLabel}
+            </p>
           </div>
         </div>
       </div>
