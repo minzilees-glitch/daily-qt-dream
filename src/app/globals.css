@@ -1392,7 +1392,7 @@ a {
   line-height: var(--lh-caption);
 }
 
-/* Status under date: force regular even though .type-section is 600. */
+/* Status under date: match description/caption weight. */
 .premium-home-header-band .home-status-line {
   font-weight: 400 !important;
 }

@@ -40,10 +40,12 @@ export function AppHeader({
 
     const sync = () => {
       const h = Math.round(el.getBoundingClientRect().height);
-      const next = Math.min(
+      const matched = Math.min(
         HOME_AVATAR_MAX,
         Math.max(HOME_AVATAR_MIN, h),
       );
+      /* Home avatar: 70% of copy-matched size. */
+      const next = Math.max(1, Math.round(matched * 0.7));
       setAvatarSize((prev) => (prev === next ? prev : next));
     };
 
