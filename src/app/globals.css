@@ -876,6 +876,10 @@ a {
   background: var(--color-sky); /* #66AEE2 */
 }
 
+.premium-tab-header.premium-tab-header--me .premium-tab-title {
+  color: var(--color-black); /* #000917 */
+}
+
 .premium-qt-root:has(> .premium-tab-header--me) {
   background: var(--color-sky); /* sheet-ear seam matches header */
 }
