@@ -1005,11 +1005,28 @@ a {
 /* 우리순 header: 하늘색 (match 마이페이지). */
 .premium-tab-header.premium-tab-header--group {
   background: var(--color-sky); /* #6DC2FF */
-  color: var(--color-ink-blue);
+  color: var(--color-black); /* #000917 — match 랭킹 */
 }
 
 .premium-qt-root:has(> .premium-tab-header--group) {
   background: var(--color-sky); /* sheet-ear seam matches header */
+}
+
+/* 우리순 header copy: all type black (title, month picker, etc.). */
+.premium-tab-header.premium-tab-header--group .premium-tab-title,
+.premium-tab-header.premium-tab-header--group .type-caption,
+.premium-tab-header.premium-tab-header--group .type-body-sm,
+.premium-tab-header.premium-tab-header--group .type-month,
+.premium-tab-header.premium-tab-header--group .qt-validation-hint,
+.premium-tab-header.premium-tab-header--group .text-text-main,
+.premium-tab-header.premium-tab-header--group .text-text-secondary,
+.premium-tab-header.premium-tab-header--group .text-black {
+  color: var(--color-black) !important; /* #000917 */
+}
+
+.premium-tab-header.premium-tab-header--group svg {
+  color: var(--color-black);
+  stroke: currentColor;
 }
 
 /* 랭킹 header: 하늘색 (우리순·마이페이지와 동일). */
