@@ -69,6 +69,7 @@ export default function HomePage() {
             label="오늘의 말씀"
             embedded
             collapsible={false}
+            oneLineHeader
           />
         }
         sheet={

@@ -42,6 +42,8 @@ export function ReadingPassageBlock({
   collapsible = true,
   /** Dark-blue range/title ink (`--color-ink-blue`). */
   inkTitle = false,
+  /** Label + range + summary title on one line (home). */
+  oneLineHeader = false,
 }: {
   reading: QtReadingRange;
   label?: string;
@@ -54,6 +56,7 @@ export function ReadingPassageBlock({
   embedded?: boolean;
   collapsible?: boolean;
   inkTitle?: boolean;
+  oneLineHeader?: boolean;
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded || !collapsible);
   const passage = reading.passage?.trim() ?? "";
@@ -101,6 +104,7 @@ export function ReadingPassageBlock({
         trailing={toggle}
         afterTitle={divider}
         inkTitle={inkTitle}
+        oneLine={oneLineHeader}
       />
 
       {showBody ? (
