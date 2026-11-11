@@ -1047,14 +1047,14 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 .premium-cal-day-selected {
-  background: var(--cta);
+  background: var(--color-ink-blue); /* #1F3E62 */
   box-shadow: none;
   animation: premium-select-pop 0.42s cubic-bezier(0.22, 1.4, 0.36, 1) both;
 }
 
 .premium-cal-glow {
-  background: var(--cta);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sky) 28%, transparent);
+  background: var(--color-ink-blue); /* #1F3E62 */
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-ink-blue) 28%, transparent);
   animation: premium-select-pop 0.42s cubic-bezier(0.22, 1.4, 0.36, 1) both;
 }
 
