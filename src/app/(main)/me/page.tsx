@@ -47,7 +47,7 @@ export default function MePage() {
     .join(" · ");
 
   return (
-    <div className="premium-qt-root">
+    <div className="premium-qt-root premium-qt-root--me-sky">
       <header className="premium-tab-header premium-tab-header--me">
         <h1 className="premium-tab-title">마이페이지</h1>
         <div className="sky-walkers-bleed mt-2 animate-fade-up">
@@ -60,8 +60,8 @@ export default function MePage() {
         </div>
       </header>
 
-      <section className="premium-qt-sheet premium-qt-sheet--fill premium-qt-sheet--me">
-        <div className="premium-panel me-weekday-panel animate-fade-up">
+      <section className="premium-qt-sheet premium-qt-sheet--me">
+        <div className="premium-panel animate-fade-up">
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h2 className="premium-panel-title mb-0">내가 잘 지키는 요일</h2>
             <span className="type-caption font-medium text-text-secondary">

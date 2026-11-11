@@ -646,13 +646,18 @@ a {
   border-radius: 0 !important;
 }
 
-/* Mypage sky: same photo language, no walkers — taller free-sky band. */
+/* Mypage sky: fills leftover viewport above content-fit bottom sheet. */
 .sky-group-card.me-sky-card {
-  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 280px;
+  height: 100%;
 }
 
 .me-sky-card .me-sky-stage {
-  height: 132px;
+  flex: 1 1 auto;
+  min-height: 96px;
   background: transparent;
 }
 
@@ -845,7 +850,7 @@ a {
   padding-bottom: calc(1.25rem + var(--space-stack-sm));
 }
 
-/* 우리순 / 마이페이지: stretch sheet to fill remaining viewport. */
+/* 우리순: stretch sheet to fill remaining viewport. */
 .premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet.premium-qt-sheet--fill {
   flex: 1 1 auto;
   min-height: 0;
@@ -853,9 +858,26 @@ a {
   flex-direction: column;
 }
 
-/* 마이페이지: pin weekday chart to sheet bottom (no empty gap below). */
-.premium-qt-sheet.premium-qt-sheet--me > .me-weekday-panel {
-  margin-top: auto;
+/*
+ * 마이페이지 (sky): content-fit sheet anchored to bottom;
+ * header/sky grows into the leftover viewport.
+ */
+.premium-qt-root.premium-qt-root--me-sky > .premium-tab-header--me {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-qt-root.premium-qt-root--me-sky > .premium-tab-header--me .sky-walkers-bleed {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-qt-root.premium-qt-root--me-sky > .premium-qt-sheet.premium-qt-sheet--me {
+  flex: 0 0 auto;
 }
 
 /* 계정 설정: logout sits under profile detail at sheet bottom. */
