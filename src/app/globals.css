@@ -942,13 +942,13 @@ a {
 
 .premium-home-header-band {
   position: relative;
-  z-index: 1;
+  z-index: 1; /* sits under the 말씀 panel */
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
-  padding-bottom: var(--space-stack-sm);
+  /* Extra bottom pad so passage overlap does not cover header content. */
+  padding-bottom: calc(var(--space-stack-sm) + 14px);
   background: var(--color-sky); /* #c2e5f0 */
   color: var(--color-ink-blue);
-  /* No header→passage seam shadow — lift lives under the 말씀 panel. */
   box-shadow: none;
 }
 
@@ -1004,19 +1004,23 @@ a {
 
 .premium-home-passage {
   position: relative;
-  z-index: 2;
-  /* Flush under sky header — no mismatched strip under the seam. */
-  margin-top: 0;
+  z-index: 3; /* 말씀 sits on top of the sky header */
+  /* Pull up over the header so the panel reads as layered on top. */
+  margin-top: -14px;
   padding-inline: var(--space-page-x);
   padding-top: calc(var(--space-stack) + 6px); /* slight air above 「오늘의 말씀」 */
   padding-bottom: 0.75rem;
   border-radius: 0;
   background: var(--color-white);
   color: var(--color-ink-blue);
-  /* Cast under the 말씀 panel (bottom edge), not between header and passage. */
+  /*
+   * Upward cast onto the sky header (passage above header in stacking).
+   * Soft downward residual keeps the panel from floating flat on the sheet.
+   */
   box-shadow:
-    0 6px 16px 0 rgba(0, 9, 23, 0.14),
-    0 2px 5px 0 rgba(31, 62, 98, 0.1);
+    0 -6px 16px 0 rgba(0, 9, 23, 0.18),
+    0 -2px 5px 0 rgba(31, 62, 98, 0.12),
+    0 4px 10px 0 rgba(0, 9, 23, 0.06);
 }
 
 /* Dark reading text on white passage. */
