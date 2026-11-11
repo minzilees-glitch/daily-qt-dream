@@ -143,8 +143,8 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 480px;
 
-  /* ——— Premium QT calendar (나의 QT들) — sky calendar + white sheet ——— */
-  --premium-cal-bg: var(--color-sky);
+  /* ——— Premium QT calendar (나의 QT들) — black calendar + sky sheet ——— */
+  --premium-cal-bg: var(--color-black);
   --premium-sheet: var(--color-white);
 }
 
@@ -697,12 +697,12 @@ a {
   z-index: 1;
   padding: calc(var(--space-title-pt) + var(--safe-top)) var(--space-page-x)
     1.25rem;
-  background: var(--color-sky); /* #CAEBF2 */
-  color: var(--color-ink-blue);
+  background: var(--color-black); /* #000917 */
+  color: var(--color-sky);
   border-radius: 0 !important;
 }
 
-/* Ink text on sky calendar header — month, day nums, captions. */
+/* Sky/light text on black calendar header — month, day nums, captions. */
 .premium-qt-header .type-month,
 .premium-qt-header .type-caption,
 .premium-qt-header .type-body-sm,
@@ -710,23 +710,28 @@ a {
 .premium-qt-header .text-text-main,
 .premium-qt-header .text-text-secondary,
 .premium-qt-header .text-black {
-  color: var(--color-ink-blue) !important;
+  color: var(--color-sky) !important;
 }
 
-/* Future / muted day nums on sky calendar. */
+/* Future / muted day nums on black calendar. */
 .premium-qt-header .premium-cal-day .opacity-40,
 .premium-qt-header button:disabled {
   opacity: 0.45;
 }
 
-/* Today accent stays 소라 on the sky calendar. */
+/* Today accent stays 소라 on the black calendar. */
 .premium-qt-header .text-cta {
   color: var(--color-sora) !important;
 }
 
 .premium-qt-header svg {
-  color: var(--color-ink-blue);
+  color: var(--color-sky);
   stroke: currentColor;
+}
+
+/* 나의 QT들: passage/body sheet sits on sky. */
+.premium-qt-root:has(> .premium-qt-header) > .premium-qt-sheet {
+  background: var(--color-sky); /* #CAEBF2 */
 }
 
 .premium-qt-sheet {
@@ -785,7 +790,7 @@ a {
 .premium-qt-sheet.premium-qt-sheet--fill
   > .premium-panel--half
   + .premium-panel--half {
-  margin-top: 0;
+  margin-top: 10px; /* 「날짜별 참여」 down 10px */
   padding-top: 0;
 }
 
