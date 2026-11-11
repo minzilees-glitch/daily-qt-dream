@@ -32,6 +32,7 @@ export default function GroupPage() {
 
   if (!currentUser) return null;
 
+  const group = groups.find((g) => g.id === currentUser.groupId);
   const ranking = computeGroupRanking(
     groups,
     users,
@@ -52,7 +53,9 @@ export default function GroupPage() {
   return (
     <div className="premium-qt-root premium-qt-root--group-sky">
       <header className="premium-tab-header premium-tab-header--group">
-        <h1 className="premium-tab-title">우리 순</h1>
+        <h1 className="premium-tab-title">
+          우리순은 {group?.name ?? "순"}
+        </h1>
         <div className="mt-[var(--space-stack-sm)]">
           <MonthPicker
             value={ym}
