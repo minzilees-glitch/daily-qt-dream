@@ -295,11 +295,11 @@
   font-weight: 600;
 }
 
-/* Primary filled CTAs: 소라 fill + ink-blue label/icons, pill, flat */
+/* Primary filled CTAs: black fill + sky label/icons, pill, flat */
 .bg-cta,
 .btn-cta {
-  background-color: var(--color-sora) !important; /* #00A8DD 소라 */
-  color: var(--color-ink-blue) !important; /* #1f3e62 */
+  background-color: var(--color-black) !important; /* #000917 */
+  color: var(--color-sky) !important; /* #C2E5F0 */
   font-weight: 700;
   letter-spacing: 0.03em; /* slight tracking bump on CTA label */
   /* +2px vs former py-3.5 (14px) → 16px top/bottom */
@@ -310,7 +310,7 @@
 }
 .bg-cta svg,
 .btn-cta svg {
-  color: var(--color-ink-blue) !important;
+  color: var(--color-sky) !important;
   stroke: currentColor;
 }
 
