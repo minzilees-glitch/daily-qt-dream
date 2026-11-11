@@ -275,14 +275,14 @@ html[data-sky-mode="밤모드"] {
 
 /* Arbitrary Tailwind text-[Npx] loses to .type-section — force sizes here. */
 .qt-field-title {
-  font-size: 20px !important; /* was 21; −1pt */
+  font-size: 18px !important; /* was 20; −2pt */
   font-weight: 600;
   color: var(--text-main);
 }
 
 /* 우리순 graph section titles — 1pt under field title. */
 .qt-field-title--sm {
-  font-size: 19px !important;
+  font-size: 17px !important;
 }
 
 /* Home QT validation hint + all similar instructional notices. */
