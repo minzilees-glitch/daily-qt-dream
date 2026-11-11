@@ -190,7 +190,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           </button>
         </div>
 
-        <div className="mt-5 pb-6">
+        <div className={`mt-5 ${calendarExpanded ? "pb-6" : "pb-2"}`}>
           <QtCalendar
             yearMonth={ym}
             completedDates={completedDates}
