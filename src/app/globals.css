@@ -774,6 +774,21 @@ a {
   flex-direction: column;
 }
 
+/* 우리순 sheet: equal vertical halves for 이번주 / 날짜별. */
+.premium-qt-sheet.premium-qt-sheet--fill > .premium-panel--half {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-qt-sheet.premium-qt-sheet--fill
+  > .premium-panel--half
+  + .premium-panel--half {
+  margin-top: 0;
+  padding-top: 0;
+}
+
 .premium-qt-root:has(> .premium-tab-header)
   :is(
     .premium-stat-tile,
