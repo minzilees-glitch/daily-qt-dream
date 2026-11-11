@@ -264,6 +264,10 @@
   color: var(--text-main);
 }
 
+.qt-validation-hint {
+  font-size: 16px !important;
+}
+
 .reading-passage-range {
   font-size: 22px !important; /* field title 20px + 2pt */
   font-weight: 600;
