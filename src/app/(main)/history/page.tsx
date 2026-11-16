@@ -26,6 +26,7 @@ import {
   currentYearMonth,
   formatDisplayDate,
   isFutureDate,
+  parseYmd,
   todaySeoul,
   yearMonthOf,
 } from "@/lib/dates";
@@ -145,6 +146,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     title: reading.title ?? "",
     url: durannoUrlForDate(selected),
   };
+  const { year, month, day } = parseYmd(selected);
+  const durannoLabel = `${year}년 ${month}월 ${day}일의 말씀`;
   const hasEntry = !!selectedEntry;
 
   const showToast = (message: string) => {
@@ -284,7 +287,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             <HomeDurannoPassage
               key={selected}
               reading={duranno}
-              label="오늘의 말씀"
+              label={durannoLabel}
               embedded
             />
           </div>
