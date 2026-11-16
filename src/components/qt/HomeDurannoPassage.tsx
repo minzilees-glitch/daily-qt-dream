@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * 말씀 header — eyebrow + verse range (+ optional sky 「말씀보기」 text link).
+ * 말씀 header — eyebrow + verse range (+ optional deep-sky 「말씀보기」 link).
  * No 본문 써머리 / title line (home + history).
  * Home: full-bleed mint via `.home-duranno-in-sheet` + Duranno link.
  * History: `embedded` skips mint (parent owns wash); pass `showLink` for today only.
@@ -61,13 +61,13 @@ export function HomeDurannoPassage({
                 aria-label="말씀보기"
                 title="말씀보기"
               >
-                말씀보기
-                <ArrowUpRight
-                  size={18}
+                <BookOpen
+                  size={16}
                   strokeWidth={2.25}
                   color="var(--color-sky-deep)"
                   aria-hidden
                 />
+                말씀보기
               </a>
             </>
           ) : null}

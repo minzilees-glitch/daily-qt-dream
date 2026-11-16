@@ -7,8 +7,8 @@
   --color-gray: #f2f2f2; /* 그레이 */
   --color-mint: #caebf2; /* 민트 — former soft “sky” chrome */
   --color-sky: #6dc2ff; /* 하늘색 */
-  /* 「말씀보기」+arrow only — deeper than --color-sky; do not reuse for chrome. */
-  --color-sky-deep: #1e8fd6;
+  /* 「말씀보기」+book icon only — deeper than --color-sky; do not reuse for chrome. */
+  --color-sky-deep: #0b6fb8;
   --color-sora: #94deee; /* 소라 */
   --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
   --color-black: #000917; /* 검정 */
@@ -177,7 +177,7 @@ html[data-sky-mode="밤모드"] {
   --color-gray: #f2f2f2;
   --color-mint: #caebf2; /* 민트 — soft chrome (former --color-sky) */
   --color-sky: #6dc2ff; /* 하늘색; brand chrome remains --sky #5FBCFC */
-  --color-sky-deep: #1e8fd6; /* 말씀보기 CTA only */
+  --color-sky-deep: #0b6fb8; /* 말씀보기 CTA only */
   --color-sora: #94deee; /* 소라 #94DEEE */
   --color-ink-blue: #1f3e62;
   --color-black: #000917;
@@ -1642,7 +1642,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 /*
- * 「말씀보기」 + ArrowUpRight — dedicated deep sky (not --color-sky).
+ * 「말씀보기」 + BookOpen — dedicated deep sky (not --color-sky).
  * Nested selectors + token beat inherit/a leftovers.
  */
 .home-duranno-in-sheet a.home-duranno-cta,
@@ -1680,7 +1680,7 @@ a.home-duranno-cta:focus-visible {
   -webkit-appearance: none;
   appearance: none;
   text-decoration: none !important;
-  color: var(--color-sky-deep) !important; /* #1E8FD6 */
+  color: var(--color-sky-deep) !important; /* #0B6FB8 */
   -webkit-text-fill-color: var(--color-sky-deep) !important;
   font-size: var(--fs-caption);
   font-weight: 600;
