@@ -101,18 +101,21 @@ html {
    * scales with root font-size while matching the prior 16px-base look.
    * Hairlines stay 1px; micro CTA spacers stay px on purpose.
    */
-  --fs-nav: 0.75rem; /* 12px */
-  --fs-micro: 0.8125rem; /* 13px — calendar weekday headers */
-  --fs-caption: 1rem; /* 16px — hints / .qt-validation-hint */
-  --fs-label: 0.9375rem; /* 15px */
-  --fs-body-sm: 1.125rem; /* 18px */
-  --fs-body: 1.1875rem; /* 19px */
-  --fs-section: 1.125rem; /* 18px */
-  --fs-body-lg: 1.1875rem; /* 19px */
-  --fs-stat: 1.25rem; /* 20px */
-  --fs-display: clamp(1.375rem, 0.6rem + 3.2vw, 1.5rem); /* ~22–24 */
-  --fs-page: clamp(1.375rem, 0.6rem + 3.2vw, 1.5rem); /* home date / titles */
-  --fs-display-xl: clamp(1.875rem, 1rem + 4vw, 2.125rem); /* login hero ~30–34 */
+  /* Scale −2pt vs prior (DQ-679). Comments = px @ 16 root. */
+  --fs-nav: 0.625rem; /* 10px */
+  --fs-micro: 0.6875rem; /* 11px — calendar weekday headers */
+  --fs-caption: 0.875rem; /* 14px — hints / .qt-validation-hint */
+  --fs-label: 0.8125rem; /* 13px */
+  --fs-body-sm: 1rem; /* 16px */
+  --fs-body: 1.0625rem; /* 17px */
+  --fs-section: 1rem; /* 16px */
+  --fs-body-lg: 1.0625rem; /* 17px */
+  --fs-stat: 1.125rem; /* 18px */
+  --fs-display: clamp(1.25rem, 0.55rem + 3vw, 1.375rem); /* ~20–22 */
+  --fs-page: clamp(1.25rem, 0.55rem + 3vw, 1.375rem); /* home date / titles */
+  /* MonthPicker label (calendar / group / ranking) — 2pt under --fs-page */
+  --fs-month: clamp(1.125rem, 0.45rem + 3vw, 1.25rem); /* ~18–20 */
+  --fs-display-xl: clamp(1.75rem, 0.9rem + 4vw, 2rem); /* login hero ~28–32 */
   --lh-relaxed: 1.625;
   --lh-caption: 1.35; /* notices / type-caption — tighter than body-lg */
   --lh-page-title: 1.15;
@@ -185,6 +188,18 @@ html[data-sky-mode="밤모드"] {
   --sky-mode-ink: var(--color-white); /* readable on black chrome */
 }
 
+/*
+ * MeSky + SkyWalkers: transparent cloud PNG over `--sky-mode-fill`
+ * (same token as AppHeader / `.premium-home-header-band` — day sky / night black).
+ * Asset: `/group/sky-clouds-bg.png` (RGBA; sky keyed out). No blend/opacity hacks.
+ */
+.sky-group-card > img.sky-clouds-bg {
+  opacity: 1;
+  visibility: visible;
+  mix-blend-mode: normal;
+  filter: none;
+}
+
 @theme inline {
   /* User palette utilities (hex — avoid circular var() in @theme) */
   --color-white: #ffffff;
@@ -236,6 +251,7 @@ html[data-sky-mode="밤모드"] {
   --text-stat: var(--fs-stat);
   --text-display: var(--fs-display);
   --text-page: var(--fs-page);
+  --text-month: var(--fs-month);
   --text-display-xl: var(--fs-display-xl);
   --tracking-title: 0.04em;
   --tracking-label: 0.06em;
@@ -299,19 +315,19 @@ html[data-sky-mode="밤모드"] {
 
 /* Arbitrary Tailwind text-[Npx] loses to .type-section — force sizes here. */
 .qt-field-title {
-  font-size: 1.125rem !important; /* 18px @ 16 root */
+  font-size: 1rem !important; /* 16px @ 16 root (−2pt) */
   font-weight: 600 !important; /* beat body/type utilities in read-only views */
   color: var(--color-black) !important; /* #000917 */
 }
 
 /* 우리순 graph section titles — 1pt under field title. */
 .qt-field-title--sm {
-  font-size: 1.0625rem !important; /* 17px */
+  font-size: 0.9375rem !important; /* 15px */
 }
 
 /* Chart/section titles (우리순 · 나의 일주일) — +2pt over field title. */
 .qt-field-title--lg {
-  font-size: 1.25rem !important; /* 20px */
+  font-size: 1.125rem !important; /* 18px */
 }
 
 /* Home QT validation hint + all similar instructional notices. */
@@ -352,13 +368,13 @@ html[data-sky-mode="밤모드"] {
 }
 
 .reading-passage-range {
-  font-size: 1.375rem !important; /* 22px — passage range emphasis */
+  font-size: 1.25rem !important; /* 20px — passage range emphasis (−2pt) */
   font-weight: 600;
   color: var(--text-main);
 }
 .type-month {
-  /* Same size token as home header date (.type-page-title / --fs-page). */
-  font-size: var(--fs-page);
+  /* MonthPicker on calendar / 우리순 / 랭킹 — --fs-month (−2pt vs page). */
+  font-size: var(--fs-month);
   font-weight: 600;
   letter-spacing: var(--tracking-month);
 }
@@ -383,11 +399,11 @@ html[data-sky-mode="밤모드"] {
   font-weight: 600;
 }
 
-/* CTA labels: 1pt under body (19→18). PrimaryButton + legacy .btn-cta. */
+/* CTA labels: 1pt under body (17→16). PrimaryButton + legacy .btn-cta. */
 .cta-label,
 .bg-cta,
 .btn-cta {
-  font-size: 1.125rem !important;
+  font-size: 1rem !important;
 }
 
 /* Primary filled CTAs: black fill + sky label/icons, pill, flat */
@@ -596,9 +612,9 @@ a {
   backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
   -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
 }
-/* SkyWalkers / MeSky: cloud photo over 낮모드/밤모드 solid fill. */
+/* SkyWalkers / MeSky: same base as AppHeader (`.premium-home-header-band`). */
 .soft-card.sky-group-card {
-  background: var(--sky-mode-fill);
+  background-color: var(--sky-mode-fill) !important;
   border: none;
   border-radius: 0 !important;
   box-shadow: var(--shadow-soft);
@@ -728,7 +744,8 @@ a {
   width: 100%;
   /* Extra pad so absolute photo covers the sheet underlap / rounded ears. */
   padding-bottom: var(--radius-sheet);
-  background: var(--sky-mode-fill); /* under cloud photo */
+  /* Identical token to AppHeader / `.premium-home-header-band` / tab headers. */
+  background-color: var(--sky-mode-fill) !important;
   border-radius: 0 !important;
 }
 
@@ -1513,15 +1530,15 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   color: color-mix(in srgb, var(--sky-mode-ink) 78%, transparent) !important;
 }
 
-/* Home profile name/group: 1pt smaller than type-label / type-caption */
+/* Home profile name/group: slightly under type-label / type-caption (−2pt pass). */
 .premium-home-header-band .home-profile-name {
-  font-size: 14px; /* type-label 15px − 1pt */
+  font-size: 0.75rem; /* 12px — under --fs-label 13 */
   font-weight: 400; /* regular under profile */
   letter-spacing: var(--tracking-label);
 }
 
 .premium-home-header-band .home-profile-group {
-  font-size: 14px; /* type-caption 16px − 2pt */
+  font-size: 0.75rem; /* 12px — under --fs-caption 14 */
   font-weight: 400;
   line-height: var(--lh-caption);
 }
@@ -1593,6 +1610,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   margin-top: -1.25rem;
   min-height: 0;
   background: #ffffff !important;
+  /* Round the filtered sheet itself — filter + square bg made top ears look square. */
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0 !important;
   /* No side/bottom pad — form body is edge-to-edge white (like history). */
   padding-top: 0 !important;
   padding-inline: 0 !important;
@@ -1600,7 +1619,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   /* Same drop-shadow token as 나의 QT들 (.premium-qt-sheet). */
   box-shadow: none;
   filter: var(--premium-sheet-filter);
-  overflow: visible;
+  overflow: hidden; /* clip mint/white children to sheet radius */
 }
 
 /*
@@ -1613,6 +1632,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   margin: 0;
   width: 100%;
   padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
+  /* Parent `.premium-home-form-sheet` owns the curve + clip; keep mint flush. */
   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
   background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-black); /* #000917 */

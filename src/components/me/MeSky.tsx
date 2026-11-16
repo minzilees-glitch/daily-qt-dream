@@ -13,6 +13,7 @@ import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
 import { WalkerFace } from "@/components/ui/WalkerFace";
 import { useApp } from "@/lib/app-context";
+import { SKY_CLOUDS_BG } from "@/lib/sky-assets";
 
 /** Four discrete sizes (~11px baseline +5%): smaller / base / larger / largest. */
 const SKY_LIGHT_SIZES = [8.4, 10.5, 12.6, 14.7] as const;
@@ -297,9 +298,9 @@ export function MeSky({
     <div ref={cardRef} className="sky-group-card me-sky-card relative overflow-hidden">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/group/sky-clouds-bg.png"
+        src={SKY_CLOUDS_BG}
         alt=""
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+        className="sky-clouds-bg pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
         draggable={false}
       />
 

@@ -59,7 +59,7 @@ export function MonthPicker({
   // Color only: capsule → black on ivory; light → white on sky; else black.
   const onLight = light && !capsule;
   const ink = onLight ? "text-white" : "text-black";
-  const chevronClass = `relative z-[1] flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-transparent ${ink} shadow-none transition disabled:opacity-30`;
+  const chevronClass = `relative z-[1] flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-transparent ${ink} shadow-none transition disabled:opacity-30`;
 
   const goPrev = () => {
     if (!canPrev) return;
@@ -91,7 +91,7 @@ export function MonthPicker({
           onClick={goPrev}
           className={chevronClass}
         >
-          <ChevronLeft size={18} strokeWidth={2.5} />
+          <ChevronLeft size={16} strokeWidth={2.5} />
         </button>
         <p className={`relative z-[1] type-month whitespace-nowrap text-center ${ink}`}>
           {monthOnly ? formatMonthOnly(value) : formatMonthLabel(value)}
@@ -103,7 +103,7 @@ export function MonthPicker({
           onClick={goNext}
           className={chevronClass}
         >
-          <ChevronRight size={18} strokeWidth={2.5} />
+          <ChevronRight size={16} strokeWidth={2.5} />
         </button>
       </div>
     </div>
