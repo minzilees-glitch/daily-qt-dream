@@ -812,9 +812,14 @@ a {
   color: color-mix(in srgb, var(--muted) 70%, transparent) !important; /* #F2F2F2 @ 70% */
 }
 
-/* Today accent stays 소라 on the calendar. */
+/* Today accent (selected uses .premium-cal-day-selected white). */
 .premium-qt-header .text-cta {
   color: var(--color-sora) !important;
+}
+
+/* Inactive today (not selected): ink-blue date numeral. */
+.premium-qt-header .premium-cal-day-today {
+  color: var(--color-ink-blue) !important; /* #1F3E62 */
 }
 
 .premium-qt-header svg {

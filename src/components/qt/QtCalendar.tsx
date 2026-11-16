@@ -299,7 +299,7 @@ export function QtCalendar({
                     selected
                       ? "text-white"
                       : isToday
-                        ? "text-cta"
+                        ? "premium-cal-day-today"
                         : future
                           ? "premium-cal-day-muted"
                           : "text-text-main"
@@ -374,7 +374,7 @@ export function QtCalendar({
                           selected
                             ? "text-white"
                             : isToday
-                              ? "text-cta"
+                              ? "premium-cal-day-today"
                               : future
                                 ? "premium-cal-day-muted"
                                 : "text-text-main"

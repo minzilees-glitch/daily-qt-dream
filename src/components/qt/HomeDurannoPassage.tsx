@@ -33,18 +33,18 @@ export function HomeDurannoPassage({
           <div className="shrink-0 self-center">{labelTrailing}</div>
         ) : null}
       </div>
-      <div className="mt-1 flex items-center gap-2">
-        <p className="reading-passage-range min-w-0 flex-1 truncate">{range}</p>
+      <div className="mt-1 flex min-w-0 items-center gap-1">
+        <p className="reading-passage-range min-w-0 shrink truncate">{range}</p>
         <a
           href={reading.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="home-duranno-cta shrink-0"
+          className="home-duranno-cta inline-flex shrink-0 items-center gap-0.5"
           aria-label="두란노에서 오늘의 말씀 읽기"
           title="두란노에서 오늘의 말씀 읽기"
         >
-          <BookOpen size={24} strokeWidth={2} aria-hidden />
-          <ArrowUpRight size={20} strokeWidth={2.25} aria-hidden />
+          <BookOpen size={22} strokeWidth={1.5} aria-hidden />
+          <ArrowUpRight size={18} strokeWidth={1.5} aria-hidden />
         </a>
       </div>
       {title ? (
