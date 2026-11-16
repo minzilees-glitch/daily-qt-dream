@@ -1409,28 +1409,23 @@ a {
   padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
   border-radius: 36px 36px 0 0;
   background: color-mix(in srgb, var(--color-mint) 50%, white);
-  color: var(--color-ink-blue);
+  color: var(--color-black); /* #000917 */
   box-shadow: none !important;
   filter: none !important;
 }
 
-.home-duranno-in-sheet .reading-passage-range {
-  color: var(--color-ink-blue) !important;
-}
-
-.home-duranno-in-sheet .text-text-secondary {
-  color: color-mix(in srgb, var(--color-ink-blue) 72%, transparent) !important;
-}
-
+.home-duranno-in-sheet .reading-passage-range,
+.home-duranno-in-sheet .text-text-secondary,
 .home-duranno-in-sheet .home-duranno-summary {
-  color: var(--color-ink-blue) !important;
+  color: var(--color-black) !important; /* #000917 */
 }
 
+/* Icon-only Duranno link — no capsule; sky reads on mint vs black copy. */
 .home-duranno-cta {
-  color: var(--color-ink-blue);
-  border-radius: var(--radius-pill);
-  padding: 0.35rem 0.7rem;
-  background: color-mix(in srgb, white 78%, var(--color-mint));
+  color: var(--color-sky); /* #6DC2FF */
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
   box-shadow: none;
 }
 
