@@ -69,14 +69,14 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
     }
   });
 
-  // Demo: pin 사랑순 (test user’s 우리순) month lights; scale peers nearby.
+  // Demo: pin 김병준 순 (test user’s 우리순) month lights; scale peers nearby.
   enforceDemoMonthTotals(users, records, today, {
     "2026-09": { groupId: "g-01", lights: 30 },
     "2026-10": { groupId: "g-01", lights: 61 },
     "2026-11": { groupId: "g-01", lights: 16 }, // to date
   });
 
-  // Current month podium without blowing past the Nov pin: 믿음순 1 · 사랑순 2.
+  // Current month podium without blowing past the Nov pin: 믿음순 1 · 김병준 순 2.
   enforceDemoPodiumNear(users, records, today, "g-05", "g-01", 16);
 
   return records;

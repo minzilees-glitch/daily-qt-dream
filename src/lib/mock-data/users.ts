@@ -59,7 +59,9 @@ const GIVEN = [
 
 /**
  * ~300 members across 30 groups (~10 each).
- * First user of each group is leader. u-001 is the default test login (admin + 사랑순).
+ * First user of each group is leader.
+ * u-001 is the default test login: 이민지 · 김병준 순 · admin.
+ * Rule: everyone in 김병준 순 is 다락방장 = admin.
  */
 export function buildUsers(groups: Group[]): User[] {
   const rng = mulberry32(20261102);
@@ -68,18 +70,19 @@ export function buildUsers(groups: Group[]): User[] {
 
   for (const group of groups) {
     const size = 9 + Math.floor(rng() * 3); // 9–11
+    const isDarakbangAdminSun = group.name === "김병준 순";
     for (let i = 0; i < size; i++) {
       const id = `u-${String(seq).padStart(3, "0")}`;
       const isLeader = i === 0;
       const name =
         seq === 1
-          ? "테스트유저"
+          ? "이민지"
           : `${pick(rng, FAMILY)}${pick(rng, GIVEN)}`;
       users.push({
         id,
         name,
         groupId: group.id,
-        isAdmin: seq === 1,
+        isAdmin: isDarakbangAdminSun,
         isLeader,
       });
       if (isLeader) {
