@@ -939,19 +939,22 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-sora) !important;
 }
 
-/* Inactive today (not selected): solid numeral, no underline.
- * Selected today uses .premium-cal-day-selected / glow — no today class. */
+/* Inactive today (not selected): solid numeral + underline (day & night).
+ * Selected today uses .premium-cal-day-selected / glow — no today class → no underline. */
 .premium-qt-header .premium-cal-day-today {
   color: var(--color-ink-blue) !important; /* #1F3E62 */
   opacity: 1 !important;
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 12px; /* air under the numeral; not tight */
+  text-decoration-color: var(--color-ink-blue);
 }
 
-/* 밤모드: brighter today ink so numeral reads full-strength on black. */
+/* 밤모드: brighter today ink so underline/numeral read full-strength on black. */
 html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   color: var(--color-mint) !important; /* #CAEBF2 */
   opacity: 1 !important;
-  text-decoration: none;
+  text-decoration-color: var(--color-mint);
 }
 
 .premium-qt-header svg {
