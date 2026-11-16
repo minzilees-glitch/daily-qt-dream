@@ -13,6 +13,10 @@ export type ProfileRepoResult<T> =
  * - Nickname / avatar URL / QT / stars live on the profile (+ `qt_entries`).
  * - Stars aggregate per 순 and on me page.
  * Full roster import waits for her roster file; this module only scaffolds writes.
+ *
+ * Security (20261118_rls_security_harden):
+ * - Members update own `display_name` / `avatar_url` only (trigger blocks role/group_id).
+ * - `group_id` / role / roster membership: admin JWT or service_role seed — never phones in client tables.
  */
 
 /** Read display_name for one profile (pilot nickname). */
