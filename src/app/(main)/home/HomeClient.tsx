@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { MoreHorizontal, Send } from "lucide-react";
+import { useState } from "react";
+import { Send } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { LightIcon } from "@/components/ui/LightIcon";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
@@ -10,6 +10,7 @@ import { Toast } from "@/components/ui/Toast";
 import { DayEntryView } from "@/components/qt/DayEntryView";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
 import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
+import { PassageEntryActions } from "@/components/qt/PassageEntryActions";
 import { HomePremiumShell } from "@/components/qt/HomePremiumShell";
 import { useApp } from "@/lib/app-context";
 import type { DurannoTodayMeta } from "@/lib/duranno";
@@ -39,18 +40,7 @@ export function HomeClient({
   const today = useSeoulToday();
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onDoc = (e: MouseEvent) => {
-      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [menuOpen]);
 
   if (!currentUser) return null;
 
@@ -155,42 +145,11 @@ export function HomeClient({
               label="오늘의 말씀"
               labelTrailing={
                 showMenu ? (
-                  <div className="relative" ref={menuRef}>
-                    <button
-                      type="button"
-                      aria-label="더보기"
-                      aria-expanded={menuOpen}
-                      onClick={() => setMenuOpen((v) => !v)}
-                      className="flex h-8 w-8 items-center justify-center bg-transparent text-text-main shadow-none"
-                    >
-                      <MoreHorizontal size={18} strokeWidth={1.75} />
-                    </button>
-                    {menuOpen ? (
-                      <div className="absolute right-0 z-20 mt-1 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-                        <button
-                          type="button"
-                          className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
-                          onClick={() => {
-                            setMenuOpen(false);
-                            setEditing(true);
-                          }}
-                        >
-                          수정
-                        </button>
-                        <button
-                          type="button"
-                          className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
-                          disabled={!hasEntry && !doneToday}
-                          onClick={() => {
-                            setMenuOpen(false);
-                            setConfirmOpen(true);
-                          }}
-                        >
-                          삭제
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
+                  <PassageEntryActions
+                    onEdit={() => setEditing(true)}
+                    onDelete={() => setConfirmOpen(true)}
+                    deleteDisabled={!hasEntry && !doneToday}
+                  />
                 ) : null
               }
             />

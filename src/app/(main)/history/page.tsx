@@ -11,7 +11,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { CalendarDays, MoreHorizontal, Rows2, Send } from "lucide-react";
+import { CalendarDays, Rows2, Send } from "lucide-react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
@@ -20,6 +20,7 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { QtCalendar } from "@/components/qt/QtCalendar";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
 import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
+import { PassageEntryActions } from "@/components/qt/PassageEntryActions";
 import { DayEntryView } from "@/components/qt/DayEntryView";
 import { useApp } from "@/lib/app-context";
 import {
@@ -74,10 +75,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const [dragging, setDragging] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const menuRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const handleRef = useRef<HTMLDivElement>(null);
@@ -124,15 +123,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     }
     return s;
   }, [completions, currentUser, ym]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onDoc = (e: MouseEvent) => {
-      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [menuOpen]);
 
   const recomputeSheetTop = useCallback(() => {
     const weekH = weekHeaderHRef.current;
@@ -279,7 +269,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     if (yearMonthOf(date) < HISTORY_MIN_YM) return;
     setSelected(date);
     setEditing(false);
-    setMenuOpen(false);
     if (yearMonthOf(date) !== ym) setYm(yearMonthOf(date));
   };
 
@@ -441,42 +430,11 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               showLink={isToday}
               labelTrailing={
                 !future ? (
-                  <div className="relative" ref={menuRef}>
-                    <button
-                      type="button"
-                      aria-label="더보기"
-                      aria-expanded={menuOpen}
-                      onClick={() => setMenuOpen((v) => !v)}
-                      className="flex h-8 w-8 items-center justify-center bg-transparent text-text-main shadow-none"
-                    >
-                      <MoreHorizontal size={18} strokeWidth={1.75} />
-                    </button>
-                    {menuOpen ? (
-                      <div className="absolute right-0 z-20 mt-1 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-                        <button
-                          type="button"
-                          className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
-                          onClick={() => {
-                            setMenuOpen(false);
-                            setEditing(true);
-                          }}
-                        >
-                          수정
-                        </button>
-                        <button
-                          type="button"
-                          className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
-                          disabled={!hasEntry && !selectedCompleted}
-                          onClick={() => {
-                            setMenuOpen(false);
-                            setConfirmOpen(true);
-                          }}
-                        >
-                          삭제
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
+                  <PassageEntryActions
+                    onEdit={() => setEditing(true)}
+                    onDelete={() => setConfirmOpen(true)}
+                    deleteDisabled={!hasEntry && !selectedCompleted}
+                  />
                 ) : null
               }
             />

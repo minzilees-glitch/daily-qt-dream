@@ -15,7 +15,7 @@ export function HomeDurannoPassage({
   embedded = false,
   /** Home only — history omits the external bible link. Default true. */
   showLink = true,
-  /** Right-aligned on the label row (e.g. history ⋮ menu). */
+  /** Right-aligned on the label row (e.g. edit + delete icons). */
   labelTrailing,
 }: {
   reading: Pick<DurannoTodayMeta, "range"> &
@@ -30,12 +30,12 @@ export function HomeDurannoPassage({
 
   const body = (
     <>
-      {/* Trailing (history ⋮) is absolute so it doesn't inflate row height —
-          otherwise eyebrow→range gap reads wider than home (mt-1 after h-8). */}
+      {/* Trailing icons are absolute so they don't inflate row height —
+          otherwise eyebrow→range gap reads wider (mt-1 after h-8). */}
       <div className="relative">
         <StatLabel
           className={`home-duranno-label min-w-0 truncate text-text-secondary${
-            labelTrailing ? " pr-10" : ""
+            labelTrailing ? " pr-16" : ""
           }`}
         >
           {label}
