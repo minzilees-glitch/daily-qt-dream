@@ -28,7 +28,7 @@ import {
   historyPassageLabel,
 } from "@/lib/history-passages";
 import { durannoUrlForDate } from "@/lib/duranno";
-import { fieldsFromEntry } from "@/lib/qt-entry";
+import { entryHasQtContent, fieldsFromEntry } from "@/lib/qt-entry";
 import {
   formatQtShareText,
   isShareAbortError,
@@ -60,7 +60,7 @@ function clampHistoryDate(date: string): string {
 }
 
 function HistoryPageInner({ initialDate }: { initialDate: string }) {
-  const { currentUser, completions, isCompleted, getEntry, saveEntry, clearEntry, lastEarnedDate } =
+  const { currentUser, completions, getEntry, saveEntry, clearEntry, lastEarnedDate } =
     useApp();
 
   const startDate = clampHistoryDate(initialDate);
@@ -277,7 +277,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
   if (!currentUser) return null;
 
-  const selectedCompleted = isCompleted(currentUser.id, selected);
   const selectedEntry = getEntry(currentUser.id, selected);
   const today = todaySeoul();
   const future = isFutureDate(selected, today);
@@ -289,10 +288,10 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     url: isToday ? durannoUrlForDate(selected) : undefined,
   };
   const passageLabel = historyPassageLabel(selected);
-  const hasEntry = !!selectedEntry;
-  /** 말씀 header edit: only when that day's QT is saved (or currently editing). */
-  const showEdit =
-    !future && (hasEntry || selectedCompleted || editing);
+  /** Real QT text only — completion/presence without rows opens compose, not empty copy. */
+  const hasContent = entryHasQtContent(selectedEntry);
+  /** 말씀 header edit: only when that day's QT has saved text (or currently editing). */
+  const showEdit = !future && (hasContent || editing);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -414,7 +413,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         }`}
         style={{ top: sheetTop }}
       >
-        <div className="premium-history-mint">
+        {/* Grabber stays pinned for sheet resize; 말씀 scrolls with drawer body. */}
+        <div className="premium-history-mint premium-history-mint--handle">
           <div
             ref={handleRef}
             className="premium-history-sheet-drag"
@@ -430,89 +430,94 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           >
             <span className="premium-sheet-grabber" aria-hidden />
           </div>
-          <div className="premium-history-passage pt-3">
-            <HomeDurannoPassage
-              key={selected}
-              reading={passageReading}
-              label={passageLabel}
-              embedded
-              showLink={isToday}
-              rangeTrailing={
-                showEdit ? (
-                  <PassageEntryActions
-                    editActive={editing}
-                    onEdit={() => setEditing(true)}
-                  />
-                ) : null
-              }
-            />
-          </div>
         </div>
 
         <div
           key={selected}
           className="premium-content-crossfade premium-history-sheet-body"
         >
-          <div className="premium-history-qt">
-            {future ? (
-              <div className="pt-[var(--space-stack-lg)]">
-                {/* Same helper chrome as QtEntryForm 「큐티는 전체 합쳐…」. */}
-                <p className="qt-validation-hint type-caption break-keep text-text-secondary">
-                  미래 날짜는 완료할 수 없습니다.
-                </p>
-              </div>
-            ) : editing ? (
-              <QtEntryForm
-                key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
-                initial={selectedEntry}
-                editing
-                onDelete={() => setConfirmOpen(true)}
-                onSave={async (fields) => {
-                  try {
-                    const res = await saveEntry(selected, fields);
-                    showToast(res.message);
-                    if (res.ok) setEditing(false);
-                  } catch (err) {
-                    const detail =
-                      err instanceof Error ? err.message : "알 수 없는 오류";
-                    showToast(`저장 실패: ${detail}`);
+          <div className="premium-history-sheet-scroll">
+            <div className="premium-history-mint premium-history-mint--passage">
+              <div className="premium-history-passage pt-3">
+                <HomeDurannoPassage
+                  key={selected}
+                  reading={passageReading}
+                  label={passageLabel}
+                  embedded
+                  showLink={isToday}
+                  rangeTrailing={
+                    showEdit ? (
+                      <PassageEntryActions
+                        editActive={editing}
+                        onEdit={() => setEditing(true)}
+                      />
+                    ) : null
                   }
-                }}
-              />
-            ) : hasEntry || selectedCompleted ? (
-              <div className="space-y-[var(--space-stack-lg)]">
-                <DayEntryView entry={selectedEntry} />
-                <PrimaryButton
-                  type="button"
-                  variant="secondary"
-                  className="w-full"
-                  onClick={shareSavedEntry}
-                >
-                  <Send size={18} strokeWidth={2.25} aria-hidden />
-                  나의 큐티 나누기
-                </PrimaryButton>
+                />
               </div>
-            ) : (
-              <QtEntryForm
-                key={`hist-new-${selected}`}
-                initial={null}
-                helperNotice={
-                  past && !hasEntry
-                    ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."
-                    : null
-                }
-                onSave={async (fields) => {
-                  try {
-                    const res = await saveEntry(selected, fields);
-                    showToast(res.message);
-                  } catch (err) {
-                    const detail =
-                      err instanceof Error ? err.message : "알 수 없는 오류";
-                    showToast(`저장 실패: ${detail}`);
+            </div>
+
+            <div className="premium-history-qt">
+              {future ? (
+                <div className="pt-[var(--space-stack-lg)]">
+                  {/* Same helper chrome as QtEntryForm 「큐티는 전체 합쳐…」. */}
+                  <p className="qt-validation-hint type-caption break-keep text-text-secondary">
+                    미래 날짜는 완료할 수 없습니다.
+                  </p>
+                </div>
+              ) : editing ? (
+                <QtEntryForm
+                  key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
+                  initial={selectedEntry}
+                  editing
+                  onDelete={() => setConfirmOpen(true)}
+                  onSave={async (fields) => {
+                    try {
+                      const res = await saveEntry(selected, fields);
+                      showToast(res.message);
+                      if (res.ok) setEditing(false);
+                    } catch (err) {
+                      const detail =
+                        err instanceof Error ? err.message : "알 수 없는 오류";
+                      showToast(`저장 실패: ${detail}`);
+                    }
+                  }}
+                />
+              ) : hasContent ? (
+                <div className="space-y-[var(--space-stack-lg)]">
+                  <DayEntryView entry={selectedEntry} />
+                  <PrimaryButton
+                    type="button"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={shareSavedEntry}
+                  >
+                    <Send size={18} strokeWidth={2.25} aria-hidden />
+                    나의 큐티 나누기
+                  </PrimaryButton>
+                </div>
+              ) : (
+                <QtEntryForm
+                  key={`hist-new-${selected}`}
+                  initial={selectedEntry ?? null}
+                  helperNotice={
+                    past && !hasContent
+                      ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."
+                      : null
                   }
-                }}
-              />
-            )}
+                  onSave={async (fields) => {
+                    try {
+                      const res = await saveEntry(selected, fields);
+                      showToast(res.message);
+                    } catch (err) {
+                      const detail =
+                        err instanceof Error ? err.message : "알 수 없는 오류";
+                      showToast(`저장 실패: ${detail}`);
+                    }
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
       </section>

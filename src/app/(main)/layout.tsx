@@ -10,10 +10,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const hideNav = pathname === "/admin";
 
   return (
-    <PhoneShell>
+    <PhoneShell data-nav={hideNav ? "hidden" : "docked"}>
       <AuthGate>
         <div className="phone-scroll">
-          <div className={hideNav ? "pb-[var(--space-section-pb)]" : "pb-[calc(72px+var(--safe-bottom))]"}>
+          <div
+            className={
+              hideNav
+                ? "pb-[var(--space-section-pb)]"
+                : "pb-[calc(var(--nav-reserve)+var(--safe-bottom))]"
+            }
+          >
             {children}
           </div>
         </div>

@@ -1,13 +1,12 @@
 import type { QtEntry } from "@/types";
 
+/**
+ * Read-only QT fields. Callers should only mount this when
+ * `entryHasQtContent(entry)` is true — empty dates open QtEntryForm instead.
+ * This fallback is a safety net, not the product empty state.
+ */
 export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
-  if (!entry) {
-    return (
-      <p className="text-center type-body-sm text-text-secondary">
-        이 날짜에 작성한 큐티 기록이 없습니다.
-      </p>
-    );
-  }
+  if (!entry) return null;
 
   const rows = [
     { label: "오늘 나의 마음에 남는 구절", value: entry.verse },
@@ -16,13 +15,7 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
     { label: "묵상 후 나의 기도제목", value: entry.prayer },
   ].filter((r) => r.value.trim().length > 0);
 
-  if (rows.length === 0) {
-    return (
-      <p className="text-center type-body-sm text-text-secondary">
-        이 날짜에 작성한 큐티 기록이 없습니다.
-      </p>
-    );
-  }
+  if (rows.length === 0) return null;
 
   /* Same top air as QtEntryForm helper block (home form-body). */
   return (
