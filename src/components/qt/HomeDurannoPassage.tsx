@@ -4,24 +4,30 @@ import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * 말씀 header — range + summary + Duranno icon CTA (no passage body).
- * Home: full-bleed mint via `.home-duranno-in-sheet`.
- * History: `embedded` skips mint (parent `.premium-history-passage` owns wash).
+ * 말씀 header — range + summary (+ optional Duranno icon CTA).
+ * Home: full-bleed mint via `.home-duranno-in-sheet` + Duranno link.
+ * History: `embedded` skips mint (parent owns wash); pass `showLink={false}`
+ * (past dates are not free on Duranno).
  */
 export function HomeDurannoPassage({
   reading,
   label = "오늘의 말씀",
   embedded = false,
+  /** Home only — history omits the external bible link. Default true. */
+  showLink = true,
   /** Right-aligned on the label row (e.g. history ⋮ menu). */
   labelTrailing,
 }: {
-  reading: Pick<DurannoTodayMeta, "range" | "title" | "url">;
+  reading: Pick<DurannoTodayMeta, "range" | "title"> &
+    Partial<Pick<DurannoTodayMeta, "url">>;
   label?: string;
   embedded?: boolean;
+  showLink?: boolean;
   labelTrailing?: ReactNode;
 }) {
   const range = reading.range || "—";
   const title = reading.title?.trim();
+  const linkUrl = showLink ? reading.url?.trim() : "";
 
   const body = (
     <>
@@ -35,17 +41,19 @@ export function HomeDurannoPassage({
       </div>
       <div className="mt-1 flex min-w-0 items-center gap-4">
         <p className="reading-passage-range min-w-0 shrink truncate">{range}</p>
-        <a
-          href={reading.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="home-duranno-cta inline-flex shrink-0 items-center gap-0.5"
-          aria-label="두란노에서 오늘의 말씀 읽기"
-          title="두란노에서 오늘의 말씀 읽기"
-        >
-          <BookOpen size={22} strokeWidth={1.5} aria-hidden />
-          <ArrowUpRight size={18} strokeWidth={1.5} aria-hidden />
-        </a>
+        {linkUrl ? (
+          <a
+            href={linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="home-duranno-cta inline-flex shrink-0 items-center gap-0.5"
+            aria-label="두란노에서 오늘의 말씀 읽기"
+            title="두란노에서 오늘의 말씀 읽기"
+          >
+            <BookOpen size={22} strokeWidth={1.5} aria-hidden />
+            <ArrowUpRight size={18} strokeWidth={1.5} aria-hidden />
+          </a>
+        ) : null}
       </div>
       {title ? (
         <p className="home-duranno-summary mt-1 type-body-sm font-medium">

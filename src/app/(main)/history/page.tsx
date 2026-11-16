@@ -19,8 +19,10 @@ import { QtEntryForm } from "@/components/qt/QtEntryForm";
 import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
 import { DayEntryView } from "@/components/qt/DayEntryView";
 import { useApp } from "@/lib/app-context";
-import { getReadingForDate } from "@/lib/mock-data";
-import { durannoUrlForDate } from "@/lib/duranno";
+import {
+  getHistoryPassage,
+  historyPassageLabel,
+} from "@/lib/history-passages";
 import { fieldsFromEntry } from "@/lib/qt-entry";
 import {
   formatQtShareText,
@@ -31,7 +33,6 @@ import {
   addMonths,
   currentYearMonth,
   isFutureDate,
-  parseYmd,
   todaySeoul,
   yearMonthOf,
 } from "@/lib/dates";
@@ -102,14 +103,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const today = todaySeoul();
   const future = isFutureDate(selected, today);
   const past = selected < today;
-  const reading = getReadingForDate(selected);
-  const duranno = {
-    range: reading.range,
-    title: reading.title ?? "",
-    url: durannoUrlForDate(selected),
-  };
-  const { year, month, day } = parseYmd(selected);
-  const durannoLabel = `${year}년 ${month}월 ${day}일의 말씀`;
+  const historyPassage = getHistoryPassage(selected);
+  const passageLabel = historyPassageLabel(selected);
   const hasEntry = !!selectedEntry;
 
   const showToast = (message: string) => {
@@ -119,7 +114,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
   const share = {
     dateYmd: selected,
-    passageRange: duranno.range,
+    passageRange: historyPassage.range,
     onShared: (via: "share" | "clipboard") =>
       showToast(via === "share" ? "공유했어요" : "클립보드에 복사했어요"),
     onError: (message: string) => showToast(message),
@@ -221,9 +216,10 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
             <HomeDurannoPassage
               key={selected}
-              reading={duranno}
-              label={durannoLabel}
+              reading={historyPassage}
+              label={passageLabel}
               embedded
+              showLink={false}
               labelTrailing={
                 !future ? (
                   <div className="relative" ref={menuRef}>
