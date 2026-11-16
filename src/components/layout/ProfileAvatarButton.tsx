@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Camera, UserRound } from "lucide-react";
 import { useApp } from "@/lib/app-context";
 import { compressAvatarImage } from "@/lib/avatar-image";
@@ -22,23 +22,26 @@ export function ProfileAvatarButton({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!open) {
-      setPreview(null);
-      setError(null);
-      setSaving(false);
-    }
-  }, [open]);
-
   if (!currentUser) return null;
 
   const avatar = currentUser.avatarUrl ?? null;
+  /** Default initial letter: deep navy (`--color-ink-blue`). */
+  const initialShell =
+    "bg-sky-light text-[var(--color-ink-blue)] hover:bg-sky-light";
   const shell =
-    light
-      ? "bg-white/20 text-white hover:bg-white/30"
-      : fallback === "initial"
-        ? "bg-sky-light text-[var(--color-ink-blue)] hover:bg-sky-light"
+    fallback === "initial"
+      ? initialShell
+      : light
+        ? "bg-white/20 text-white hover:bg-white/30"
         : "bg-sky-light text-sky hover:bg-sky-light";
+
+  const closeModal = () => {
+    if (saving) return;
+    setOpen(false);
+    setPreview(null);
+    setError(null);
+    setSaving(false);
+  };
 
   const onPick = (file: File | null) => {
     if (!file) return;
@@ -77,6 +80,8 @@ export function ProfileAvatarButton({
       return;
     }
     setOpen(false);
+    setPreview(null);
+    setError(null);
   };
 
   return (
@@ -130,9 +135,7 @@ export function ProfileAvatarButton({
           role="dialog"
           aria-modal="true"
           aria-label="프로필 사진 미리보기"
-          onClick={() => {
-            if (!saving) setOpen(false);
-          }}
+          onClick={closeModal}
         >
           <div
             className="w-full max-w-sm rounded-[var(--radius-md)] bg-white p-[var(--space-card)] shadow-none"
@@ -161,7 +164,7 @@ export function ProfileAvatarButton({
                 type="button"
                 disabled={saving}
                 className="rounded-full bg-sky-light px-4 py-3 type-body-sm font-semibold text-text-main disabled:opacity-50"
-                onClick={() => setOpen(false)}
+                onClick={closeModal}
               >
                 {preview ? "취소" : "닫기"}
               </button>

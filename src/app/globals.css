@@ -1482,7 +1482,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 /* Home profile name/group: 1pt smaller than type-label / type-caption */
 .premium-home-header-band .home-profile-name {
   font-size: 14px; /* type-label 15px − 1pt */
-  font-weight: 700;
+  font-weight: 400; /* regular under profile */
   letter-spacing: var(--tracking-label);
 }
 
@@ -1618,7 +1618,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   opacity: 0.5;
 }
 
-/* 「말씀보기」 plain sky text + chevron — no capsule/pill chrome. */
+/* 「말씀보기」 plain ink-blue text + ArrowUpRight — no capsule/pill chrome. */
 .home-duranno-cta,
 .home-duranno-cta:link,
 .home-duranno-cta:visited,

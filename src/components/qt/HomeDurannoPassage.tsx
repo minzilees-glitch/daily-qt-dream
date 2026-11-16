@@ -38,7 +38,7 @@ export function HomeDurannoPassage({
       <div className="relative mt-1">
         <div
           className={`flex min-w-0 items-center gap-14${
-            rangeTrailing ? " pr-16" : ""
+            rangeTrailing ? (linkUrl ? " pr-24" : " pr-16") : ""
           }`}
         >
           <p className="reading-passage-range m-0 min-w-0 shrink truncate leading-none">
