@@ -1647,7 +1647,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   -webkit-appearance: none;
   appearance: none;
   text-decoration: none !important;
-  color: var(--color-sky) !important; /* #6DC2FF */
+  color: var(--color-ink-blue) !important; /* #1F3E62 */
   font-size: var(--fs-caption);
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -1670,7 +1670,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 .home-duranno-cta:focus-visible {
-  outline: 2px solid var(--color-sky);
+  outline: 2px solid var(--color-ink-blue);
   outline-offset: 2px;
   border-radius: 0 !important;
   background: transparent !important;

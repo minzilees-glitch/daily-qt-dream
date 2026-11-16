@@ -37,7 +37,7 @@ export function HomeDurannoPassage({
           height (h-8 buttons vs range text). Far-right = actions. */}
       <div className="relative mt-1">
         <div
-          className={`flex min-w-0 items-center gap-10${
+          className={`flex min-w-0 items-center gap-14${
             rangeTrailing ? " pr-16" : ""
           }`}
         >
