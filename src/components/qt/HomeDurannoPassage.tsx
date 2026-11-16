@@ -57,7 +57,7 @@ export function HomeDurannoPassage({
                 title="말씀보기"
               >
                 말씀보기
-                <ArrowUpRight size={15} strokeWidth={2.25} aria-hidden />
+                <ArrowUpRight size={18} strokeWidth={2.25} aria-hidden />
               </a>
             </>
           ) : null}
