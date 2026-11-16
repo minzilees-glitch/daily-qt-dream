@@ -46,7 +46,8 @@ export function HomeClient({
   const doneToday = isCompleted(currentUser.id, today);
   const todayEntry = getEntry(currentUser.id, today);
   const hasEntry = Boolean(todayEntry);
-  const showActions = doneToday || editing || hasEntry;
+  const showEdit = doneToday || hasEntry;
+  const editActive = editing && showEdit;
 
   const showToast = (message: string) => {
     setToast(message);
@@ -142,19 +143,18 @@ export function HomeClient({
         }
         sheet={
           <>
-            <HomeDurannoPassage
-              reading={reading}
-              label="오늘의 말씀"
-              rangeTrailing={
-                showActions ? (
+            <HomeDurannoPassage reading={reading} label="오늘의 말씀" />
+            <div className="premium-home-qt relative">
+              {showEdit ? (
+                <div className="absolute right-[var(--space-page-x)] top-1 z-10">
                   <PassageEntryActions
-                    editActive={editing && (hasEntry || doneToday)}
+                    editActive={editActive}
                     onEdit={() => setEditing(true)}
                   />
-                ) : null
-              }
-            />
-            <div className="premium-home-qt">{formBody}</div>
+                </div>
+              ) : null}
+              {formBody}
+            </div>
           </>
         }
       />

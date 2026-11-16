@@ -1648,13 +1648,15 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.15;
-  opacity: 1;
+  opacity: 1 !important;
 }
 
 .home-duranno-cta:hover {
-  opacity: 0.82;
+  opacity: 1 !important;
   background: transparent !important;
   filter: none !important;
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
 }
 
 .home-duranno-cta:focus-visible {
