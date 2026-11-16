@@ -26,6 +26,7 @@ import {
   getHistoryPassage,
   historyPassageLabel,
 } from "@/lib/history-passages";
+import { durannoUrlForDate } from "@/lib/duranno";
 import { fieldsFromEntry } from "@/lib/qt-entry";
 import {
   formatQtShareText,
@@ -289,7 +290,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const today = todaySeoul();
   const future = isFutureDate(selected, today);
   const past = selected < today;
+  const isToday = selected === today;
   const historyPassage = getHistoryPassage(selected);
+  const passageReading = {
+    ...historyPassage,
+    url: isToday ? durannoUrlForDate(selected) : undefined,
+  };
   const passageLabel = historyPassageLabel(selected);
   const hasEntry = !!selectedEntry;
 
@@ -410,10 +416,10 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           <div className="premium-history-passage pt-3">
             <HomeDurannoPassage
               key={selected}
-              reading={historyPassage}
+              reading={passageReading}
               label={passageLabel}
               embedded
-              showLink={false}
+              showLink={isToday}
               labelTrailing={
                 !future ? (
                   <div className="relative" ref={menuRef}>
