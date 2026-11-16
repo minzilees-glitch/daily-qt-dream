@@ -139,6 +139,7 @@ export function HomeClient({
                       hasEntry || doneToday ? shareSavedEntry : undefined
                     }
                     shareDisabled={!hasEntry}
+                    editActive={editing && (hasEntry || doneToday)}
                     onEdit={() => setEditing(true)}
                   />
                 ) : null

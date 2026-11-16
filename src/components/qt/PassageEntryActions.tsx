@@ -7,11 +7,14 @@ export function PassageEntryActions({
   onShare,
   onEdit,
   shareDisabled = false,
+  editActive = false,
 }: {
   /** After QT saved — same action as former 「나의 큐티 나누기」. */
   onShare?: () => void;
   onEdit: () => void;
   shareDisabled?: boolean;
+  /** While editing — pencil shows pressed/active. */
+  editActive?: boolean;
 }) {
   return (
     <div className="flex items-center gap-0.5">
@@ -29,10 +32,19 @@ export function PassageEntryActions({
       <button
         type="button"
         aria-label="수정"
+        aria-pressed={editActive}
         onClick={onEdit}
-        className="flex h-9 w-9 items-center justify-center bg-transparent text-text-main opacity-70 shadow-none transition hover:opacity-100"
+        className={`flex h-9 w-9 items-center justify-center rounded-full shadow-none transition ${
+          editActive
+            ? "bg-sky-light text-sky opacity-100"
+            : "bg-transparent text-text-main opacity-70 hover:opacity-100"
+        }`}
       >
-        <Pencil size={18} strokeWidth={1.75} aria-hidden />
+        <Pencil
+          size={18}
+          strokeWidth={editActive ? 2.25 : 1.75}
+          aria-hidden
+        />
       </button>
     </div>
   );

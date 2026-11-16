@@ -439,6 +439,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                         : undefined
                     }
                     shareDisabled={!hasEntry}
+                    editActive={editing}
                     onEdit={() => setEditing(true)}
                   />
                 ) : null
