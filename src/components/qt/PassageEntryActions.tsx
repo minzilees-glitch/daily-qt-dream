@@ -16,6 +16,9 @@ export function PassageEntryActions({
   /** While editing — pencil shows pressed/active. */
   editActive?: boolean;
 }) {
+  const idleIcon =
+    "flex h-9 w-9 items-center justify-center bg-transparent text-[var(--color-black)] opacity-50 shadow-none transition hover:opacity-80 disabled:opacity-30";
+
   return (
     <div className="flex items-center gap-0.5">
       {onShare ? (
@@ -24,7 +27,7 @@ export function PassageEntryActions({
           aria-label="나의 큐티 나누기"
           disabled={shareDisabled}
           onClick={onShare}
-          className="flex h-9 w-9 items-center justify-center bg-transparent text-text-main opacity-70 shadow-none transition hover:opacity-100 disabled:opacity-30"
+          className={idleIcon}
         >
           <Send size={18} strokeWidth={1.75} aria-hidden />
         </button>
@@ -34,11 +37,11 @@ export function PassageEntryActions({
         aria-label="수정"
         aria-pressed={editActive}
         onClick={onEdit}
-        className={`flex h-9 w-9 items-center justify-center rounded-full shadow-none transition ${
+        className={
           editActive
-            ? "bg-sky-light text-sky opacity-100"
-            : "bg-transparent text-text-main opacity-70 hover:opacity-100"
-        }`}
+            ? "flex h-9 w-9 items-center justify-center rounded-full bg-sky-light text-sky opacity-100 shadow-none transition"
+            : `${idleIcon} rounded-full`
+        }
       >
         <Pencil
           size={18}
