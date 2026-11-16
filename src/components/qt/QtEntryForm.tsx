@@ -42,9 +42,16 @@ export function QtEntryForm({
   const fields = { meditation, verse, decisionObedience, prayer };
   const totalLen = totalTrimmedLength(fields);
   const locked = disabled || busy;
+  const showDelete = Boolean(editing && onDelete);
 
   return (
-    <div className="space-y-[var(--space-stack-lg)]">
+    <div
+      className={`space-y-[var(--space-stack-lg)] ${
+        showDelete
+          ? "pb-[var(--qt-save-reserve-stack)]"
+          : "pb-[var(--qt-save-reserve)]"
+      }`}
+    >
       <div className="pt-[var(--space-stack-lg)]">
         {helperNotice ? (
           <div className="qt-validation-hint type-caption mb-[var(--space-stack-sm)] break-keep text-text-secondary">
@@ -106,7 +113,7 @@ export function QtEntryForm({
         onChange={setPrayer}
       />
 
-      <div className="flex flex-col gap-[var(--space-stack-sm)]">
+      <div className="qt-entry-save-bar" role="group" aria-label="저장">
         <PrimaryButton
           type="button"
           variant="primary"
@@ -128,7 +135,7 @@ export function QtEntryForm({
               : "저장하고 큐티 완료"}
         </PrimaryButton>
 
-        {editing && onDelete ? (
+        {showDelete ? (
           <PrimaryButton
             type="button"
             variant="secondary"

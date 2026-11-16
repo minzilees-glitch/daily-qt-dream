@@ -153,12 +153,12 @@ html {
   /* ——— Effects: glass frames + nav; soft wash behind ——— */
   --shadow-soft: none;
   --shadow-nav: none;
-  --shadow-nav-float: 0 0.625rem 1.875rem rgba(0, 60, 130, 0.42);
+  --shadow-nav-float: none; /* docked bar — no floating lift */
   /* Shared premium sheet lift (Home + 나의 QT들 + other tabs). */
   --premium-sheet-filter:
     drop-shadow(0 -0.5rem 0.875rem rgba(0, 9, 23, 0.07))
     drop-shadow(0 -0.125rem 0.3125rem rgba(31, 62, 98, 0.05));
-  /* Icon-only bottom nav: dark blue capsule */
+  /* Icon-only bottom nav: dark docked bar */
   --nav-glass-bg: var(--color-black);
   --nav-glass-border: rgba(255, 255, 255, 0.18);
   --nav-glass-blur: 1.75rem;
@@ -174,7 +174,13 @@ html {
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 30rem; /* 480px @ 16px root */
-  --nav-reserve: 4.5rem; /* bottom nav capsule stack (~72px) */
+  /* Docked nav content height excl. safe-bottom (~pt 10 + row ~42 + pb 10). */
+  --nav-reserve: 4rem;
+  /* Space QT save CTA sits above the docked nav (nav + home-indicator air). */
+  --chrome-bottom: calc(var(--nav-reserve) + var(--safe-bottom));
+  /* In-flow pad so fields clear the fixed save dock (1 btn / 2 btn stack). */
+  --qt-save-reserve: 5.75rem;
+  --qt-save-reserve-stack: 10.25rem;
   --desktop-shell-chrome: 3rem; /* desktop phone-shell vertical inset */
 
   /* ——— Premium QT calendar (나의 QT들) — 낮모드/밤모드 fill + white sheet ——— */
@@ -622,7 +628,7 @@ a {
   -webkit-backdrop-filter: none;
 }
 
-/* Bottom nav capsule — translucent sky/CTA glass + blur; float shadow stays */
+/* Bottom nav — docked full-bleed glass bar (flush to screen bottom). */
 .nav-glass {
   background: var(--nav-glass-bg);
   border: 1px solid var(--nav-glass-border);
@@ -631,9 +637,58 @@ a {
   box-shadow: var(--shadow-nav-float);
   color: #ffffff;
 }
+.nav-glass--docked {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  box-shadow: none;
+}
+/* Full-cell tab hit target: fills docked bar height, incl. safe-area. */
+.nav-tab-hit {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  /* Total bar = --nav-reserve + safe; padding-bottom carries the inset. */
+  min-height: calc(var(--nav-reserve) + var(--safe-bottom));
+  padding: 0.625rem 0.25rem calc(0.625rem + var(--safe-bottom));
+  -webkit-tap-highlight-color: transparent;
+}
 .nav-glass svg {
   color: currentColor;
   stroke: currentColor;
+  pointer-events: none;
+}
+
+/*
+ * QT entry save CTA: fixed to the phone viewport, stacked above docked nav.
+ * Soft white fade only — no card chrome. Contained by .phone-shell transform.
+ */
+.qt-entry-save-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--chrome-bottom);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-sm);
+  padding: 0.75rem var(--space-page-x) 0.65rem;
+  background: linear-gradient(
+    to top,
+    #ffffff 0%,
+    #ffffff 58%,
+    color-mix(in srgb, #ffffff 72%, transparent) 82%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+.qt-entry-save-bar > * {
+  pointer-events: auto;
+}
+/* Admin / save-only screens: stick to true viewport bottom. */
+.phone-shell[data-nav="hidden"] {
+  --chrome-bottom: var(--safe-bottom);
 }
 
 /* Shared MonthPicker capsule — same frosted language as SoftCard */
@@ -964,14 +1019,24 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   transition: none;
 }
 
-/* Grabber + 말씀: mint wash only (not around the white form). */
+/* Mint wash shared by pinned grabber + scrolling 말씀 band. */
 .premium-history-mint {
-  flex: 0 0 auto;
   width: 100%;
   box-sizing: border-box;
-  padding-top: 10px; /* was 22 — grabber sits higher */
   background: color-mix(in srgb, var(--color-mint) 40%, white);
+}
+
+/* Grabber only — pinned at sheet top so drag still works after 말씀 scrolls away. */
+.premium-history-mint--handle {
+  flex: 0 0 auto;
+  padding-top: 10px; /* was 22 — grabber sits higher */
   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  z-index: 2;
+}
+
+/* 말씀 band scrolls away with drawer content (not sticky). */
+.premium-history-mint--passage {
+  flex: 0 0 auto;
 }
 
 .premium-qt-sheet.premium-qt-sheet--history > .premium-content-crossfade,
@@ -981,6 +1046,17 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: #ffffff;
+}
+
+/* Single drawer scroller: 말씀 header + QT body travel together. */
+.premium-history-sheet-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   background: #ffffff;
 }
 
@@ -994,18 +1070,17 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   box-sizing: border-box;
 }
 
-/* Form body: solid white edge-to-edge (L/R/bottom), content padded inward. */
+/* Form body: solid white edge-to-edge; scroll owned by .premium-history-sheet-scroll.
+ * History sheet already ends above the docked nav; QtEntryForm pads for save bar. */
 .premium-history-qt {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
   margin-inline: 0;
   width: 100%;
-  padding: 0 var(--space-page-x) calc(1.5rem + var(--safe-bottom));
+  min-height: min-content;
+  padding: 0 var(--space-page-x) 1.5rem;
   background: #ffffff !important;
   box-sizing: border-box;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: visible;
 }
 
 /* Future-only (no QT band): keep bottom pad on the sky passage. */
@@ -1659,7 +1734,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   filter: none !important;
 }
 
-/* Form body: solid white edge-to-edge; grows so sheet reaches screen bottom. */
+/* Form body: solid white edge-to-edge; grows so sheet reaches screen bottom.
+ * Bottom pad clears docked nav; QtEntryForm adds its own pad for the fixed save bar. */
 .premium-home-qt {
   flex: 1 1 auto;
   margin-inline: 0;
