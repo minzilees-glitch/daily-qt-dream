@@ -998,9 +998,13 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 
 /*
  * Extra air under header before overlapping sheet.
- * 1.25rem (20px) base + --space-stack-sm (16px) = 36px total bottom pad.
+ * Ranking matches home `.premium-home-header-band` (1.15rem air + 1.25rem overlap).
+ * Mypage keeps prior 1.25rem + --space-stack-sm (1rem).
  */
-.premium-tab-header.premium-tab-header--ranking,
+.premium-tab-header.premium-tab-header--ranking {
+  padding-bottom: calc(1.15rem + 1.25rem);
+}
+
 .premium-tab-header.premium-tab-header--me {
   padding-bottom: calc(1.25rem + var(--space-stack-sm));
 }
