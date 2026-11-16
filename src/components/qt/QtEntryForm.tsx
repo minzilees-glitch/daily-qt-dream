@@ -77,7 +77,7 @@ export function QtEntryForm({
         placeholder="기억에 남는 구절을 적어보세요."
         value={verse}
         disabled={locked}
-        minRows={3}
+        minRows={2}
         onChange={setVerse}
       />
       <Field
@@ -86,7 +86,7 @@ export function QtEntryForm({
         placeholder="오늘 말씀을 통해 받은 은혜를 적어보세요."
         value={meditation}
         disabled={locked}
-        minRows={5}
+        minRows={2}
         onChange={setMeditation}
       />
       <Field
@@ -95,7 +95,7 @@ export function QtEntryForm({
         placeholder="오늘 결단하고 순종할 것을 적어보세요."
         value={decisionObedience}
         disabled={locked}
-        minRows={3}
+        minRows={2}
         onChange={setDecisionObedience}
       />
       <Field
@@ -104,7 +104,7 @@ export function QtEntryForm({
         placeholder="오늘의 기도제목을 적어보세요."
         value={prayer}
         disabled={locked}
-        minRows={3}
+        minRows={2}
         onChange={setPrayer}
       />
 
