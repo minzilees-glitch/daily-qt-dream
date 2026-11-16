@@ -69,14 +69,15 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
     }
   });
 
-  // Demo: pin 사랑순 (test user’s 우리순) Sep/Oct lights; scale peers nearby.
+  // Demo: pin 사랑순 (test user’s 우리순) month lights; scale peers nearby.
   enforceDemoMonthTotals(users, records, today, {
     "2026-09": { groupId: "g-01", lights: 30 },
     "2026-10": { groupId: "g-01", lights: 61 },
+    "2026-11": { groupId: "g-01", lights: 16 }, // to date
   });
 
-  // Demo ranking UI: 믿음순 1위 (gold), 사랑순 2위 (silver) for current month.
-  enforceDemoPodium(users, records, today, "g-05", "g-01");
+  // Current month podium without blowing past the Nov pin: 믿음순 1 · 사랑순 2.
+  enforceDemoPodiumNear(users, records, today, "g-05", "g-01", 16);
 
   return records;
 }
@@ -182,82 +183,35 @@ function enforceDemoMonthTotals(
   }
 }
 
-/** Pad/trim current-month lights so `firstId` ranks 1 and `secondId` ranks 2 alone. */
-function enforceDemoPodium(
+/**
+ * Current-month podium around a pinned 2nd-place total (does not inflate 우리순).
+ * firstId → gold, secondId → silver at `secondLights`; other 순 stay below silver.
+ */
+function enforceDemoPodiumNear(
   users: User[],
   records: QtCompletion[],
   today: string,
   firstId: string,
   secondId: string,
+  secondLights: number,
 ): void {
   const ym = currentYearMonth();
   const dates = rankingScopeDays(ym, today);
   if (dates.length === 0) return;
 
-  const key = (userId: string, date: string) => `${userId}|${date}`;
-  const present = new Set(
-    records.filter((c) => c.completed).map((c) => key(c.userId, c.date)),
-  );
-  const membersOf = (gid: string) => users.filter((u) => u.groupId === gid);
+  const allGroups = [...new Set(users.map((u) => u.groupId))];
+  const silver = Math.max(0, Math.floor(secondLights));
+  const gold = silver + 4;
 
-  const countGroup = (gid: string) => {
-    let n = 0;
-    for (const u of membersOf(gid)) {
-      for (const d of dates) {
-        if (present.has(key(u.id, d))) n += 1;
-      }
-    }
-    return n;
-  };
+  setGroupMonthLights(users, records, ym, secondId, silver, today);
+  setGroupMonthLights(users, records, ym, firstId, gold, today);
 
-  const addOne = (gid: string): boolean => {
-    for (const u of membersOf(gid)) {
-      for (const d of dates) {
-        const k = key(u.id, d);
-        if (present.has(k)) continue;
-        present.add(k);
-        records.push({ userId: u.id, date: d, completed: true });
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const removeOne = (gid: string): boolean => {
-    for (const u of [...membersOf(gid)].reverse()) {
-      for (const d of [...dates].reverse()) {
-        const k = key(u.id, d);
-        if (!present.has(k)) continue;
-        present.delete(k);
-        const idx = records.findIndex(
-          (c) => c.userId === u.id && c.date === d && c.completed,
-        );
-        if (idx >= 0) records.splice(idx, 1);
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const othersMax = () => {
-    let max = 0;
-    for (const gid of new Set(users.map((u) => u.groupId))) {
-      if (gid === firstId || gid === secondId) continue;
-      max = Math.max(max, countGroup(gid));
-    }
-    return max;
-  };
-
-  // 2nd place: above every other group (except 1st), with a clear gap.
-  while (countGroup(secondId) <= othersMax()) {
-    if (!addOne(secondId)) break;
-  }
-  // 1st place: strictly above 2nd.
-  while (countGroup(firstId) <= countGroup(secondId)) {
-    if (!addOne(firstId)) {
-      if (!removeOne(secondId)) break;
-    }
-  }
+  allGroups.forEach((gid, i) => {
+    if (gid === firstId || gid === secondId) return;
+    // Keep bronze-and-below under silver (stable spread).
+    const peer = Math.max(4, silver - 2 - (i % 5));
+    setGroupMonthLights(users, records, ym, gid, peer, today);
+  });
 }
 
 /**
