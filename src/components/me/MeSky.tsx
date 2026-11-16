@@ -236,8 +236,9 @@ export function MeSky({
       // Jump: abs(sin) lifts off the ground (stronger than group bob).
       const jump = -Math.abs(Math.sin(state.phase)) * 10;
       el.style.transform = `translate3d(${state.x}px, ${state.y + jump}px, 0)`;
-      const figure = el.querySelector<HTMLElement>("[data-figure]");
-      if (figure) figure.style.transform = `scaleX(${state.facing})`;
+      // Face stays front-facing; only body flips with walk direction.
+      const body = el.querySelector<HTMLElement>("[data-facing]");
+      if (body) body.style.transform = `scaleX(${state.facing})`;
     };
 
     paint();
@@ -422,14 +423,19 @@ export function MeSky({
               size={WALKER_FACE_PX}
               style={{ top: WALKER_FACE_TOP }}
             />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={bodySrc}
-              alt=""
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
-              style={{ height: WALKER_BODY_H }}
-              draggable={false}
-            />
+            <div
+              data-facing
+              className="absolute inset-0 will-change-transform"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={bodySrc}
+                alt=""
+                className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
+                style={{ height: WALKER_BODY_H }}
+                draggable={false}
+              />
+            </div>
           </div>
         </div>
       </div>

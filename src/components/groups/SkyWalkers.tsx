@@ -345,9 +345,10 @@ export function SkyWalkers({
         const bobAmp =
           s.activity === "tea" ? 1.4 : s.activity === "book" ? 0.8 : 2.2;
         const bob = Math.sin(s.bobPhase) * bobAmp;
-        const figure = el.querySelector<HTMLElement>("[data-figure]");
         el.style.transform = `translate3d(${s.x}px, ${s.y + bob}px, 0)`;
-        if (figure) figure.style.transform = `scaleX(${s.facing})`;
+        // Face stays front-facing; only body + props flip with walk direction.
+        const body = el.querySelector<HTMLElement>("[data-facing]");
+        if (body) body.style.transform = `scaleX(${s.facing})`;
 
         const tea = el.querySelector<HTMLElement>('[data-prop="tea"]');
         if (tea) {
@@ -561,23 +562,28 @@ export function SkyWalkers({
                       width: WALKER_FIGURE_W,
                     }}
                   >
-                    {/* Face: shared profile thumbnail / nickname initial (same as home·mypage). */}
+                    {/* Face: shared profile thumbnail / nickname initial — never mirrored. */}
                     <WalkerFace
                       user={u}
                       size={WALKER_FACE_PX}
                       style={{ top: WALKER_FACE_TOP }}
                     />
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={bodyUrl(i)}
-                      alt=""
-                      className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
-                      style={{ height: WALKER_BODY_H }}
-                      draggable={false}
-                    />
-                    {activity === "tea" ? <TeaCup /> : null}
-                    {activity === "book" ? <BookProp /> : null}
-                    {activity === "wave" ? <WaveHand /> : null}
+                    <div
+                      data-facing
+                      className="absolute inset-0 will-change-transform"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={bodyUrl(i)}
+                        alt=""
+                        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
+                        style={{ height: WALKER_BODY_H }}
+                        draggable={false}
+                      />
+                      {activity === "tea" ? <TeaCup /> : null}
+                      {activity === "book" ? <BookProp /> : null}
+                      {activity === "wave" ? <WaveHand /> : null}
+                    </div>
                   </div>
                 </button>
               </div>
