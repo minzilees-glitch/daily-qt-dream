@@ -202,9 +202,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           <span className="premium-sheet-grabber" />
         </div>
         <div key={selected} className="premium-content-crossfade flex flex-col">
-          <div className="premium-history-passage space-y-[var(--space-stack-sm)]">
-            <div className="flex items-start justify-between gap-3 pt-3">
-              <div className="flex min-w-0 flex-1 items-start gap-2">
+          <div className="premium-history-passage space-y-[var(--space-stack-sm)] pt-3">
+            {(future || past) && (
+              <div className="flex min-w-0 items-start gap-2">
                 <span className="shrink-0 self-center">
                   <LightIcon
                     active={selectedCompleted}
@@ -213,66 +213,65 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                     justEarned={selectedCompleted && !future}
                   />
                 </span>
-                <div className="min-w-0 flex-1">
-                  {future ? (
-                    <p className="type-body-sm text-text-secondary">
-                      미래 날짜는 완료할 수 없습니다.
-                    </p>
-                  ) : past ? (
-                    <p className="qt-validation-hint type-caption break-keep text-text-secondary">
-                      지난 큐티완료는 빛을 획득할 수 없습니다.
-                      <br />
-                      그러나 지난 큐티는 당신 심령에 남을거에요.
-                    </p>
-                  ) : null}
-                </div>
+                {future ? (
+                  <p className="type-body-sm text-text-secondary">
+                    미래 날짜는 완료할 수 없습니다.
+                  </p>
+                ) : (
+                  <p className="qt-validation-hint type-caption break-keep text-text-secondary">
+                    지난 큐티완료는 빛을 획득할 수 없습니다.
+                    <br />
+                    그러나 지난 큐티는 당신 심령에 남을거에요.
+                  </p>
+                )}
               </div>
-
-              {!future ? (
-                <div className="relative shrink-0" ref={menuRef}>
-                  <button
-                    type="button"
-                    aria-label="더보기"
-                    aria-expanded={menuOpen}
-                    onClick={() => setMenuOpen((v) => !v)}
-                    className="flex h-10 w-10 items-center justify-center bg-transparent text-text-main shadow-none"
-                  >
-                    <MoreHorizontal size={18} strokeWidth={1.75} />
-                  </button>
-                  {menuOpen ? (
-                    <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-                      <button
-                        type="button"
-                        className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
-                        onClick={() => {
-                          setMenuOpen(false);
-                          setEditing(true);
-                        }}
-                      >
-                        수정
-                      </button>
-                      <button
-                        type="button"
-                        className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
-                        disabled={!hasEntry && !selectedCompleted}
-                        onClick={() => {
-                          setMenuOpen(false);
-                          setConfirmOpen(true);
-                        }}
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
+            )}
 
             <HomeDurannoPassage
               key={selected}
               reading={duranno}
               label={durannoLabel}
               embedded
+              labelTrailing={
+                !future ? (
+                  <div className="relative" ref={menuRef}>
+                    <button
+                      type="button"
+                      aria-label="더보기"
+                      aria-expanded={menuOpen}
+                      onClick={() => setMenuOpen((v) => !v)}
+                      className="flex h-8 w-8 items-center justify-center bg-transparent text-text-main shadow-none"
+                    >
+                      <MoreHorizontal size={18} strokeWidth={1.75} />
+                    </button>
+                    {menuOpen ? (
+                      <div className="absolute right-0 z-20 mt-1 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+                        <button
+                          type="button"
+                          className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
+                          onClick={() => {
+                            setMenuOpen(false);
+                            setEditing(true);
+                          }}
+                        >
+                          수정
+                        </button>
+                        <button
+                          type="button"
+                          className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
+                          disabled={!hasEntry && !selectedCompleted}
+                          onClick={() => {
+                            setMenuOpen(false);
+                            setConfirmOpen(true);
+                          }}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null
+              }
             />
           </div>
 

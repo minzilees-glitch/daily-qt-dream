@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ArrowUpRight, BookOpen } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
@@ -11,19 +12,27 @@ export function HomeDurannoPassage({
   reading,
   label = "오늘의 말씀",
   embedded = false,
+  /** Right-aligned on the label row (e.g. history ⋮ menu). */
+  labelTrailing,
 }: {
   reading: Pick<DurannoTodayMeta, "range" | "title" | "url">;
   label?: string;
   embedded?: boolean;
+  labelTrailing?: ReactNode;
 }) {
   const range = reading.range || "—";
   const title = reading.title?.trim();
 
   const body = (
     <>
-      <StatLabel className="home-duranno-label text-text-secondary">
-        {label}
-      </StatLabel>
+      <div className="flex items-center justify-between gap-2">
+        <StatLabel className="home-duranno-label min-w-0 flex-1 truncate text-text-secondary">
+          {label}
+        </StatLabel>
+        {labelTrailing ? (
+          <div className="shrink-0 self-center">{labelTrailing}</div>
+        ) : null}
+      </div>
       <div className="mt-1 flex items-center gap-2">
         <p className="reading-passage-range min-w-0 flex-1 truncate">{range}</p>
         <a
