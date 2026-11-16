@@ -1296,12 +1296,9 @@ a {
   color: var(--color-black); /* #000917 — not sky */
 }
 
-/*
- * Home shell: one shared sky→white gradient (no solid header/body split).
- * 낮모드: sky fill → white; 밤모드: black chrome → white.
- */
+/* Home shell: sky header + overlapping mint QT sheet (Duranno lives in sheet). */
 .premium-home-root {
-  background: transparent;
+  background: var(--color-white);
 }
 
 .premium-home-shell {
@@ -1313,13 +1310,8 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  background: linear-gradient(
-    180deg,
-    var(--sky-mode-fill) 0%,
-    color-mix(in srgb, var(--sky-mode-fill) 55%, white) 28%,
-    color-mix(in srgb, var(--sky-mode-fill) 18%, white) 58%,
-    var(--color-white) 100%
-  );
+  /* Mint wash under rounded sheet corners. */
+  background: color-mix(in srgb, var(--color-mint) 50%, white);
 }
 
 .premium-home-top {
@@ -1328,7 +1320,7 @@ a {
   flex-direction: column;
   height: auto;
   overflow: visible;
-  background: transparent;
+  background: var(--sky-mode-fill);
 }
 
 .premium-home-header-band {
@@ -1338,8 +1330,8 @@ a {
   padding-inline: var(--space-page-x);
   /* Air under status line; keep 1.25rem for sheet overlap. */
   padding-bottom: calc(0.65rem + 1.25rem);
-  /* Transparent so the shared shell gradient shows through. */
-  background: transparent;
+  /* 낮모드/밤모드 — same token as 우리순·랭킹·마이페이지 headers. */
+  background: var(--sky-mode-fill);
   color: var(--sky-mode-ink);
   box-shadow: none;
 }
