@@ -5,6 +5,8 @@ import type {
   User,
 } from "@/types";
 import {
+  currentYearMonth,
+  listDatesInMonth,
   rankingScopeDays,
   TERM_14_START,
   todaySeoul,
@@ -203,16 +205,27 @@ export function groupDayParticipation(
   users: User[],
   yearMonth: string,
   completionSet: Set<string>,
-): { date: string; count: number; total: number }[] {
+  todayLimit: string = todaySeoul(),
+): { date: string; count: number; total: number; active: boolean }[] {
   const members = users.filter((u) => u.groupId === groupId);
-  const dates = rankingScopeDays(yearMonth);
-  return dates.map((date) => ({
-    date,
-    total: members.length,
-    count: members.filter((m) =>
-      completionSet.has(completionSetKey(m.id, date)),
-    ).length,
-  }));
+  const [y, m] = yearMonth.split("-").map(Number);
+  const current = currentYearMonth();
+  // Full month for chart (current month keeps remaining days as inactive).
+  const dates = yearMonth > current ? [] : listDatesInMonth(y, m);
+
+  return dates.map((date) => {
+    const active = date <= todayLimit;
+    return {
+      date,
+      active,
+      total: active ? members.length : 0,
+      count: active
+        ? members.filter((m) =>
+            completionSet.has(completionSetKey(m.id, date)),
+          ).length
+        : 0,
+    };
+  });
 }
 
 /** This week Sun–Sat group counts (bars). Future weekdays: possible=0. */
@@ -259,6 +272,7 @@ export function groupWeekdayParticipation(
   }));
 
   for (const d of dayPart) {
+    if (!d.active) continue;
     const sun0 = new Date(`${d.date}T12:00:00+09:00`).getUTCDay();
     const monFirst = sun0 === 0 ? 6 : sun0 - 1;
     buckets[monFirst]!.count += d.count;
