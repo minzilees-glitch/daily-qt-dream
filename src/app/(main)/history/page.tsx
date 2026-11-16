@@ -203,29 +203,21 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         </div>
         <div key={selected} className="premium-content-crossfade flex flex-col">
           <div className="premium-history-passage space-y-[var(--space-stack-sm)] pt-3">
-            {(future || past) && (
+            {future ? (
               <div className="flex min-w-0 items-start gap-2">
                 <span className="shrink-0 self-center">
                   <LightIcon
                     active={selectedCompleted}
                     future={future}
                     size={24}
-                    justEarned={selectedCompleted && !future}
+                    justEarned={false}
                   />
                 </span>
-                {future ? (
-                  <p className="type-body-sm text-text-secondary">
-                    미래 날짜는 완료할 수 없습니다.
-                  </p>
-                ) : (
-                  <p className="qt-validation-hint type-caption break-keep text-text-secondary">
-                    지난 큐티완료는 빛을 획득할 수 없습니다.
-                    <br />
-                    그러나 지난 큐티는 당신 심령에 남을거에요.
-                  </p>
-                )}
+                <p className="type-body-sm text-text-secondary">
+                  미래 날짜는 완료할 수 없습니다.
+                </p>
               </div>
-            )}
+            ) : null}
 
             <HomeDurannoPassage
               key={selected}
@@ -316,6 +308,15 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   key={`hist-new-${selected}`}
                   initial={null}
                   share={share}
+                  helperNotice={
+                    past && !hasEntry ? (
+                      <>
+                        지난 큐티완료는 빛을 획득할 수 없습니다.
+                        <br />
+                        그러나 지난 큐티는 당신 심령에 남을거에요.
+                      </>
+                    ) : null
+                  }
                   onSave={async (fields) => {
                     try {
                       const res = await saveEntry(selected, fields);

@@ -33,7 +33,7 @@ export function HomeDurannoPassage({
           <div className="shrink-0 self-center">{labelTrailing}</div>
         ) : null}
       </div>
-      <div className="mt-1 flex min-w-0 items-center gap-1">
+      <div className="mt-1 flex min-w-0 items-center gap-2.5">
         <p className="reading-passage-range min-w-0 shrink truncate">{range}</p>
         <a
           href={reading.url}

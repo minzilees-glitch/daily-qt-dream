@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Check, Send } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
@@ -26,6 +26,8 @@ export function QtEntryForm({
   showClear,
   /** Home: 「나의 큐티 나누기」 shares date + range + non-empty fields. */
   share,
+  /** Optional notice above 「QT는 전체 합쳐…」 helper (e.g. past-empty history). */
+  helperNotice,
 }: {
   initial?: QtEntry | null;
   onSave: (fields: QtEntryFields) => void | Promise<void>;
@@ -38,6 +40,7 @@ export function QtEntryForm({
     onShared?: (via: "share" | "clipboard") => void;
     onError?: (message: string) => void;
   };
+  helperNotice?: ReactNode;
 }) {
   const seed = fieldsFromEntry(initial);
   const [meditation, setMeditation] = useState(seed.meditation);
@@ -54,22 +57,29 @@ export function QtEntryForm({
 
   return (
     <div className="space-y-[var(--space-stack-lg)]">
-      <p className="qt-validation-hint type-caption pt-[var(--space-stack-lg)] text-text-secondary">
-        QT는 전체 합쳐{" "}
-        <strong className="type-caption-em">
-          최소 {QT_MIN_TOTAL_CHARS}자 이상
-        </strong>{" "}
-        적어주세요.
-        <span
-          className={`ml-1.5 tabular-nums ${
-            totalLen >= QT_MIN_TOTAL_CHARS
-              ? "text-text-main"
-              : "text-text-secondary/70"
-          }`}
-        >
-          (지금 {totalLen}자)
-        </span>
-      </p>
+      <div className="pt-[var(--space-stack-lg)]">
+        {helperNotice ? (
+          <div className="qt-validation-hint type-caption mb-[var(--space-stack-sm)] break-keep text-text-secondary">
+            {helperNotice}
+          </div>
+        ) : null}
+        <p className="qt-validation-hint type-caption text-text-secondary">
+          QT는 전체 합쳐{" "}
+          <strong className="type-caption-em">
+            최소 {QT_MIN_TOTAL_CHARS}자 이상
+          </strong>{" "}
+          적어주세요.
+          <span
+            className={`ml-1.5 tabular-nums ${
+              totalLen >= QT_MIN_TOTAL_CHARS
+                ? "text-text-main"
+                : "text-text-secondary/70"
+            }`}
+          >
+            (지금 {totalLen}자)
+          </span>
+        </p>
+      </div>
 
       <Field
         id="verse"
