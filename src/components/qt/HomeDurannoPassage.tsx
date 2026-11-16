@@ -30,12 +30,20 @@ export function HomeDurannoPassage({
 
   const body = (
     <>
-      <div className="flex items-center justify-between gap-2">
-        <StatLabel className="home-duranno-label min-w-0 flex-1 truncate text-text-secondary">
+      {/* Trailing (history ⋮) is absolute so it doesn't inflate row height —
+          otherwise eyebrow→range gap reads wider than home (mt-1 after h-8). */}
+      <div className="relative">
+        <StatLabel
+          className={`home-duranno-label min-w-0 truncate text-text-secondary${
+            labelTrailing ? " pr-10" : ""
+          }`}
+        >
           {label}
         </StatLabel>
         {labelTrailing ? (
-          <div className="shrink-0 self-center">{labelTrailing}</div>
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 shrink-0">
+            {labelTrailing}
+          </div>
         ) : null}
       </div>
       <div className="mt-1 flex min-w-0 items-center gap-4">
