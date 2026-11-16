@@ -462,7 +462,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 initial={selectedEntry}
                 editing
                 onDelete={() => setConfirmOpen(true)}
-                share={share}
                 onSave={async (fields) => {
                   try {
                     const res = await saveEntry(selected, fields);
@@ -481,7 +480,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               <QtEntryForm
                 key={`hist-new-${selected}`}
                 initial={null}
-                share={share}
                 helperNotice={
                   past && !hasEntry
                     ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."

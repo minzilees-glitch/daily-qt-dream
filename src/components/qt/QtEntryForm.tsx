@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Check, Send } from "lucide-react";
+import { Check } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -9,11 +9,6 @@ import {
   fieldsFromEntry,
   totalTrimmedLength,
 } from "@/lib/qt-entry";
-import {
-  formatQtShareText,
-  isShareAbortError,
-  shareOrCopyText,
-} from "@/lib/qt-share";
 import type { QtEntry } from "@/types";
 
 const QT_LINE_FALLBACK_PX = 36;
@@ -25,8 +20,6 @@ export function QtEntryForm({
   disabled,
   /** Editing a saved entry: secondary 삭제 + primary 「수정사항 저장」. */
   editing = false,
-  /** Home: 「나의 큐티 나누기」 shares date + range + non-empty fields (create flow). */
-  share,
   /** Optional notice above 「큐티는 전체 합쳐…」 helper (e.g. past-empty history). */
   helperNotice,
 }: {
@@ -36,12 +29,6 @@ export function QtEntryForm({
   onDelete?: () => void;
   disabled?: boolean;
   editing?: boolean;
-  share?: {
-    dateYmd: string;
-    passageRange: string;
-    onShared?: (via: "share" | "clipboard") => void;
-    onError?: (message: string) => void;
-  };
   helperNotice?: ReactNode;
 }) {
   const seed = fieldsFromEntry(initial);
@@ -121,32 +108,6 @@ export function QtEntryForm({
       />
 
       <div className="flex flex-col gap-[var(--space-stack-sm)]">
-        {share && !editing ? (
-          <PrimaryButton
-            type="button"
-            variant="secondary"
-            className="w-full"
-            disabled={locked}
-            onClick={async () => {
-              const text = formatQtShareText({
-                dateYmd: share.dateYmd,
-                passageRange: share.passageRange,
-                fields,
-              });
-              try {
-                const via = await shareOrCopyText(text);
-                share.onShared?.(via);
-              } catch (err) {
-                if (isShareAbortError(err)) return;
-                share.onError?.("공유에 실패했어요");
-              }
-            }}
-          >
-            <Send size={18} strokeWidth={2.25} aria-hidden />
-            나의 큐티 나누기
-          </PrimaryButton>
-        ) : null}
-
         {editing && onDelete ? (
           <PrimaryButton
             type="button"
@@ -173,12 +134,14 @@ export function QtEntryForm({
             }
           }}
         >
-          <Check size={18} strokeWidth={2.25} aria-hidden />
+          {editing ? (
+            <Check size={18} strokeWidth={2.25} aria-hidden />
+          ) : null}
           {busy
             ? "저장 중…"
             : editing
               ? "수정사항 저장"
-              : "저장하고 큐티 완료하기"}
+              : "저장하고 큐티 완료"}
         </PrimaryButton>
       </div>
     </div>

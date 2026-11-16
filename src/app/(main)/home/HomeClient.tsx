@@ -80,7 +80,6 @@ export function HomeClient({
         key={`home-qt-${today}-${editing ? todayEntry?.updatedAt ?? "edit" : "new"}`}
         initial={todayEntry}
         editing={editing && (hasEntry || doneToday)}
-        share={shareOpts}
         onDelete={
           editing && (hasEntry || doneToday)
             ? () => setConfirmOpen(true)
