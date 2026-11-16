@@ -1639,10 +1639,10 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
  */
 .home-duranno-cta-gap {
   display: inline-block;
-  width: 1.75rem; /* 28px clear visual air */
-  min-width: 1.75rem;
+  width: 1.5rem; /* 24px — slightly tighter than prior 28px */
+  min-width: 1.5rem;
   height: 1px;
-  flex: 0 0 1.75rem;
+  flex: 0 0 1.5rem;
   pointer-events: none;
 }
 
