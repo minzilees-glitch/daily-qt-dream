@@ -58,7 +58,7 @@ export function HomeClient({
               />
             }
             status={
-              <p className="home-status-line type-caption text-text-main">
+              <p className="home-status-line type-body-sm text-text-main">
                 {doneToday
                   ? "오늘의 큐티를 완료했어요"
                   : "오늘의 큐티를 아직 안했어요"}

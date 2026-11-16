@@ -1370,15 +1370,16 @@ a {
   line-height: var(--lh-caption);
 }
 
-/* 「오늘은」 matches 사랑순 (.home-profile-group) size; keep medium weight. */
+/* 「오늘은」 same type as 「오늘의 말씀」(StatLabel); color kept via band rules. */
 .premium-home-header-band .home-header-label {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: var(--lh-caption);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
 }
 
-/* Status under date: match description/caption weight. */
+/* Status under date: same size as 말씀 summary (type-body-sm). */
 .premium-home-header-band .home-status-line {
+  font-size: var(--fs-body-sm) !important;
   font-weight: 400 !important;
 }
 

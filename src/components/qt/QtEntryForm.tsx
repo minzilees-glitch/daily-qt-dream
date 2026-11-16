@@ -54,7 +54,7 @@ export function QtEntryForm({
 
   return (
     <div className="space-y-[var(--space-stack-lg)]">
-      <p className="qt-validation-hint type-caption text-text-secondary">
+      <p className="qt-validation-hint type-caption pt-[var(--space-stack-sm)] text-text-secondary">
         QT는 전체 합쳐{" "}
         <strong className="type-caption-em">
           최소 {QT_MIN_TOTAL_CHARS}자 이상

@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
+import { StatLabel } from "@/components/ui/StatLabel";
 
 const HOME_AVATAR_MIN = 52;
 const HOME_AVATAR_MAX = 96;
@@ -66,13 +67,13 @@ export function AppHeader({
         }`}
       >
         <div ref={copyRef} className="min-w-0 flex-1">
-          <p
-            className={`home-header-label font-medium ${
+          <StatLabel
+            className={`home-header-label ${
               light ? "text-white/80" : "text-sky"
             }`}
           >
             {title}
-          </p>
+          </StatLabel>
           <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5">
             <p
               className={`type-page-title min-w-0 ${
