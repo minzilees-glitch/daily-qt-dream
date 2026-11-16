@@ -1414,6 +1414,10 @@ a {
 
 .home-duranno-cta {
   color: var(--color-ink-blue);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.7rem;
+  background: color-mix(in srgb, white 78%, var(--color-mint));
+  box-shadow: none;
 }
 
 .home-duranno-cta svg {
