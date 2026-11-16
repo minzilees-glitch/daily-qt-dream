@@ -3,7 +3,7 @@ import { StatLabel } from "@/components/ui/StatLabel";
 export function WeekdayParticipation({
   days,
   showPossible = true,
-  /** Count above each bar. Default true; 우리순 이번주 chart hides it. */
+  /** Count above each bar (same as mypage 「나의 일주일」). */
   showCount = true,
 }: {
   days: { weekday: number; label: string; count: number; possible: number }[];

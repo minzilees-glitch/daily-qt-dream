@@ -90,6 +90,15 @@ export function DayParticipation({
             }
             aria-disabled={!isActive}
           >
+            {isActive ? (
+              <p className="type-label font-semibold tabular-nums text-[var(--color-black)]">
+                {d.count}
+              </p>
+            ) : (
+              <span className="type-label font-semibold tabular-nums text-text-secondary">
+                -
+              </span>
+            )}
             {/* Active: sora track/fill · Future: muted deactivated track */}
             <div
               className={`flex h-20 w-8 items-end overflow-hidden rounded-full ${
