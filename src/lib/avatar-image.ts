@@ -24,10 +24,11 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-/** Detect HEIC/HEIF by MIME, extension, or ISO `ftyp` brand (empty MIME on some iOS picks). */
-async function assertNotHeic(source: File): Promise<void> {
+/** Detect HEIC/HEIF by MIME, File name, or ISO `ftyp` brand (empty MIME on some iOS picks). */
+async function assertNotHeic(source: Blob): Promise<void> {
   const mime = source.type || "";
-  if (/heic|heif/i.test(mime) || /\.heic$/i.test(source.name)) {
+  const name = source instanceof File ? source.name : "";
+  if (/heic|heif/i.test(mime) || /\.heic$/i.test(name)) {
     throw new Error(HEIC_MSG);
   }
   try {
@@ -86,7 +87,7 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
  * Keeps uploads under the avatars bucket 2 MiB limit and avoids localStorage bloat.
  */
 export async function compressAvatarImage(
-  source: File | string,
+  source: Blob | string,
 ): Promise<{ dataUrl: string; blob: Blob }> {
   if (typeof source !== "string") {
     const mime = source.type || "";
