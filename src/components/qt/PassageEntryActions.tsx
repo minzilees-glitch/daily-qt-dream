@@ -11,9 +11,6 @@ export function PassageEntryActions({
   /** While editing — pencil shows pressed/active. */
   editActive?: boolean;
 }) {
-  const idleIcon =
-    "flex h-9 w-9 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] opacity-50 shadow-none transition hover:opacity-80";
-
   return (
     <div className="flex items-center gap-0.5">
       <button
@@ -21,13 +18,11 @@ export function PassageEntryActions({
         aria-label="수정"
         aria-pressed={editActive}
         onClick={onEdit}
-        className={
-          editActive
-            ? "flex h-9 w-9 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] opacity-100 shadow-none transition"
-            : idleIcon
-        }
+        className={`flex h-10 w-10 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] shadow-none transition ${
+          editActive ? "opacity-100" : "opacity-30 hover:opacity-50"
+        }`}
       >
-        <Pencil size={18} strokeWidth={1.75} aria-hidden />
+        <Pencil size={20} strokeWidth={1.75} aria-hidden />
       </button>
     </div>
   );
