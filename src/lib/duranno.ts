@@ -80,6 +80,11 @@ export async function fetchDurannoTodayMeta(
     date,
     range,
     title,
-    url: DURANNO_BIBLE_URL,
+    url: requestUrl,
   };
+}
+
+/** Duranno bible URL for a Seoul calendar date (opens that day's QT). */
+export function durannoUrlForDate(date: string): string {
+  return `${DURANNO_BIBLE_URL}?qtDate=${encodeURIComponent(date)}`;
 }

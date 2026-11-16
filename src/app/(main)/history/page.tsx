@@ -16,11 +16,11 @@ import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { QtCalendar } from "@/components/qt/QtCalendar";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
-import { ReadingPassageBlock } from "@/components/qt/ReadingPassageBlock";
-import { ReadingRangeMilestone } from "@/components/qt/ReadingRangeMilestone";
+import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
 import { DayEntryView } from "@/components/qt/DayEntryView";
 import { useApp } from "@/lib/app-context";
 import { getReadingForDate } from "@/lib/mock-data";
+import { durannoUrlForDate } from "@/lib/duranno";
 import {
   addMonths,
   currentYearMonth,
@@ -140,6 +140,11 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const future = isFutureDate(selected, today);
   const past = selected < today;
   const reading = getReadingForDate(selected);
+  const duranno = {
+    range: reading.range,
+    title: reading.title,
+    url: durannoUrlForDate(selected),
+  };
   const hasEntry = !!selectedEntry;
 
   const showToast = (message: string) => {
@@ -276,23 +281,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               ) : null}
             </div>
 
-            {future ? (
-              <ReadingRangeMilestone
-                key={selected}
-                reading={reading}
-                label="오늘의 말씀"
-                embedded
-              />
-            ) : (
-              <ReadingPassageBlock
-                key={selected}
-                reading={reading}
-                label="오늘의 말씀"
-                embedded
-                collapsible={false}
-                inkTitle
-              />
-            )}
+            <HomeDurannoPassage
+              key={selected}
+              reading={duranno}
+              label="오늘의 말씀"
+              embedded
+            />
           </div>
 
           {!future && editing ? (

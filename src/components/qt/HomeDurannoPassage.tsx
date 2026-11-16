@@ -3,21 +3,24 @@ import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * Sheet-top 말씀 header — full-bleed mint (no card radius/inset).
- * Same horizontal pad as QT fields; only mint bg differs.
+ * 말씀 header — range + summary + Duranno icon CTA (no passage body).
+ * Home: full-bleed mint via `.home-duranno-in-sheet`.
+ * History: `embedded` skips mint (parent `.premium-history-passage` owns wash).
  */
 export function HomeDurannoPassage({
   reading,
   label = "오늘의 말씀",
+  embedded = false,
 }: {
-  reading: DurannoTodayMeta;
+  reading: Pick<DurannoTodayMeta, "range" | "title" | "url">;
   label?: string;
+  embedded?: boolean;
 }) {
   const range = reading.range || "—";
   const title = reading.title?.trim();
 
-  return (
-    <div className="home-duranno-in-sheet shadow-none">
+  const body = (
+    <>
       <StatLabel className="home-duranno-label text-text-secondary">
         {label}
       </StatLabel>
@@ -40,6 +43,12 @@ export function HomeDurannoPassage({
           {title}
         </p>
       ) : null}
-    </div>
+    </>
   );
+
+  if (embedded) {
+    return <div className="home-duranno-meta">{body}</div>;
+  }
+
+  return <div className="home-duranno-in-sheet shadow-none">{body}</div>;
 }
