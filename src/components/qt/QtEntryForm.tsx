@@ -8,6 +8,11 @@ import {
   fieldsFromEntry,
   totalTrimmedLength,
 } from "@/lib/qt-entry";
+import {
+  formatQtShareText,
+  isShareAbortError,
+  shareOrCopyText,
+} from "@/lib/qt-share";
 import type { QtEntry } from "@/types";
 
 const QT_LINE_FALLBACK_PX = 36;
