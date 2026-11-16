@@ -83,7 +83,7 @@ export function DayParticipation({
             title={`${d.date}: ${d.count}/${d.total}`}
           >
             {/* Track: light sora tint · Fill: sora · Labels: black (Sunday red) */}
-            <div className="flex h-20 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sora)_32%,white)]">
+            <div className="flex h-14 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sora)_32%,white)]">
               <div
                 className="w-full rounded-full bg-[var(--color-sora)] transition-all"
                 style={{ height: `${Math.max(8, ratio * 100)}%` }}

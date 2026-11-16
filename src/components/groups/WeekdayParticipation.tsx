@@ -39,7 +39,7 @@ export function WeekdayParticipation({
               <span className="h-0 w-full" aria-hidden />
             )}
             {/* Track: light sora tint · Fill: sora · Labels: black */}
-            <div className="flex h-20 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sora)_32%,white)]">
+            <div className="flex h-14 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sora)_32%,white)]">
               <div
                 className="w-full rounded-full bg-[var(--color-sora)] transition-all"
                 style={{
