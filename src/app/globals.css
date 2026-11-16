@@ -1333,11 +1333,11 @@ a {
 
 .premium-home-header-band {
   position: relative;
-  z-index: 1; /* sits under the overlapping QT sheet */
+  z-index: 1;
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
-  /* Air under status line; keep 1.25rem for sheet overlap. */
-  padding-bottom: calc(0.65rem + 1.25rem);
+  /* Air under status line (no sheet-overlap pull anymore). */
+  padding-bottom: 0.65rem;
   /* Transparent so the shared shell gradient shows through. */
   background: transparent;
   color: var(--sky-mode-ink);
@@ -1391,21 +1391,24 @@ a {
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
-  /* Overlap sky header; white sheet for QT fields (mint only in Duranno box). */
-  margin-top: -1.25rem;
   min-height: 0;
-  background: var(--premium-sheet) !important;
-  /* Air above the rounded Duranno box. */
+  /* Flat on the shared gradient — no drawer radius / shadow / overlap. */
+  margin-top: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  /* Air above the Duranno card. */
   padding-top: calc(var(--space-stack) + 6px);
 }
 
 /*
  * Duranno lead-in: clear rounded mint box (label / range / summary).
- * QT fields below sit on the white sheet.
+ * QT fields below sit flat on the home gradient.
  */
 .home-duranno-in-sheet {
   box-sizing: border-box;
-  /* Horizontal inset so white sheet reads beside the mint card. */
+  /* Horizontal inset so gradient reads beside the mint card. */
   margin: 0 0.75rem 0.25rem;
   padding: 1rem 1.15rem;
   border-radius: var(--radius-card);

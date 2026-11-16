@@ -3,8 +3,8 @@
 import type { ReactNode } from "react";
 
 /**
- * Home shell: sky header + overlapping mint QT sheet (no grabber).
- * 「오늘의 말씀」 lives at the sheet top — same mint wash as the pad above it.
+ * Home shell: shared sky→white gradient + flat QT content (no drawer chrome).
+ * 「오늘의 말씀」 Duranno card sits at the top of the form block.
  */
 export function HomePremiumShell({
   header,
