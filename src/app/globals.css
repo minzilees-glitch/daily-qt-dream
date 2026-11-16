@@ -113,6 +113,8 @@ html {
   --fs-stat: 1.125rem; /* 18px */
   --fs-display: clamp(1.25rem, 0.55rem + 3vw, 1.375rem); /* ~20–22 */
   --fs-page: clamp(1.25rem, 0.55rem + 3vw, 1.375rem); /* home date / titles */
+  /* MonthPicker label (calendar / group / ranking) — 2pt under --fs-page */
+  --fs-month: clamp(1.125rem, 0.45rem + 3vw, 1.25rem); /* ~18–20 */
   --fs-display-xl: clamp(1.75rem, 0.9rem + 4vw, 2rem); /* login hero ~28–32 */
   --lh-relaxed: 1.625;
   --lh-caption: 1.35; /* notices / type-caption — tighter than body-lg */
@@ -253,6 +255,7 @@ html[data-sky-mode="밤모드"] .sky-group-card > img.sky-clouds-bg {
   --text-stat: var(--fs-stat);
   --text-display: var(--fs-display);
   --text-page: var(--fs-page);
+  --text-month: var(--fs-month);
   --text-display-xl: var(--fs-display-xl);
   --tracking-title: 0.04em;
   --tracking-label: 0.06em;
@@ -374,8 +377,8 @@ html[data-sky-mode="밤모드"] .sky-group-card > img.sky-clouds-bg {
   color: var(--text-main);
 }
 .type-month {
-  /* Same size token as home header date (.type-page-title / --fs-page). */
-  font-size: var(--fs-page);
+  /* MonthPicker on calendar / 우리순 / 랭킹 — --fs-month (−2pt vs page). */
+  font-size: var(--fs-month);
   font-weight: 600;
   letter-spacing: var(--tracking-month);
 }
