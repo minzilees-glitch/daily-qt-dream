@@ -1665,7 +1665,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   -webkit-appearance: none;
   appearance: none;
   text-decoration: none !important;
-  color: var(--color-ink-blue) !important; /* #1F3E62 */
+  color: var(--color-sky) !important; /* #6DC2FF */
   font-size: var(--fs-caption);
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -1677,6 +1677,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: inherit !important;
   stroke: currentColor !important;
   flex-shrink: 0;
+  opacity: 1 !important;
 }
 
 .home-duranno-cta:hover {
@@ -1685,10 +1686,11 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   filter: none !important;
   text-decoration: underline !important;
   text-underline-offset: 2px;
+  color: var(--color-sky) !important;
 }
 
 .home-duranno-cta:focus-visible {
-  outline: 2px solid var(--color-ink-blue);
+  outline: 2px solid var(--color-sky);
   outline-offset: 2px;
   border-radius: 0 !important;
   background: transparent !important;
