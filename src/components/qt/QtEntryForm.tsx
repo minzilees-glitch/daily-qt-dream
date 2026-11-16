@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -11,6 +12,11 @@ import {
 import type { QtEntry } from "@/types";
 
 const QT_LINE_FALLBACK_PX = 36;
+
+function phoneShellEl(): Element | null {
+  if (typeof document === "undefined") return null;
+  return document.querySelector(".phone-shell");
+}
 
 export function QtEntryForm({
   initial,
@@ -38,11 +44,50 @@ export function QtEntryForm({
   );
   const [prayer, setPrayer] = useState(seed.prayer);
   const [busy, setBusy] = useState(false);
+  /** Portal target: escape sheet `overflow: hidden` so fixed save stays visible. */
+  const shellEl = phoneShellEl();
 
   const fields = { meditation, verse, decisionObedience, prayer };
   const totalLen = totalTrimmedLength(fields);
   const locked = disabled || busy;
   const showDelete = Boolean(editing && onDelete);
+
+  const saveBar = (
+    <div className="qt-entry-save-bar" role="group" aria-label="저장">
+      <PrimaryButton
+        type="button"
+        variant="primary"
+        className="w-full"
+        disabled={locked}
+        onClick={async () => {
+          setBusy(true);
+          try {
+            await onSave(fields);
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        {busy
+          ? "저장 중…"
+          : editing
+            ? "수정사항 저장"
+            : "저장하고 큐티 완료"}
+      </PrimaryButton>
+
+      {showDelete ? (
+        <PrimaryButton
+          type="button"
+          variant="secondary"
+          className="w-full !bg-[color-mix(in_srgb,var(--color-danger)_16%,white)] !text-danger hover:brightness-95 [&_svg]:!text-danger"
+          disabled={locked}
+          onClick={onDelete}
+        >
+          삭제
+        </PrimaryButton>
+      ) : null}
+    </div>
+  );
 
   return (
     <div
@@ -113,40 +158,7 @@ export function QtEntryForm({
         onChange={setPrayer}
       />
 
-      <div className="qt-entry-save-bar" role="group" aria-label="저장">
-        <PrimaryButton
-          type="button"
-          variant="primary"
-          className="w-full"
-          disabled={locked}
-          onClick={async () => {
-            setBusy(true);
-            try {
-              await onSave(fields);
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          {busy
-            ? "저장 중…"
-            : editing
-              ? "수정사항 저장"
-              : "저장하고 큐티 완료"}
-        </PrimaryButton>
-
-        {showDelete ? (
-          <PrimaryButton
-            type="button"
-            variant="secondary"
-            className="w-full !bg-[color-mix(in_srgb,var(--color-danger)_16%,white)] !text-danger hover:brightness-95 [&_svg]:!text-danger"
-            disabled={locked}
-            onClick={onDelete}
-          >
-            삭제
-          </PrimaryButton>
-        ) : null}
-      </div>
+      {shellEl ? createPortal(saveBar, shellEl) : saveBar}
     </div>
   );
 }

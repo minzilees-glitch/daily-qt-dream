@@ -31,6 +31,11 @@ export function isEmptyQtEntry(fields: QtEntryFields): boolean {
   return totalTrimmedLength(fields) === 0;
 }
 
+/** True when an entry has any saved QT text (not merely a completion flag). */
+export function entryHasQtContent(entry?: QtEntry | null): boolean {
+  return Boolean(entry) && !isEmptyQtEntry(fieldsFromEntry(entry));
+}
+
 export function validationMessage(fields: QtEntryFields): string | null {
   if (!isValidQtEntry(fields)) {
     return "전체 합쳐 최소 10자 이상 적어주세요.";

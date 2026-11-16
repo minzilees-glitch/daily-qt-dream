@@ -16,7 +16,7 @@ import { useApp } from "@/lib/app-context";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 import { formatDisplayDate } from "@/lib/dates";
 import { useSeoulToday } from "@/hooks/useSeoulToday";
-import { fieldsFromEntry } from "@/lib/qt-entry";
+import { entryHasQtContent, fieldsFromEntry } from "@/lib/qt-entry";
 import {
   formatQtShareText,
   isShareAbortError,
@@ -45,9 +45,12 @@ export function HomeClient({
 
   const doneToday = isCompleted(currentUser.id, today);
   const todayEntry = getEntry(currentUser.id, today);
-  const hasEntry = Boolean(todayEntry);
-  const showEdit = doneToday || hasEntry;
+  /** Completion flags without QT text (fetch miss / empty row) → compose, not empty copy. */
+  const hasContent = entryHasQtContent(todayEntry);
+  const showEdit = hasContent;
   const editActive = editing && showEdit;
+  /** Read-only view only when there is real saved text; otherwise open the form. */
+  const showCompose = editing || !hasContent;
 
   const showToast = (message: string) => {
     setToast(message);
@@ -77,43 +80,38 @@ export function HomeClient({
     }
   };
 
-  const formBody =
-    editing || !doneToday ? (
-      <QtEntryForm
-        key={`home-qt-${today}-${editing ? todayEntry?.updatedAt ?? "edit" : "new"}`}
-        initial={todayEntry}
-        editing={editing && (hasEntry || doneToday)}
-        onDelete={
-          editing && (hasEntry || doneToday)
-            ? () => setConfirmOpen(true)
-            : undefined
+  const formBody = showCompose ? (
+    <QtEntryForm
+      key={`home-qt-${today}-${editing ? todayEntry?.updatedAt ?? "edit" : "new"}`}
+      initial={todayEntry}
+      editing={editing && hasContent}
+      onDelete={editing && hasContent ? () => setConfirmOpen(true) : undefined}
+      onSave={async (fields) => {
+        try {
+          const res = await saveEntry(today, fields);
+          showToast(res.message);
+          if (res.ok) setEditing(false);
+        } catch (err) {
+          const detail =
+            err instanceof Error ? err.message : "알 수 없는 오류";
+          showToast(`저장 실패: ${detail}`);
         }
-        onSave={async (fields) => {
-          try {
-            const res = await saveEntry(today, fields);
-            showToast(res.message);
-            if (res.ok) setEditing(false);
-          } catch (err) {
-            const detail =
-              err instanceof Error ? err.message : "알 수 없는 오류";
-            showToast(`저장 실패: ${detail}`);
-          }
-        }}
-      />
-    ) : (
-      <div className="space-y-[var(--space-stack-lg)]">
-        <DayEntryView entry={todayEntry} />
-        <PrimaryButton
-          type="button"
-          variant="secondary"
-          className="w-full"
-          onClick={shareSavedEntry}
-        >
-          <Send size={18} strokeWidth={2.25} aria-hidden />
-          나의 큐티 나누기
-        </PrimaryButton>
-      </div>
-    );
+      }}
+    />
+  ) : (
+    <div className="space-y-[var(--space-stack-lg)]">
+      <DayEntryView entry={todayEntry} />
+      <PrimaryButton
+        type="button"
+        variant="secondary"
+        className="w-full"
+        onClick={shareSavedEntry}
+      >
+        <Send size={18} strokeWidth={2.25} aria-hidden />
+        나의 큐티 나누기
+      </PrimaryButton>
+    </div>
+  );
 
   return (
     <>

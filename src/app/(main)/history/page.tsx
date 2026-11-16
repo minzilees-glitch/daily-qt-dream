@@ -28,7 +28,7 @@ import {
   historyPassageLabel,
 } from "@/lib/history-passages";
 import { durannoUrlForDate } from "@/lib/duranno";
-import { fieldsFromEntry } from "@/lib/qt-entry";
+import { entryHasQtContent, fieldsFromEntry } from "@/lib/qt-entry";
 import {
   formatQtShareText,
   isShareAbortError,
@@ -60,7 +60,7 @@ function clampHistoryDate(date: string): string {
 }
 
 function HistoryPageInner({ initialDate }: { initialDate: string }) {
-  const { currentUser, completions, isCompleted, getEntry, saveEntry, clearEntry, lastEarnedDate } =
+  const { currentUser, completions, getEntry, saveEntry, clearEntry, lastEarnedDate } =
     useApp();
 
   const startDate = clampHistoryDate(initialDate);
@@ -277,7 +277,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
   if (!currentUser) return null;
 
-  const selectedCompleted = isCompleted(currentUser.id, selected);
   const selectedEntry = getEntry(currentUser.id, selected);
   const today = todaySeoul();
   const future = isFutureDate(selected, today);
@@ -289,10 +288,10 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     url: isToday ? durannoUrlForDate(selected) : undefined,
   };
   const passageLabel = historyPassageLabel(selected);
-  const hasEntry = !!selectedEntry;
-  /** 말씀 header edit: only when that day's QT is saved (or currently editing). */
-  const showEdit =
-    !future && (hasEntry || selectedCompleted || editing);
+  /** Real QT text only — completion/presence without rows opens compose, not empty copy. */
+  const hasContent = entryHasQtContent(selectedEntry);
+  /** 말씀 header edit: only when that day's QT has saved text (or currently editing). */
+  const showEdit = !future && (hasContent || editing);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -484,7 +483,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                     }
                   }}
                 />
-              ) : hasEntry || selectedCompleted ? (
+              ) : hasContent ? (
                 <div className="space-y-[var(--space-stack-lg)]">
                   <DayEntryView entry={selectedEntry} />
                   <PrimaryButton
@@ -500,9 +499,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               ) : (
                 <QtEntryForm
                   key={`hist-new-${selected}`}
-                  initial={null}
+                  initial={selectedEntry ?? null}
                   helperNotice={
-                    past && !hasEntry
+                    past && !hasContent
                       ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."
                       : null
                   }
