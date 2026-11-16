@@ -1,6 +1,6 @@
 /** Max edge for profile thumbnail (Storage bucket limit is 2 MiB). */
-const MAX_EDGE = 512;
-const JPEG_QUALITY = 0.82;
+const MAX_EDGE = 384;
+const JPEG_QUALITY = 0.65;
 /** Soft target under Storage 2 MiB after base64 overhead. */
 const MAX_BYTES = 1_500_000;
 
