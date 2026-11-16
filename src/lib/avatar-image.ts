@@ -1,8 +1,14 @@
-/** Max edge for profile thumbnail (Storage bucket limit is 2 MiB). */
-const MAX_EDGE = 512;
-const JPEG_QUALITY = 0.82;
+/**
+ * Profile thumbnail defaults (client-side, before Storage upload):
+ * max edge 384px, JPEG quality ~0.65 (bucket limit 2 MiB).
+ */
+const MAX_EDGE = 384;
+const JPEG_QUALITY = 0.65;
 /** Soft target under Storage 2 MiB after base64 overhead. */
 const MAX_BYTES = 1_500_000;
+
+const HEIC_MSG =
+  "이 형식(HEIC)은 지원하지 않아요. JPEG/PNG로 변환하거나 다른 사진을 선택해 주세요.";
 
 /**
  * Decode a File or data URL into an HTMLImageElement.
@@ -16,6 +22,34 @@ function loadImage(src: string): Promise<HTMLImageElement> {
       reject(new Error("이미지를 열 수 없어요. JPEG/PNG로 다시 선택해 주세요."));
     img.src = src;
   });
+}
+
+/** Detect HEIC/HEIF by MIME, extension, or ISO `ftyp` brand (empty MIME on some iOS picks). */
+async function assertNotHeic(source: File): Promise<void> {
+  const mime = source.type || "";
+  if (/heic|heif/i.test(mime) || /\.heic$/i.test(source.name)) {
+    throw new Error(HEIC_MSG);
+  }
+  try {
+    const buf = await source.slice(0, 16).arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    if (bytes.length < 12) return;
+    const brand = String.fromCharCode(
+      bytes[4]!,
+      bytes[5]!,
+      bytes[6]!,
+      bytes[7]!,
+      bytes[8]!,
+      bytes[9]!,
+      bytes[10]!,
+      bytes[11]!,
+    );
+    if (/ftyp/i.test(brand) && /heic|heif|mif1|msf1/i.test(brand)) {
+      throw new Error(HEIC_MSG);
+    }
+  } catch (err) {
+    if (err instanceof Error && err.message === HEIC_MSG) throw err;
+  }
 }
 
 function canvasToJpegBlob(
@@ -59,12 +93,7 @@ export async function compressAvatarImage(
     if (mime && !mime.startsWith("image/")) {
       throw new Error("이미지 파일만 업로드할 수 있어요.");
     }
-    if (/heic|heif/i.test(mime) || /\.heic$/i.test(source.name)) {
-      // Most Chromium browsers cannot decode HEIC in <img>/canvas.
-      throw new Error(
-        "이 형식(HEIC)은 지원하지 않아요. JPEG/PNG로 변환하거나 다른 사진을 선택해 주세요.",
-      );
-    }
+    await assertNotHeic(source);
   }
 
   const src =

@@ -38,14 +38,13 @@ export function BottomNav() {
   return (
     <nav
       aria-label="하단 메뉴"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-40"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-8 pb-[calc(10px+var(--safe-bottom))]"
     >
       {/*
-        Hit targets own the full docked bar height (incl. safe-area pad).
-        Padding lives on each <Link>, not the glass chrome, so taps anywhere
-        in a tab cell navigate — not only on the icon glyph.
+        Floating capsule: each <Link> fills its grid cell so taps near the
+        icon (not only the glyph) navigate.
       */}
-      <div className="nav-glass nav-glass--docked pointer-events-auto grid w-full grid-cols-5">
+      <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-2.5">
         {TABS.map(({ href, label, icon: Icon, light }) => {
           const active = isActive(pathname, href);
           return (
@@ -54,7 +53,7 @@ export function BottomNav() {
               href={href}
               aria-label={label}
               title={label}
-              className={`nav-tab-hit flex min-h-0 min-w-0 items-center justify-center transition ${
+              className={`nav-tab-hit flex min-w-0 items-center justify-center rounded-[var(--radius-btn)] px-1 py-2.5 transition ${
                 active ? "bg-white/20" : "hover:bg-white/10 active:bg-white/15"
               }`}
               aria-current={active ? "page" : undefined}
