@@ -5,9 +5,6 @@ import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { User } from "@/types";
 
-/** Hard visual max for decorative sky lights. */
-const SKY_LIGHT_HARD_MAX = 64;
-
 /** Four discrete sizes (~11px baseline +5%): smaller / base / larger / largest. */
 const SKY_LIGHT_SIZES = [8.4, 10.5, 12.6, 14.7] as const;
 
@@ -85,10 +82,10 @@ function buildSkySparks(
   lights: number,
   band: SkyBandPx | null,
 ): { sparks: SkySpark[]; capped: boolean } {
-  const total = Math.max(0, Math.floor(lights));
-  const show = Math.min(total, SKY_LIGHT_HARD_MAX);
+  /* 1:1 with 「우리순 전체」 period lights (not memberCount). */
+  const show = Math.max(0, Math.floor(lights));
   if (!band || band.cardW < 8 || band.cardH < 8) {
-    return { sparks: [], capped: total > 0 };
+    return { sparks: [], capped: false };
   }
 
   const sparks: SkySpark[] = [];
@@ -132,7 +129,8 @@ function buildSkySparks(
 
   return {
     sparks,
-    capped: total > SKY_LIGHT_HARD_MAX || sparks.length < Math.min(total, show),
+    /* True only if placement failed for some icons (crowding), not a count cap. */
+    capped: sparks.length < show,
   };
 }
 
@@ -454,6 +452,7 @@ export function SkyWalkers({
   }, [selectedId]);
 
   const visible = members.slice(0, 12);
+  /* Decorative stars = 「우리순 전체」 lights for the selected period. */
   const { sparks, capped } = useMemo(
     () => buildSkySparks(lights, skyBand),
     [lights, skyBand],
@@ -462,8 +461,9 @@ export function SkyWalkers({
   return (
     <div
       ref={cardRef}
-      className="sky-group-card relative overflow-hidden rounded-[var(--radius-md)]"
+      className="sky-group-card relative overflow-hidden"
     >
+      {/* Photo bg only — no solid sky color fill behind it. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/group/sky-clouds-bg.png"
@@ -511,33 +511,38 @@ export function SkyWalkers({
         ) : null}
       </div>
 
-      <div ref={statsRef} className="relative z-10 px-4 pb-2 pt-4">
+      <div ref={statsRef} className="relative z-20 px-4 pb-2 pt-4">
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <StatLabel className="text-white/85">우리순은</StatLabel>
-            <p className="mt-1 type-stat text-white">{memberCount}명</p>
+          {/* Semi-transparent white panels + ink/black type — readable on photo. */}
+          <div className="sky-stat-tile bg-white/50 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
+            <StatLabel className="text-[var(--color-ink-blue)]">우리순은</StatLabel>
+            <p className="mt-1 type-stat text-[var(--color-black)]">
+              {memberCount}명
+            </p>
           </div>
-          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <StatLabel className="text-white/85">우리순 현재</StatLabel>
+          <div className="sky-stat-tile bg-white/50 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
+            <StatLabel className="text-[var(--color-ink-blue)]">우리순 전체</StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount
                 lights={lights}
                 size={18}
-                tone="onDark"
-                textClassName="type-stat text-white"
+                tone="active"
+                textClassName="type-stat text-[var(--color-black)]"
               />
             </div>
           </div>
-          <div className="rounded-[var(--radius-md)] bg-white/25 px-2 py-3 backdrop-blur-[2px]">
-            <StatLabel className="text-white/85">우리순 순위</StatLabel>
-            <p className="mt-1 type-stat text-white">{rankLabel}</p>
+          <div className="sky-stat-tile bg-white/50 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
+            <StatLabel className="text-[var(--color-ink-blue)]">우리순 순위</StatLabel>
+            <p className="mt-1 type-stat text-[var(--color-black)]">
+              {rankLabel}
+            </p>
           </div>
         </div>
       </div>
 
       <div
         ref={stageRef}
-        className="sky-walkers-stage relative z-10 h-[210px] w-full overflow-hidden"
+        className="sky-walkers-stage relative z-10 min-h-[210px] w-full overflow-hidden"
         aria-label="순원들이 구름 위에서 걷고 차를 마시며 책을 읽는 장면"
       >
         <div ref={layerRef} className="absolute inset-0">

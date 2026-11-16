@@ -1,18 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  ChevronRight,
-  LogOut,
-  Settings,
-  Shield,
-} from "lucide-react";
-import { PageTitle } from "@/components/layout/PageTitle";
-import { SoftCard } from "@/components/ui/SoftCard";
-import { StatLabel } from "@/components/ui/StatLabel";
-import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { MeSky } from "@/components/me/MeSky";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
 import { useApp } from "@/lib/app-context";
 import {
@@ -20,7 +8,6 @@ import {
   parseYmd,
   todaySeoul,
 } from "@/lib/dates";
-import { LightCount } from "@/components/ui/LightIcon";
 import {
   buildCompletionSet,
   buildLightSet,
@@ -30,8 +17,7 @@ import {
 } from "@/lib/stats";
 
 export default function MePage() {
-  const { currentUser, groups, completions, logout } = useApp();
-  const router = useRouter();
+  const { currentUser, groups, completions } = useApp();
 
   if (!currentUser) return null;
 
@@ -47,111 +33,41 @@ export default function MePage() {
     set,
     todaySeoul(),
   );
-  // On-time lights this year (past backfills excluded).
+  // On-time lights this year (past backfills excluded) — also drives sky sparks.
   const yearDays = userYearLights(currentUser.id, year, lightSet, todaySeoul());
 
-  return (
-    <div>
-      <section className="hero-gradient px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
-        <PageTitle light>마이페이지</PageTitle>
-        <div className="mt-[var(--space-stack)]">
-          <SoftCard className="animate-fade-up">
-            <div className="flex items-center gap-4">
-              <ProfileAvatarButton size={56} fallback="initial" />
-              <div className="min-w-0">
-                <p className="truncate type-stat text-text-main">
-                  {currentUser.name}
-                </p>
-                <p className="type-body-sm text-text-secondary">
-                  {group?.name ?? "-"}
-                  {currentUser.isLeader ? " · 순장" : ""}
-                  {currentUser.isAdmin ? " · 관리자" : ""}
-                </p>
-              </div>
-            </div>
-            <div className="mt-[var(--space-stack)] grid grid-cols-2 gap-3">
-              <div className="frame-glass px-3 py-3 text-center">
-                <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
-                <div className="mt-1 flex justify-center">
-                  <LightCount
-                    lights={month.lights}
-                    size={18}
-                    rays={false}
-                    textClassName="type-stat text-text-main"
-                  />
-                </div>
-              </div>
-              <div className="frame-glass px-3 py-3 text-center">
-                <StatLabel className="text-text-secondary">{year}년 누적</StatLabel>
-                <div className="mt-1 flex justify-center">
-                  <LightCount
-                    lights={yearDays}
-                    size={18}
-                    textClassName="type-stat text-text-main"
-                  />
-                </div>
-              </div>
-            </div>
-          </SoftCard>
-        </div>
-      </section>
+  const groupLabel = [
+    group?.name ?? "-",
+    currentUser.isLeader ? "순장" : null,
+    currentUser.isAdmin ? "관리자" : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
-      <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pt-1">
-        <SoftCard>
+  return (
+    <div className="premium-qt-root premium-qt-root--me-sky">
+      <header className="premium-tab-header premium-tab-header--me">
+        <h1 className="premium-tab-title">마이페이지</h1>
+        <div className="sky-walkers-bleed mt-2 animate-fade-up">
+          <MeSky
+            monthLights={month.lights}
+            yearLights={yearDays}
+            yearLabel={String(year)}
+            groupLabel={groupLabel}
+          />
+        </div>
+      </header>
+
+      <section className="premium-qt-sheet premium-qt-sheet--me">
+        <div className="premium-panel animate-fade-up">
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <h2 className="type-section text-text-main">
-              내가 잘 지키는 요일
-            </h2>
-            <span className="text-label font-medium text-text-secondary">
+            <h2 className="premium-panel-title mb-0">나의 일주일</h2>
+            <span className="type-caption font-medium text-text-secondary">
               {year}년 누적 기준
             </span>
           </div>
           <WeekdayParticipation days={weekdayPart} showPossible={false} />
-        </SoftCard>
-
-        <div className="space-y-2">
-          <button
-            type="button"
-            className="soft-card flex w-full items-center justify-between p-[var(--space-stack-sm)] text-left"
-          >
-            <span className="flex items-center gap-3 type-body font-medium">
-              <Settings size={18} className="text-sky" strokeWidth={1.75} />
-              계정 설정
-              <span className="type-caption font-normal text-text-secondary">(준비 중)</span>
-            </span>
-            <ChevronRight size={18} className="text-text-secondary" />
-          </button>
-          {currentUser.isAdmin ? (
-            <Link
-              href="/admin"
-              className="soft-card flex items-center justify-between p-[var(--space-stack-sm)]"
-            >
-              <span className="flex items-center gap-3 type-body font-medium">
-                <Shield size={18} className="text-sky" strokeWidth={1.75} />
-                관리자
-              </span>
-              <ChevronRight size={18} className="text-text-secondary" />
-            </Link>
-          ) : null}
         </div>
-
-        <PrimaryButton
-          type="button"
-          variant="soft"
-          className="w-full"
-          onClick={() => {
-            logout();
-            router.replace("/login");
-          }}
-        >
-          <LogOut size={18} strokeWidth={1.75} />
-          로그아웃
-        </PrimaryButton>
-
-        <p className="text-center type-caption text-text-secondary">
-          로그인 세션은 이 브라우저 localStorage에 저장됩니다. QT 기록은
-          Supabase가 설정되면 DB에 저장되고, 없으면 로컬로 대체됩니다.
-        </p>
       </section>
     </div>
   );

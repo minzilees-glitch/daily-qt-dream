@@ -2,31 +2,39 @@
 
 import {
   Suspense,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react";
-import { PageTitle } from "@/components/layout/PageTitle";
-import { StatLabel } from "@/components/ui/StatLabel";
+import { CalendarDays, Rows2, Send } from "lucide-react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
-import { LightCount, LightIcon } from "@/components/ui/LightIcon";
+import { LightCount } from "@/components/ui/LightIcon";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { QtCalendar } from "@/components/qt/QtCalendar";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
-import { ReadingPassageBlock } from "@/components/qt/ReadingPassageBlock";
-import { ReadingRangeMilestone } from "@/components/qt/ReadingRangeMilestone";
+import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
+import { PassageEntryActions } from "@/components/qt/PassageEntryActions";
 import { DayEntryView } from "@/components/qt/DayEntryView";
 import { useApp } from "@/lib/app-context";
-import { getReadingForDate } from "@/lib/mock-data";
 import {
-  addMonths,
-  currentYearMonth,
-  formatDisplayDate,
+  getHistoryPassage,
+  historyPassageLabel,
+} from "@/lib/history-passages";
+import { durannoUrlForDate } from "@/lib/duranno";
+import { fieldsFromEntry } from "@/lib/qt-entry";
+import {
+  formatQtShareText,
+  isShareAbortError,
+  shareOrCopyText,
+} from "@/lib/qt-share";
+import {
   isFutureDate,
   todaySeoul,
   yearMonthOf,
@@ -38,64 +46,62 @@ function parseDateParam(raw: string | null): string | null {
   return raw;
 }
 
-const DATE_TITLE_MAX_PX = 24; /* matches --fs-display */
-const DATE_TITLE_MIN_PX = 15; /* matches --fs-caption */
+/** 나의 큐티들 calendar span: Sep 2026 → Dec 2027. */
+const HISTORY_MIN_YM = "2026-09";
+const HISTORY_MIN_DATE = "2026-09-01";
+const HISTORY_MAX_YM = "2027-12";
+/** Sheet overlaps header so rounded corners sit on sky. */
+const SHEET_OVERLAP_PX = 20;
+/** Fallback week→month header delta until both modes are measured. */
+const FALLBACK_MAX_DROP_PX = 180;
 
-/** Single-line title that shrinks to the largest font size that still fits. */
-function FitDateTitle({ text }: { text: string }) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLHeadingElement>(null);
-
-  useLayoutEffect(() => {
-    const wrap = wrapRef.current;
-    const el = textRef.current;
-    if (!wrap || !el) return;
-
-    const fit = () => {
-      let size = DATE_TITLE_MAX_PX;
-      el.style.fontSize = `${size}px`;
-      el.style.whiteSpace = "nowrap";
-      while (size > DATE_TITLE_MIN_PX && el.scrollWidth > wrap.clientWidth) {
-        size -= 0.5;
-        el.style.fontSize = `${size}px`;
-      }
-    };
-
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(wrap);
-    return () => ro.disconnect();
-  }, [text]);
-
-  return (
-    <div ref={wrapRef} className="min-w-0 flex-1 overflow-hidden">
-      <h2
-        ref={textRef}
-        className="type-month whitespace-nowrap text-text-main"
-        style={{ fontSize: DATE_TITLE_MAX_PX }}
-        suppressHydrationWarning
-      >
-        {text}
-      </h2>
-    </div>
-  );
+function clampHistoryDate(date: string): string {
+  return date < HISTORY_MIN_DATE ? HISTORY_MIN_DATE : date;
 }
 
 function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const { currentUser, completions, isCompleted, getEntry, saveEntry, clearEntry, lastEarnedDate } =
     useApp();
 
-  const [ym, setYm] = useState(yearMonthOf(initialDate));
-  const [selected, setSelected] = useState(initialDate);
+  const startDate = clampHistoryDate(initialDate);
+  const [ym, setYm] = useState(yearMonthOf(startDate));
+  const [selected, setSelected] = useState(startDate);
+  /** false = week strip (sheet max open); true = month grid (sheet min). */
   const [calendarExpanded, setCalendarExpanded] = useState(false);
+  /** Continuous sheet drop px: 0 = week/open, maxDrop = month/collapsed. */
+  const [drop, setDrop] = useState(0);
+  const [maxDrop, setMaxDrop] = useState(FALLBACK_MAX_DROP_PX);
+  const [sheetTop, setSheetTop] = useState(200);
+  const [dragging, setDragging] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
-  const minYm = addMonths(currentYearMonth(), -2);
-  const maxYm = currentYearMonth();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const handleRef = useRef<HTMLDivElement>(null);
+  const weekHeaderHRef = useRef(0);
+  const monthHeaderHRef = useRef(0);
+  const dropRef = useRef(0);
+  const maxDropRef = useRef(FALLBACK_MAX_DROP_PX);
+  const calendarExpandedRef = useRef(false);
+  const draggingRef = useRef(false);
+  const dragRef = useRef<{
+    pointerId: number;
+    startY: number;
+    startDrop: number;
+    lastY: number;
+    lastT: number;
+    velocityY: number;
+  } | null>(null);
+
+  dropRef.current = drop;
+  maxDropRef.current = maxDrop;
+  calendarExpandedRef.current = calendarExpanded;
+  draggingRef.current = dragging;
+
+  const minYm = HISTORY_MIN_YM;
+  const maxYm = HISTORY_MAX_YM;
 
   const set = useMemo(() => buildCompletionSet(completions), [completions]);
   const lightSet = useMemo(() => buildLightSet(completions), [completions]);
@@ -118,19 +124,151 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     return s;
   }, [completions, currentUser, ym]);
 
+  const recomputeSheetTop = useCallback(() => {
+    const weekH = weekHeaderHRef.current;
+    const monthH = monthHeaderHRef.current;
+    if (weekH > 0 && monthH > weekH) {
+      const nextMax = Math.max(48, monthH - weekH);
+      if (nextMax !== maxDropRef.current) {
+        maxDropRef.current = nextMax;
+        setMaxDrop(nextMax);
+      }
+    }
+    const base = (weekHeaderHRef.current || headerRef.current?.offsetHeight || 180) - SHEET_OVERLAP_PX;
+    const nextTop = Math.max(80, Math.round(base + dropRef.current));
+    setSheetTop(nextTop);
+  }, []);
+
+  const measureHeader = useCallback(() => {
+    const h = headerRef.current?.offsetHeight ?? 0;
+    if (h <= 0) return;
+    if (calendarExpandedRef.current) {
+      monthHeaderHRef.current = h;
+    } else {
+      weekHeaderHRef.current = h;
+    }
+    recomputeSheetTop();
+  }, [recomputeSheetTop]);
+
+  useLayoutEffect(() => {
+    measureHeader();
+  }, [measureHeader, calendarExpanded, ym]);
+
   useEffect(() => {
-    if (!menuOpen) return;
-    const onDoc = (e: MouseEvent) => {
-      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    const el = headerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => measureHeader());
+    ro.observe(el);
+    window.addEventListener("resize", measureHeader);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measureHeader);
     };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [menuOpen]);
+  }, [measureHeader]);
+
+  useEffect(() => {
+    recomputeSheetTop();
+  }, [drop, recomputeSheetTop]);
+
+  /** Soft rubber-band past ends while dragging. */
+  const resistDrop = useCallback((raw: number) => {
+    const max = maxDropRef.current;
+    if (raw < 0) return raw * 0.28;
+    if (raw > max) return max + (raw - max) * 0.28;
+    return raw;
+  }, []);
+
+  /** Reveal month grid in the gap as soon as the sheet lowers. */
+  const syncCalendarToDrop = useCallback((d: number) => {
+    const showMonth = d > 10;
+    if (showMonth === calendarExpandedRef.current) return;
+    calendarExpandedRef.current = showMonth;
+    setCalendarExpanded(showMonth);
+  }, []);
+
+  const setDropLive = useCallback(
+    (next: number) => {
+      dropRef.current = next;
+      setDrop(next);
+      syncCalendarToDrop(next);
+    },
+    [syncCalendarToDrop],
+  );
+
+  const snapDrop = useCallback(
+    (current: number, velocityY: number) => {
+      const max = maxDropRef.current;
+      const mid = max * 0.42;
+      /* velocityY: px/ms — flick down → collapse, flick up → open */
+      const open =
+        velocityY < -0.55 || (Math.abs(velocityY) < 0.45 && current < mid);
+      const target = open ? 0 : max;
+      setDragging(false);
+      draggingRef.current = false;
+      dropRef.current = target;
+      setDrop(target);
+      calendarExpandedRef.current = !open;
+      setCalendarExpanded(!open);
+    },
+    [],
+  );
+
+  const onHandlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+    handleRef.current?.setPointerCapture(e.pointerId);
+    setDragging(true);
+    draggingRef.current = true;
+    dragRef.current = {
+      pointerId: e.pointerId,
+      startY: e.clientY,
+      startDrop: dropRef.current,
+      lastY: e.clientY,
+      lastT: e.timeStamp,
+      velocityY: 0,
+    };
+  };
+
+  const onHandlePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    const dy = e.clientY - drag.startY; /* down → collapse */
+    const dt = Math.max(1, e.timeStamp - drag.lastT);
+    drag.velocityY = (e.clientY - drag.lastY) / dt;
+    drag.lastY = e.clientY;
+    drag.lastT = e.timeStamp;
+    setDropLive(resistDrop(drag.startDrop + dy));
+  };
+
+  const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    const velocityY = drag.velocityY;
+    dragRef.current = null;
+    try {
+      handleRef.current?.releasePointerCapture(e.pointerId);
+    } catch {
+      /* already released */
+    }
+    const max = maxDropRef.current;
+    const clamped = Math.min(max, Math.max(0, dropRef.current));
+    snapDrop(clamped, velocityY);
+  };
+
+  const toggleCalendar = () => {
+    const next = !calendarExpanded;
+    setDragging(false);
+    draggingRef.current = false;
+    setCalendarExpanded(next);
+    calendarExpandedRef.current = next;
+    const target = next ? maxDropRef.current : 0;
+    dropRef.current = target;
+    setDrop(target);
+  };
 
   const selectDate = (date: string) => {
+    if (yearMonthOf(date) < HISTORY_MIN_YM) return;
     setSelected(date);
     setEditing(false);
-    setMenuOpen(false);
     if (yearMonthOf(date) !== ym) setYm(yearMonthOf(date));
   };
 
@@ -141,7 +279,13 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const today = todaySeoul();
   const future = isFutureDate(selected, today);
   const past = selected < today;
-  const reading = getReadingForDate(selected);
+  const isToday = selected === today;
+  const historyPassage = getHistoryPassage(selected);
+  const passageReading = {
+    ...historyPassage,
+    url: isToday ? durannoUrlForDate(selected) : undefined,
+  };
+  const passageLabel = historyPassageLabel(selected);
   const hasEntry = !!selectedEntry;
 
   const showToast = (message: string) => {
@@ -149,46 +293,99 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     window.setTimeout(() => setToast(null), 2400);
   };
 
-  return (
-    <div>
-      {/* Top-section-only wash — same pattern as 우리순; calendar stays below so gradient does not stretch. */}
-      <section className="hero-gradient-spread px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
-        <PageTitle light>나의 QT들</PageTitle>
-        <div className="mt-[var(--space-stack-sm)]">
-          <MonthPicker
-            value={ym}
-            onChange={(next) => {
-              setYm(next);
-              setCalendarExpanded(false);
-            }}
-            min={minYm}
-            max={maxYm}
-            capsule
-          />
-        </div>
-      </section>
+  const share = {
+    dateYmd: selected,
+    passageRange: historyPassage.range,
+    onShared: (via: "share" | "clipboard") =>
+      showToast(via === "share" ? "공유했어요" : "클립보드에 복사했어요"),
+    onError: (message: string) => showToast(message),
+  };
 
-      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pb-3 pt-1">
-        <div className="space-y-[var(--space-stack-sm)]">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="frame-glass px-3 py-3 text-center">
-              <StatLabel className="text-text-secondary">이번달 내가 모은 빛</StatLabel>
-              <div className="mt-1 flex justify-center">
+  const shareSavedEntry = async () => {
+    const text = formatQtShareText({
+      dateYmd: share.dateYmd,
+      passageRange: share.passageRange,
+      fields: fieldsFromEntry(selectedEntry),
+    });
+    try {
+      const via = await shareOrCopyText(text);
+      share.onShared(via);
+    } catch (err) {
+      if (isShareAbortError(err)) return;
+      share.onError("공유에 실패했어요");
+    }
+  };
+
+  return (
+    <div ref={rootRef} className="premium-qt-root premium-qt-root--history">
+      <header ref={headerRef} className="premium-qt-header">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <MonthPicker
+                value={ym}
+                onChange={(next) => {
+                  setYm(next);
+                  setCalendarExpanded(false);
+                  calendarExpandedRef.current = false;
+                  dropRef.current = 0;
+                  setDrop(0);
+                }}
+                min={minYm}
+                max={maxYm}
+                align="start"
+              />
+              <div
+                className="inline-flex items-center"
+                title="이번달 내가 모은 빛"
+                aria-label={`이번달 내가 모은 빛 ${stats.lights}`}
+              >
                 <LightCount
                   lights={stats.lights}
-                  size={18}
+                  size={16}
                   rays={false}
-                  textClassName="type-stat text-text-main"
+                  textClassName="type-body-sm font-semibold tabular-nums text-[var(--color-mint)]"
                 />
               </div>
             </div>
-            <div className="frame-glass px-3 py-3 text-center">
-              <StatLabel className="text-text-secondary">집계 일수</StatLabel>
-              <p className="mt-1 type-stat text-text-main">
-                {stats.possible}일
-              </p>
-            </div>
           </div>
+          <div
+            className="premium-cal-mode-toggle shrink-0"
+            role="group"
+            aria-label="달력 보기"
+          >
+            <button
+              type="button"
+              className={`premium-cal-mode-toggle__btn${
+                !calendarExpanded ? " is-active" : ""
+              }`}
+              aria-pressed={!calendarExpanded}
+              aria-label="주간 달력"
+              onClick={() => {
+                if (!calendarExpanded) return;
+                toggleCalendar();
+              }}
+            >
+              <Rows2 size={18} strokeWidth={1.75} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className={`premium-cal-mode-toggle__btn${
+                calendarExpanded ? " is-active" : ""
+              }`}
+              aria-pressed={calendarExpanded}
+              aria-label="월간 달력"
+              onClick={() => {
+                if (calendarExpanded) return;
+                toggleCalendar();
+              }}
+            >
+              <CalendarDays size={18} strokeWidth={1.75} aria-hidden />
+            </button>
+          </div>
+        </div>
+
+        <div className={`mt-5 ${calendarExpanded ? "pb-6" : "pb-2"}`}>
           <QtCalendar
             yearMonth={ym}
             completedDates={completedDates}
@@ -199,143 +396,114 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             minYearMonth={minYm}
             maxYearMonth={maxYm}
           />
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={() => setCalendarExpanded((v) => !v)}
-              className="flex h-8 w-8 items-center justify-center text-text-secondary transition hover:text-text-main"
-              aria-expanded={calendarExpanded}
-              aria-label={
-                calendarExpanded ? "최근 2주만 보기" : "전체 달 보기"
+        </div>
+      </header>
+
+      <section
+        className={`premium-qt-sheet premium-qt-sheet--history${
+          dragging ? " is-dragging" : ""
+        }`}
+        style={{ top: sheetTop }}
+      >
+        <div className="premium-history-mint">
+          <div
+            ref={handleRef}
+            className="premium-history-sheet-drag"
+            role="slider"
+            aria-label="시트 높이 조절"
+            aria-valuemin={0}
+            aria-valuemax={maxDrop}
+            aria-valuenow={Math.round(Math.min(maxDrop, Math.max(0, drop)))}
+            onPointerDown={onHandlePointerDown}
+            onPointerMove={onHandlePointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          >
+            <span className="premium-sheet-grabber" aria-hidden />
+          </div>
+          <div className="premium-history-passage pt-3">
+            <HomeDurannoPassage
+              key={selected}
+              reading={passageReading}
+              label={passageLabel}
+              embedded
+              showLink={isToday}
+              rangeTrailing={
+                !future ? (
+                  <PassageEntryActions
+                    onEdit={() => setEditing(true)}
+                    onDelete={() => setConfirmOpen(true)}
+                    deleteDisabled={!hasEntry && !selectedCompleted}
+                  />
+                ) : null
               }
-            >
-              {calendarExpanded ? (
-                <ChevronUp size={20} strokeWidth={1.75} />
-              ) : (
-                <ChevronDown size={20} strokeWidth={1.75} />
-              )}
-            </button>
+            />
           </div>
         </div>
-      </section>
 
-      <div
-        className="h-px w-full bg-divider shadow-none"
-        role="separator"
-        aria-hidden
-      />
-
-      <section className="animate-fade-up space-y-[var(--space-stack-sm)] px-[var(--space-page-x)] pt-10">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="flex min-w-0 items-center gap-1.5">
-              <span className="shrink-0">
-                <LightIcon
-                  active={selectedCompleted}
-                  future={future}
-                  size={28}
-                  justEarned={selectedCompleted && !future}
-                />
-              </span>
-              <FitDateTitle text={formatDisplayDate(selected)} />
-            </div>
+        <div
+          key={selected}
+          className="premium-content-crossfade premium-history-sheet-body"
+        >
+          <div className="premium-history-qt">
             {future ? (
-              <p className="mt-1 type-body-sm text-text-secondary">
+              <p className="qt-validation-hint type-caption pt-[var(--space-stack-lg)] text-text-secondary">
                 미래 날짜는 완료할 수 없습니다.
               </p>
-            ) : past ? (
-              <p className="type-caption mt-1 break-keep text-text-secondary">
-                지난 큐티완료는 빛을 획득할 수 없습니다.
-                <br />
-                그러나 지난 큐티는 당신 심령에 남을거에요.
-              </p>
-            ) : null}
-          </div>
-
-          {!future ? (
-            <div className="relative shrink-0" ref={menuRef}>
-              <button
-                type="button"
-                aria-label="더보기"
-                aria-expanded={menuOpen}
-                onClick={() => setMenuOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center bg-transparent text-text-main shadow-none"
-              >
-                <MoreHorizontal size={18} strokeWidth={1.75} />
-              </button>
-              {menuOpen ? (
-                <div className="absolute right-0 z-20 mt-2 w-32 overflow-hidden rounded-[var(--radius-md)] bg-white py-1 shadow-none">
-                  <button
-                    type="button"
-                    className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-text-main hover:bg-sky-light"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setEditing(true);
-                    }}
-                  >
-                    수정
-                  </button>
-                  <button
-                    type="button"
-                    className="block w-full px-4 py-2.5 text-left type-body-sm font-medium text-danger hover:bg-sky-light disabled:opacity-40"
-                    disabled={!hasEntry && !selectedCompleted}
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setConfirmOpen(true);
-                    }}
-                  >
-                    삭제
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
-
-        {future ? (
-          <ReadingRangeMilestone key={selected} reading={reading} label="본문" />
-        ) : (
-          <ReadingPassageBlock key={selected} reading={reading} label="본문" defaultExpanded />
-        )}
-
-        {!future && editing ? (
-          <QtEntryForm
-            key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
-            initial={selectedEntry}
-            onSave={async (fields) => {
-              try {
-                const res = await saveEntry(selected, fields);
-                showToast(res.message);
-                if (res.ok) setEditing(false);
-              } catch (err) {
-                const detail =
-                  err instanceof Error ? err.message : "알 수 없는 오류";
-                showToast(`저장 실패: ${detail}`);
-              }
-            }}
-          />
-        ) : null}
-
-        {!future && !editing ? (
-          hasEntry || selectedCompleted ? (
-            <DayEntryView entry={selectedEntry} />
-          ) : (
-            <QtEntryForm
-              key={`hist-new-${selected}`}
-              initial={null}
-              onSave={async (fields) => {
-                try {
-                  const res = await saveEntry(selected, fields);
-                  showToast(res.message);
-                } catch (err) {
-                  const detail =
-                    err instanceof Error ? err.message : "알 수 없는 오류";
-                  showToast(`저장 실패: ${detail}`);
+            ) : editing ? (
+              <QtEntryForm
+                key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
+                initial={selectedEntry}
+                share={share}
+                onSave={async (fields) => {
+                  try {
+                    const res = await saveEntry(selected, fields);
+                    showToast(res.message);
+                    if (res.ok) setEditing(false);
+                  } catch (err) {
+                    const detail =
+                      err instanceof Error ? err.message : "알 수 없는 오류";
+                    showToast(`저장 실패: ${detail}`);
+                  }
+                }}
+              />
+            ) : hasEntry || selectedCompleted ? (
+              <div className="space-y-[var(--space-stack-lg)]">
+                <DayEntryView entry={selectedEntry} />
+                <PrimaryButton
+                  type="button"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={shareSavedEntry}
+                >
+                  <Send size={18} strokeWidth={2.25} aria-hidden />
+                  나의 큐티 나누기
+                </PrimaryButton>
+              </div>
+            ) : (
+              <QtEntryForm
+                key={`hist-new-${selected}`}
+                initial={null}
+                share={share}
+                helperNotice={
+                  past && !hasEntry
+                    ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."
+                    : null
                 }
-              }}
-            />
-          )
-        ) : null}
+                onSave={async (fields) => {
+                  try {
+                    const res = await saveEntry(selected, fields);
+                    showToast(res.message);
+                  } catch (err) {
+                    const detail =
+                      err instanceof Error ? err.message : "알 수 없는 오류";
+                    showToast(`저장 실패: ${detail}`);
+                  }
+                }}
+              />
+            )}
+          </div>
+        </div>
       </section>
 
       <ConfirmModal

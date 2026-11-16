@@ -45,7 +45,7 @@ export default function LoginPage() {
             >
               테스트로 시작하기
             </PrimaryButton>
-            <p className="mt-3 text-center type-caption text-text-secondary">
+            <p className="qt-validation-hint mt-3 text-center type-caption text-text-secondary">
               실제 카카오 로그인이 아닙니다.
               <br />
               Phase 1 프로토타입용 테스트 계정으로 입장합니다.

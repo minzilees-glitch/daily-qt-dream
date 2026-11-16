@@ -60,6 +60,18 @@ export function weekDatesMonFirst(ymd: string = todaySeoul()): string[] {
   });
 }
 
+/** Sun→Sat dates for the Seoul week containing `ymd` (7 days). */
+export function weekDatesSunFirst(ymd: string = todaySeoul()): string[] {
+  const offset = weekdaySunFirst(ymd);
+  const { year, month, day } = parseYmd(ymd);
+  const sunday = new Date(Date.UTC(year, month - 1, day - offset));
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(sunday);
+    d.setUTCDate(sunday.getUTCDate() + i);
+    return formatYmd(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
+  });
+}
+
 export function addMonths(yearMonth: string, delta: number): string {
   const [y, m] = yearMonth.split("-").map(Number);
   const date = new Date(Date.UTC(y, m - 1 + delta, 1));

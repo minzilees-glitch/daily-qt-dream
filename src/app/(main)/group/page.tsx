@@ -1,8 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { PageTitle } from "@/components/layout/PageTitle";
-import { SoftCard } from "@/components/ui/SoftCard";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { DayParticipation } from "@/components/groups/DayParticipation";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
@@ -34,6 +32,7 @@ export default function GroupPage() {
 
   if (!currentUser) return null;
 
+  const group = groups.find((g) => g.id === currentUser.groupId);
   const ranking = computeGroupRanking(
     groups,
     users,
@@ -52,19 +51,21 @@ export default function GroupPage() {
   );
 
   return (
-    <div>
-      <section className="hero-gradient px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
-        <PageTitle light>우리 순</PageTitle>
+    <div className="premium-qt-root premium-qt-root--group-sky">
+      <header className="premium-tab-header premium-tab-header--group">
+        <h1 className="premium-tab-title">
+          우리순은 {group?.name ?? "순"}
+        </h1>
         <div className="mt-[var(--space-stack-sm)]">
           <MonthPicker
             value={ym}
             onChange={setYm}
             min={addMonths(currentYearMonth(), -2)}
             max={currentYearMonth()}
-            capsule
+            align="center"
           />
         </div>
-        <div className="mt-[var(--space-stack)] animate-fade-up">
+        <div className="sky-walkers-bleed mt-2 animate-fade-up">
           <SkyWalkers
             members={members}
             memberCount={myRank?.memberCount ?? 0}
@@ -72,11 +73,11 @@ export default function GroupPage() {
             rankLabel={`${myRank?.rank ?? "-"}위`}
           />
         </div>
-      </section>
+      </header>
 
-      <section className="animate-fade-up space-y-[var(--space-stack)] px-[var(--space-page-x)] pt-1">
-        <SoftCard>
-          <h2 className="mb-3 type-section text-text-main">
+      <section className="premium-qt-sheet premium-qt-sheet--group">
+        <div className="premium-panel animate-fade-up">
+          <h2 className="qt-field-title qt-field-title--sm mb-5">
             우리순의 이번주 참여
           </h2>
           <WeekdayParticipation
@@ -84,14 +85,14 @@ export default function GroupPage() {
             showCount={false}
             showPossible={false}
           />
-        </SoftCard>
+        </div>
 
-        <SoftCard>
-          <h2 className="mb-3 type-section text-text-main">
+        <div className="premium-panel premium-panel--no-divider animate-fade-up">
+          <h2 className="qt-field-title qt-field-title--sm mb-5">
             우리순 날짜별 참여
           </h2>
           <DayParticipation days={dayPart} />
-        </SoftCard>
+        </div>
       </section>
     </div>
   );

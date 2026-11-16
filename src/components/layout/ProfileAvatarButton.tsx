@@ -89,11 +89,11 @@ export function ProfileAvatarButton({
           )}
         </span>
         <span
-          className={`absolute -bottom-0.5 -right-0.5 z-10 flex h-4 w-4 items-center justify-center rounded-full ${
+          className={`absolute -bottom-0.5 -right-0.5 z-10 flex h-6 w-6 items-center justify-center rounded-full ${
             light ? "bg-white/90 text-sky" : "bg-sky text-white"
           }`}
         >
-          <Camera size={10} strokeWidth={2.2} aria-hidden />
+          <Camera size={14} strokeWidth={2.2} aria-hidden />
         </span>
       </button>
 
@@ -134,7 +134,9 @@ export function ProfileAvatarButton({
               />
             </div>
             {error ? (
-              <p className="mt-3 text-center type-caption text-danger">{error}</p>
+              <p className="qt-validation-hint mt-3 text-center type-caption text-danger">
+                {error}
+              </p>
             ) : null}
             <div className="mt-[var(--space-stack)] grid grid-cols-2 gap-2">
               <button
@@ -148,7 +150,7 @@ export function ProfileAvatarButton({
               <button
                 type="button"
                 disabled={saving}
-                className="btn-cta bg-cta rounded-full px-4 py-3 type-body-sm font-semibold !text-white disabled:opacity-50"
+                className="btn-cta bg-cta rounded-full px-4 py-3 type-body-sm font-semibold !text-[var(--color-mint)] disabled:opacity-50"
                 onClick={() => void onSave()}
               >
                 {saving ? "저장 중…" : "저장"}

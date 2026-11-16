@@ -36,7 +36,7 @@ export function ReflectionEditor({
       >
         묵상 저장
       </PrimaryButton>
-      <p className="text-center type-caption text-text-secondary">
+      <p className="qt-validation-hint text-center type-caption text-text-secondary">
         체크와 묵상은 서로 독립적입니다. 작성 없이도 완료할 수 있어요.
       </p>
     </div>

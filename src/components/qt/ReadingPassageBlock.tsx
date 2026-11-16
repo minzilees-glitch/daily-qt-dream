@@ -32,42 +32,53 @@ function renderPassage(text: string): ReactNode {
   return nodes;
 }
 
-/** Soft sky-wash 본문: shared header + scripture accordion (past/today). */
+/** Soft sky-wash 본문: shared header + optional scripture accordion. */
 export function ReadingPassageBlock({
   reading,
-  label = "본문",
+  label = "오늘의 말씀",
   defaultExpanded = false,
   embedded = false,
+  /** When false, always show full passage with no chevron toggle (Home / 나의 QT들). */
+  collapsible = true,
+  /** Dark-blue range/title ink (`--color-ink-blue`). */
+  inkTitle = false,
+  /** Label + range + summary title on one line (home). */
+  oneLineHeader = false,
 }: {
   reading: QtReadingRange;
-  label?: string;
-  /** When true, verse body starts fully expanded (나의 QT / Home). */
+  label?: string | null;
+  /** When true, verse body starts fully expanded (collapsible only). */
   defaultExpanded?: boolean;
   /**
    * When true (inside SoftCard): same surface as the card —
    * no sky wash / nested panel.
    */
   embedded?: boolean;
+  collapsible?: boolean;
+  inkTitle?: boolean;
+  oneLineHeader?: boolean;
 }) {
-  const [expanded, setExpanded] = useState(defaultExpanded);
+  const [expanded, setExpanded] = useState(defaultExpanded || !collapsible);
   const passage = reading.passage?.trim() ?? "";
   const hasPassage = passage.length > 0;
+  const showBody = hasPassage && (!collapsible || expanded);
 
-  const toggle = hasPassage ? (
-    <button
-      type="button"
-      onClick={() => setExpanded((v) => !v)}
-      className="inline-flex items-center justify-center bg-transparent p-0 text-cta shadow-none transition hover:brightness-95"
-      aria-expanded={expanded}
-      aria-label={expanded ? "본문 접기" : "본문 더보기"}
-    >
-      {expanded ? (
-        <ChevronUp size={20} strokeWidth={2} aria-hidden />
-      ) : (
-        <ChevronDown size={20} strokeWidth={2} aria-hidden />
-      )}
-    </button>
-  ) : null;
+  const toggle =
+    collapsible && hasPassage ? (
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="inline-flex items-center justify-center bg-transparent p-0 text-cta shadow-none transition hover:brightness-95"
+        aria-expanded={expanded}
+        aria-label={expanded ? "본문 접기" : "본문 더보기"}
+      >
+        {expanded ? (
+          <ChevronUp size={20} strokeWidth={2} aria-hidden />
+        ) : (
+          <ChevronDown size={20} strokeWidth={2} aria-hidden />
+        )}
+      </button>
+    ) : null;
 
   /* Home SoftCard (embedded): no divider under title row. History keeps it. */
   const divider =
@@ -92,9 +103,11 @@ export function ReadingPassageBlock({
         label={label}
         trailing={toggle}
         afterTitle={divider}
+        inkTitle={inkTitle}
+        oneLine={oneLineHeader}
       />
 
-      {hasPassage && expanded ? (
+      {showBody ? (
         <div className="mt-3">
           <p className="type-body leading-[1.8] text-text-main whitespace-pre-wrap">
             {renderPassage(passage)}

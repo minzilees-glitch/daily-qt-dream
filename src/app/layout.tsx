@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { AppProvider } from "@/lib/app-context";
+import { SkyModeSync } from "@/components/layout/SkyModeSync";
+import { SKY_MODE_BOOTSTRAP } from "@/lib/sky-mode";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,14 +19,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className="h-full antialiased">
+    <html lang="ko" className="h-full antialiased" data-sky-mode="낮모드">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: SKY_MODE_BOOTSTRAP }} />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
         />
       </head>
       <body className="min-h-full font-sans antialiased text-text-main">
+        <SkyModeSync />
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

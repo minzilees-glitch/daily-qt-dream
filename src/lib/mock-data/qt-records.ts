@@ -69,42 +69,53 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
     }
   });
 
-  // Demo ranking UI: 사랑순 1위 (gold), 믿음순 2위 (silver) for current month.
-  enforceDemoPodium(users, records, today, "g-01", "g-05");
+  // Demo: pin 김병준 순 (test user’s 우리순) month lights; scale peers nearby.
+  enforceDemoMonthTotals(users, records, today, {
+    "2026-09": { groupId: "g-01", lights: 30 },
+    "2026-10": { groupId: "g-01", lights: 61 },
+    "2026-11": { groupId: "g-01", lights: 16 }, // to date
+  });
+
+  // Current month podium without blowing past the Nov pin: 믿음순 1 · 김병준 순 2.
+  enforceDemoPodiumNear(users, records, today, "g-05", "g-01", 16);
 
   return records;
 }
 
-/** Pad/trim current-month lights so `firstId` ranks 1 and `secondId` ranks 2 alone. */
-function enforceDemoPodium(
+/** Exact light count for one group in one month (add/trim completions). */
+function setGroupMonthLights(
   users: User[],
   records: QtCompletion[],
+  yearMonth: string,
+  groupId: string,
+  target: number,
   today: string,
-  firstId: string,
-  secondId: string,
 ): void {
-  const ym = currentYearMonth();
-  const dates = rankingScopeDays(ym, today);
+  const dates = rankingScopeDays(yearMonth, today);
   if (dates.length === 0) return;
 
   const key = (userId: string, date: string) => `${userId}|${date}`;
   const present = new Set(
     records.filter((c) => c.completed).map((c) => key(c.userId, c.date)),
   );
-  const membersOf = (gid: string) => users.filter((u) => u.groupId === gid);
+  const members = users.filter((u) => u.groupId === groupId);
 
-  const countGroup = (gid: string) => {
+  const memberLights = (userId: string) => {
     let n = 0;
-    for (const u of membersOf(gid)) {
-      for (const d of dates) {
-        if (present.has(key(u.id, d))) n += 1;
-      }
+    for (const d of dates) {
+      if (present.has(key(userId, d))) n += 1;
     }
     return n;
   };
 
-  const addOne = (gid: string): boolean => {
-    for (const u of membersOf(gid)) {
+  const count = () => members.reduce((n, u) => n + memberLights(u.id), 0);
+
+  const addOne = (): boolean => {
+    // Spread adds toward members with the fewest lights.
+    const sorted = [...members].sort(
+      (a, b) => memberLights(a.id) - memberLights(b.id),
+    );
+    for (const u of sorted) {
       for (const d of dates) {
         const k = key(u.id, d);
         if (present.has(k)) continue;
@@ -116,8 +127,12 @@ function enforceDemoPodium(
     return false;
   };
 
-  const removeOne = (gid: string): boolean => {
-    for (const u of [...membersOf(gid)].reverse()) {
+  const removeOne = (): boolean => {
+    // Trim from members with the most lights first.
+    const sorted = [...members].sort(
+      (a, b) => memberLights(b.id) - memberLights(a.id),
+    );
+    for (const u of sorted) {
       for (const d of [...dates].reverse()) {
         const k = key(u.id, d);
         if (!present.has(k)) continue;
@@ -132,25 +147,71 @@ function enforceDemoPodium(
     return false;
   };
 
-  const othersMax = () => {
-    let max = 0;
-    for (const gid of new Set(users.map((u) => u.groupId))) {
-      if (gid === firstId || gid === secondId) continue;
-      max = Math.max(max, countGroup(gid));
-    }
-    return max;
-  };
+  const goal = Math.max(0, Math.floor(target));
+  let guard = 0;
+  while (count() < goal && guard++ < 5000) {
+    if (!addOne()) break;
+  }
+  guard = 0;
+  while (count() > goal && guard++ < 5000) {
+    if (!removeOne()) break;
+  }
+}
 
-  // 2nd place: above every other group (except 1st), with a clear gap.
-  while (countGroup(secondId) <= othersMax()) {
-    if (!addOne(secondId)) break;
+/**
+ * Pin 우리순 month totals, then place other 순 nearby so ranking/charts look sane.
+ */
+function enforceDemoMonthTotals(
+  users: User[],
+  records: QtCompletion[],
+  today: string,
+  targets: Record<string, { groupId: string; lights: number }>,
+): void {
+  const allGroups = [...new Set(users.map((u) => u.groupId))];
+
+  for (const [yearMonth, { groupId, lights }] of Object.entries(targets)) {
+    setGroupMonthLights(users, records, yearMonth, groupId, lights, today);
+
+    const peers = allGroups.filter((g) => g !== groupId);
+    peers.forEach((gid, i) => {
+      // Spread peers around the pinned total (±~35%) with stable per-group jitter.
+      const factor = 0.72 + ((i * 17) % 13) * 0.035; // ~0.72–1.14
+      const jitter = ((i * 11) % 9) - 4;
+      const peerTarget = Math.max(6, Math.round(lights * factor) + jitter);
+      setGroupMonthLights(users, records, yearMonth, gid, peerTarget, today);
+    });
   }
-  // 1st place: strictly above 2nd.
-  while (countGroup(firstId) <= countGroup(secondId)) {
-    if (!addOne(firstId)) {
-      if (!removeOne(secondId)) break;
-    }
-  }
+}
+
+/**
+ * Current-month podium around a pinned 2nd-place total (does not inflate 우리순).
+ * firstId → gold, secondId → silver at `secondLights`; other 순 stay below silver.
+ */
+function enforceDemoPodiumNear(
+  users: User[],
+  records: QtCompletion[],
+  today: string,
+  firstId: string,
+  secondId: string,
+  secondLights: number,
+): void {
+  const ym = currentYearMonth();
+  const dates = rankingScopeDays(ym, today);
+  if (dates.length === 0) return;
+
+  const allGroups = [...new Set(users.map((u) => u.groupId))];
+  const silver = Math.max(0, Math.floor(secondLights));
+  const gold = silver + 4;
+
+  setGroupMonthLights(users, records, ym, secondId, silver, today);
+  setGroupMonthLights(users, records, ym, firstId, gold, today);
+
+  allGroups.forEach((gid, i) => {
+    if (gid === firstId || gid === secondId) return;
+    // Keep bronze-and-below under silver (stable spread).
+    const peer = Math.max(4, silver - 2 - (i % 5));
+    setGroupMonthLights(users, records, ym, gid, peer, today);
+  });
 }
 
 /**

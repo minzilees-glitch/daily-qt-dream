@@ -7,7 +7,8 @@ import type {
 import {
   rankingScopeDays,
   todaySeoul,
-  weekDatesMonFirst,
+  weekDatesSunFirst,
+  weekdaySunFirst,
 } from "@/lib/dates";
 
 export function completionSetKey(userId: string, date: string): string {
@@ -194,15 +195,15 @@ export function groupDayParticipation(
   }));
 }
 
-/** This week Mon–Sun group counts (bars). Future weekdays: possible=0. */
+/** This week Sun–Sat group counts (bars). Future weekdays: possible=0. */
 export function groupThisWeekWeekdayParticipation(
   groupId: string,
   users: User[],
   completionSet: Set<string>,
   today: string = todaySeoul(),
 ): { weekday: number; label: string; count: number; possible: number }[] {
-  const labels = ["월", "화", "수", "목", "금", "토", "일"];
-  const week = weekDatesMonFirst(today);
+  const labels = ["일", "월", "화", "수", "목", "금", "토"];
+  const week = weekDatesSunFirst(today);
   const members = users.filter((u) => u.groupId === groupId);
   const total = members.length;
 
@@ -247,14 +248,14 @@ export function groupWeekdayParticipation(
   return buckets;
 }
 
-/** Personal QT completions by weekday (Mon-first) for a month scope. */
+/** Personal QT completions by weekday (Sun→Sat) for year cumulative scope. */
 export function userWeekdayParticipation(
   userId: string,
   year: number,
   completionSet: Set<string>,
   todayLimit: string = todaySeoul(),
 ): { weekday: number; label: string; count: number; possible: number }[] {
-  const labels = ["월", "화", "수", "목", "금", "토", "일"];
+  const labels = ["일", "월", "화", "수", "목", "금", "토"];
   const buckets = labels.map((label, weekday) => ({
     weekday,
     label,
@@ -268,11 +269,10 @@ export function userWeekdayParticipation(
     for (const date of rankingScopeDays(ym, todayLimit)) {
       if (!date.startsWith(`${year}-`)) continue;
       if (date > todayLimit) continue;
-      const sun0 = new Date(`${date}T12:00:00+09:00`).getUTCDay();
-      const monFirst = sun0 === 0 ? 6 : sun0 - 1;
-      buckets[monFirst]!.possible += 1;
+      const sunFirst = weekdaySunFirst(date);
+      buckets[sunFirst]!.possible += 1;
       if (completionSet.has(completionSetKey(userId, date))) {
-        buckets[monFirst]!.count += 1;
+        buckets[sunFirst]!.count += 1;
       }
     }
   }

@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   addDays,
   daysInMonth,
   formatYmd,
   isFutureDate,
   todaySeoul,
+  weekDatesMonFirst,
   weekdayIndexMonFirst,
   yearMonthOf,
 } from "@/lib/dates";
@@ -14,11 +15,11 @@ import { LightIcon } from "@/components/ui/LightIcon";
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
 const WHEEL_THRESHOLD = 48;
-const TOUCH_THRESHOLD = 40;
+const SWIPE_THRESHOLD = 40;
 
 /**
  * Build Mon-first month grid, then optionally collapse to ~2 recent weeks.
- * Collapsed: 2 week-rows around the focus date within the viewed month
+ * Collapsed (legacy helper): 2 week-rows around the focus date within the viewed month
  * (capped at today for the current month).
  */
 function buildWeekRows(yearMonth: string): (number | null)[][] {
@@ -85,7 +86,7 @@ export function QtCalendar({
   completedDates,
   selectedDate,
   onSelect,
-  /** When true, only render ~2 recent weeks (accordion collapsed). */
+  /** When true, render a single premium week strip (accordion collapsed). */
   collapsed = false,
   /** Date that just earned a light — one-shot ray burst on that cell. */
   justEarnedDate = null,
@@ -110,15 +111,18 @@ export function QtCalendar({
       : yearMonth === yearMonthOf(today)
         ? today
         : formatYmd(y, m, daysInMonth(y, m));
-  const allRows = buildWeekRows(yearMonth);
-  const rows = collapsed
-    ? collapsedWeekRows(yearMonth, allRows, today, focusDate)
-    : allRows;
 
   const rootRef = useRef<HTMLDivElement>(null);
   const wheelAccRef = useRef(0);
-  const touchStartY = useRef<number | null>(null);
-  const touchMoved = useRef(false);
+  const weekKeyRef = useRef<string | null>(null);
+  const pendingSlideRef = useRef<"next" | "prev" | null>(null);
+  const [weekSlide, setWeekSlide] = useState<"next" | "prev" | null>(null);
+  const swipeRef = useRef<{
+    active: boolean;
+    startX: number;
+    startY: number;
+    moved: boolean;
+  }>({ active: false, startX: 0, startY: 0, moved: false });
 
   const stepWeek = useCallback(
     (direction: -1 | 1) => {
@@ -131,6 +135,8 @@ export function QtCalendar({
       const nextYm = yearMonthOf(next);
       if (minYearMonth && nextYm < minYearMonth) return;
       if (maxYearMonth && nextYm > maxYearMonth) return;
+      // next week enters from right; previous from left
+      pendingSlideRef.current = direction === 1 ? "next" : "prev";
       onSelect(next);
     },
     [
@@ -143,14 +149,19 @@ export function QtCalendar({
     ],
   );
 
+  /* Horizontal wheel / trackpad: one threshold → one week. */
   useEffect(() => {
     const el = rootRef.current;
-    if (!el || !onSelect) return;
+    if (!el || !onSelect || !collapsed) return;
 
     const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+      const absX = Math.abs(e.deltaX);
+      const absY = Math.abs(e.deltaY);
+      // Prefer horizontal; allow vertical-as-horizontal when shift-held.
+      const delta = absX >= absY || e.shiftKey ? (e.shiftKey ? e.deltaY : e.deltaX) : 0;
+      if (delta === 0) return;
       e.preventDefault();
-      wheelAccRef.current += e.deltaY;
+      wheelAccRef.current += delta;
       if (Math.abs(wheelAccRef.current) < WHEEL_THRESHOLD) return;
       const dir: -1 | 1 = wheelAccRef.current > 0 ? 1 : -1;
       wheelAccRef.current = 0;
@@ -159,55 +170,98 @@ export function QtCalendar({
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, [onSelect, stepWeek]);
+  }, [collapsed, onSelect, stepWeek]);
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0]?.clientY ?? null;
-    touchMoved.current = false;
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!collapsed) return;
+    swipeRef.current = {
+      active: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      moved: false,
+    };
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (touchStartY.current == null) return;
-    const yPos = e.touches[0]?.clientY;
-    if (yPos == null) return;
-    if (Math.abs(yPos - touchStartY.current) > 12) touchMoved.current = true;
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const swipe = swipeRef.current;
+    if (!swipe.active) return;
+    const dx = e.clientX - swipe.startX;
+    const dy = e.clientY - swipe.startY;
+    if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
+      swipe.moved = true;
+    }
   };
 
-  const onTouchEnd = (e: React.TouchEvent) => {
-    const start = touchStartY.current;
-    touchStartY.current = null;
-    if (start == null || !touchMoved.current) return;
-    const end = e.changedTouches[0]?.clientY;
-    if (end == null) return;
-    const dy = end - start;
-    if (Math.abs(dy) < TOUCH_THRESHOLD) return;
-    // Finger up → next week (same as wheel down); finger down → previous week
-    stepWeek(dy < 0 ? 1 : -1);
+  const endSwipe = (e: React.PointerEvent<HTMLDivElement>) => {
+    const swipe = swipeRef.current;
+    if (!swipe.active) return;
+    swipe.active = false;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
+    if (!swipe.moved) return;
+    const dx = e.clientX - swipe.startX;
+    const dy = e.clientY - swipe.startY;
+    if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
+    // Swipe left (dx < 0) → next week; swipe right → previous week.
+    stepWeek(dx < 0 ? 1 : -1);
   };
+
+  const weekDates = weekDatesMonFirst(focusDate);
+  const weekKey = weekDates[0] ?? focusDate;
+  const allRows = buildWeekRows(yearMonth);
+
+  useEffect(() => {
+    if (!collapsed) {
+      weekKeyRef.current = weekKey;
+      setWeekSlide(null);
+      return;
+    }
+    const prev = weekKeyRef.current;
+    weekKeyRef.current = weekKey;
+    if (!prev || prev === weekKey) return;
+
+    const pending = pendingSlideRef.current;
+    pendingSlideRef.current = null;
+    if (pending) {
+      setWeekSlide(pending);
+      return;
+    }
+    // External date jump (month picker / day tap in another week).
+    setWeekSlide(weekKey > prev ? "next" : "prev");
+  }, [collapsed, weekKey]);
 
   return (
     <div
       ref={rootRef}
-      className="touch-pan-y"
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
+      className={
+        collapsed
+          ? "premium-cal-week-viewport touch-pan-x select-none"
+          : "touch-pan-y"
+      }
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endSwipe}
+      onPointerCancel={endSwipe}
     >
-      <div className="mb-2 grid grid-cols-7 gap-2 text-center type-micro text-text-secondary">
-        {WEEKDAYS.map((d) => (
-          <div key={d} className="py-1">
-            {d}
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 gap-2 overflow-visible touch-pan-y">
-        {rows.flatMap((row, ri) =>
-          row.map((day, ci) => {
-            const idx = ri * 7 + ci;
-            if (day == null) {
-              return <div key={`e-${yearMonth}-${idx}`} className="aspect-square" />;
-            }
-            const date = formatYmd(y, m, day);
+      {collapsed ? (
+        <div
+          key={`week-${weekKey}`}
+          className={`grid grid-cols-7 gap-1.5 ${
+            weekSlide === "next"
+              ? "premium-cal-week-slide-next"
+              : weekSlide === "prev"
+                ? "premium-cal-week-slide-prev"
+                : "premium-cal-month-anim"
+          }`}
+          aria-label="주간 달력 — 좌우로 밀면 일주일씩 이동합니다"
+        >
+          {weekDates.map((date, i) => {
+            const day = Number(date.slice(8, 10));
+            const inMonth = yearMonthOf(date) === yearMonth;
             const done = completedDates.has(date);
             const future = isFutureDate(date, today);
             const selected = selectedDate === date;
@@ -218,70 +272,141 @@ export function QtCalendar({
                 key={date}
                 type="button"
                 disabled={future && !onSelect}
-                onClick={() => onSelect?.(date)}
+                onClick={(ev) => {
+                  if (swipeRef.current.moved) {
+                    ev.preventDefault();
+                    return;
+                  }
+                  onSelect?.(date);
+                }}
                 aria-label={`${date}${done ? ", 완료" : ""}`}
                 aria-pressed={selected}
-                className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible touch-pan-y transition"
+                className={`premium-cal-day relative flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-[22px] px-1 py-2 transition ${
+                  selected ? "premium-cal-day-selected" : ""
+                } ${!inMonth ? "opacity-40" : ""}`}
               >
                 <span
-                  className={`relative mx-auto flex h-full w-[calc(100%-2px)] flex-col items-center justify-center gap-1 py-2 text-center ${
+                  className={`type-micro ${
                     selected
-                      ? "!text-white"
-                      : isToday
-                        ? "text-cta"
-                        : done
-                          ? "text-text-main"
-                          : future
-                            ? "text-text-secondary/40"
-                            : "text-text-main"
+                      ? "font-semibold text-white"
+                      : "text-text-secondary"
                   }`}
                 >
-                  {/* Selection / light-active fill — 2px up vs date copy */}
-                  <span
-                    aria-hidden
-                    className={`pointer-events-none absolute inset-x-0 top-[-2px] bottom-[2px] rounded-[var(--radius-day)] ${
-                      selected
-                        ? "bg-cta shadow-none"
-                        : isToday
-                          ? "bg-cta/18 group-hover:bg-cta/24"
+                  {WEEKDAYS[i]}
+                </span>
+                <span
+                  className={`relative z-[1] text-[17px] font-semibold tabular-nums leading-none ${
+                    selected
+                      ? "text-white"
+                      : isToday
+                        ? "premium-cal-day-today"
+                        : future
+                          ? "premium-cal-day-future"
                           : done
-                            ? "bg-white"
-                            : future
-                              ? ""
-                              : "group-hover:bg-white/70"
-                    }`}
-                  />
-                  <span
-                    className={`relative z-[1] text-center text-label leading-none font-medium tabular-nums ${
-                      selected
-                        ? ""
-                        : isToday
-                          ? "font-semibold text-cta"
-                          : done
-                            ? "text-sky"
-                            : ""
-                    }`}
-                  >
-                    {day}
-                  </span>
+                            ? "text-text-main"
+                            : "premium-cal-day-past"
+                  }`}
+                >
+                  {day}
+                </span>
+                <span className="relative z-[1] flex h-5 w-5 items-center justify-center">
                   {done ? (
-                    <span className="relative z-[1] mx-auto flex h-5 w-5 shrink-0 -translate-y-[2px] items-center justify-center overflow-visible">
-                      <LightIcon
-                        tone="active"
-                        size={16}
-                        label="빛 수집됨"
-                        justEarned={justEarnedDate === date}
-                      />
-                    </span>
-                  ) : (
-                    <span className="relative z-[1] mx-auto h-5 w-5 shrink-0 -translate-y-[2px]" />
-                  )}
+                    <LightIcon
+                      tone={selected ? "white" : "active"}
+                      size={16}
+                      rays={false}
+                      label="빛 수집됨"
+                      justEarned={justEarnedDate === date}
+                    />
+                  ) : selected ? (
+                    <span
+                      className="h-1.5 w-1.5 rounded-full bg-white/55"
+                      aria-hidden
+                    />
+                  ) : null}
                 </span>
               </button>
             );
-          }),
-        )}
-      </div>
+          })}
+        </div>
+      ) : (
+        <div key={`month-${yearMonth}`} className="premium-cal-month-anim">
+          <div className="mb-2 grid grid-cols-7 gap-1 text-center type-micro text-text-secondary">
+            {WEEKDAYS.map((d) => (
+              <div key={d} className="py-1">
+                {d}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-y-1 gap-x-1 overflow-visible touch-pan-y">
+            {allRows.flatMap((row, ri) =>
+              row.map((day, ci) => {
+                const idx = ri * 7 + ci;
+                if (day == null) {
+                  return (
+                    <div
+                      key={`e-${yearMonth}-${idx}`}
+                      className="aspect-square"
+                    />
+                  );
+                }
+                const date = formatYmd(y, m, day);
+                const done = completedDates.has(date);
+                const future = isFutureDate(date, today);
+                const selected = selectedDate === date;
+                const isToday = date === today;
+
+                return (
+                  <button
+                    key={date}
+                    type="button"
+                    disabled={future && !onSelect}
+                    onClick={() => onSelect?.(date)}
+                    aria-label={`${date}${done ? ", 완료" : ""}`}
+                    aria-pressed={selected}
+                    className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible touch-pan-y"
+                  >
+                    <span
+                      className={`relative flex h-[42px] w-[42px] flex-col items-center justify-center rounded-full transition ${
+                        selected ? "premium-cal-glow" : ""
+                      }`}
+                    >
+                      <span
+                        className={`relative z-[1] text-center text-[15px] leading-none font-semibold tabular-nums ${
+                          selected
+                            ? "text-white"
+                            : isToday
+                              ? "premium-cal-day-today"
+                              : future
+                                ? "premium-cal-day-future"
+                                : done
+                                  ? "text-text-main"
+                                  : "premium-cal-day-past"
+                        }`}
+                      >
+                        {day}
+                      </span>
+                      {done ? (
+                        <span className="relative z-[1] mt-0.5 flex h-4 w-4 items-center justify-center">
+                          <LightIcon
+                            tone={selected ? "white" : "active"}
+                            size={14}
+                            rays={false}
+                            label="빛 수집됨"
+                            justEarned={justEarnedDate === date}
+                          />
+                        </span>
+                      ) : (
+                        <span className="mt-0.5 h-4 w-4" aria-hidden />
+                      )}
+                    </span>
+                  </button>
+                );
+              }),
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

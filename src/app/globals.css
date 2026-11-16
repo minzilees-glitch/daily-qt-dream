@@ -2,20 +2,48 @@
 
 :root {
   /* ——— Color ——— */
+  /* User palette (premium QT) — English + Korean aliases */
+  --color-white: #ffffff; /* 화이트 */
+  --color-gray: #f2f2f2; /* 그레이 */
+  --color-mint: #caebf2; /* 민트 — former soft “sky” chrome */
+  --color-sky: #6dc2ff; /* 하늘색 */
+  --color-sora: #94deee; /* 소라 */
+  --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
+  --color-black: #000917; /* 검정 */
+  /*
+   * 낮모드 / 밤모드 chrome (Asia/Seoul).
+   * 낮모드 fill = 하늘색, ink = 검정; 밤모드 (19:00–06:00) fill = 검정, ink = 흰/라이트.
+   * Set by html[data-sky-mode]; see docs/preferences.md.
+   */
+  --sky-mode-fill: var(--color-sky);
+  --sky-mode-ink: var(--color-black); /* #000917 — 낮모드 헤더 글자 */
+  --color-chick: #eeefc7; /* 병아리 */
+  --color-yellow: #fbcc58; /* 노랑 — light-icon / palette yellow */
+  /* Korean aliases */
+  --색-화이트: var(--color-white);
+  --색-그레이: var(--color-gray);
+  --색-민트: var(--color-mint);
+  --색-하늘: var(--color-sky);
+  --색-소라: var(--color-sora);
+  --색-잉크블루: var(--color-ink-blue);
+  --색-검정: var(--color-black);
+  --색-병아리: var(--color-chick);
+  --색-노랑: var(--color-yellow);
+
+  /* Legacy / product tokens — keep names; wire to palette where they match */
   --sky: #5fbcfc;
   --sky-secondary: #83aeee;
   --sky-light: #e8f3fb;
   /* Primary CTA (buttons / nav / selected day) — distinct from chrome sky */
   --cta: #008cff;
   /* Surface swap (Phase 1 polish): page = white, cards = ivory */
-  /* Surface swap (Phase 1 polish): page = white, cards = ivory */
   --ivory: #faf8f3;
-  --white: #ffffff;
+  --white: var(--color-white);
   --text-main: #243746;
   --text-secondary: #768896;
-  /* Light yellow (빛 icon active) — brand-used, previously hardcoded */
-  --light-yellow: #f5c518;
-  --light-yellow-soft: #ffe066;
+  /* 빛 icon yellows — both tones pin to palette #FBCC58 */
+  --light-yellow: var(--color-yellow);
+  --light-yellow-soft: var(--color-yellow);
   --danger: #e35d5d;
   /* All dividers (1px hairlines + thick bars) share this color; height varies. */
   /* Slightly darker than #e5eaf0 — still soft; sole hairline/divider token */
@@ -23,7 +51,7 @@
   --hairline: var(--divider);
   --divider-strong: var(--divider); /* legacy alias — same color as --divider */
   --page-chrome: #eef3f7;
-  --muted: #c2cad2; /* LightIcon inactive */
+  --muted: #f2f2f2; /* LightIcon inactive */
   --medal-gold: #e8b923; /* ranking trophy 1위 */
   --medal-silver: #a8b0b8; /* ranking trophy 2위 */
   /* SkyWalkers / illustration palette (reusable scene colors) */
@@ -60,20 +88,20 @@
   /* ——— Typography (scale +1pt from prior 11…33) ——— */
   --fs-nav: 12px;
   --fs-micro: 13px; /* calendar weekday headers, tiny chrome */
-  --fs-caption: 15px;
+  --fs-caption: 16px; /* hint / notice captions — matches .qt-validation-hint */
   --fs-label: 15px;
-  --fs-body-sm: 16px;
-  --fs-body: 17px;
+  --fs-body-sm: 18px;
+  --fs-body: 19px;
   --fs-section: 18px;
   --fs-body-lg: 19px;
   --fs-stat: 20px;
   --fs-display: 24px;
-  --fs-page: 27px;
+  --fs-page: 24px;
   --fs-display-xl: 34px; /* login hero */
   --lh-relaxed: 1.625;
   --lh-caption: 1.35; /* notices / type-caption — tighter than body-lg */
   --lh-page-title: 1.15;
-  --tracking-title: 0.01em; /* page titles — was 0.04em */
+  --tracking-title: 0.04em; /* page titles / type-page-title */
   --tracking-label: 0.06em;
   --tracking-month: 0.02em;
 
@@ -92,7 +120,7 @@
   --radius-btn: var(--radius-pill);
 
   /* ——— Spacing ——— */
-  --space-page-x: 1.25rem; /* page horizontal = former px-5 */
+  --space-page-x: 24px; /* page horizontal gutters */
   --space-card: 1.25rem; /* SoftCard / modal pad = former p-5 */
   --space-control-x: 1.25rem; /* button / control horizontal pad */
   --space-stack-sm: 1rem; /* space-y-4 / mt-4 */
@@ -107,9 +135,13 @@
   --shadow-soft: none;
   --shadow-nav: none;
   --shadow-nav-float: 0 10px 30px rgba(0, 60, 130, 0.42);
-  /* Icon-only bottom nav: frosted CTA-tinted glass (not opaque solid) */
-  --nav-glass-bg: rgba(0, 140, 255, 0.4);
-  --nav-glass-border: rgba(255, 255, 255, 0.45);
+  /* Shared premium sheet lift (Home + 나의 QT들 + other tabs). */
+  --premium-sheet-filter:
+    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
+    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
+  /* Icon-only bottom nav: dark blue capsule */
+  --nav-glass-bg: var(--color-black);
+  --nav-glass-border: rgba(255, 255, 255, 0.18);
   --nav-glass-blur: 28px;
   /* SoftCard / primary frames — stronger frosted glass than #62 */
   --frame-glass-bg: rgba(255, 255, 255, 0.16);
@@ -123,15 +155,35 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
   --phone-max: 480px;
+
+  /* ——— Premium QT calendar (나의 QT들) — 낮모드/밤모드 fill + white sheet ——— */
+  --premium-cal-bg: var(--sky-mode-fill);
+  --premium-sheet: var(--color-white);
+}
+
+/* 밤모드 (19:00–06:00 Asia/Seoul): sky chrome → black; header ink → light. */
+html[data-sky-mode="밤모드"] {
+  --sky-mode-fill: var(--color-black); /* #000917 */
+  --sky-mode-ink: var(--color-white); /* readable on black chrome */
 }
 
 @theme inline {
-  --color-sky: var(--sky);
+  /* User palette utilities (hex — avoid circular var() in @theme) */
+  --color-white: #ffffff;
+  --color-gray: #f2f2f2;
+  --color-mint: #caebf2; /* 민트 — soft chrome (former --color-sky) */
+  --color-sky: #6dc2ff; /* 하늘색; brand chrome remains --sky #5FBCFC */
+  --color-sora: #94deee; /* 소라 #94DEEE */
+  --color-ink-blue: #1f3e62;
+  --color-black: #000917;
+  --color-chick: #eeefc7;
+  --color-yellow: #fbcc58; /* #FBCC58 light-icon / palette yellow */
+  /* Legacy vivid sky chrome for existing text-sky / bg-sky-light patterns */
+  --color-sky-chrome: var(--sky);
   --color-sky-secondary: var(--sky-secondary);
   --color-sky-light: var(--sky-light);
   --color-cta: var(--cta);
   --color-ivory: var(--ivory);
-  --color-white: #ffffff;
   --color-pure-white: var(--white);
   --color-text-main: var(--text-main);
   --color-text-secondary: var(--text-secondary);
@@ -165,7 +217,7 @@
   --text-display: var(--fs-display);
   --text-page: var(--fs-page);
   --text-display-xl: var(--fs-display-xl);
-  --tracking-title: 0.01em;
+  --tracking-title: 0.04em;
   --tracking-label: 0.06em;
   --tracking-month: 0.02em;
   --radius-sm: 12px;
@@ -224,8 +276,64 @@
   font-size: var(--fs-section);
   font-weight: 600;
 }
+
+/* Arbitrary Tailwind text-[Npx] loses to .type-section — force sizes here. */
+.qt-field-title {
+  font-size: 18px !important; /* was 20; −2pt */
+  font-weight: 600 !important; /* beat body/type utilities in read-only views */
+  color: var(--color-black) !important; /* #000917 */
+}
+
+/* 우리순 graph section titles — 1pt under field title. */
+.qt-field-title--sm {
+  font-size: 17px !important;
+}
+
+/* Home QT validation hint + all similar instructional notices. */
+.qt-validation-hint {
+  font-size: var(--fs-caption) !important; /* 16px */
+}
+
+/* QT textareas: notebook lines under every row.
+ * Avoid background-attachment:local — WebKit often paints nothing on <textarea>. */
+.qt-lined-field {
+  /* 19px body × ~1.9 ≈ 36 → lock px so gradient matches line boxes. */
+  --qt-line: 36px;
+  font-size: var(--fs-body);
+  line-height: var(--qt-line) !important;
+  padding: 0 !important;
+  margin: 0;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none;
+  resize: none;
+  /* Grow with content (JS snaps to --qt-line); sheet scrolls — no inner field scroll. */
+  overflow: hidden;
+  background-color: transparent !important;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--qt-line) - 1px),
+    color-mix(in srgb, var(--color-ink-blue) 16%, white) calc(var(--qt-line) - 1px),
+    color-mix(in srgb, var(--color-ink-blue) 16%, white) var(--qt-line)
+  ) !important;
+  background-size: 100% var(--qt-line) !important;
+  background-repeat: repeat-y !important;
+  background-position: 0 0 !important;
+  background-attachment: scroll !important;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+}
+
+.reading-passage-range {
+  font-size: 22px !important; /* matches .qt-field-title */
+  font-weight: 600;
+  color: var(--text-main);
+}
 .type-month {
-  font-size: var(--fs-section); /* 18px — sole month-label role; color only varies */
+  /* Same size token as home header date (.type-page-title / --fs-page). */
+  font-size: var(--fs-page);
   font-weight: 600;
   letter-spacing: var(--tracking-month);
 }
@@ -250,17 +358,29 @@
   font-weight: 600;
 }
 
-/* Primary filled CTAs: CTA blue + white label/icons, pill, flat */
+/* CTA labels: 1pt under body (19→18). PrimaryButton + legacy .btn-cta. */
+.cta-label,
 .bg-cta,
 .btn-cta {
-  background-color: var(--cta) !important;
-  color: #ffffff !important;
+  font-size: 18px !important;
+}
+
+/* Primary filled CTAs: black fill + sky label/icons, pill, flat */
+.bg-cta,
+.btn-cta {
+  background-color: var(--color-black) !important; /* #000917 */
+  color: var(--color-mint) !important; /* mint #CAEBF2 */
+  font-weight: 700;
+  letter-spacing: 0.03em; /* slight tracking bump on CTA label */
+  /* +2px vs former py-3.5 (14px) → 16px top/bottom */
+  padding-top: 16px;
+  padding-bottom: 16px;
   box-shadow: none !important;
   border-radius: 9999px;
 }
 .bg-cta svg,
 .btn-cta svg {
-  color: #ffffff !important;
+  color: var(--color-mint) !important;
   stroke: currentColor;
 }
 
@@ -451,10 +571,11 @@ a {
   backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
   -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
 }
-/* SkyWalkers photo card keeps opaque scene fill — not ivory glass */
+/* SkyWalkers / MeSky: cloud photo over 낮모드/밤모드 solid fill. */
 .soft-card.sky-group-card {
-  background: #9fd0f5;
+  background: var(--sky-mode-fill);
   border: none;
+  border-radius: 0 !important;
   box-shadow: var(--shadow-soft);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -564,30 +685,81 @@ a {
   display: none;
 }
 
-/* Combined group sky card — photo bg; stage stays transparent over clouds */
+/*
+ * Photo frame edge-to-edge in header; no solid sky color behind the image.
+ * Extend under the overlapping rounded sheet (36px radius) so corners don't clip.
+ */
+.sky-walkers-bleed {
+  margin-inline: calc(-1 * var(--space-page-x));
+  width: calc(100% + 2 * var(--space-page-x));
+  margin-bottom: -36px;
+  position: relative;
+  z-index: 1;
+}
+
 .sky-group-card {
   min-height: 360px;
-  background: #9fd0f5;
+  width: 100%;
+  /* Extra pad so absolute photo covers the sheet underlap / rounded ears. */
+  padding-bottom: 36px;
+  background: var(--sky-mode-fill); /* under cloud photo */
+  border-radius: 0 !important;
+}
+
+/* Mypage sky: fills leftover viewport above content-fit bottom sheet.
+ * Slightly deeper underlap than base 36px so rounded sheet ears don't clip photo. */
+.sky-group-card.me-sky-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 280px;
+  height: 100%;
+  padding-bottom: 44px;
+}
+
+.me-sky-card .me-sky-stage {
+  flex: 1 1 auto;
+  min-height: 96px;
+  background: transparent;
+}
+
+.sky-group-card .sky-stat-tile {
+  border-radius: 8px !important; /* dashboard windows */
 }
 
 .sky-walkers-stage {
   background: transparent;
 }
 
-/* Decorative group lights drifting in the upper sky band */
+/* Decorative sky lights: soft float + twinkle (MeSky + SkyWalkers). */
 @keyframes sky-light-drift {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    opacity: 0.72;
+    filter: brightness(0.92);
   }
-  50% {
-    transform: translateY(-3px);
+  35% {
+    transform: translateY(-2px) scale(1.08);
+    opacity: 1;
+    filter: brightness(1.18);
+  }
+  55% {
+    transform: translateY(-3px) scale(0.94);
+    opacity: 0.55;
+    filter: brightness(0.85);
+  }
+  75% {
+    transform: translateY(-1px) scale(1.12);
+    opacity: 1;
+    filter: brightness(1.22);
   }
 }
 
 .sky-light-drift {
   animation: sky-light-drift var(--sky-dur, 4s) ease-in-out infinite;
   animation-delay: var(--sky-delay, 0s);
+  will-change: transform, opacity, filter;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -596,6 +768,966 @@ a {
   }
 
   .sky-light-drift {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    will-change: auto;
+  }
+}
+
+/* ——— Premium QT calendar page (sky calendar + brand CTA) ——— */
+.premium-qt-root {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100dvh - 72px - var(--safe-bottom));
+  background: var(--premium-cal-bg);
+  color: var(--text-main);
+  /* Allow sheet drop-shadow to paint above the rounded top. */
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.premium-qt-header {
+  position: relative;
+  z-index: 1;
+  padding: calc(var(--space-title-pt) + var(--safe-top)) var(--space-page-x)
+    1.25rem;
+  /* 낮모드 sky / 밤모드 black — same --sky-mode-fill as other headers. */
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
+  border-radius: 0 !important;
+}
+
+/* Calendar header copy follows 낮모드/밤모드 ink. */
+.premium-qt-header .type-month,
+.premium-qt-header .type-caption,
+.premium-qt-header .type-body-sm,
+.premium-qt-header .type-micro,
+.premium-qt-header .text-text-main,
+.premium-qt-header .text-text-secondary,
+.premium-qt-header .text-black {
+  color: var(--sky-mode-ink) !important;
+}
+
+/* Out-of-month / disabled chrome. */
+.premium-qt-header .premium-cal-day .opacity-40,
+.premium-qt-header button:disabled {
+  opacity: 0.45;
+}
+
+/* Date state contrast: color alpha only — same font-size/weight as siblings. */
+.premium-qt-header .premium-cal-day-muted,
+.premium-qt-header .premium-cal-day-future {
+  color: color-mix(in srgb, var(--muted) 70%, transparent) !important;
+}
+
+/* Past incomplete (deactivated): brighter than future, still softened. */
+.premium-qt-header .premium-cal-day-past {
+  color: color-mix(in srgb, var(--sky-mode-ink) 72%, transparent) !important;
+}
+
+/* 밤모드: past idle clearer; future much dimmer — no size/weight change. */
+html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-past {
+  color: color-mix(in srgb, var(--color-white) 78%, transparent) !important;
+}
+
+html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-future,
+html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
+  color: color-mix(in srgb, var(--color-white) 26%, transparent) !important;
+}
+
+/* Today accent (selected uses .premium-cal-day-selected white). */
+.premium-qt-header .text-cta {
+  color: var(--color-sora) !important;
+}
+
+/* Inactive today (not selected): ink-blue date numeral. */
+.premium-qt-header .premium-cal-day-today {
+  color: var(--color-ink-blue) !important; /* #1F3E62 */
+}
+
+.premium-qt-header svg {
+  color: var(--sky-mode-ink);
+  stroke: currentColor;
+}
+
+/*
+ * 나의 QT들: fixed-height shell; sheet is absolute and fills to page bottom.
+ * Continuous grabber drag moves `top` between week (open) and month (collapsed).
+ */
+.premium-qt-root--history {
+  position: relative;
+  height: calc(100dvh - 72px - var(--safe-bottom));
+  max-height: calc(100dvh - 72px - var(--safe-bottom));
+  overflow: hidden;
+}
+
+@media (min-width: 520px) {
+  .premium-qt-root--history {
+    height: calc(100dvh - 48px - 72px - var(--safe-bottom));
+    max-height: calc(100dvh - 48px - 72px - var(--safe-bottom));
+  }
+}
+
+.premium-qt-root--history > .premium-qt-header {
+  flex: 0 0 auto;
+}
+
+/*
+ * 나의 QT들 sheet: top pad + grabber + passage share one mint wash;
+ * QT hint + fields sit on solid white below.
+ * !important: beat earlier `.premium-qt-sheet` / sky sheet rules.
+ */
+.premium-qt-root--history > .premium-qt-sheet.premium-qt-sheet--history,
+.premium-qt-root:has(> .premium-qt-header)
+  > .premium-qt-sheet.premium-qt-sheet--history {
+  /* Sheet chrome is white; mint lives only in .premium-history-mint. */
+  background: #ffffff !important;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+.premium-qt-root--history > .premium-qt-sheet.premium-qt-sheet--history {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* `top` set inline from drag (week open → month collapsed). */
+  margin-top: 0;
+  min-height: 0;
+  height: auto;
+  /* No side/bottom pad — form body is edge-to-edge white. */
+  padding-top: 0 !important;
+  padding-inline: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden;
+  will-change: top;
+  transition: top 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.premium-qt-root--history
+  > .premium-qt-sheet.premium-qt-sheet--history.is-dragging {
+  transition: none;
+}
+
+/* Grabber + 말씀: mint wash only (not around the white form). */
+.premium-history-mint {
+  flex: 0 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: 10px; /* was 22 — grabber sits higher */
+  background: color-mix(in srgb, var(--color-mint) 40%, white);
+  border-radius: 36px 36px 0 0;
+}
+
+.premium-qt-sheet.premium-qt-sheet--history > .premium-content-crossfade,
+.premium-history-sheet-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* Date + passage inside mint band. */
+.premium-history-passage {
+  flex: 0 0 auto;
+  margin-inline: 0;
+  width: 100%;
+  padding: 0 var(--space-page-x) var(--space-stack);
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* Form body: solid white edge-to-edge (L/R/bottom), content padded inward. */
+.premium-history-qt {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-inline: 0;
+  width: 100%;
+  padding: 0 var(--space-page-x) calc(1.5rem + var(--safe-bottom));
+  background: #ffffff !important;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Future-only (no QT band): keep bottom pad on the sky passage. */
+.premium-qt-sheet.premium-qt-sheet--history:not(:has(.premium-history-qt))
+  .premium-history-passage {
+  padding-bottom: calc(var(--space-stack) + 1.5rem + var(--safe-bottom));
+  flex: 1 1 auto;
+}
+
+.premium-qt-sheet {
+  position: relative;
+  z-index: 2;
+  /* Overlap content above so 36px TL/TR corners sit on top (not under a square edge). */
+  margin-top: -1.25rem;
+  min-height: calc(100dvh - 280px);
+  /* Top pad 32px on all tabs: home, 나의 QT들, 우리순, 랭킹, 마이페이지. */
+  padding-top: 32px;
+  padding-inline: var(--space-page-x);
+  padding-bottom: calc(1.5rem + var(--safe-bottom));
+  border-radius: 36px 36px 0 0 !important;
+  background: var(--premium-sheet);
+  color: var(--text-main);
+  /* Shape-following lift on the sheet itself (all tabs). */
+  box-shadow: none;
+  filter: var(--premium-sheet-filter);
+}
+
+/*
+ * 우리순 / 랭킹 / 마이페이지: keep rounded sheet top.
+ * Root matches sky header so calendar token does not peek at sheet ears.
+ * Inherit shared sheet drop-shadow from `.premium-qt-sheet` (do not null it).
+ */
+.premium-qt-root:has(> .premium-tab-header) {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 72px - var(--safe-bottom));
+  background: var(--color-mint); /* mint #CAEBF2 — seam under rounded sheet */
+}
+
+.premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet {
+  /* Content-sized by default — avoid tall empty gap under last section. */
+  min-height: 0;
+}
+
+/*
+ * Extra air under header before overlapping sheet.
+ * Ranking matches home `.premium-home-header-band` (1.15rem air + 1.25rem overlap).
+ * Mypage keeps prior 1.25rem + --space-stack-sm (1rem).
+ */
+.premium-tab-header.premium-tab-header--ranking {
+  padding-bottom: calc(1.15rem + 1.25rem);
+}
+
+.premium-tab-header.premium-tab-header--me {
+  padding-bottom: calc(1.25rem + var(--space-stack-sm));
+}
+
+/* 마이페이지 header: 낮모드/밤모드 fill. */
+.premium-tab-header.premium-tab-header--me {
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
+}
+
+.premium-tab-header.premium-tab-header--me .premium-tab-title {
+  color: var(--sky-mode-ink);
+}
+
+.premium-qt-root:has(> .premium-tab-header--me) {
+  background: var(--sky-mode-fill); /* sheet-ear seam matches header */
+}
+
+/* Optional full-height sheet (unused by 우리순; kept for other tabs). */
+.premium-qt-root:has(> .premium-tab-header) > .premium-qt-sheet.premium-qt-sheet--fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * 마이페이지 (sky): content-fit sheet anchored to bottom;
+ * header/sky grows into the leftover viewport.
+ */
+.premium-qt-root.premium-qt-root--me-sky > .premium-tab-header--me {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-qt-root.premium-qt-root--me-sky > .premium-tab-header--me .sky-walkers-bleed {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: -44px; /* match me-sky-card pad; sheet rounds sit over sky */
+}
+
+.premium-qt-root.premium-qt-root--me-sky > .premium-qt-sheet.premium-qt-sheet--me {
+  flex: 0 0 auto;
+  /* Flush white sheet through layout nav pad (same as 우리순). */
+  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
+  padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
+}
+
+/* 계정 설정: logout sits under profile detail at sheet bottom. */
+.premium-qt-sheet.premium-qt-sheet--me > .me-sheet-foot {
+  margin-top: auto;
+}
+
+/*
+ * 우리순: content-fit bottom sheet (charts hug content);
+ * SkyWalkers header grows into leftover viewport (like mypage MeSky).
+ */
+.premium-qt-root.premium-qt-root--group-sky > .premium-tab-header--group {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-qt-root.premium-qt-root--group-sky > .premium-tab-header--group .sky-walkers-bleed {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-qt-root.premium-qt-root--group-sky .sky-group-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+.premium-qt-root.premium-qt-root--group-sky .sky-walkers-stage {
+  flex: 1 1 auto;
+  min-height: 210px;
+}
+
+.premium-qt-root.premium-qt-root--group-sky > .premium-qt-sheet.premium-qt-sheet--group {
+  flex: 0 0 auto;
+  /* Pull white sheet through layout nav pad so it sits flush to the screen bottom. */
+  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
+  padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
+}
+
+.premium-qt-sheet.premium-qt-sheet--group > .premium-panel + .premium-panel {
+  margin-top: 10px; /* 「날짜별 참여」 spacing */
+  padding-top: 0;
+}
+
+.premium-qt-root:has(> .premium-tab-header)
+  :is(
+    .premium-stat-tile,
+    .premium-list-row,
+    .premium-rank-row,
+    .premium-panel,
+    .sky-group-card,
+    .sky-stat-tile,
+    .soft-card
+  ) {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Gray capsule grabber — Home + 나의 QT들 sheet tops. */
+.premium-sheet-grabber {
+  display: block;
+  width: 28px;
+  height: 5px;
+  border-radius: 9999px;
+  background: #c8cdd3;
+  margin-inline: auto;
+  flex-shrink: 0;
+}
+
+.premium-sheet-grabber-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
+  margin: -18px 0 0.35rem; /* nudge pill slightly toward sheet top */
+  pointer-events: none;
+}
+
+/* History: interactive drag handle inside mint band. */
+.premium-history-sheet-drag {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 22px;
+  margin: 0 0 10px; /* more air below grabber → pill reads higher */
+  width: 100%;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.premium-history-sheet-drag:active {
+  cursor: grabbing;
+}
+
+.premium-cal-day-selected {
+  background: var(--color-ink-blue); /* #1F3E62 */
+  border-radius: 9999px !important; /* capsule — softer than 22px block */
+  box-shadow: none;
+  animation: premium-select-pop 0.42s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+
+/* Selected weekday (월…일) stays white — beat .premium-qt-header .type-micro ink. */
+.premium-qt-header .premium-cal-day-selected .type-micro,
+.premium-qt-header .premium-cal-day-selected .text-white {
+  color: var(--color-white) !important;
+}
+
+.premium-cal-glow {
+  background: var(--color-ink-blue); /* #1F3E62 */
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-ink-blue) 28%, transparent);
+  animation: premium-select-pop 0.42s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+
+.premium-cal-month-anim {
+  animation: premium-month-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.premium-content-crossfade {
+  animation: premium-crossfade 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Secondary tabs (우리순 / 랭킹 / 마이페이지): sky header + white sheet. */
+.premium-tab-header {
+  position: relative;
+  z-index: 1;
+  padding: calc(var(--space-title-pt) + var(--safe-top)) var(--space-page-x)
+    1.25rem;
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink); /* 낮모드 black / 밤모드 white */
+  border-radius: 0 !important;
+}
+
+/* 우리순 header: 낮모드/밤모드 fill (match 마이페이지). */
+.premium-tab-header.premium-tab-header--group {
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
+}
+
+.premium-qt-root:has(> .premium-tab-header--group) {
+  background: var(--sky-mode-fill); /* sheet-ear seam matches header */
+}
+
+/* 우리순 header copy: follows 낮모드/밤모드 ink. */
+.premium-tab-header.premium-tab-header--group .premium-tab-title,
+.premium-tab-header.premium-tab-header--group .type-caption,
+.premium-tab-header.premium-tab-header--group .type-body-sm,
+.premium-tab-header.premium-tab-header--group .type-month,
+.premium-tab-header.premium-tab-header--group .qt-validation-hint,
+.premium-tab-header.premium-tab-header--group .text-text-main,
+.premium-tab-header.premium-tab-header--group .text-text-secondary,
+.premium-tab-header.premium-tab-header--group .text-black {
+  color: var(--sky-mode-ink) !important;
+}
+
+.premium-tab-header.premium-tab-header--group svg {
+  color: var(--sky-mode-ink);
+  stroke: currentColor;
+}
+
+/* 랭킹 header: 낮모드/밤모드 fill (우리순·마이페이지와 동일). */
+.premium-tab-header.premium-tab-header--ranking {
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
+}
+
+.premium-qt-root:has(> .premium-tab-header--ranking) {
+  background: var(--sky-mode-fill); /* sheet-ear seam matches header */
+}
+
+/* 랭킹 header copy: follows 낮모드/밤모드 ink. */
+.premium-tab-header.premium-tab-header--ranking .premium-tab-title,
+.premium-tab-header.premium-tab-header--ranking .type-caption,
+.premium-tab-header.premium-tab-header--ranking .type-body-sm,
+.premium-tab-header.premium-tab-header--ranking .type-month,
+.premium-tab-header.premium-tab-header--ranking .qt-validation-hint,
+.premium-tab-header.premium-tab-header--ranking .text-text-main,
+.premium-tab-header.premium-tab-header--ranking .text-text-secondary,
+.premium-tab-header.premium-tab-header--ranking .text-black {
+  color: var(--sky-mode-ink) !important;
+}
+
+.premium-tab-header.premium-tab-header--ranking svg {
+  color: var(--sky-mode-ink);
+  stroke: currentColor;
+}
+
+.premium-tab-title {
+  margin: 0;
+  font-size: var(--fs-page);
+  font-weight: 600;
+  letter-spacing: var(--tracking-title);
+  line-height: var(--lh-page-title);
+  color: var(--sky-mode-ink);
+}
+
+.premium-tab-header .type-caption,
+.premium-tab-header .type-body-sm,
+.premium-tab-header .type-month,
+.premium-tab-header .qt-validation-hint,
+.premium-tab-header .text-text-main,
+.premium-tab-header .text-text-secondary,
+.premium-tab-header .text-black,
+.premium-tab-header .premium-tab-title {
+  color: var(--sky-mode-ink) !important;
+}
+
+.premium-tab-header svg {
+  color: var(--sky-mode-ink);
+  stroke: currentColor;
+}
+
+/* 마이페이지 dashboard tiles: 16px radius + white/50. */
+.premium-tab-header .premium-stat-tile {
+  border-radius: 16px !important;
+  background: rgb(255 255 255 / 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.premium-tab-header .premium-stat-tile .text-text-secondary,
+.premium-tab-header .premium-stat-tile .text-text-main {
+  color: var(--color-ink-blue) !important;
+}
+
+/* Flat panels — no glass SoftCard chrome inside the sheet. */
+.premium-panel {
+  background: transparent;
+}
+
+.premium-panel + .premium-panel {
+  margin-top: var(--space-stack);
+  padding-top: var(--space-stack);
+  border-top: 1px solid var(--divider);
+}
+
+/* 우리순 「날짜별 참여」: no divider; no gray band. */
+.premium-panel.premium-panel--no-divider {
+  border-top: none !important;
+}
+
+/*
+ * 날짜별 graph: full-bleed horizontal scroll track (edge-to-edge under sheet).
+ * Inline padding mirrors page gutters so the resting start aligns with titles.
+ */
+.day-part-scroller {
+  margin-inline: calc(-1 * var(--space-page-x));
+  width: calc(100% + 2 * var(--space-page-x));
+  padding-inline: var(--space-page-x);
+  box-sizing: border-box;
+}
+
+.premium-panel-title {
+  margin: 0 0 0.75rem;
+  font-size: var(--fs-section);
+  font-weight: 600;
+  color: var(--color-ink-blue);
+}
+
+/*
+ * Square edges for panels / rows / seams on secondary tabs.
+ * Sheet top stays rounded; shadows stripped separately above.
+ * Excludes pills, avatars, CTAs, calendar day cells.
+ */
+.premium-qt-root
+  :is(
+    .premium-stat-tile,
+    .premium-list-row,
+    .premium-panel,
+    .premium-tab-header,
+    .sky-group-card
+  ) {
+  border-radius: 0 !important;
+}
+
+/* SkyWalkers keep 8px; 마이페이지 stat tiles 16px; rank rows 12px. */
+.premium-qt-root .sky-stat-tile {
+  border-radius: 8px !important;
+}
+
+.premium-qt-root .premium-stat-tile {
+  border-radius: 16px !important;
+}
+
+.premium-qt-root .premium-rank-row {
+  border-radius: 12px !important;
+}
+
+.premium-stat-tile {
+  border-radius: 16px !important;
+  background: rgb(255 255 255 / 0.5);
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.premium-list-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 0 !important;
+  background: var(--color-gray);
+  padding: var(--space-stack-sm);
+  text-align: left;
+  text-decoration: none;
+  box-shadow: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+.premium-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 12px !important;
+  background: var(--color-gray);
+  padding: 1.15rem 1rem;
+  box-shadow: none;
+}
+
+.premium-rank-row--mine {
+  background: var(--color-ink-blue); /* #1F3E62 */
+  outline: none;
+}
+
+.premium-rank-row--mine .type-body,
+.premium-rank-row--mine .type-body-sm,
+.premium-rank-row--mine .text-text-main,
+.premium-rank-row--mine .text-text-secondary {
+  color: var(--color-mint) !important;
+}
+
+.premium-mine-pill {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  border-radius: 9999px;
+  background: var(--color-mint); /* mint #CAEBF2 */
+  padding: 0.15rem 0.4rem;
+  font-size: var(--fs-nav);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-black); /* #000917 — not sky */
+}
+
+/* Home shell: sky header + overlapping mint QT sheet (Duranno lives in sheet). */
+.premium-home-root {
+  background: var(--color-white);
+}
+
+.premium-home-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-home-shell--short {
+  height: auto;
+  min-height: calc(100dvh - 72px - var(--safe-bottom));
+  overflow: visible;
+  /* Mint wash under rounded sheet corners. */
+  background: color-mix(in srgb, var(--color-mint) 50%, white);
+}
+
+.premium-home-top {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  overflow: visible;
+  background: var(--sky-mode-fill);
+}
+
+.premium-home-header-band {
+  position: relative;
+  z-index: 1; /* sits under the overlapping QT sheet */
+  flex: 0 0 auto;
+  padding-inline: var(--space-page-x);
+  /* Extra air under status line; keep 1.25rem for sheet overlap. */
+  padding-bottom: calc(1.15rem + 1.25rem);
+  /* 낮모드/밤모드 — same token as 우리순·랭킹·마이페이지 headers. */
+  background: var(--sky-mode-fill);
+  color: var(--sky-mode-ink);
+  box-shadow: none;
+}
+
+/* Header copy follows 낮모드/밤모드 ink. */
+.premium-home-header-band .type-page-title,
+.premium-home-header-band .type-section,
+.premium-home-header-band .type-body-sm,
+.premium-home-header-band .type-label,
+.premium-home-header-band .type-caption,
+.premium-home-header-band .text-sky,
+.premium-home-header-band .text-text-main,
+.premium-home-header-band .text-text-secondary,
+.premium-home-header-band .text-white,
+.premium-home-header-band .home-status-line {
+  color: var(--sky-mode-ink) !important;
+}
+
+.premium-home-header-band .home-header-label,
+.premium-home-header-band .home-profile-group {
+  color: color-mix(in srgb, var(--sky-mode-ink) 78%, transparent) !important;
+}
+
+/* Home profile name/group: 1pt smaller than type-label / type-caption */
+.premium-home-header-band .home-profile-name {
+  font-size: 14px; /* type-label 15px − 1pt */
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+}
+
+.premium-home-header-band .home-profile-group {
+  font-size: 14px; /* type-caption 16px − 2pt */
+  font-weight: 400;
+  line-height: var(--lh-caption);
+}
+
+/* 「오늘은」 same type as 「오늘의 말씀」(StatLabel); color kept via band rules. */
+.premium-home-header-band .home-header-label {
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+}
+
+/* Home date: slightly tighter than default --tracking-title (0.04em). */
+.premium-home-header-band .type-page-title {
+  letter-spacing: 0.02em;
+}
+
+/* Status under date: same size as 말씀 summary (type-body-sm). */
+.premium-home-header-band .home-status-line {
+  font-size: var(--fs-body-sm) !important;
+  font-weight: 400 !important; /* regular */
+  letter-spacing: 0.02em; /* slightly open */
+  opacity: 0.8; /* 「오늘의 큐티를 …」 soft under date */
+}
+
+/* History calendar: top-right segmented week/month toggle. */
+.premium-cal-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.premium-cal-mode-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-mint);
+  opacity: 0.72;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.premium-cal-mode-toggle__btn.is-active {
+  background: rgba(255, 255, 255, 0.22);
+  opacity: 1;
+}
+
+.premium-cal-mode-toggle__btn:disabled {
+  opacity: 0.4;
+}
+
+.premium-cal-mode-toggle__btn:not(:disabled):hover {
+  opacity: 1;
+}
+
+.premium-home-form-sheet {
+  /* Grow into leftover viewport so completed QT white fills to screen bottom. */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  z-index: 3;
+  /* Overlap sky header; mint 말씀 + edge-to-edge white form below. */
+  margin-top: -1.25rem;
+  min-height: 0;
+  background: #ffffff !important;
+  /* No side/bottom pad — form body is edge-to-edge white (like history). */
+  padding-top: 0 !important;
+  padding-inline: 0 !important;
+  padding-bottom: 0 !important;
+  /* Same drop-shadow token as 나의 QT들 (.premium-qt-sheet). */
+  box-shadow: none;
+  filter: var(--premium-sheet-filter);
+  overflow: visible;
+}
+
+/*
+ * 말씀 header: full-bleed mint in the sheet (not a card).
+ * Sheet has no inline pad — mint + white form each own their own page-x.
+ * Top radius matches sheet so mint follows the drawer curve without overflow:hidden.
+ */
+.home-duranno-in-sheet {
+  box-sizing: border-box;
+  margin: 0;
+  width: 100%;
+  padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
+  border-radius: 36px 36px 0 0;
+  background: color-mix(in srgb, var(--color-mint) 50%, white);
+  color: var(--color-black); /* #000917 */
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Form body: solid white edge-to-edge; grows so sheet reaches screen bottom. */
+.premium-home-qt {
+  flex: 1 1 auto;
+  margin-inline: 0;
+  width: 100%;
+  min-height: 0;
+  padding: 0 var(--space-page-x) calc(1.5rem + 72px + var(--safe-bottom));
+  background: #ffffff !important;
+  box-sizing: border-box;
+}
+
+/* Pull white through layout nav pad (same flush as 나의 QT들 / 우리순). */
+.premium-home-form-sheet {
+  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
+}
+
+.home-duranno-in-sheet .reading-passage-range,
+.home-duranno-meta .reading-passage-range {
+  color: var(--color-black) !important; /* #000917 */
+}
+
+/* 「오늘의 말씀」 label + Duranno icons @ 50%; range stays full. */
+.home-duranno-in-sheet .home-duranno-label,
+.home-duranno-meta .home-duranno-label {
+  color: var(--color-black) !important; /* #000917 */
+  opacity: 0.5;
+}
+
+/* Icon-only Duranno CTA (BookOpen + ArrowUpRight) — black @ 50%, no capsule. */
+.home-duranno-cta,
+.home-duranno-cta:link,
+.home-duranno-cta:visited,
+.home-duranno-cta:hover,
+.home-duranno-cta:active,
+.home-duranno-cta:focus {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.125rem;
+  flex-shrink: 0;
+  color: var(--color-black) !important; /* #000917 */
+  opacity: 0.5;
+  background: none !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+  text-decoration: none !important;
+}
+
+.home-duranno-cta:hover {
+  opacity: 0.7;
+  filter: none !important;
+}
+
+.home-duranno-cta:focus-visible {
+  outline: 2px solid var(--color-black);
+  outline-offset: 3px;
+  border-radius: 2px !important; /* square focus, never pill */
+}
+
+.home-duranno-cta svg {
+  color: inherit !important;
+  background: none !important;
+  box-shadow: none !important;
+  flex-shrink: 0;
+}
+
+@keyframes premium-select-pop {
+  0% {
+    transform: scale(0.86);
+    opacity: 0.65;
+  }
+  70% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes premium-month-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Collapsed week strip: horizontal page turn when week steps. */
+.premium-cal-week-viewport {
+  overflow: hidden;
+}
+
+@keyframes premium-week-slide-next {
+  from {
+    opacity: 0.35;
+    transform: translateX(32%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes premium-week-slide-prev {
+  from {
+    opacity: 0.35;
+    transform: translateX(-32%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.premium-cal-week-slide-next {
+  animation: premium-week-slide-next 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.premium-cal-week-slide-prev {
+  animation: premium-week-slide-prev 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes premium-crossfade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-cal-day-selected,
+  .premium-cal-glow,
+  .premium-cal-month-anim,
+  .premium-cal-week-slide-next,
+  .premium-cal-week-slide-prev,
+  .premium-content-crossfade {
     animation: none;
   }
 }

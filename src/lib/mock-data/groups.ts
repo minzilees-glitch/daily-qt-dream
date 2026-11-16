@@ -2,7 +2,7 @@ import type { Group } from "@/types";
 
 /** 30 순 (groups). Leader ids are assigned after users are generated. */
 export const GROUP_NAMES = [
-  "사랑순",
+  "김병준 순",
   "기쁨순",
   "평안순",
   "소망순",

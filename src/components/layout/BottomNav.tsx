@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Files, Trophy, UserRound, Users, type LucideIcon } from "lucide-react";
+import {
+  CalendarDays,
+  Trophy,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { LightIcon } from "@/components/ui/LightIcon";
 
 type Tab = {
@@ -16,7 +22,7 @@ type Tab = {
 /** Equal-priority row: home first (no raised center). */
 const TABS: Tab[] = [
   { href: "/home", label: "오늘의 QT", light: true },
-  { href: "/history", label: "나의 QT들", icon: Files },
+  { href: "/history", label: "나의 QT들", icon: CalendarDays },
   { href: "/group", label: "우리 순", icon: Users },
   { href: "/ranking", label: "랭킹", icon: Trophy },
   { href: "/me", label: "마이페이지", icon: UserRound },
@@ -32,7 +38,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="하단 메뉴"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[calc(10px+var(--safe-bottom))]"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-8 pb-[calc(10px+var(--safe-bottom))]"
     >
       <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-1.5">
         {TABS.map(({ href, label, icon: Icon, light }) => {

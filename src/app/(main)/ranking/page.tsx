@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { PageTitle } from "@/components/layout/PageTitle";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { RankingList } from "@/components/ranking/RankingList";
 import { useApp } from "@/lib/app-context";
@@ -27,25 +26,31 @@ export default function RankingPage() {
   if (!currentUser) return null;
 
   return (
-    <div>
-      <section className="hero-gradient px-[var(--space-page-x)] pb-[var(--space-hero-pb)]">
-        <PageTitle light>랭킹</PageTitle>
-        <div className="mt-[var(--space-stack-sm)]">
-          <MonthPicker
-            value={ym}
-            onChange={setYm}
-            min={addMonths(currentYearMonth(), -2)}
-            max={currentYearMonth()}
-            capsule
-          />
-        </div>
-        <p className="type-caption mt-[var(--space-stack)] text-center text-text-main">
-          QT를 당일에 완료한 날마다 빛 1개를 모읍니다. 순 전체 빛 수로 순위를 매깁니다.
+    <div className="premium-qt-root">
+      <header className="premium-tab-header premium-tab-header--ranking">
+        <h1 className="premium-tab-title">랭킹</h1>
+        <p className="qt-validation-hint type-caption mt-[var(--space-stack-sm)] text-text-secondary">
+          QT를 당일에 완료한 날마다 빛 1개를 모읍니다. 순 전체 빛 수로 순위를
+          매깁니다.
         </p>
-      </section>
+      </header>
 
-      <section className="animate-fade-up px-[var(--space-page-x)] pt-1">
-        <RankingList rows={rows} />
+      <section className="premium-qt-sheet">
+        <div className="premium-sheet-grabber-row" aria-hidden>
+          <span className="premium-sheet-grabber" />
+        </div>
+        <div className="animate-fade-up">
+          <div className="mb-[var(--space-stack)]">
+            <MonthPicker
+              value={ym}
+              onChange={setYm}
+              min={addMonths(currentYearMonth(), -2)}
+              max={currentYearMonth()}
+              align="start"
+            />
+          </div>
+          <RankingList rows={rows} />
+        </div>
       </section>
     </div>
   );

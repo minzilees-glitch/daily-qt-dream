@@ -12,6 +12,8 @@ export function MonthPicker({
   light = false,
   /** Glass month-capsule chrome; black ink (overrides `light`). Shared by 나의 QT들 / 우리순 / 랭킹. */
   capsule = false,
+  /** Start-align the control (premium history header). Default centers. */
+  align = "center",
 }: {
   value: string;
   onChange: (ym: string) => void;
@@ -22,6 +24,7 @@ export function MonthPicker({
   /** White ink on sky backgrounds. Ignored when `capsule`. */
   light?: boolean;
   capsule?: boolean;
+  align?: "center" | "start";
 }) {
   const prev = addMonths(value, -1);
   const next = addMonths(value, 1);
@@ -33,7 +36,11 @@ export function MonthPicker({
   const chevronClass = `relative z-[1] flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-transparent ${ink} shadow-none transition disabled:opacity-30`;
 
   return (
-    <div className="flex items-center justify-center">
+    <div
+      className={`flex items-center ${
+        align === "start" ? "justify-start" : "justify-center"
+      }`}
+    >
       <div
         className={`inline-flex items-center gap-1.5 ${
           capsule ? "month-capsule relative px-3 py-1.5" : ""

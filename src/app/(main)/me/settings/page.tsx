@@ -1,0 +1,91 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, ChevronRight, LogOut, Shield } from "lucide-react";
+import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { useApp } from "@/lib/app-context";
+
+export default function MeSettingsPage() {
+  const { currentUser, groups, logout } = useApp();
+  const router = useRouter();
+
+  if (!currentUser) return null;
+
+  const group = groups.find((g) => g.id === currentUser.groupId);
+
+  return (
+    <div className="premium-qt-root">
+      <header className="premium-tab-header premium-tab-header--me">
+        <div className="flex items-center gap-2">
+          <Link
+            href="/me"
+            aria-label="마이페이지로"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--sky-mode-ink)]"
+          >
+            <ArrowLeft size={20} strokeWidth={1.75} />
+          </Link>
+          <h1 className="premium-tab-title mb-0">계정 설정</h1>
+        </div>
+      </header>
+
+      <section className="premium-qt-sheet premium-qt-sheet--fill premium-qt-sheet--me">
+        <div className="premium-panel animate-fade-up">
+          <div className="flex flex-col items-center gap-3 py-2">
+            <ProfileAvatarButton size={88} fallback="initial" />
+            <div className="text-center">
+              <p className="type-stat text-text-main">{currentUser.name}</p>
+              <p className="mt-1 type-body-sm text-text-secondary">
+                {group?.name ?? "-"}
+                {currentUser.isLeader ? " · 순장" : ""}
+                {currentUser.isAdmin ? " · 관리자" : ""}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="premium-panel animate-fade-up">
+          <p className="type-body-sm text-text-secondary">
+            프로필 사진을 눌러 변경할 수 있어요. 이름·순 변경은 준비 중입니다.
+          </p>
+        </div>
+
+        {currentUser.isAdmin ? (
+          <div className="premium-panel space-y-2 animate-fade-up">
+            <Link href="/admin" className="premium-list-row">
+              <span className="flex items-center gap-3 type-body font-medium text-text-main">
+                <Shield
+                  size={18}
+                  className="text-[var(--color-ink-blue)]"
+                  strokeWidth={1.75}
+                />
+                관리자
+              </span>
+              <ChevronRight size={18} className="text-text-secondary" />
+            </Link>
+          </div>
+        ) : null}
+
+        <div className="premium-panel me-sheet-foot">
+          <PrimaryButton
+            type="button"
+            className="w-full"
+            onClick={() => {
+              logout();
+              router.replace("/login");
+            }}
+          >
+            <LogOut size={18} strokeWidth={1.75} />
+            로그아웃
+          </PrimaryButton>
+
+          <p className="qt-validation-hint mt-[var(--space-stack-sm)] text-center type-caption text-text-secondary">
+            로그인 세션은 이 브라우저 localStorage에 저장됩니다. QT 기록은
+            Supabase가 설정되면 DB에 저장되고, 없으면 로컬로 대체됩니다.
+          </p>
+        </div>
+      </section>
+    </div>
+  );
+}

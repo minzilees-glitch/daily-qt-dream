@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { Check, Send } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -8,7 +9,14 @@ import {
   fieldsFromEntry,
   totalTrimmedLength,
 } from "@/lib/qt-entry";
+import {
+  formatQtShareText,
+  isShareAbortError,
+  shareOrCopyText,
+} from "@/lib/qt-share";
 import type { QtEntry } from "@/types";
+
+const QT_LINE_FALLBACK_PX = 36;
 
 export function QtEntryForm({
   initial,
@@ -16,12 +24,23 @@ export function QtEntryForm({
   onClear,
   disabled,
   showClear,
+  /** Home: 「나의 큐티 나누기」 shares date + range + non-empty fields. */
+  share,
+  /** Optional notice above 「QT는 전체 합쳐…」 helper (e.g. past-empty history). */
+  helperNotice,
 }: {
   initial?: QtEntry | null;
   onSave: (fields: QtEntryFields) => void | Promise<void>;
   onClear?: () => void | Promise<void>;
   disabled?: boolean;
   showClear?: boolean;
+  share?: {
+    dateYmd: string;
+    passageRange: string;
+    onShared?: (via: "share" | "clipboard") => void;
+    onError?: (message: string) => void;
+  };
+  helperNotice?: ReactNode;
 }) {
   const seed = fieldsFromEntry(initial);
   const [meditation, setMeditation] = useState(seed.meditation);
@@ -38,22 +57,29 @@ export function QtEntryForm({
 
   return (
     <div className="space-y-[var(--space-stack-lg)]">
-      <p className="type-caption text-text-secondary">
-        구절 · 묵상 · 결단과 순종 · 기도제목을 전체 합쳐{" "}
-        <strong className="type-caption-em">
-          최소 {QT_MIN_TOTAL_CHARS}자 이상
-        </strong>{" "}
-        적어주세요.
-        <span
-          className={`ml-1.5 tabular-nums ${
-            totalLen >= QT_MIN_TOTAL_CHARS
-              ? "text-text-main"
-              : "text-text-secondary/70"
-          }`}
-        >
-          (지금 {totalLen}자)
-        </span>
-      </p>
+      <div className="pt-[var(--space-stack-lg)]">
+        {helperNotice ? (
+          <div className="qt-validation-hint type-caption mb-[var(--space-stack-sm)] break-keep text-text-secondary">
+            {helperNotice}
+          </div>
+        ) : null}
+        <p className="qt-validation-hint type-caption text-text-secondary">
+          QT는 전체 합쳐{" "}
+          <strong className="type-caption-em">
+            최소 {QT_MIN_TOTAL_CHARS}자 이상
+          </strong>{" "}
+          적어주세요.
+          <span
+            className={`ml-1.5 tabular-nums ${
+              totalLen >= QT_MIN_TOTAL_CHARS
+                ? "text-text-main"
+                : "text-text-secondary/70"
+            }`}
+          >
+            (지금 {totalLen}자)
+          </span>
+        </p>
+      </div>
 
       <Field
         id="verse"
@@ -61,7 +87,7 @@ export function QtEntryForm({
         placeholder="기억에 남는 구절을 적어보세요."
         value={verse}
         disabled={locked}
-        rows={3}
+        minRows={3}
         onChange={setVerse}
       />
       <Field
@@ -70,7 +96,7 @@ export function QtEntryForm({
         placeholder="오늘 말씀을 통해 받은 은혜를 적어보세요."
         value={meditation}
         disabled={locked}
-        rows={5}
+        minRows={3}
         onChange={setMeditation}
       />
       <Field
@@ -79,7 +105,7 @@ export function QtEntryForm({
         placeholder="오늘 결단하고 순종할 것을 적어보세요."
         value={decisionObedience}
         disabled={locked}
-        rows={3}
+        minRows={3}
         onChange={setDecisionObedience}
       />
       <Field
@@ -88,25 +114,55 @@ export function QtEntryForm({
         placeholder="오늘의 기도제목을 적어보세요."
         value={prayer}
         disabled={locked}
-        rows={3}
+        minRows={3}
         onChange={setPrayer}
       />
 
-      <PrimaryButton
-        type="button"
-        className="w-full"
-        disabled={locked}
-        onClick={async () => {
-          setBusy(true);
-          try {
-            await onSave(fields);
-          } finally {
-            setBusy(false);
-          }
-        }}
-      >
-        {busy ? "저장 중…" : "저장하고 QT 완료하기"}
-      </PrimaryButton>
+      <div className="flex flex-col gap-[var(--space-stack-sm)]">
+        {share ? (
+          <PrimaryButton
+            type="button"
+            variant="secondary"
+            className="w-full"
+            disabled={locked}
+            onClick={async () => {
+              const text = formatQtShareText({
+                dateYmd: share.dateYmd,
+                passageRange: share.passageRange,
+                fields,
+              });
+              try {
+                const via = await shareOrCopyText(text);
+                share.onShared?.(via);
+              } catch (err) {
+                if (isShareAbortError(err)) return;
+                share.onError?.("공유에 실패했어요");
+              }
+            }}
+          >
+            <Send size={18} strokeWidth={2.25} aria-hidden />
+            나의 큐티 나누기
+          </PrimaryButton>
+        ) : null}
+
+        <PrimaryButton
+          type="button"
+          variant="primary"
+          className="w-full"
+          disabled={locked}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              await onSave(fields);
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          <Check size={18} strokeWidth={2.25} aria-hidden />
+          {busy ? "저장 중…" : "저장하고 큐티 완료하기"}
+        </PrimaryButton>
+      </div>
 
       {showClear && onClear ? (
         <PrimaryButton
@@ -130,6 +186,21 @@ export function QtEntryForm({
   );
 }
 
+function readLinePx(el: HTMLTextAreaElement): number {
+  const raw = getComputedStyle(el).getPropertyValue("--qt-line").trim();
+  const n = Number.parseFloat(raw);
+  return Number.isFinite(n) && n > 0 ? n : QT_LINE_FALLBACK_PX;
+}
+
+/** Grow one notebook line at a time; no inner scrollbar. */
+function syncAutoGrowHeight(el: HTMLTextAreaElement, minRows: number) {
+  const line = readLinePx(el);
+  const minH = minRows * line;
+  el.style.height = "0px";
+  const needed = Math.max(minH, el.scrollHeight);
+  el.style.height = `${Math.ceil(needed / line) * line}px`;
+}
+
 function Field({
   id,
   label,
@@ -137,7 +208,7 @@ function Field({
   value,
   onChange,
   disabled,
-  rows,
+  minRows,
 }: {
   id: string;
   label: string;
@@ -145,24 +216,34 @@ function Field({
   value: string;
   onChange: (v: string) => void;
   disabled?: boolean;
-  rows: number;
+  minRows: number;
 }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    syncAutoGrowHeight(el, minRows);
+
+    const onResize = () => syncAutoGrowHeight(el, minRows);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [value, minRows]);
+
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="type-section mb-1.5 block text-text-main"
-      >
+      <label htmlFor={id} className="qt-field-title mb-3 block">
         {label}
       </label>
       <textarea
+        ref={ref}
         id={id}
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        rows={rows}
+        rows={minRows}
         placeholder={placeholder}
-        className="type-body w-full resize-none rounded-[var(--radius-input)] border-0 bg-ivory px-4 py-3.5 text-text-main shadow-none placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-sky disabled:opacity-60"
+        className="qt-lined-field type-body w-full text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:ring-0 disabled:opacity-60"
       />
     </div>
   );
