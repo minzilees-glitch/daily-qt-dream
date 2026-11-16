@@ -14,7 +14,7 @@ export function HomeDurannoPassage({
   embedded = false,
   /** Home + today history — Duranno bible URL. Default true. */
   showLink = true,
-  /** Right-aligned on the 말씀구절 (range) row (e.g. share + edit icons). */
+  /** Right-aligned on the 말씀구절 (range) row (e.g. edit icon). */
   rangeTrailing,
 }: {
   reading: Pick<DurannoTodayMeta, "range"> &
