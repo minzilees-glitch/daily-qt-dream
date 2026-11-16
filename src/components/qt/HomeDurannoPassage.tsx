@@ -18,7 +18,9 @@ export function HomeDurannoPassage({
 
   return (
     <div className="home-duranno-in-sheet shadow-none">
-      <StatLabel className="text-text-secondary">{label}</StatLabel>
+      <StatLabel className="home-duranno-label text-text-secondary">
+        {label}
+      </StatLabel>
       <div className="mt-1 flex items-center gap-2">
         <p className="reading-passage-range min-w-0 flex-1 truncate">{range}</p>
         <a

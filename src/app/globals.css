@@ -1415,12 +1415,17 @@ a {
 }
 
 .home-duranno-in-sheet .reading-passage-range,
-.home-duranno-in-sheet .text-text-secondary,
 .home-duranno-in-sheet .home-duranno-summary {
   color: var(--color-black) !important; /* #000917 */
 }
 
-/* Icon-only Duranno CTA (BookOpen + ArrowUpRight) — black, no capsule. */
+/* Only 「오늘의 말씀」 label at 70%; range/summary/icons stay full. */
+.home-duranno-in-sheet .home-duranno-label {
+  color: var(--color-black) !important; /* #000917 */
+  opacity: 0.7;
+}
+
+/* Icon-only Duranno CTA (BookOpen + ArrowUpRight) — black @ 100%, no capsule. */
 .home-duranno-cta,
 .home-duranno-cta:link,
 .home-duranno-cta:visited,
@@ -1432,7 +1437,7 @@ a {
   gap: 0.125rem;
   flex-shrink: 0;
   color: var(--color-black) !important; /* #000917 */
-  opacity: 0.7;
+  opacity: 1;
   background: none !important;
   background-color: transparent !important;
   border: 0 !important;
@@ -1447,8 +1452,7 @@ a {
 }
 
 .home-duranno-cta:hover {
-  opacity: 0.85;
-  filter: none !important;
+  filter: brightness(0.92) !important;
 }
 
 .home-duranno-cta:focus-visible {
