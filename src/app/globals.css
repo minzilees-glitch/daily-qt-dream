@@ -1499,7 +1499,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   opacity: 0.8; /* 「오늘의 큐티를 …」 soft under date */
 }
 
-/* History calendar: top-right segmented week/month (+ optional 오늘). */
+/* History calendar: top-right segmented week/month toggle. */
 .premium-cal-mode-toggle {
   display: inline-flex;
   align-items: center;

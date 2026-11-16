@@ -283,20 +283,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     if (yearMonthOf(date) !== ym) setYm(yearMonthOf(date));
   };
 
-  const jumpToToday = () => {
-    const todayYmd = clampHistoryDate(todaySeoul());
-    setSelected(todayYmd);
-    setYm(yearMonthOf(todayYmd));
-    setEditing(false);
-    setMenuOpen(false);
-    setDragging(false);
-    draggingRef.current = false;
-    calendarExpandedRef.current = false;
-    setCalendarExpanded(false);
-    dropRef.current = 0;
-    setDrop(0);
-  };
-
   if (!currentUser) return null;
 
   const selectedCompleted = isCompleted(currentUser.id, selected);
@@ -406,15 +392,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               }}
             >
               <CalendarDays size={18} strokeWidth={1.75} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className="premium-cal-mode-toggle__btn type-caption font-semibold"
-              onClick={jumpToToday}
-              disabled={selected === todaySeoul()}
-              aria-label="오늘 날짜로 이동"
-            >
-              오늘
             </button>
           </div>
         </div>
