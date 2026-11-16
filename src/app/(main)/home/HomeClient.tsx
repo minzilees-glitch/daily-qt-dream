@@ -143,7 +143,7 @@ export function HomeClient({
             <HomeDurannoPassage
               reading={reading}
               label="오늘의 말씀"
-              labelTrailing={
+              rangeTrailing={
                 showMenu ? (
                   <PassageEntryActions
                     onEdit={() => setEditing(true)}

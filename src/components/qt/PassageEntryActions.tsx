@@ -2,7 +2,7 @@
 
 import { Pencil, Trash2 } from "lucide-react";
 
-/** Right-aligned edit + delete icons on 말씀 header (home + history). */
+/** Right-aligned edit + delete icons on the 말씀구절 (range) row (home + history). */
 export function PassageEntryActions({
   onEdit,
   onDelete,

@@ -15,51 +15,53 @@ export function HomeDurannoPassage({
   embedded = false,
   /** Home only — history omits the external bible link. Default true. */
   showLink = true,
-  /** Right-aligned on the label row (e.g. edit + delete icons). */
-  labelTrailing,
+  /** Right-aligned on the 말씀구절 (range) row (e.g. edit + delete icons). */
+  rangeTrailing,
 }: {
   reading: Pick<DurannoTodayMeta, "range"> &
     Partial<Pick<DurannoTodayMeta, "url" | "title">>;
   label?: string;
   embedded?: boolean;
   showLink?: boolean;
-  labelTrailing?: ReactNode;
+  rangeTrailing?: ReactNode;
 }) {
   const range = reading.range || "—";
   const linkUrl = showLink ? reading.url?.trim() : "";
 
   const body = (
     <>
-      {/* Trailing icons are absolute so they don't inflate row height —
-          otherwise eyebrow→range gap reads wider (mt-1 after h-8). */}
-      <div className="relative">
-        <StatLabel
-          className={`home-duranno-label min-w-0 truncate text-text-secondary${
-            labelTrailing ? " pr-16" : ""
+      <StatLabel className="home-duranno-label min-w-0 truncate text-text-secondary">
+        {label}
+      </StatLabel>
+      {/* Trailing edit/delete stay absolute so they don't inflate range-row
+          height (h-8 buttons vs range text). Far-right = actions. */}
+      <div className="relative mt-1">
+        <div
+          className={`flex min-w-0 items-center gap-4${
+            rangeTrailing ? " pr-16" : ""
           }`}
         >
-          {label}
-        </StatLabel>
-        {labelTrailing ? (
+          <p className="reading-passage-range min-w-0 shrink truncate">
+            {range}
+          </p>
+          {linkUrl ? (
+            <a
+              href={linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="home-duranno-cta inline-flex shrink-0 items-center gap-0.5"
+              aria-label="두란노에서 오늘의 말씀 읽기"
+              title="두란노에서 오늘의 말씀 읽기"
+            >
+              <BookOpen size={22} strokeWidth={1.5} aria-hidden />
+              <ArrowUpRight size={18} strokeWidth={1.5} aria-hidden />
+            </a>
+          ) : null}
+        </div>
+        {rangeTrailing ? (
           <div className="absolute right-0 top-1/2 -translate-y-1/2 shrink-0">
-            {labelTrailing}
+            {rangeTrailing}
           </div>
-        ) : null}
-      </div>
-      <div className="mt-1 flex min-w-0 items-center gap-4">
-        <p className="reading-passage-range min-w-0 shrink truncate">{range}</p>
-        {linkUrl ? (
-          <a
-            href={linkUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="home-duranno-cta inline-flex shrink-0 items-center gap-0.5"
-            aria-label="두란노에서 오늘의 말씀 읽기"
-            title="두란노에서 오늘의 말씀 읽기"
-          >
-            <BookOpen size={22} strokeWidth={1.5} aria-hidden />
-            <ArrowUpRight size={18} strokeWidth={1.5} aria-hidden />
-          </a>
         ) : null}
       </div>
     </>

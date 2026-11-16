@@ -428,7 +428,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               label={passageLabel}
               embedded
               showLink={isToday}
-              labelTrailing={
+              rangeTrailing={
                 !future ? (
                   <PassageEntryActions
                     onEdit={() => setEditing(true)}
