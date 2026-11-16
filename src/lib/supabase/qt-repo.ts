@@ -46,15 +46,27 @@ export async function fetchUserQtEntries(
 }
 
 /**
- * Presence rows for light counts (no QT text).
- * Falls back to selecting only user_id + entry_date from qt_entries
- * if the view is missing.
+ * Presence rows for light counts (no QT journal text).
+ * Prefers SECURITY DEFINER RPC `get_qt_presence` (same-group / admin).
+ * Falls back to presence view, then user_id+entry_date select (own rows under RLS).
  */
 export async function fetchQtPresence(): Promise<
   QtRepoResult<QtCompletion[]>
 > {
   const sb = getSupabaseBrowser();
   if (!sb) return { ok: false, error: "Supabase not configured" };
+
+  const viaRpc = await sb.rpc("get_qt_presence");
+  if (!viaRpc.error) {
+    return {
+      ok: true,
+      data: (viaRpc.data ?? []).map((r) => ({
+        userId: r.user_id,
+        date: r.entry_date,
+        completed: true,
+      })),
+    };
+  }
 
   const viaView = await sb
     .from("qt_entry_presence")
@@ -75,7 +87,12 @@ export async function fetchQtPresence(): Promise<
     .from("qt_entries")
     .select("user_id, entry_date");
 
-  if (viaTable.error) return { ok: false, error: viaTable.error.message };
+  if (viaTable.error) {
+    return {
+      ok: false,
+      error: viaRpc.error.message || viaTable.error.message,
+    };
+  }
   return {
     ok: true,
     data: (viaTable.data ?? []).map((r) => ({

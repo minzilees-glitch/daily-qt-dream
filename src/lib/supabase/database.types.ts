@@ -131,7 +131,42 @@ export interface Database {
         Relationships: [];
       };
     };
-    Functions: Record<string, never>;
+    Functions: {
+      get_qt_presence: {
+        Args: Record<string, never>;
+        Returns: {
+          user_id: string;
+          entry_date: string;
+        }[];
+      };
+      get_group_qt_counts: {
+        Args: {
+          p_group_id: string;
+          p_from?: string | null;
+          p_to?: string | null;
+        };
+        Returns: {
+          user_id: string;
+          entry_count: number;
+        }[];
+      };
+      current_profile_id: {
+        Args: Record<string, never>;
+        Returns: string;
+      };
+      is_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+      my_group_id: {
+        Args: Record<string, never>;
+        Returns: string;
+      };
+      profiles_share_group: {
+        Args: { target_user_id: string };
+        Returns: boolean;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
