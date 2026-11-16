@@ -3,8 +3,8 @@
 import type { ReactNode } from "react";
 
 /**
- * Home shell: sky header + overlapping mint QT sheet.
- * 「오늘의 말씀」 lives inside the sheet (no separate passage window).
+ * Home shell: sky header + overlapping mint QT sheet (no grabber).
+ * 「오늘의 말씀」 lives at the sheet top — same mint wash as the pad above it.
  */
 export function HomePremiumShell({
   header,
@@ -20,9 +20,6 @@ export function HomePremiumShell({
       </div>
 
       <section className="premium-qt-sheet premium-home-form-sheet">
-        <div className="premium-sheet-grabber-row" aria-hidden>
-          <span className="premium-sheet-grabber" />
-        </div>
         {sheet}
       </section>
     </div>
