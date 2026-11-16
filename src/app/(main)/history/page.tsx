@@ -142,7 +142,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const reading = getReadingForDate(selected);
   const duranno = {
     range: reading.range,
-    title: reading.title,
+    title: reading.title ?? "",
     url: durannoUrlForDate(selected),
   };
   const hasEntry = !!selectedEntry;
