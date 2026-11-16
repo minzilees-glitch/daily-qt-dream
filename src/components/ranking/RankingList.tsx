@@ -71,7 +71,11 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
             <RankMark row={row} />
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
-            <p className="min-w-0 truncate type-body font-bold text-text-main">
+            <p
+              className={`min-w-0 truncate type-body text-text-main ${
+                row.isMine ? "font-medium" : "font-bold"
+              }`}
+            >
               {row.groupName}
             </p>
             {row.isMine ? (
