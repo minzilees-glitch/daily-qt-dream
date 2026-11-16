@@ -11,7 +11,6 @@ import { buildUsers } from "./users";
 import {
   buildQtCompletions,
   buildEntries,
-  ensureTestUserToday,
   monthsCovered,
 } from "./qt-records";
 import { buildAwards } from "./awards";
@@ -37,8 +36,8 @@ export function getMockData(): MockDataset {
 
   const groups = buildGroups();
   const users = buildUsers(groups);
-  let completions = buildQtCompletions(users);
-  completions = ensureTestUserToday(completions, TEST_USER_ID);
+  // Empty participation — no fabricated QT / lights / awards for pilot.
+  const completions = buildQtCompletions(users);
   const reflections = buildEntries(users, completions);
   const awards = buildAwards(groups, users, completions);
   const readingRanges = buildReadingRanges(3);
