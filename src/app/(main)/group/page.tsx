@@ -94,7 +94,7 @@ export default function GroupPage() {
         <div className="premium-panel premium-panel--no-divider animate-fade-up">
           <div className="mb-3">
             <h2 className="qt-field-title qt-field-title--lg mb-0">
-              우리순 이번달 날짜별 참여
+              우리순의 일별 참여
             </h2>
           </div>
           <DayParticipation days={dayPart} />
