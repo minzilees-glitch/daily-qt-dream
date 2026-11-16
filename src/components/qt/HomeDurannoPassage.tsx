@@ -40,7 +40,7 @@ export function HomeDurannoPassage({
             rangeTrailing ? " pr-16" : ""
           }`}
         >
-          <p className="reading-passage-range min-w-0 shrink truncate">
+          <p className="reading-passage-range m-0 min-w-0 shrink truncate leading-none">
             {range}
           </p>
           {linkUrl ? (
@@ -48,7 +48,7 @@ export function HomeDurannoPassage({
               href={linkUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="home-duranno-cta type-caption shrink-0"
+              className="home-duranno-cta type-caption self-center shrink-0"
               aria-label="말씀보기"
               title="말씀보기"
             >
