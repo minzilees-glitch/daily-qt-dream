@@ -859,7 +859,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   opacity: 1 !important;
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  text-underline-offset: 8px; /* further below the numeral */
+  text-underline-offset: 12px; /* further below the numeral */
   text-decoration-color: var(--color-ink-blue);
 }
 
