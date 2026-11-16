@@ -1,7 +1,6 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Check } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -112,7 +111,7 @@ export function QtEntryForm({
           <PrimaryButton
             type="button"
             variant="secondary"
-            className="w-full"
+            className="w-full !text-danger [&_svg]:!text-danger"
             disabled={locked}
             onClick={onDelete}
           >
@@ -134,9 +133,6 @@ export function QtEntryForm({
             }
           }}
         >
-          {editing ? (
-            <Check size={18} strokeWidth={2.25} aria-hidden />
-          ) : null}
           {busy
             ? "저장 중…"
             : editing
