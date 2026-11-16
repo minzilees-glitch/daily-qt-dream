@@ -357,6 +357,13 @@ html[data-sky-mode="밤모드"] {
   font-weight: 600;
 }
 
+/* CTA labels: 1pt under body (19→18). PrimaryButton + legacy .btn-cta. */
+.cta-label,
+.bg-cta,
+.btn-cta {
+  font-size: 18px !important;
+}
+
 /* Primary filled CTAs: black fill + sky label/icons, pill, flat */
 .bg-cta,
 .btn-cta {

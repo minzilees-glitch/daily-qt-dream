@@ -12,9 +12,9 @@ export function PrimaryButton({
   variant = "primary",
   ...rest
 }: Props) {
-  /* All CTAs: always bold — beats .type-body 400. */
+  /* All CTAs: bold + .cta-label 18px (body 19 − 1pt). */
   const base =
-    "type-body !font-bold inline-flex items-center justify-center gap-2 rounded-[var(--radius-btn)] px-[var(--space-control-x)] py-4 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]";
+    "cta-label type-body !font-bold inline-flex items-center justify-center gap-2 rounded-[var(--radius-btn)] px-[var(--space-control-x)] py-4 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]";
 
   const styles =
     variant === "primary"
