@@ -21,8 +21,8 @@ type Tab = {
 
 /** Equal-priority row: home first (no raised center). */
 const TABS: Tab[] = [
-  { href: "/home", label: "오늘의 QT", light: true },
-  { href: "/history", label: "나의 QT들", icon: CalendarDays },
+  { href: "/home", label: "오늘의 큐티", light: true },
+  { href: "/history", label: "나의 큐티들", icon: CalendarDays },
   { href: "/group", label: "우리 순", icon: Users },
   { href: "/ranking", label: "랭킹", icon: Trophy },
   { href: "/me", label: "마이페이지", icon: UserRound },
@@ -40,7 +40,7 @@ export function BottomNav() {
       aria-label="하단 메뉴"
       className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-8 pb-[calc(10px+var(--safe-bottom))]"
     >
-      <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-1.5">
+      <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-2.5">
         {TABS.map(({ href, label, icon: Icon, light }) => {
           const active = isActive(pathname, href);
           return (

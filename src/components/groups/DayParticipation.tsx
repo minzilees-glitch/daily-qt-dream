@@ -6,7 +6,7 @@ import { weekdaySunFirst } from "@/lib/dates";
 export function DayParticipation({
   days,
 }: {
-  days: { date: string; count: number; total: number }[];
+  days: { date: string; count: number; total: number; active?: boolean }[];
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{
@@ -62,7 +62,7 @@ export function DayParticipation({
   return (
     <div
       ref={scrollerRef}
-      className="day-part-scroller flex cursor-grab gap-2 overflow-x-auto pb-1 scrollbar-none active:cursor-grabbing touch-pan-x select-none"
+      className="day-part-scroller flex cursor-grab gap-1 overflow-x-auto pb-1 scrollbar-none active:cursor-grabbing touch-pan-x select-none"
       style={{ WebkitOverflowScrolling: "touch" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -73,27 +73,54 @@ export function DayParticipation({
       }}
     >
       {days.map((d) => {
-        const ratio = d.total === 0 ? 0 : d.count / d.total;
+        const isActive = d.active !== false;
+        const ratio = !isActive || d.total === 0 ? 0 : d.count / d.total;
         const dayNum = Number(d.date.slice(8));
         const isSunday = weekdaySunFirst(d.date) === 0;
         return (
           <div
             key={d.date}
-            className="flex w-11 shrink-0 snap-start flex-col items-center gap-1.5"
-            title={`${d.date}: ${d.count}/${d.total}`}
+            className={`flex w-8 shrink-0 snap-start flex-col items-center gap-1.5 ${
+              isActive ? "" : "opacity-40"
+            }`}
+            title={
+              isActive
+                ? `${d.date}: ${d.count}/${d.total}`
+                : `${d.date}: 아직 열리지 않은 날`
+            }
+            aria-disabled={!isActive}
           >
-            {/* Track: light sora tint · Fill: sora · Labels: black (Sunday red) */}
-            <div className="flex h-20 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sora)_32%,white)]">
-              <div
-                className="w-full rounded-full bg-[var(--color-sora)] transition-all"
-                style={{ height: `${Math.max(8, ratio * 100)}%` }}
-              />
+            {isActive ? (
+              <p className="type-label !font-normal tabular-nums text-[var(--color-black)]">
+                {d.count}
+              </p>
+            ) : (
+              <span className="type-label !font-normal tabular-nums text-text-secondary">
+                -
+              </span>
+            )}
+            {/* Active: sora track/fill · Future: muted deactivated track */}
+            <div
+              className={`flex h-14 w-5 items-end overflow-hidden rounded-full ${
+                isActive
+                  ? "bg-[color-mix(in_srgb,var(--color-sora)_32%,white)]"
+                  : "bg-[color-mix(in_srgb,var(--muted)_55%,white)]"
+              }`}
+            >
+              {isActive ? (
+                <div
+                  className="w-full rounded-full bg-[var(--color-sora)] transition-all"
+                  style={{ height: `${Math.max(8, ratio * 100)}%` }}
+                />
+              ) : null}
             </div>
             <span
               className={`type-label ${
-                isSunday
-                  ? "text-[var(--color-danger)]"
-                  : "text-[var(--color-black)]"
+                !isActive
+                  ? "text-text-secondary"
+                  : isSunday
+                    ? "text-[var(--color-danger)]"
+                    : "text-[var(--color-black)]"
               }`}
             >
               {dayNum}

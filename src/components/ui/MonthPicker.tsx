@@ -1,7 +1,13 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { addMonths, formatMonthLabel, formatMonthOnly } from "@/lib/dates";
+import {
+  addDays,
+  addMonths,
+  formatMonthLabel,
+  formatMonthOnly,
+  yearMonthOf,
+} from "@/lib/dates";
 
 export function MonthPicker({
   value,
@@ -14,6 +20,14 @@ export function MonthPicker({
   capsule = false,
   /** Start-align the control (premium history header). Default centers. */
   align = "center",
+  /**
+   * Chevron step unit. `week` uses `focusDate` + `onFocusDateChange`
+   * (history weekly calendar). Default `month`.
+   */
+  step = "month",
+  /** Anchor date for week stepping (YYYY-MM-DD). Required when step="week". */
+  focusDate,
+  onFocusDateChange,
 }: {
   value: string;
   onChange: (ym: string) => void;
@@ -25,15 +39,39 @@ export function MonthPicker({
   light?: boolean;
   capsule?: boolean;
   align?: "center" | "start";
+  step?: "month" | "week";
+  focusDate?: string;
+  onFocusDateChange?: (ymd: string) => void;
 }) {
-  const prev = addMonths(value, -1);
-  const next = addMonths(value, 1);
-  const canPrev = !min || prev >= min;
-  const canNext = !max || next <= max;
+  const weekMode = step === "week" && !!focusDate && !!onFocusDateChange;
+  const prevMonth = addMonths(value, -1);
+  const nextMonth = addMonths(value, 1);
+  const prevWeek = weekMode ? addDays(focusDate, -7) : "";
+  const nextWeek = weekMode ? addDays(focusDate, 7) : "";
+
+  const canPrev = weekMode
+    ? !min || yearMonthOf(prevWeek) >= min
+    : !min || prevMonth >= min;
+  const canNext = weekMode
+    ? !max || yearMonthOf(nextWeek) <= max
+    : !max || nextMonth <= max;
+
   // Color only: capsule → black on ivory; light → white on sky; else black.
   const onLight = light && !capsule;
   const ink = onLight ? "text-white" : "text-black";
   const chevronClass = `relative z-[1] flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-transparent ${ink} shadow-none transition disabled:opacity-30`;
+
+  const goPrev = () => {
+    if (!canPrev) return;
+    if (weekMode) onFocusDateChange(prevWeek);
+    else onChange(prevMonth);
+  };
+
+  const goNext = () => {
+    if (!canNext) return;
+    if (weekMode) onFocusDateChange(nextWeek);
+    else onChange(nextMonth);
+  };
 
   return (
     <div
@@ -48,9 +86,9 @@ export function MonthPicker({
       >
         <button
           type="button"
-          aria-label="이전 달"
+          aria-label={weekMode ? "이전 주" : "이전 달"}
           disabled={!canPrev}
-          onClick={() => canPrev && onChange(prev)}
+          onClick={goPrev}
           className={chevronClass}
         >
           <ChevronLeft size={18} strokeWidth={2.5} />
@@ -60,9 +98,9 @@ export function MonthPicker({
         </p>
         <button
           type="button"
-          aria-label="다음 달"
+          aria-label={weekMode ? "다음 주" : "다음 달"}
           disabled={!canNext}
-          onClick={() => canNext && onChange(next)}
+          onClick={goNext}
           className={chevronClass}
         >
           <ChevronRight size={18} strokeWidth={2.5} />

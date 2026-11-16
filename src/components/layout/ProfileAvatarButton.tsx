@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Camera, UserRound } from "lucide-react";
 import { useApp } from "@/lib/app-context";
+import { compressAvatarImage } from "@/lib/avatar-image";
 
 export function ProfileAvatarButton({
   light = false,
@@ -21,33 +22,51 @@ export function ProfileAvatarButton({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!open) {
-      setPreview(null);
-      setError(null);
-      setSaving(false);
-    }
-  }, [open]);
-
   if (!currentUser) return null;
 
   const avatar = currentUser.avatarUrl ?? null;
+  /** Default initial letter: deep navy (`--color-ink-blue`). */
+  const initialShell =
+    "bg-sky-light text-[var(--color-ink-blue)] hover:bg-sky-light";
   const shell =
-    light
-      ? "bg-white/20 text-white hover:bg-white/30"
-      : "bg-sky-light text-sky hover:bg-sky-light";
+    fallback === "initial"
+      ? initialShell
+      : light
+        ? "bg-white/20 text-white hover:bg-white/30"
+        : "bg-sky-light text-sky hover:bg-sky-light";
+
+  const closeModal = () => {
+    if (saving) return;
+    setOpen(false);
+    setPreview(null);
+    setError(null);
+    setSaving(false);
+  };
 
   const onPick = (file: File | null) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === "string" ? reader.result : null;
-      if (!result) return;
-      setPreview(result);
-      setError(null);
+    if (!file) return;
+    if (file.type && !file.type.startsWith("image/")) {
+      setError("이미지 파일만 업로드할 수 있어요.");
       setOpen(true);
-    };
-    reader.readAsDataURL(file);
+      setPreview(null);
+      return;
+    }
+    void (async () => {
+      setError(null);
+      try {
+        const { dataUrl } = await compressAvatarImage(file);
+        setPreview(dataUrl);
+        setOpen(true);
+      } catch (err) {
+        setPreview(null);
+        setOpen(true);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "이미지를 열 수 없어요. JPEG/PNG로 다시 선택해 주세요.",
+        );
+      }
+    })();
   };
 
   const onSave = async () => {
@@ -61,6 +80,8 @@ export function ProfileAvatarButton({
       return;
     }
     setOpen(false);
+    setPreview(null);
+    setError(null);
   };
 
   return (
@@ -108,15 +129,13 @@ export function ProfileAvatarButton({
         }}
       />
 
-      {open && preview ? (
+      {open ? (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-[var(--space-page-x)]"
           role="dialog"
           aria-modal="true"
           aria-label="프로필 사진 미리보기"
-          onClick={() => {
-            if (!saving) setOpen(false);
-          }}
+          onClick={closeModal}
         >
           <div
             className="w-full max-w-sm rounded-[var(--radius-md)] bg-white p-[var(--space-card)] shadow-none"
@@ -125,14 +144,16 @@ export function ProfileAvatarButton({
             <p className="type-body font-semibold text-text-main">
               프로필 사진 변경
             </p>
-            <div className="mt-[var(--space-stack-sm)] flex justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={preview}
-                alt="미리보기"
-                className="h-36 w-36 rounded-full object-cover"
-              />
-            </div>
+            {preview ? (
+              <div className="mt-[var(--space-stack-sm)] flex justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={preview}
+                  alt="미리보기"
+                  className="h-36 w-36 rounded-full object-cover"
+                />
+              </div>
+            ) : null}
             {error ? (
               <p className="qt-validation-hint mt-3 text-center type-caption text-danger">
                 {error}
@@ -143,13 +164,13 @@ export function ProfileAvatarButton({
                 type="button"
                 disabled={saving}
                 className="rounded-full bg-sky-light px-4 py-3 type-body-sm font-semibold text-text-main disabled:opacity-50"
-                onClick={() => setOpen(false)}
+                onClick={closeModal}
               >
-                취소
+                {preview ? "취소" : "닫기"}
               </button>
               <button
                 type="button"
-                disabled={saving}
+                disabled={saving || !preview}
                 className="btn-cta bg-cta rounded-full px-4 py-3 type-body-sm font-semibold !text-[var(--color-mint)] disabled:opacity-50"
                 onClick={() => void onSave()}
               >

@@ -1,41 +1,51 @@
 import type { Group } from "@/types";
 
-/** 30 순 (groups). Leader ids are assigned after users are generated. */
+/**
+ * Canonical 33 순 (docs/sun-list.md).
+ * Leader ids are assigned in users.ts.
+ */
 export const GROUP_NAMES = [
   "김병준 순",
-  "기쁨순",
-  "평안순",
-  "소망순",
-  "믿음순",
-  "은혜순",
-  "진리순",
-  "생명순",
-  "빛된순",
-  "새아침순",
-  "감람순",
-  "시온순",
-  "베다니순",
-  "갈릴리순",
-  "엠마오순",
-  "마가순",
-  "안디옥순",
-  "빌립보순",
-  "고린도순",
-  "에베소순",
-  "골로새순",
-  "데살로니가순",
-  "디모데순",
-  "디도순",
-  "빌레몬순",
-  "히브리순",
-  "야고보순",
-  "베드로순",
-  "요한순",
-  "유다순",
+  "김서경 순",
+  "최다혜 순",
+  "오요섭 순",
+  "문은미 순",
+  "장석인 순",
+  "임인택 순",
+  "이지행 순",
+  "신은영 순",
+  "정현태 순",
+  "한준희 순",
+  "이한지 순",
+  "이유진 순",
+  "박하은 순",
+  "홍승우 순",
+  "최진화 순",
+  "박호수 순",
+  "박영수 순",
+  "김이현 순",
+  "김태희 순",
+  "박마광 순",
+  "양은지 순",
+  "정지현 순",
+  "구현정 순",
+  "김승하 순",
+  "박현수 순",
+  "이성민 순",
+  "한요한 순",
+  "김미림 순",
+  "신의정 순",
+  "우경식 순",
+  "임예진 순",
+  "정봉훈 순",
 ] as const;
 
+/** Demo-only 순 for ranking/group pilot numbers — not in sun-list. */
+export const PILOT_GROUP_NAME = "파일럿 순";
+
 export function buildGroups(): Group[] {
-  return GROUP_NAMES.map((name, i) => ({
+  const names = [...GROUP_NAMES, PILOT_GROUP_NAME];
+  return names.map((name, i) => ({
     id: `g-${String(i + 1).padStart(2, "0")}`,
     name,
     leaderId: "", // filled in users.ts

@@ -70,27 +70,33 @@ export default function GroupPage() {
             members={members}
             memberCount={myRank?.memberCount ?? 0}
             lights={myRank?.lights ?? 0}
-            rankLabel={`${myRank?.rank ?? "-"}위`}
+            rankLabel={
+              myRank && myRank.lights > 0 ? `${myRank.rank}위` : "-"
+            }
           />
         </div>
       </header>
 
       <section className="premium-qt-sheet premium-qt-sheet--group">
         <div className="premium-panel animate-fade-up">
-          <h2 className="qt-field-title qt-field-title--sm mb-5">
-            우리순의 이번주 참여
-          </h2>
+          <div className="mb-3">
+            <h2 className="qt-field-title qt-field-title--lg mb-0">
+              우리순의 이번주 참여
+            </h2>
+          </div>
           <WeekdayParticipation
             days={weekBars}
-            showCount={false}
             showPossible={false}
+            trackClassName="h-14"
           />
         </div>
 
         <div className="premium-panel premium-panel--no-divider animate-fade-up">
-          <h2 className="qt-field-title qt-field-title--sm mb-5">
-            우리순 날짜별 참여
-          </h2>
+          <div className="mb-3">
+            <h2 className="qt-field-title qt-field-title--lg mb-0">
+              우리순의 일별 참여
+            </h2>
+          </div>
           <DayParticipation days={dayPart} />
         </div>
       </section>

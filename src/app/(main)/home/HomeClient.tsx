@@ -46,7 +46,8 @@ export function HomeClient({
   const doneToday = isCompleted(currentUser.id, today);
   const todayEntry = getEntry(currentUser.id, today);
   const hasEntry = Boolean(todayEntry);
-  const showActions = doneToday || editing || hasEntry;
+  const showEdit = doneToday || hasEntry;
+  const editActive = editing && showEdit;
 
   const showToast = (message: string) => {
     setToast(message);
@@ -81,7 +82,12 @@ export function HomeClient({
       <QtEntryForm
         key={`home-qt-${today}-${editing ? todayEntry?.updatedAt ?? "edit" : "new"}`}
         initial={todayEntry}
-        share={shareOpts}
+        editing={editing && (hasEntry || doneToday)}
+        onDelete={
+          editing && (hasEntry || doneToday)
+            ? () => setConfirmOpen(true)
+            : undefined
+        }
         onSave={async (fields) => {
           try {
             const res = await saveEntry(today, fields);
@@ -117,6 +123,7 @@ export function HomeClient({
             homeLayout
             title="오늘은"
             dateLabel={formatDisplayDate(today)}
+            nickname={currentUser.name}
             dateAccessory={
               <LightIcon
                 active={doneToday}
@@ -140,11 +147,10 @@ export function HomeClient({
               reading={reading}
               label="오늘의 말씀"
               rangeTrailing={
-                showActions ? (
+                showEdit ? (
                   <PassageEntryActions
+                    editActive={editActive}
                     onEdit={() => setEditing(true)}
-                    onDelete={() => setConfirmOpen(true)}
-                    deleteDisabled={!hasEntry && !doneToday}
                   />
                 ) : null
               }
@@ -155,7 +161,7 @@ export function HomeClient({
       />
       <ConfirmModal
         open={confirmOpen}
-        title="이 날의 QT 기록을 삭제할까요?"
+        title="이 날의 큐티 기록을 삭제할까요?"
         description="삭제하면 완료도 함께 취소됩니다. 이 작업은 되돌릴 수 없습니다."
         confirmLabel="삭제"
         cancelLabel="취소"

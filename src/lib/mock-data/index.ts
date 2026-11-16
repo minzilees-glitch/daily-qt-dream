@@ -11,7 +11,6 @@ import { buildUsers } from "./users";
 import {
   buildQtCompletions,
   buildEntries,
-  ensureTestUserToday,
   monthsCovered,
 } from "./qt-records";
 import { buildAwards } from "./awards";
@@ -37,10 +36,10 @@ export function getMockData(): MockDataset {
 
   const groups = buildGroups();
   const users = buildUsers(groups);
-  let completions = buildQtCompletions(users);
-  completions = ensureTestUserToday(completions, TEST_USER_ID);
+  // Seeded demo: 이민지 Sep/Oct + 11-15; 파일럿 순 Sep/Oct/Nov. Others 0.
+  const completions = buildQtCompletions(users);
   const reflections = buildEntries(users, completions);
-  const awards = buildAwards(groups, users, completions);
+  const awards = buildAwards();
   const readingRanges = buildReadingRanges(3);
 
   cached = {

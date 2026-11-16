@@ -24,18 +24,23 @@ import {
   TEST_USER_ID,
 } from "@/lib/mock-data";
 import { isFutureDate, todaySeoul } from "@/lib/dates";
-import { loadJson, removeKey, saveJson } from "@/lib/storage";
+import { loadJson, removeKey, saveJson, trySaveJson } from "@/lib/storage";
 import {
   normalizeEntry,
   trimFields,
   validationMessage,
 } from "@/lib/qt-entry";
+import { compressAvatarImage } from "@/lib/avatar-image";
 import {
   clearAvatar,
   dataUrlToBlob,
   fetchProfileAvatarMap,
   uploadAndSaveAvatar,
 } from "@/lib/supabase/avatar-repo";
+import {
+  fetchDisplayName,
+  updateDisplayName,
+} from "@/lib/supabase/profile-repo";
 import {
   deleteQtEntry,
   fetchQtPresence,
@@ -70,11 +75,16 @@ interface AppState {
   confirmAward: (yearMonth: string, groupId: string, lights: number) => void;
   /**
    * Save profile photo for the current user.
-   * Optimistic local map first; when Supabase is configured, also uploads to
-   * Storage (`avatars/{userId}/avatar.*`) and updates `profiles.avatar_url`.
+   * Compresses to a JPEG thumbnail first; when Supabase is configured, also
+   * uploads to Storage (`avatars/{userId}/avatar.*`) and updates
+   * `profiles.avatar_url`. Falls back to local-only if cloud upload fails.
    */
   setAvatarUrl: (
     dataUrl: string | null,
+  ) => Promise<{ ok: boolean; message: string }>;
+  /** Update nickname (profiles.display_name when Supabase is on). */
+  setDisplayName: (
+    name: string,
   ) => Promise<{ ok: boolean; message: string }>;
   isCompleted: (userId: string, date: string) => boolean;
   getReflection: (userId: string, date: string) => QtEntry | undefined;
@@ -97,6 +107,8 @@ interface Overrides {
   awards: MonthlyAward[];
   /** Profile photo data URLs keyed by user id. */
   avatarMap: Record<string, string>;
+  /** Nickname overrides keyed by user id (profiles.display_name). */
+  nameMap?: Record<string, string>;
   /**
    * Completions that do not earn lights (past-date backfills).
    * Keys: `userId|YYYY-MM-DD`. Persists for both local + Supabase saves.
@@ -111,6 +123,7 @@ const emptyOverrides = (): Overrides => ({
   leaderMap: {},
   awards: [],
   avatarMap: {},
+  nameMap: {},
   noLightKeys: [],
 });
 
@@ -184,9 +197,25 @@ function writeSession(id: string | null) {
 }
 
 function writeOverrides(next: Overrides) {
-  saveJson(OVERRIDES_KEY, next);
-  readFresh();
+  const persisted = trySaveJson(OVERRIDES_KEY, next);
+  if (persisted) {
+    readFresh();
+  } else {
+    // Keep in-memory state even when localStorage quota blocks (large avatars).
+    version += 1;
+    clientSnap = {
+      sessionUserId: clientSnap.sessionUserId,
+      overrides: {
+        ...next,
+        reflections: (next.reflections ?? []).map((r) =>
+          normalizeEntry(r as QtEntry & { content?: string }),
+        ),
+      },
+      version,
+    };
+  }
   emit();
+  return persisted;
 }
 
 const READY_TRUE = true;
@@ -271,6 +300,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         };
       });
       if (avatars.ok) setRemoteAvatars(avatars.data);
+      const display = await fetchDisplayName(sessionUserId);
+      if (!cancelled && display.ok && display.data) {
+        const nameMap = { ...(getSnapshot().overrides.nameMap ?? {}) };
+        // Prefer local override if user already edited this session.
+        if (!nameMap[sessionUserId]) {
+          nameMap[sessionUserId] = display.data;
+          writeOverrides({ ...getSnapshot().overrides, nameMap });
+        }
+      }
       setRemoteTick((t) => t + 1);
     })();
     return () => {
@@ -295,13 +333,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         remoteAvatars[u.id] ??
         u.avatarUrl ??
         null;
-      return { ...u, groupId, isLeader, avatarUrl };
+      const name = overrides.nameMap?.[u.id]?.trim() || u.name;
+      return { ...u, name, groupId, isLeader, avatarUrl };
     });
   }, [
     base,
     overrides.userGroupMap,
     overrides.leaderMap,
     overrides.avatarMap,
+    overrides.nameMap,
     remoteAvatars,
   ]);
 
@@ -669,44 +709,96 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ok: false, message: "로그인이 필요해요." };
       }
 
-      // Optimistic local update (instant UI for home / me / walkers)
+      if (!dataUrl) {
+        const avatarMap = { ...(overrides.avatarMap ?? {}) };
+        delete avatarMap[sessionUserId];
+        writeOverrides({ ...overrides, avatarMap });
+        if (supabaseEnabled) {
+          const res = await clearAvatar(sessionUserId);
+          if (!res.ok) {
+            return { ok: false, message: res.error };
+          }
+          setRemoteAvatars((prev) => {
+            const next = { ...prev };
+            delete next[sessionUserId];
+            return next;
+          });
+        }
+        return { ok: true, message: "프로필 사진을 삭제했어요." };
+      }
+
+      // Always compress to a JPEG thumbnail before persist/upload.
+      let compressed: { dataUrl: string; blob: Blob };
+      try {
+        compressed = await compressAvatarImage(dataUrl);
+      } catch (err) {
+        const detail =
+          err instanceof Error ? err.message : "이미지 변환에 실패했어요.";
+        return { ok: false, message: detail };
+      }
+
       const avatarMap = { ...(overrides.avatarMap ?? {}) };
-      if (dataUrl) avatarMap[sessionUserId] = dataUrl;
-      else delete avatarMap[sessionUserId];
+      avatarMap[sessionUserId] = compressed.dataUrl;
       writeOverrides({ ...overrides, avatarMap });
 
       if (!supabaseEnabled) {
         return { ok: true, message: "저장했어요." };
       }
 
-      if (!dataUrl) {
-        const res = await clearAvatar(sessionUserId);
-        if (!res.ok) {
-          return { ok: false, message: res.error };
-        }
-        setRemoteAvatars((prev) => {
-          const next = { ...prev };
-          delete next[sessionUserId];
-          return next;
-        });
-        return { ok: true, message: "프로필 사진을 삭제했어요." };
-      }
-
-      const blob = dataUrlToBlob(dataUrl);
+      const blob =
+        compressed.blob.type.startsWith("image/")
+          ? compressed.blob
+          : dataUrlToBlob(compressed.dataUrl);
       if (!blob) {
         return { ok: false, message: "이미지 형식을 읽지 못했어요." };
       }
 
       const res = await uploadAndSaveAvatar(sessionUserId, blob);
       if (!res.ok) {
-        return { ok: false, message: res.error };
+        // Local thumbnail already saved — pilot can keep using the app offline.
+        return {
+          ok: true,
+          message: `기기에 저장했어요. 클라우드 동기화 실패: ${res.error}`,
+        };
       }
 
-      // Replace data URL with durable public Storage URL
       avatarMap[sessionUserId] = res.data;
       writeOverrides({ ...overrides, avatarMap });
       setRemoteAvatars((prev) => ({ ...prev, [sessionUserId]: res.data }));
       return { ok: true, message: "프로필 사진을 저장했어요." };
+    },
+    [overrides, sessionUserId, supabaseEnabled],
+  );
+
+  const setDisplayName = useCallback(
+    async (name: string) => {
+      if (!sessionUserId) {
+        return { ok: false, message: "로그인이 필요해요." };
+      }
+      const trimmed = name.trim();
+      if (!trimmed) {
+        return { ok: false, message: "닉네임을 입력해 주세요." };
+      }
+      if (trimmed.length > 40) {
+        return { ok: false, message: "닉네임은 40자 이내로 입력해 주세요." };
+      }
+
+      const nameMap = { ...(overrides.nameMap ?? {}) };
+      nameMap[sessionUserId] = trimmed;
+      writeOverrides({ ...overrides, nameMap });
+
+      if (!supabaseEnabled) {
+        return { ok: true, message: "닉네임을 저장했어요." };
+      }
+
+      const res = await updateDisplayName(sessionUserId, trimmed);
+      if (!res.ok) {
+        return {
+          ok: true,
+          message: `기기에 저장했어요. 클라우드 동기화 실패: ${res.error}`,
+        };
+      }
+      return { ok: true, message: "닉네임을 저장했어요." };
     },
     [overrides, sessionUserId, supabaseEnabled],
   );
@@ -729,6 +821,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setGroupLeader,
     confirmAward,
     setAvatarUrl,
+    setDisplayName,
     isCompleted,
     getReflection,
     getEntry,

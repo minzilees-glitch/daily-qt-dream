@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
+import { WalkerFace } from "@/components/ui/WalkerFace";
 import type { User } from "@/types";
 
 /** Four discrete sizes (~11px baseline +5%): smaller / base / larger / largest. */
@@ -145,14 +146,6 @@ const BODY_VARIANTS = [
   "pink",
 ] as const;
 
-const AVATAR_STYLES = [
-  "avataaars",
-  "lorelei",
-  "notionists",
-  "thumbs",
-  "shapes",
-] as const;
-
 type Activity = "walk" | "tea" | "book" | "wave";
 
 type WalkerState = {
@@ -166,18 +159,6 @@ type WalkerState = {
   bobSpeed: number;
   pauseLeft: number;
 };
-
-/** DiceBear placeholder when the member has no stored profile photo. */
-function fallbackAvatarUrl(userId: string, index: number): string {
-  const style = AVATAR_STYLES[index % AVATAR_STYLES.length]!;
-  const seed = encodeURIComponent(userId);
-  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundType=gradientLinear&radius=50`;
-}
-
-/** Prefer shared `User.avatarUrl` (local avatarMap / mock); else DiceBear. */
-function walkerFaceSrc(user: User, index: number): string {
-  return user.avatarUrl || fallbackAvatarUrl(user.id, index);
-}
 
 function bodyUrl(index: number): string {
   const name = BODY_VARIANTS[index % BODY_VARIANTS.length]!;
@@ -364,9 +345,10 @@ export function SkyWalkers({
         const bobAmp =
           s.activity === "tea" ? 1.4 : s.activity === "book" ? 0.8 : 2.2;
         const bob = Math.sin(s.bobPhase) * bobAmp;
-        const figure = el.querySelector<HTMLElement>("[data-figure]");
         el.style.transform = `translate3d(${s.x}px, ${s.y + bob}px, 0)`;
-        if (figure) figure.style.transform = `scaleX(${s.facing})`;
+        // Face stays front-facing; only body + props flip with walk direction.
+        const body = el.querySelector<HTMLElement>("[data-facing]");
+        if (body) body.style.transform = `scaleX(${s.facing})`;
 
         const tea = el.querySelector<HTMLElement>('[data-prop="tea"]');
         if (tea) {
@@ -580,32 +562,28 @@ export function SkyWalkers({
                       width: WALKER_FIGURE_W,
                     }}
                   >
-                    {/* Face overlaps collar: sits low in U so shoulders cover lower face */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={walkerFaceSrc(u, i)}
-                      alt=""
-                      width={WALKER_FACE_PX}
-                      height={WALKER_FACE_PX}
-                      className="pointer-events-none absolute left-1/2 z-[3] -translate-x-1/2 rounded-full bg-white object-cover"
-                      style={{
-                        top: WALKER_FACE_TOP,
-                        width: WALKER_FACE_PX,
-                        height: WALKER_FACE_PX,
-                      }}
-                      draggable={false}
+                    {/* Face: shared profile thumbnail / nickname initial — never mirrored. */}
+                    <WalkerFace
+                      user={u}
+                      size={WALKER_FACE_PX}
+                      style={{ top: WALKER_FACE_TOP }}
                     />
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={bodyUrl(i)}
-                      alt=""
-                      className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
-                      style={{ height: WALKER_BODY_H }}
-                      draggable={false}
-                    />
-                    {activity === "tea" ? <TeaCup /> : null}
-                    {activity === "book" ? <BookProp /> : null}
-                    {activity === "wave" ? <WaveHand /> : null}
+                    <div
+                      data-facing
+                      className="absolute inset-0 will-change-transform"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={bodyUrl(i)}
+                        alt=""
+                        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
+                        style={{ height: WALKER_BODY_H }}
+                        draggable={false}
+                      />
+                      {activity === "tea" ? <TeaCup /> : null}
+                      {activity === "book" ? <BookProp /> : null}
+                      {activity === "wave" ? <WaveHand /> : null}
+                    </div>
                   </div>
                 </button>
               </div>

@@ -7,6 +7,8 @@
   --color-gray: #f2f2f2; /* 그레이 */
   --color-mint: #caebf2; /* 민트 — former soft “sky” chrome */
   --color-sky: #6dc2ff; /* 하늘색 */
+  /* 「말씀보기」+book icon only — deeper than --color-sky; do not reuse for chrome. */
+  --color-sky-deep: #0b6fb8;
   --color-sora: #94deee; /* 소라 */
   --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
   --color-black: #000917; /* 검정 */
@@ -24,6 +26,7 @@
   --색-그레이: var(--color-gray);
   --색-민트: var(--color-mint);
   --색-하늘: var(--color-sky);
+  --색-하늘딥: var(--color-sky-deep);
   --색-소라: var(--color-sora);
   --색-잉크블루: var(--color-ink-blue);
   --색-검정: var(--color-black);
@@ -54,6 +57,7 @@
   --muted: #f2f2f2; /* LightIcon inactive */
   --medal-gold: #e8b923; /* ranking trophy 1위 */
   --medal-silver: #a8b0b8; /* ranking trophy 2위 */
+  --medal-bronze: #c47a3a; /* ranking trophy 3위 */
   /* SkyWalkers / illustration palette (reusable scene colors) */
   --skywalker-sand: #f4e8d8;
   --skywalker-sand-edge: #d9c4a8;
@@ -173,6 +177,7 @@ html[data-sky-mode="밤모드"] {
   --color-gray: #f2f2f2;
   --color-mint: #caebf2; /* 민트 — soft chrome (former --color-sky) */
   --color-sky: #6dc2ff; /* 하늘색; brand chrome remains --sky #5FBCFC */
+  --color-sky-deep: #0b6fb8; /* 말씀보기 CTA only */
   --color-sora: #94deee; /* 소라 #94DEEE */
   --color-ink-blue: #1f3e62;
   --color-black: #000917;
@@ -196,6 +201,7 @@ html[data-sky-mode="밤모드"] {
   --color-muted: var(--muted);
   --color-medal-gold: var(--medal-gold);
   --color-medal-silver: var(--medal-silver);
+  --color-medal-bronze: var(--medal-bronze);
   --color-skywalker-sand: var(--skywalker-sand);
   --color-skywalker-sand-edge: var(--skywalker-sand-edge);
   --color-skywalker-wood: var(--skywalker-wood);
@@ -287,6 +293,11 @@ html[data-sky-mode="밤모드"] {
 /* 우리순 graph section titles — 1pt under field title. */
 .qt-field-title--sm {
   font-size: 17px !important;
+}
+
+/* Chart/section titles (우리순 · 나의 일주일) — +2pt over field title. */
+.qt-field-title--lg {
+  font-size: 20px !important;
 }
 
 /* Home QT validation hint + all similar instructional notices. */
@@ -841,9 +852,19 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-sora) !important;
 }
 
-/* Inactive today (not selected): ink-blue date numeral. */
+/* Inactive today (not selected): solid numeral, no underline.
+ * Selected today uses .premium-cal-day-selected / glow — no today class. */
 .premium-qt-header .premium-cal-day-today {
   color: var(--color-ink-blue) !important; /* #1F3E62 */
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+/* 밤모드: brighter today ink so numeral reads full-strength on black. */
+html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
+  color: var(--color-mint) !important; /* #CAEBF2 */
+  opacity: 1 !important;
+  text-decoration: none;
 }
 
 .premium-qt-header svg {
@@ -1053,9 +1074,9 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 
 .premium-qt-root.premium-qt-root--me-sky > .premium-qt-sheet.premium-qt-sheet--me {
   flex: 0 0 auto;
-  /* Flush white sheet through layout nav pad (same as 우리순). */
-  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
-  padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
+  /* Content-fit: layout already pads for bottom nav — don't double-stack empty sheet pad. */
+  margin-bottom: 0;
+  padding-bottom: 1.5rem;
 }
 
 /* 계정 설정: logout sits under profile detail at sheet bottom. */
@@ -1096,13 +1117,14 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 
 .premium-qt-root.premium-qt-root--group-sky > .premium-qt-sheet.premium-qt-sheet--group {
   flex: 0 0 auto;
-  /* Pull white sheet through layout nav pad so it sits flush to the screen bottom. */
-  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
-  padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
+  /* Match mypage sheet: layout already pads for bottom nav. */
+  margin-bottom: 0;
+  padding-bottom: 1.5rem;
 }
 
 .premium-qt-sheet.premium-qt-sheet--group > .premium-panel + .premium-panel {
-  margin-top: 10px; /* 「날짜별 참여」 spacing */
+  /* Extra air before 「이번달 날짜별」 title under weekday chart. */
+  margin-top: calc(var(--space-stack) + 0.75rem); /* 1.25rem + 12px */
   padding-top: 0;
 }
 
@@ -1399,6 +1421,11 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-mint) !important;
 }
 
+/* Own 순 name (e.g. 김병준 순): medium, not bold. */
+.premium-rank-row--mine .type-body {
+  font-weight: 500 !important;
+}
+
 .premium-mine-pill {
   display: inline-flex;
   flex-shrink: 0;
@@ -1474,7 +1501,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 /* Home profile name/group: 1pt smaller than type-label / type-caption */
 .premium-home-header-band .home-profile-name {
   font-size: 14px; /* type-label 15px − 1pt */
-  font-weight: 700;
+  font-weight: 400; /* regular under profile */
   letter-spacing: var(--tracking-label);
 }
 
@@ -1594,60 +1621,146 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
 }
 
+/* Range + 「말씀보기」 row: force vertical center (range 22px vs caption CTA). */
+.home-duranno-range-row {
+  display: flex !important;
+  align-items: center !important;
+}
+
 .home-duranno-in-sheet .reading-passage-range,
 .home-duranno-meta .reading-passage-range {
   color: var(--color-black) !important; /* #000917 */
+  margin: 0;
+  line-height: 1 !important; /* leading-none — optical middle with CTA */
+  display: flex;
+  align-items: center;
+  align-self: center;
 }
 
-/* 「오늘의 말씀」 label + Duranno icons @ 50%; range stays full. */
+/* 「오늘의 말씀」 label @ 50%; range stays full. */
 .home-duranno-in-sheet .home-duranno-label,
 .home-duranno-meta .home-duranno-label {
   color: var(--color-black) !important; /* #000917 */
   opacity: 0.5;
 }
 
-/* Icon-only Duranno CTA (BookOpen + ArrowUpRight) — black @ 50%, no capsule. */
-.home-duranno-cta,
-.home-duranno-cta:link,
-.home-duranno-cta:visited,
-.home-duranno-cta:hover,
-.home-duranno-cta:active,
-.home-duranno-cta:focus {
+/*
+ * Space between 말씀구절 range and 「말씀보기」.
+ * Explicit width spacer (not flex gap) — previous gap-* bumps were easy to
+ * miss, and `.home-duranno-cta { margin: 0 !important }` killed ml-* utilities.
+ */
+.home-duranno-cta-gap {
+  display: inline-block;
+  width: 1.5rem; /* 24px — slightly tighter than prior 28px */
+  min-width: 1.5rem;
+  height: 1px;
+  flex: 0 0 1.5rem;
+  align-self: center;
+  pointer-events: none;
+}
+
+/*
+ * 「말씀보기」 + BookOpen — dedicated deep sky (not --color-sky).
+ * Nested selectors + token beat inherit/a leftovers.
+ */
+.home-duranno-in-sheet a.home-duranno-cta,
+.home-duranno-meta a.home-duranno-cta,
+a.home-duranno-cta,
+a.home-duranno-cta:link,
+a.home-duranno-cta:visited,
+a.home-duranno-cta:hover,
+a.home-duranno-cta:active,
+a.home-duranno-cta:focus,
+a.home-duranno-cta:focus-visible {
   display: inline-flex !important;
   align-items: center;
-  gap: 0.125rem;
-  flex-shrink: 0;
-  color: var(--color-black) !important; /* #000917 */
-  opacity: 0.5;
-  background: none !important;
-  background-color: transparent !important;
+  align-self: center;
+  gap: 0 !important; /* icon↔label space via .home-duranno-cta-label ml */
+  flex: 0 0 auto;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  min-height: 0 !important;
+  height: auto !important;
+  width: auto !important;
+  padding: 0 !important;
+  /* Keep top/right/bottom zero; do not use blanket margin:0 (blocks spacing). */
+  margin-top: 0 !important;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
   box-shadow: none !important;
   filter: none !important;
   -webkit-appearance: none;
   appearance: none;
   text-decoration: none !important;
+  color: var(--color-sky-deep) !important; /* #0B6FB8 */
+  -webkit-text-fill-color: var(--color-sky-deep) !important;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  opacity: 1 !important;
 }
 
-.home-duranno-cta:hover {
-  opacity: 0.7;
-  filter: none !important;
-}
-
-.home-duranno-cta:focus-visible {
-  outline: 2px solid var(--color-black);
-  outline-offset: 3px;
-  border-radius: 2px !important; /* square focus, never pill */
-}
-
-.home-duranno-cta svg {
-  color: inherit !important;
-  background: none !important;
-  box-shadow: none !important;
+.home-duranno-in-sheet a.home-duranno-cta svg,
+.home-duranno-meta a.home-duranno-cta svg,
+a.home-duranno-cta svg {
+  color: var(--color-sky-deep) !important;
+  stroke: var(--color-sky-deep) !important;
+  fill: none !important;
   flex-shrink: 0;
+  opacity: 1 !important;
+}
+
+/*
+ * Literal 5px spacer between BookOpen and 「말씀보기」.
+ * Width/flex-basis (not margin/gap) so it cannot collapse; nbsp keeps
+ * the box from being treated as empty in some engines.
+ */
+a.home-duranno-cta .home-duranno-cta-icon-gap {
+  display: inline-block !important;
+  box-sizing: border-box !important;
+  width: 5px !important;
+  min-width: 5px !important;
+  max-width: 5px !important;
+  flex: 0 0 5px !important;
+  height: 1em !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  user-select: none;
+}
+
+a.home-duranno-cta .home-duranno-cta-label {
+  display: inline-block;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+a.home-duranno-cta:hover {
+  opacity: 1 !important;
+  background: transparent !important;
+  filter: none !important;
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+  color: var(--color-sky-deep) !important;
+  -webkit-text-fill-color: var(--color-sky-deep) !important;
+}
+
+a.home-duranno-cta:focus-visible {
+  outline: 2px solid var(--color-sky-deep);
+  outline-offset: 2px;
+  border-radius: 0 !important;
+  background: transparent !important;
 }
 
 @keyframes premium-select-pop {

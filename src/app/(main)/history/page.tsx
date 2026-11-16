@@ -95,10 +95,13 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     velocityY: number;
   } | null>(null);
 
-  dropRef.current = drop;
-  maxDropRef.current = maxDrop;
-  calendarExpandedRef.current = calendarExpanded;
-  draggingRef.current = dragging;
+  // Keep gesture refs in sync after paint (not during render — React Compiler).
+  useEffect(() => {
+    dropRef.current = drop;
+    maxDropRef.current = maxDrop;
+    calendarExpandedRef.current = calendarExpanded;
+    draggingRef.current = dragging;
+  }, [drop, maxDrop, calendarExpanded, dragging]);
 
   const minYm = HISTORY_MIN_YM;
   const maxYm = HISTORY_MAX_YM;
@@ -287,6 +290,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   };
   const passageLabel = historyPassageLabel(selected);
   const hasEntry = !!selectedEntry;
+  /** 말씀 header edit: only when that day's QT is saved (or currently editing). */
+  const showEdit =
+    !future && (hasEntry || selectedCompleted || editing);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -324,6 +330,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <MonthPicker
                 value={ym}
+                step={calendarExpanded ? "month" : "week"}
+                focusDate={selected}
+                onFocusDateChange={selectDate}
                 onChange={(next) => {
                   setYm(next);
                   setCalendarExpanded(false);
@@ -342,9 +351,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               >
                 <LightCount
                   lights={stats.lights}
-                  size={16}
+                  size={20}
                   rays={false}
-                  textClassName="type-body-sm font-semibold tabular-nums text-[var(--color-mint)]"
+                  textClassName="type-stat font-semibold tabular-nums text-[var(--color-mint)]"
                 />
               </div>
             </div>
@@ -429,11 +438,10 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               embedded
               showLink={isToday}
               rangeTrailing={
-                !future ? (
+                showEdit ? (
                   <PassageEntryActions
+                    editActive={editing}
                     onEdit={() => setEditing(true)}
-                    onDelete={() => setConfirmOpen(true)}
-                    deleteDisabled={!hasEntry && !selectedCompleted}
                   />
                 ) : null
               }
@@ -447,14 +455,18 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         >
           <div className="premium-history-qt">
             {future ? (
-              <p className="qt-validation-hint type-caption pt-[var(--space-stack-lg)] text-text-secondary">
-                미래 날짜는 완료할 수 없습니다.
-              </p>
+              <div className="pt-[var(--space-stack-lg)]">
+                {/* Same helper chrome as QtEntryForm 「큐티는 전체 합쳐…」. */}
+                <p className="qt-validation-hint type-caption break-keep text-text-secondary">
+                  미래 날짜는 완료할 수 없습니다.
+                </p>
+              </div>
             ) : editing ? (
               <QtEntryForm
                 key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
                 initial={selectedEntry}
-                share={share}
+                editing
+                onDelete={() => setConfirmOpen(true)}
                 onSave={async (fields) => {
                   try {
                     const res = await saveEntry(selected, fields);
@@ -484,7 +496,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               <QtEntryForm
                 key={`hist-new-${selected}`}
                 initial={null}
-                share={share}
                 helperNotice={
                   past && !hasEntry
                     ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."
@@ -508,7 +519,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
       <ConfirmModal
         open={confirmOpen}
-        title="이 날의 QT 기록을 삭제할까요?"
+        title="이 날의 큐티 기록을 삭제할까요?"
         description="삭제하면 완료도 함께 취소됩니다. 이 작업은 되돌릴 수 없습니다."
         confirmLabel="삭제"
         cancelLabel="취소"

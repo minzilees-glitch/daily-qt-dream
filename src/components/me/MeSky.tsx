@@ -11,8 +11,8 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
+import { WalkerFace } from "@/components/ui/WalkerFace";
 import { useApp } from "@/lib/app-context";
-import type { User } from "@/types";
 
 /** Four discrete sizes (~11px baseline +5%): smaller / base / larger / largest. */
 const SKY_LIGHT_SIZES = [8.4, 10.5, 12.6, 14.7] as const;
@@ -37,14 +37,6 @@ const BODY_VARIANTS = [
   "blue",
   "purple",
   "pink",
-] as const;
-
-const AVATAR_STYLES = [
-  "avataaars",
-  "lorelei",
-  "notionists",
-  "thumbs",
-  "shapes",
 ] as const;
 
 type SkySpark = {
@@ -153,16 +145,6 @@ function buildMeSkySparks(
   };
 }
 
-function fallbackAvatarUrl(userId: string): string {
-  const style = AVATAR_STYLES[0]!;
-  const seed = encodeURIComponent(userId);
-  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundType=gradientLinear&radius=50`;
-}
-
-function walkerFaceSrc(user: User): string {
-  return user.avatarUrl || fallbackAvatarUrl(user.id);
-}
-
 function bodyUrlFor(userId: string): string {
   const n = userId.charCodeAt(userId.length - 1) % BODY_VARIANTS.length;
   return `/group/bodies/body-${BODY_VARIANTS[n]!}.png`;
@@ -182,12 +164,13 @@ function walkBand(height: number): { minY: number; maxY: number } {
 export function MeSky({
   monthLights,
   yearLights,
-  yearLabel,
+  cumulativeLabel,
   groupLabel,
 }: {
   monthLights: number;
   yearLights: number;
-  yearLabel: string;
+  /** e.g. 「14기 누적」 */
+  cumulativeLabel: string;
   groupLabel: string;
 }) {
   const { currentUser } = useApp();
@@ -253,8 +236,9 @@ export function MeSky({
       // Jump: abs(sin) lifts off the ground (stronger than group bob).
       const jump = -Math.abs(Math.sin(state.phase)) * 10;
       el.style.transform = `translate3d(${state.x}px, ${state.y + jump}px, 0)`;
-      const figure = el.querySelector<HTMLElement>("[data-figure]");
-      if (figure) figure.style.transform = `scaleX(${state.facing})`;
+      // Face stays front-facing; only body flips with walk direction.
+      const body = el.querySelector<HTMLElement>("[data-facing]");
+      if (body) body.style.transform = `scaleX(${state.facing})`;
     };
 
     paint();
@@ -307,7 +291,6 @@ export function MeSky({
   if (!currentUser) return null;
 
   const avatar = currentUser.avatarUrl ?? null;
-  const faceSrc = walkerFaceSrc(currentUser);
   const bodySrc = bodyUrlFor(currentUser.id);
 
   return (
@@ -364,7 +347,7 @@ export function MeSky({
           className="mb-3 flex items-center gap-3 rounded-[8px] bg-white/50 px-3 py-2.5 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]"
           aria-label="계정 설정"
         >
-          <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-light type-stat text-sky">
+          <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-light type-stat text-[var(--color-ink-blue)]">
             {avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={avatar} alt="" className="h-full w-full object-cover" />
@@ -403,7 +386,7 @@ export function MeSky({
           </div>
           <div className="sky-stat-tile bg-white/50 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
             <StatLabel className="text-[var(--color-ink-blue)]">
-              {yearLabel}년 누적
+              {cumulativeLabel}
             </StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount
@@ -435,28 +418,24 @@ export function MeSky({
               width: WALKER_FIGURE_W,
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={faceSrc}
-              alt=""
-              width={WALKER_FACE_PX}
-              height={WALKER_FACE_PX}
-              className="pointer-events-none absolute left-1/2 z-[3] -translate-x-1/2 rounded-full bg-white object-cover"
-              style={{
-                top: WALKER_FACE_TOP,
-                width: WALKER_FACE_PX,
-                height: WALKER_FACE_PX,
-              }}
-              draggable={false}
+            <WalkerFace
+              user={currentUser}
+              size={WALKER_FACE_PX}
+              style={{ top: WALKER_FACE_TOP }}
             />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={bodySrc}
-              alt=""
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
-              style={{ height: WALKER_BODY_H }}
-              draggable={false}
-            />
+            <div
+              data-facing
+              className="absolute inset-0 will-change-transform"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={bodySrc}
+                alt=""
+                className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
+                style={{ height: WALKER_BODY_H }}
+                draggable={false}
+              />
+            </div>
           </div>
         </div>
       </div>

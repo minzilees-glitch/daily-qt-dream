@@ -64,14 +64,14 @@ export function ConfirmModal({
           <PrimaryButton
             type="button"
             variant="soft"
-            className="flex-1"
+            className="flex-1 !py-[18px]"
             onClick={onCancel}
           >
             {cancelLabel}
           </PrimaryButton>
           <PrimaryButton
             type="button"
-            className="flex-1 !bg-danger !shadow-none"
+            className="flex-1 !bg-danger !py-[18px] !text-white !shadow-none [&_svg]:!text-white"
             onClick={onConfirm}
           >
             {confirmLabel}

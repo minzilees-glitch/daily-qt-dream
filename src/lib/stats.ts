@@ -5,8 +5,12 @@ import type {
   User,
 } from "@/types";
 import {
+  currentYearMonth,
+  listDatesInMonth,
   rankingScopeDays,
+  TERM_14_START,
   todaySeoul,
+  termScopeDays,
   weekDatesSunFirst,
   weekdaySunFirst,
 } from "@/lib/dates";
@@ -81,6 +85,24 @@ export function userYearLights(
   todayLimit: string,
 ): number {
   return userYearDays(userId, year, lightSet, todayLimit);
+}
+
+/** Term cumulative lights from `start` through today (on-time only). */
+export function userTermLights(
+  userId: string,
+  lightSet: Set<string>,
+  start: string = TERM_14_START,
+  todayLimit: string = todaySeoul(),
+): number {
+  if (todayLimit < start) return 0;
+  let count = 0;
+  for (const key of lightSet) {
+    const [uid, date] = key.split("|");
+    if (uid !== userId || !date) continue;
+    if (date < start || date > todayLimit) continue;
+    count += 1;
+  }
+  return count;
 }
 
 export function groupMonthStats(
@@ -183,16 +205,27 @@ export function groupDayParticipation(
   users: User[],
   yearMonth: string,
   completionSet: Set<string>,
-): { date: string; count: number; total: number }[] {
+  todayLimit: string = todaySeoul(),
+): { date: string; count: number; total: number; active: boolean }[] {
   const members = users.filter((u) => u.groupId === groupId);
-  const dates = rankingScopeDays(yearMonth);
-  return dates.map((date) => ({
-    date,
-    total: members.length,
-    count: members.filter((m) =>
-      completionSet.has(completionSetKey(m.id, date)),
-    ).length,
-  }));
+  const [y, m] = yearMonth.split("-").map(Number);
+  const current = currentYearMonth();
+  // Full month for chart (current month keeps remaining days as inactive).
+  const dates = yearMonth > current ? [] : listDatesInMonth(y, m);
+
+  return dates.map((date) => {
+    const active = date <= todayLimit;
+    return {
+      date,
+      active,
+      total: active ? members.length : 0,
+      count: active
+        ? members.filter((m) =>
+            completionSet.has(completionSetKey(m.id, date)),
+          ).length
+        : 0,
+    };
+  });
 }
 
 /** This week Sun–Sat group counts (bars). Future weekdays: possible=0. */
@@ -239,6 +272,7 @@ export function groupWeekdayParticipation(
   }));
 
   for (const d of dayPart) {
+    if (!d.active) continue;
     const sun0 = new Date(`${d.date}T12:00:00+09:00`).getUTCDay();
     const monFirst = sun0 === 0 ? 6 : sun0 - 1;
     buckets[monFirst]!.count += d.count;
@@ -248,11 +282,11 @@ export function groupWeekdayParticipation(
   return buckets;
 }
 
-/** Personal QT completions by weekday (Sun→Sat) for year cumulative scope. */
+/** Personal QT completions by weekday (Sun→Sat) for 기 cumulative scope. */
 export function userWeekdayParticipation(
   userId: string,
-  year: number,
   completionSet: Set<string>,
+  start: string = TERM_14_START,
   todayLimit: string = todaySeoul(),
 ): { weekday: number; label: string; count: number; possible: number }[] {
   const labels = ["일", "월", "화", "수", "목", "금", "토"];
@@ -263,17 +297,12 @@ export function userWeekdayParticipation(
     possible: 0,
   }));
 
-  // Year cumulative through today (same scope as 「N년 누적」 lights).
-  for (let month = 1; month <= 12; month++) {
-    const ym = `${year}-${String(month).padStart(2, "0")}`;
-    for (const date of rankingScopeDays(ym, todayLimit)) {
-      if (!date.startsWith(`${year}-`)) continue;
-      if (date > todayLimit) continue;
-      const sunFirst = weekdaySunFirst(date);
-      buckets[sunFirst]!.possible += 1;
-      if (completionSet.has(completionSetKey(userId, date))) {
-        buckets[sunFirst]!.count += 1;
-      }
+  // Term cumulative through today (same scope as 「14기 누적」 lights).
+  for (const date of termScopeDays(start, todayLimit)) {
+    const sunFirst = weekdaySunFirst(date);
+    buckets[sunFirst]!.possible += 1;
+    if (completionSet.has(completionSetKey(userId, date))) {
+      buckets[sunFirst]!.count += 1;
     }
   }
 

@@ -93,6 +93,25 @@ export function currentYearMonth(): string {
   return yearMonthOf(todaySeoul());
 }
 
+/** 14기 term start (Asia/Seoul civil date). Cumulative 「14기 누적」 from this day. */
+export const TERM_14_START = "2026-09-01";
+export const TERM_14_LABEL = "14기";
+
+/** Inclusive civil dates from `start` through `today` (empty if today is before start). */
+export function termScopeDays(
+  start: string = TERM_14_START,
+  today: string = todaySeoul(),
+): string[] {
+  if (today < start) return [];
+  const days: string[] = [];
+  let d = start;
+  while (d <= today) {
+    days.push(d);
+    d = addDays(d, 1);
+  }
+  return days;
+}
+
 export function listDatesInMonth(year: number, month: number): string[] {
   const n = daysInMonth(year, month);
   return Array.from({ length: n }, (_, i) => formatYmd(year, month, i + 1));

@@ -1,7 +1,6 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Check, Send } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -21,25 +20,19 @@ const QT_LINE_FALLBACK_PX = 36;
 export function QtEntryForm({
   initial,
   onSave,
-  onClear,
+  onDelete,
   disabled,
-  showClear,
-  /** Home: 「나의 큐티 나누기」 shares date + range + non-empty fields. */
-  share,
-  /** Optional notice above 「QT는 전체 합쳐…」 helper (e.g. past-empty history). */
+  /** Editing a saved entry: secondary 삭제 + primary 「수정사항 저장」. */
+  editing = false,
+  /** Optional notice above 「큐티는 전체 합쳐…」 helper (e.g. past-empty history). */
   helperNotice,
 }: {
   initial?: QtEntry | null;
   onSave: (fields: QtEntryFields) => void | Promise<void>;
-  onClear?: () => void | Promise<void>;
+  /** Opens delete confirm (edit mode only). */
+  onDelete?: () => void;
   disabled?: boolean;
-  showClear?: boolean;
-  share?: {
-    dateYmd: string;
-    passageRange: string;
-    onShared?: (via: "share" | "clipboard") => void;
-    onError?: (message: string) => void;
-  };
+  editing?: boolean;
   helperNotice?: ReactNode;
 }) {
   const seed = fieldsFromEntry(initial);
@@ -64,7 +57,7 @@ export function QtEntryForm({
           </div>
         ) : null}
         <p className="qt-validation-hint type-caption text-text-secondary">
-          QT는 전체 합쳐{" "}
+          큐티는 전체 합쳐{" "}
           <strong className="type-caption-em">
             최소 {QT_MIN_TOTAL_CHARS}자 이상
           </strong>{" "}
@@ -119,32 +112,6 @@ export function QtEntryForm({
       />
 
       <div className="flex flex-col gap-[var(--space-stack-sm)]">
-        {share ? (
-          <PrimaryButton
-            type="button"
-            variant="secondary"
-            className="w-full"
-            disabled={locked}
-            onClick={async () => {
-              const text = formatQtShareText({
-                dateYmd: share.dateYmd,
-                passageRange: share.passageRange,
-                fields,
-              });
-              try {
-                const via = await shareOrCopyText(text);
-                share.onShared?.(via);
-              } catch (err) {
-                if (isShareAbortError(err)) return;
-                share.onError?.("공유에 실패했어요");
-              }
-            }}
-          >
-            <Send size={18} strokeWidth={2.25} aria-hidden />
-            나의 큐티 나누기
-          </PrimaryButton>
-        ) : null}
-
         <PrimaryButton
           type="button"
           variant="primary"
@@ -159,29 +126,25 @@ export function QtEntryForm({
             }
           }}
         >
-          <Check size={18} strokeWidth={2.25} aria-hidden />
-          {busy ? "저장 중…" : "저장하고 큐티 완료하기"}
+          {busy
+            ? "저장 중…"
+            : editing
+              ? "수정사항 저장"
+              : "저장하고 큐티 완료"}
         </PrimaryButton>
-      </div>
 
-      {showClear && onClear ? (
-        <PrimaryButton
-          type="button"
-          variant="soft"
-          className="w-full"
-          disabled={locked}
-          onClick={async () => {
-            setBusy(true);
-            try {
-              await onClear();
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          기록 삭제 · 완료 취소
-        </PrimaryButton>
-      ) : null}
+        {editing && onDelete ? (
+          <PrimaryButton
+            type="button"
+            variant="secondary"
+            className="w-full !bg-[color-mix(in_srgb,var(--color-danger)_16%,white)] !text-danger hover:brightness-95 [&_svg]:!text-danger"
+            disabled={locked}
+            onClick={onDelete}
+          >
+            삭제
+          </PrimaryButton>
+        ) : null}
+      </div>
     </div>
   );
 }

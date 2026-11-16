@@ -5,11 +5,11 @@ import {
   rankingScopeDays,
   todaySeoul,
 } from "@/lib/dates";
-import { chance, mulberry32, pick } from "./seed";
+import { chance, mulberry32, pick, sampleN } from "./seed";
 
 const MEDITATION_SAMPLES = [
   "오늘 말씀에서 인내의 의미를 다시 묵상했습니다. 작은 일에도 감사하며 나아가고 싶습니다.",
-  "바쁘다는 핑계로 자주 미루던 QT를 오늘 아침에 했습니다. 마음이 한결 고요해졌어요.",
+  "바쁘다는 핑계로 자주 미루던 큐티를 오늘 아침에 했습니다. 마음이 한결 고요해졌어요.",
   "이웃을 사랑하라는 말씀이 구체적으로 와 닿았습니다. 한 사람에게 먼저 연락해 보려 합니다.",
   "기도 중에 제 마음을 솔직히 아뢰었습니다. 주님께서 이미 아시고 계신다는 위로를 받았습니다.",
   "오늘의 본문은 광야의 여정이었습니다. 지금 저의 광야도 의미 있음을 믿습니다.",
@@ -35,151 +35,57 @@ const OBEDIENCE_SAMPLES = [
   "불평 대신 감사로 하루를 마무리하겠습니다.",
 ];
 
+const TEST_USER_NAME = "이민지";
+const PILOT_LEADER_NAME = "파일럿";
+
 /**
- * Generate QT completions for the last 3 calendar months (Seoul).
- * Participation rates vary by group so ranking is meaningful and verifiable.
+ * Pilot seed:
+ * - 이민지: Sep 22 / Oct 14 random days + fixed 2026-11-15
+ * - 파일럿 순 (placeholder 순장): Sep 23 / Oct 11 / Nov 7 aggregate
+ * Other 순 stay at 0. 김병준 순 roster unchanged.
  */
 export function buildQtCompletions(users: User[]): QtCompletion[] {
   const today = todaySeoul();
-  const ym = currentYearMonth();
-  const months = [addMonths(ym, -2), addMonths(ym, -1), ym];
   const records: QtCompletion[] = [];
 
-  const groupRate = new Map<string, number>();
-  const groups = [...new Set(users.map((u) => u.groupId))];
-  // Baseline: descending by group id order so ranks stay distinct.
-  groups.forEach((gid, i) => {
-    groupRate.set(gid, 0.72 - i * 0.012);
-  });
-
-  users.forEach((user, idx) => {
-    const rng = mulberry32(1000 + idx * 97);
-    const base = groupRate.get(user.groupId) ?? 0.5;
-    const personal = Math.min(0.95, Math.max(0.15, base + (rng() - 0.5) * 0.24));
-
-    for (const month of months) {
-      const days = rankingScopeDays(month, today);
-      for (const date of days) {
-        const dow = new Date(`${date}T12:00:00+09:00`).getUTCDay();
-        const p = dow === 0 || dow === 6 ? personal * 0.85 : personal;
-        if (chance(rng, p)) {
-          records.push({ userId: user.id, date, completed: true });
-        }
-      }
+  const minzi = users.find((u) => u.name === TEST_USER_NAME);
+  if (minzi) {
+    pushUserMonthSample(records, minzi.id, "2026-09", 22, today, 2101);
+    pushUserMonthSample(records, minzi.id, "2026-10", 14, today, 2102);
+    // Explicit demo day with a full Korean entry (see buildEntries).
+    if (!records.some((c) => c.userId === minzi.id && c.date === "2026-11-15")) {
+      records.push({
+        userId: minzi.id,
+        date: "2026-11-15",
+        completed: true,
+      });
     }
-  });
+  }
 
-  // Demo: pin 김병준 순 (test user’s 우리순) month lights; scale peers nearby.
-  enforceDemoMonthTotals(users, records, today, {
-    "2026-09": { groupId: "g-01", lights: 30 },
-    "2026-10": { groupId: "g-01", lights: 61 },
-    "2026-11": { groupId: "g-01", lights: 16 }, // to date
-  });
-
-  // Current month podium without blowing past the Nov pin: 믿음순 1 · 김병준 순 2.
-  enforceDemoPodiumNear(users, records, today, "g-05", "g-01", 16);
+  const pilotLeader = users.find((u) => u.name === PILOT_LEADER_NAME);
+  if (pilotLeader) {
+    pushUserMonthSample(records, pilotLeader.id, "2026-09", 23, today, 2201);
+    pushUserMonthSample(records, pilotLeader.id, "2026-10", 11, today, 2202);
+    pushUserMonthSample(records, pilotLeader.id, "2026-11", 7, today, 2203);
+  }
 
   return records;
 }
 
-/** Exact light count for one group in one month (add/trim completions). */
-function setGroupMonthLights(
-  users: User[],
+function pushUserMonthSample(
   records: QtCompletion[],
+  userId: string,
   yearMonth: string,
-  groupId: string,
-  target: number,
+  count: number,
   today: string,
+  seed: number,
 ): void {
-  const dates = rankingScopeDays(yearMonth, today);
-  if (dates.length === 0) return;
-
-  const key = (userId: string, date: string) => `${userId}|${date}`;
-  const present = new Set(
-    records.filter((c) => c.completed).map((c) => key(c.userId, c.date)),
-  );
-  const members = users.filter((u) => u.groupId === groupId);
-
-  const memberLights = (userId: string) => {
-    let n = 0;
-    for (const d of dates) {
-      if (present.has(key(userId, d))) n += 1;
-    }
-    return n;
-  };
-
-  const count = () => members.reduce((n, u) => n + memberLights(u.id), 0);
-
-  const addOne = (): boolean => {
-    // Spread adds toward members with the fewest lights.
-    const sorted = [...members].sort(
-      (a, b) => memberLights(a.id) - memberLights(b.id),
-    );
-    for (const u of sorted) {
-      for (const d of dates) {
-        const k = key(u.id, d);
-        if (present.has(k)) continue;
-        present.add(k);
-        records.push({ userId: u.id, date: d, completed: true });
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const removeOne = (): boolean => {
-    // Trim from members with the most lights first.
-    const sorted = [...members].sort(
-      (a, b) => memberLights(b.id) - memberLights(a.id),
-    );
-    for (const u of sorted) {
-      for (const d of [...dates].reverse()) {
-        const k = key(u.id, d);
-        if (!present.has(k)) continue;
-        present.delete(k);
-        const idx = records.findIndex(
-          (c) => c.userId === u.id && c.date === d && c.completed,
-        );
-        if (idx >= 0) records.splice(idx, 1);
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const goal = Math.max(0, Math.floor(target));
-  let guard = 0;
-  while (count() < goal && guard++ < 5000) {
-    if (!addOne()) break;
-  }
-  guard = 0;
-  while (count() > goal && guard++ < 5000) {
-    if (!removeOne()) break;
-  }
-}
-
-/**
- * Pin 우리순 month totals, then place other 순 nearby so ranking/charts look sane.
- */
-function enforceDemoMonthTotals(
-  users: User[],
-  records: QtCompletion[],
-  today: string,
-  targets: Record<string, { groupId: string; lights: number }>,
-): void {
-  const allGroups = [...new Set(users.map((u) => u.groupId))];
-
-  for (const [yearMonth, { groupId, lights }] of Object.entries(targets)) {
-    setGroupMonthLights(users, records, yearMonth, groupId, lights, today);
-
-    const peers = allGroups.filter((g) => g !== groupId);
-    peers.forEach((gid, i) => {
-      // Spread peers around the pinned total (±~35%) with stable per-group jitter.
-      const factor = 0.72 + ((i * 17) % 13) * 0.035; // ~0.72–1.14
-      const jitter = ((i * 11) % 9) - 4;
-      const peerTarget = Math.max(6, Math.round(lights * factor) + jitter);
-      setGroupMonthLights(users, records, yearMonth, gid, peerTarget, today);
-    });
+  const pool = rankingScopeDays(yearMonth, today);
+  if (pool.length === 0 || count <= 0) return;
+  const rng = mulberry32(seed);
+  const picked = sampleN(rng, pool, Math.min(count, pool.length));
+  for (const date of picked) {
+    records.push({ userId, date, completed: true });
   }
 }
 
@@ -235,6 +141,22 @@ export function buildEntries(
     const rng = mulberry32(5000 + idx * 13);
     const dates = byUser.get(user.id) ?? [];
     for (const date of dates) {
+      // Fixed plausible Korean entry for the demo QT day.
+      if (user.name === TEST_USER_NAME && date === "2026-11-15") {
+        entries.push({
+          userId: user.id,
+          date,
+          meditation:
+            "오늘 본문에서 주님께서 먼저 찾아오신다는 말씀이 마음에 남았습니다. 바쁜 하루에도 그분께 먼저 자리를 내어 드리고 싶습니다.",
+          verse: "여호와는 나의 목자시니 내게 부족함이 없으리로다 (시편 23:1)",
+          decisionObedience:
+            "오늘 만난 사람에게 먼저 인사하고 짧은 안부라도 나누겠습니다.",
+          prayer: "가족과 순원들의 건강과 평안을 위해 기도합니다.",
+          updatedAt: `${date}T08:30:00+09:00`,
+        });
+        continue;
+      }
+
       const mode = Math.floor(rng() * 4);
       const meditation = mode === 0 ? pick(rng, MEDITATION_SAMPLES) : "";
       const verse =

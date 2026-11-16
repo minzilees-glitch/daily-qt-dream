@@ -15,7 +15,7 @@ export function MemberList({
           className="soft-card flex items-center justify-between px-4 py-3"
         >
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-light type-body-sm font-semibold text-sky">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-light type-body-sm font-semibold text-[var(--color-ink-blue)]">
               {user.name.slice(0, 1)}
             </div>
             <div className="min-w-0">
@@ -25,7 +25,7 @@ export function MemberList({
                   <Crown size={14} className="shrink-0 text-sky" aria-label="순장" />
                 ) : null}
               </p>
-              <StatLabel className="text-text-secondary">이번 달 QT</StatLabel>
+              <StatLabel className="text-text-secondary">이번 달 큐티</StatLabel>
             </div>
           </div>
           <p className="type-body font-semibold text-text-main">{days}일</p>

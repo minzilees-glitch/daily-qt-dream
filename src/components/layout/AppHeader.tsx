@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
+import { NicknameEditModal } from "@/components/ui/NicknameEditModal";
 import { StatLabel } from "@/components/ui/StatLabel";
 
 const HOME_AVATAR_MIN = 52;
@@ -14,6 +15,8 @@ export function AppHeader({
   homeLayout = false,
   dateLabel,
   showAvatar = true,
+  /** Home: nickname under profile avatar. */
+  nickname,
   /** Home: status row rendered tight under the date (left column). */
   status,
   /** Home: sits on the date line right after the weekday (e.g. light icon). */
@@ -25,11 +28,13 @@ export function AppHeader({
   dateLabel?: string;
   /** When false, hide top-right profile avatar (e.g. history/group/ranking). */
   showAvatar?: boolean;
+  nickname?: string;
   status?: ReactNode;
   dateAccessory?: ReactNode;
 }) {
   const copyRef = useRef<HTMLDivElement>(null);
   const [avatarSize, setAvatarSize] = useState(72);
+  const [nicknameOpen, setNicknameOpen] = useState(false);
 
   useLayoutEffect(() => {
     if (!homeLayout) return;
@@ -83,8 +88,29 @@ export function AppHeader({
         </div>
 
         {showAvatar ? (
-          <div className="mt-3 flex shrink-0 items-start self-stretch">
-            <ProfileAvatarButton light={light} size={avatarSize} />
+          <div className="mt-3 flex shrink-0 flex-col items-center gap-1 self-start">
+            <ProfileAvatarButton
+              light={light}
+              size={avatarSize}
+              fallback="initial"
+            />
+            {nickname ? (
+              <button
+                type="button"
+                className={`home-profile-name max-w-[5.5rem] truncate text-center ${
+                  light ? "text-white/90" : "text-text-main"
+                }`}
+                title={nickname}
+                aria-label="닉네임 수정"
+                onClick={() => setNicknameOpen(true)}
+              >
+                {nickname}
+              </button>
+            ) : null}
+            <NicknameEditModal
+              open={nicknameOpen}
+              onClose={() => setNicknameOpen(false)}
+            />
           </div>
         ) : null}
       </header>
@@ -106,7 +132,7 @@ export function AppHeader({
         light ? "text-white" : "text-text-main"
       }`}
     >
-      <ProfileAvatarButton light={light} />
+      <ProfileAvatarButton light={light} fallback="initial" />
     </header>
   );
 }
