@@ -351,9 +351,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               >
                 <LightCount
                   lights={stats.lights}
-                  size={16}
+                  size={18}
                   rays={false}
-                  textClassName="type-body-sm font-semibold tabular-nums text-[var(--color-mint)]"
+                  textClassName="type-body font-semibold tabular-nums text-[var(--color-mint)]"
                 />
               </div>
             </div>
