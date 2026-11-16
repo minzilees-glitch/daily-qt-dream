@@ -18,18 +18,18 @@ export function PassageEntryActions({
         type="button"
         aria-label="수정"
         onClick={onEdit}
-        className="flex h-8 w-8 items-center justify-center bg-transparent text-text-main opacity-70 shadow-none transition hover:opacity-100"
+        className="flex h-9 w-9 items-center justify-center bg-transparent text-text-main opacity-70 shadow-none transition hover:opacity-100"
       >
-        <Pencil size={16} strokeWidth={1.75} aria-hidden />
+        <Pencil size={18} strokeWidth={1.75} aria-hidden />
       </button>
       <button
         type="button"
         aria-label="삭제"
         disabled={deleteDisabled}
         onClick={onDelete}
-        className="flex h-8 w-8 items-center justify-center bg-transparent text-danger opacity-70 shadow-none transition hover:opacity-100 disabled:opacity-30"
+        className="flex h-9 w-9 items-center justify-center bg-transparent text-danger opacity-70 shadow-none transition hover:opacity-100 disabled:opacity-30"
       >
-        <Trash2 size={16} strokeWidth={1.75} aria-hidden />
+        <Trash2 size={18} strokeWidth={1.75} aria-hidden />
       </button>
     </div>
   );
