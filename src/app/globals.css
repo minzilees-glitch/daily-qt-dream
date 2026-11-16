@@ -1537,7 +1537,10 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 .premium-home-form-sheet {
-  flex: 0 0 auto;
+  /* Grow into leftover viewport so completed QT white fills to screen bottom. */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
   z-index: 3;
   /* Overlap sky header; mint 말씀 + edge-to-edge white form below. */
   margin-top: -1.25rem;
@@ -1570,13 +1573,20 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   filter: none !important;
 }
 
-/* Form body: solid white edge-to-edge (L/R/bottom), content padded inward. */
+/* Form body: solid white edge-to-edge; grows so sheet reaches screen bottom. */
 .premium-home-qt {
+  flex: 1 1 auto;
   margin-inline: 0;
   width: 100%;
-  padding: 0 var(--space-page-x) calc(1.5rem + var(--safe-bottom));
+  min-height: 0;
+  padding: 0 var(--space-page-x) calc(1.5rem + 72px + var(--safe-bottom));
   background: #ffffff !important;
   box-sizing: border-box;
+}
+
+/* Pull white through layout nav pad (same flush as 나의 QT들 / 우리순). */
+.premium-home-form-sheet {
+  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
 }
 
 .home-duranno-in-sheet .reading-passage-range,
