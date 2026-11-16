@@ -62,7 +62,7 @@ export function DayParticipation({
   return (
     <div
       ref={scrollerRef}
-      className="day-part-scroller flex cursor-grab gap-2 overflow-x-auto pb-1 scrollbar-none active:cursor-grabbing touch-pan-x select-none"
+      className="day-part-scroller flex cursor-grab gap-0.5 overflow-x-auto pb-1 scrollbar-none active:cursor-grabbing touch-pan-x select-none"
       style={{ WebkitOverflowScrolling: "touch" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -80,7 +80,7 @@ export function DayParticipation({
         return (
           <div
             key={d.date}
-            className={`flex w-11 shrink-0 snap-start flex-col items-center gap-1.5 ${
+            className={`flex w-7 shrink-0 snap-start flex-col items-center gap-1.5 ${
               isActive ? "" : "opacity-40"
             }`}
             title={
