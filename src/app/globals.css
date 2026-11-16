@@ -332,7 +332,8 @@ html[data-sky-mode="밤모드"] {
   color: var(--text-main);
 }
 .type-month {
-  font-size: 20px; /* was --fs-section 18px; +2pt for calendar month label */
+  /* Same size token as home header date (.type-page-title / --fs-page). */
+  font-size: var(--fs-page);
   font-weight: 600;
   letter-spacing: var(--tracking-month);
 }
