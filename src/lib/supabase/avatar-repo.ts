@@ -62,6 +62,7 @@ export async function fetchProfileAvatarMap(): Promise<
 /**
  * Upload image bytes to Storage, write `profiles.avatar_url`, return public URL.
  * Path: `avatars/{userId}/avatar.{ext}` (upsert).
+ * Callers must hard-fail on `{ ok: false }` and must not persist data URLs.
  */
 export async function uploadAndSaveAvatar(
   userId: string,

@@ -39,7 +39,9 @@ import {
 } from "@/lib/supabase/avatar-repo";
 import {
   fetchDisplayName,
+  fetchProfileGroupId,
   updateDisplayName,
+  updateProfileGroupId,
 } from "@/lib/supabase/profile-repo";
 import {
   deleteQtEntry,
@@ -75,9 +77,9 @@ interface AppState {
   confirmAward: (yearMonth: string, groupId: string, lights: number) => void;
   /**
    * Save profile photo for the current user.
-   * Compresses to a JPEG thumbnail first; when Supabase is configured, also
-   * uploads to Storage (`avatars/{userId}/avatar.*`) and updates
-   * `profiles.avatar_url`. Falls back to local-only if cloud upload fails.
+   * Compresses to a JPEG thumbnail first. With Supabase: upload Blob to Storage
+   * first, then persist the public URL only (never a data URL in localStorage);
+   * cloud errors hard-fail. Without Supabase: local data URL only.
    */
   setAvatarUrl: (
     dataUrl: string | null,
@@ -105,7 +107,10 @@ interface Overrides {
   userGroupMap: Record<string, string>;
   leaderMap: Record<string, string>;
   awards: MonthlyAward[];
-  /** Profile photo data URLs keyed by user id. */
+  /**
+   * Profile photo keyed by user id.
+   * Local-only mode: data URLs. Supabase mode: public Storage URLs only.
+   */
   avatarMap: Record<string, string>;
   /** Nickname overrides keyed by user id (profiles.display_name). */
   nameMap?: Record<string, string>;
@@ -194,6 +199,17 @@ function writeSession(id: string | null) {
   else removeKey(SESSION_KEY);
   readFresh();
   emit();
+}
+
+/** Drop base64 data-URL avatars — they blow mobile localStorage quotas. */
+function stripDataUrlAvatars(
+  map: Record<string, string> | undefined,
+): Record<string, string> {
+  const next: Record<string, string> = {};
+  for (const [id, url] of Object.entries(map ?? {})) {
+    if (url && !url.startsWith("data:")) next[id] = url;
+  }
+  return next;
 }
 
 function writeOverrides(next: Overrides) {
@@ -300,6 +316,63 @@ export function AppProvider({ children }: { children: ReactNode }) {
         };
       });
       if (avatars.ok) setRemoteAvatars(avatars.data);
+      // Supabase mode: never keep data-URL thumbnails in localStorage.
+      {
+        const cur = getSnapshot().overrides;
+        const pruned = stripDataUrlAvatars(cur.avatarMap);
+        const before = Object.keys(cur.avatarMap ?? {}).length;
+        const after = Object.keys(pruned).length;
+        if (before !== after) {
+          writeOverrides({ ...cur, avatarMap: pruned });
+        }
+      }
+
+      // DQ-691: flush any leftover localStorage QT text → qt_entries, then drop local copies.
+      {
+        const cur = getSnapshot().overrides;
+        const localMine = (cur.reflections ?? []).filter(
+          (r) => r.userId === sessionUserId,
+        );
+        if (localMine.length > 0) {
+          const flushed: QtEntry[] = [];
+          for (const entry of localMine) {
+            const res = await upsertQtEntry(sessionUserId, entry.date, {
+              meditation: entry.meditation,
+              verse: entry.verse,
+              decisionObedience: entry.decisionObedience,
+              prayer: entry.prayer,
+            });
+            if (res.ok) flushed.push(res.data);
+          }
+          if (!cancelled && flushed.length > 0) {
+            setRemoteQt((prev) => {
+              const map = new Map<string, QtEntry>();
+              for (const e of prev.myEntries) {
+                map.set(`${e.userId}|${e.date}`, e);
+              }
+              for (const e of flushed) {
+                map.set(`${e.userId}|${e.date}`, e);
+              }
+              return {
+                ...prev,
+                myEntries: [...map.values()],
+                loadedFor: sessionUserId,
+              };
+            });
+          }
+          writeOverrides({
+            ...getSnapshot().overrides,
+            reflections: (getSnapshot().overrides.reflections ?? []).filter(
+              (r) => r.userId !== sessionUserId,
+            ),
+            // Completions for this user come from qt_entry_presence / qt_entries.
+            completions: (getSnapshot().overrides.completions ?? []).filter(
+              (c) => c.userId !== sessionUserId,
+            ),
+          });
+        }
+      }
+
       const display = await fetchDisplayName(sessionUserId);
       if (!cancelled && display.ok && display.data) {
         const nameMap = { ...(getSnapshot().overrides.nameMap ?? {}) };
@@ -307,6 +380,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (!nameMap[sessionUserId]) {
           nameMap[sessionUserId] = display.data;
           writeOverrides({ ...getSnapshot().overrides, nameMap });
+        }
+      }
+
+      // DQ-693 scaffold: hydrate 순 from profiles.group_id (roster file still pending).
+      const group = await fetchProfileGroupId(sessionUserId);
+      if (!cancelled && group.ok && group.data) {
+        const userGroupMap = {
+          ...(getSnapshot().overrides.userGroupMap ?? {}),
+        };
+        if (!userGroupMap[sessionUserId]) {
+          userGroupMap[sessionUserId] = group.data;
+          writeOverrides({ ...getSnapshot().overrides, userGroupMap });
         }
       }
       setRemoteTick((t) => t + 1);
@@ -358,16 +443,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       map.set(`${c.userId}|${c.date}`, c.completed);
     }
 
-    if (remoteReady) {
-      // Prefer Supabase presence for light counts; clear mock days for the
-      // logged-in user so lights = their real qt_entries only.
-      if (sessionUserId) {
-        for (const key of [...map.keys()]) {
-          if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
-        }
+    if (supabaseEnabled && sessionUserId) {
+      // Logged-in user lights come from qt_entries / presence only (not localStorage).
+      for (const key of [...map.keys()]) {
+        if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
       }
-      for (const c of remoteQt.presence) {
-        map.set(`${c.userId}|${c.date}`, c.completed);
+      if (remoteReady) {
+        for (const c of remoteQt.presence) {
+          map.set(`${c.userId}|${c.date}`, c.completed);
+        }
       }
     } else if (!supabaseEnabled) {
       for (const c of overrides.completions) {
@@ -393,12 +477,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
     }
 
-    if (remoteReady && sessionUserId) {
+    if (supabaseEnabled && sessionUserId) {
+      // DQ-691: QT text for the session user is Postgres qt_entries only (not Storage / local).
       for (const key of [...map.keys()]) {
         if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
       }
-      for (const r of remoteQt.myEntries) {
-        map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
+      if (remoteReady) {
+        for (const r of remoteQt.myEntries) {
+          map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
+        }
       }
     } else if (!supabaseEnabled) {
       for (const r of overrides.reflections) {
@@ -669,8 +756,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...overrides,
         userGroupMap: { ...overrides.userGroupMap, [userId]: groupId },
       });
+      // DQ-693 scaffold: profiles.group_id (full roster seed waits for Minzi’s file).
+      if (supabaseEnabled) {
+        void updateProfileGroupId(userId, groupId);
+      }
     },
-    [overrides],
+    [overrides, supabaseEnabled],
   );
 
   const assignUsersToGroup = useCallback(
@@ -678,8 +769,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const map = { ...overrides.userGroupMap };
       for (const id of userIds) map[id] = groupId;
       writeOverrides({ ...overrides, userGroupMap: map });
+      if (supabaseEnabled) {
+        for (const id of userIds) {
+          void updateProfileGroupId(id, groupId);
+        }
+      }
     },
-    [overrides],
+    [overrides, supabaseEnabled],
   );
 
   const setGroupLeader = useCallback(
@@ -710,9 +806,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
 
       if (!dataUrl) {
-        const avatarMap = { ...(overrides.avatarMap ?? {}) };
-        delete avatarMap[sessionUserId];
-        writeOverrides({ ...overrides, avatarMap });
         if (supabaseEnabled) {
           const res = await clearAvatar(sessionUserId);
           if (!res.ok) {
@@ -724,6 +817,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
             return next;
           });
         }
+        const avatarMap = { ...(overrides.avatarMap ?? {}) };
+        delete avatarMap[sessionUserId];
+        writeOverrides({ ...overrides, avatarMap });
         return { ok: true, message: "프로필 사진을 삭제했어요." };
       }
 
@@ -737,14 +833,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ok: false, message: detail };
       }
 
-      const avatarMap = { ...(overrides.avatarMap ?? {}) };
-      avatarMap[sessionUserId] = compressed.dataUrl;
-      writeOverrides({ ...overrides, avatarMap });
-
+      // Local-only: persist compressed data URL (no Supabase).
       if (!supabaseEnabled) {
+        const avatarMap = { ...(overrides.avatarMap ?? {}) };
+        avatarMap[sessionUserId] = compressed.dataUrl;
+        writeOverrides({ ...overrides, avatarMap });
         return { ok: true, message: "저장했어요." };
       }
 
+      // Supabase on: upload Blob first; persist public URL only (never data URL).
       const blob =
         compressed.blob.type.startsWith("image/")
           ? compressed.blob
@@ -755,14 +852,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const res = await uploadAndSaveAvatar(sessionUserId, blob);
       if (!res.ok) {
-        // Local thumbnail already saved — pilot can keep using the app offline.
-        return {
-          ok: true,
-          message: `기기에 저장했어요. 클라우드 동기화 실패: ${res.error}`,
-        };
+        return { ok: false, message: res.error };
       }
 
-      avatarMap[sessionUserId] = res.data;
+      const avatarMap = stripDataUrlAvatars({
+        ...(overrides.avatarMap ?? {}),
+        [sessionUserId]: res.data,
+      });
       writeOverrides({ ...overrides, avatarMap });
       setRemoteAvatars((prev) => ({ ...prev, [sessionUserId]: res.data }));
       return { ok: true, message: "프로필 사진을 저장했어요." };

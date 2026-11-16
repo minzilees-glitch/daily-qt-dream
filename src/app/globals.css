@@ -1485,8 +1485,11 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   height: auto;
   min-height: calc(100dvh - var(--nav-reserve) - var(--safe-bottom));
   overflow: visible;
-  /* Mint wash under rounded sheet corners. */
-  background: color-mix(in srgb, var(--color-mint) 50%, white);
+  /*
+   * Sky under the overlapping drawer ears (not mint).
+   * Mint wash lives only inside `.home-duranno-in-sheet`.
+   */
+  background: var(--sky-mode-fill);
 }
 
 .premium-home-top {
@@ -1495,7 +1498,22 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   flex-direction: column;
   height: auto;
   overflow: visible;
+  position: relative;
+  z-index: 1; /* header layer below drawer sheet */
   background: var(--sky-mode-fill);
+}
+
+/* Extend sky under the sheet’s rounded top so ears never show shell mint/white. */
+.premium-home-top::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: var(--radius-sheet);
+  background: var(--sky-mode-fill);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .premium-home-header-band {
@@ -1605,7 +1623,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  z-index: 3;
+  position: relative;
+  z-index: 3; /* drawer above sky header layer */
   /* Overlap sky header; mint 말씀 + edge-to-edge white form below. */
   margin-top: -1.25rem;
   min-height: 0;
