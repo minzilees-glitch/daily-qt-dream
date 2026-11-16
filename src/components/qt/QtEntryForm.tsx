@@ -108,47 +108,49 @@ export function QtEntryForm({
         onChange={setPrayer}
       />
 
-      {share ? (
+      <div className="flex flex-col gap-2">
+        {share ? (
+          <PrimaryButton
+            type="button"
+            variant="soft"
+            className="w-full"
+            disabled={locked}
+            onClick={async () => {
+              const text = formatQtShareText({
+                dateYmd: share.dateYmd,
+                passageRange: share.passageRange,
+                fields,
+              });
+              try {
+                const via = await shareOrCopyText(text);
+                share.onShared?.(via);
+              } catch (err) {
+                if (isShareAbortError(err)) return;
+                share.onError?.("공유에 실패했어요");
+              }
+            }}
+          >
+            <Send size={18} strokeWidth={2.25} aria-hidden />
+            나의 큐티 나누기
+          </PrimaryButton>
+        ) : null}
+
         <PrimaryButton
           type="button"
-          variant="soft"
           className="w-full"
           disabled={locked}
           onClick={async () => {
-            const text = formatQtShareText({
-              dateYmd: share.dateYmd,
-              passageRange: share.passageRange,
-              fields,
-            });
+            setBusy(true);
             try {
-              const via = await shareOrCopyText(text);
-              share.onShared?.(via);
-            } catch (err) {
-              if (isShareAbortError(err)) return;
-              share.onError?.("공유에 실패했어요");
+              await onSave(fields);
+            } finally {
+              setBusy(false);
             }
           }}
         >
-          <Send size={18} strokeWidth={2.25} aria-hidden />
-          나의 큐티 나누기
+          {busy ? "저장 중…" : "저장하고 큐티 완료하기"}
         </PrimaryButton>
-      ) : null}
-
-      <PrimaryButton
-        type="button"
-        className="w-full"
-        disabled={locked}
-        onClick={async () => {
-          setBusy(true);
-          try {
-            await onSave(fields);
-          } finally {
-            setBusy(false);
-          }
-        }}
-      >
-        {busy ? "저장 중…" : "저장하고 큐티 완료하기"}
-      </PrimaryButton>
+      </div>
 
       {showClear && onClear ? (
         <PrimaryButton

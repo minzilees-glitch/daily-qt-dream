@@ -29,12 +29,12 @@ export function HomeDurannoPassage({
           aria-label="두란노에서 오늘의 말씀 읽기"
           title="두란노에서 오늘의 말씀 읽기"
         >
-          <BookOpen size={20} strokeWidth={2} aria-hidden />
-          <ArrowUpRight size={16} strokeWidth={2.25} aria-hidden />
+          <BookOpen size={24} strokeWidth={2} aria-hidden />
+          <ArrowUpRight size={20} strokeWidth={2.25} aria-hidden />
         </a>
       </div>
       {title ? (
-        <p className="home-duranno-summary mt-1 type-body-sm font-medium text-text-secondary">
+        <p className="home-duranno-summary mt-1 type-body-sm font-medium">
           {title}
         </p>
       ) : null}

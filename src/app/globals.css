@@ -135,6 +135,10 @@
   --shadow-soft: none;
   --shadow-nav: none;
   --shadow-nav-float: 0 10px 30px rgba(0, 60, 130, 0.42);
+  /* Shared premium sheet lift (Home + 나의 QT들 + other tabs). */
+  --premium-sheet-filter:
+    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
+    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
   /* Icon-only bottom nav: dark blue capsule */
   --nav-glass-bg: var(--color-black);
   --nav-glass-border: rgba(255, 255, 255, 0.18);
@@ -883,9 +887,7 @@ a {
   color: var(--text-main);
   /* Shape-following lift on the sheet itself (all tabs). */
   box-shadow: none;
-  filter:
-    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
-    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
+  filter: var(--premium-sheet-filter);
 }
 
 /*
@@ -1389,19 +1391,22 @@ a {
   background: var(--premium-sheet) !important;
   /* Mint band owns the sheet-top air (no white pad above it). */
   padding-top: 0;
-  /* Clip full-bleed mint to drawer top curve — no separate card radius. */
-  overflow: hidden;
+  /* Same drop-shadow token as 나의 QT들 (.premium-qt-sheet). */
+  box-shadow: none;
+  filter: var(--premium-sheet-filter);
+  overflow: visible;
 }
 
 /*
  * 말씀 header: full-bleed mint in the sheet (not a card).
  * Same --space-page-x pad as QT fields; only background differs.
+ * Top radius matches sheet so mint follows the drawer curve without overflow:hidden.
  */
 .home-duranno-in-sheet {
   box-sizing: border-box;
   margin: 0 calc(-1 * var(--space-page-x));
   padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
-  border-radius: 0 !important;
+  border-radius: 36px 36px 0 0;
   background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-ink-blue);
   box-shadow: none !important;
@@ -1412,9 +1417,12 @@ a {
   color: var(--color-ink-blue) !important;
 }
 
-.home-duranno-in-sheet .text-text-secondary,
-.home-duranno-in-sheet .home-duranno-summary {
+.home-duranno-in-sheet .text-text-secondary {
   color: color-mix(in srgb, var(--color-ink-blue) 72%, transparent) !important;
+}
+
+.home-duranno-in-sheet .home-duranno-summary {
+  color: var(--color-ink-blue) !important;
 }
 
 .home-duranno-cta {
