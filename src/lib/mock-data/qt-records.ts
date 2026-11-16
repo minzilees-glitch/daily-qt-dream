@@ -1,6 +1,11 @@
 import type { QtCompletion, QtEntry, User } from "@/types";
-import { addMonths, currentYearMonth, todaySeoul } from "@/lib/dates";
-import { chance, mulberry32, pick } from "./seed";
+import {
+  addMonths,
+  currentYearMonth,
+  rankingScopeDays,
+  todaySeoul,
+} from "@/lib/dates";
+import { chance, mulberry32, pick, sampleN } from "./seed";
 
 const MEDITATION_SAMPLES = [
   "오늘 말씀에서 인내의 의미를 다시 묵상했습니다. 작은 일에도 감사하며 나아가고 싶습니다.",
@@ -30,12 +35,58 @@ const OBEDIENCE_SAMPLES = [
   "불평 대신 감사로 하루를 마무리하겠습니다.",
 ];
 
+const TEST_USER_NAME = "이민지";
+const PILOT_LEADER_NAME = "파일럿";
+
 /**
- * Pilot seed: no fabricated QT completions / lights.
- * Real participation starts when users save QT.
+ * Pilot seed:
+ * - 이민지: Sep 22 / Oct 14 random days + fixed 2026-11-15
+ * - 파일럿 순 (placeholder 순장): Sep 23 / Oct 11 / Nov 7 aggregate
+ * Other 순 stay at 0. 김병준 순 roster unchanged.
  */
-export function buildQtCompletions(_users: User[]): QtCompletion[] {
-  return [];
+export function buildQtCompletions(users: User[]): QtCompletion[] {
+  const today = todaySeoul();
+  const records: QtCompletion[] = [];
+
+  const minzi = users.find((u) => u.name === TEST_USER_NAME);
+  if (minzi) {
+    pushUserMonthSample(records, minzi.id, "2026-09", 22, today, 2101);
+    pushUserMonthSample(records, minzi.id, "2026-10", 14, today, 2102);
+    // Explicit demo day with a full Korean entry (see buildEntries).
+    if (!records.some((c) => c.userId === minzi.id && c.date === "2026-11-15")) {
+      records.push({
+        userId: minzi.id,
+        date: "2026-11-15",
+        completed: true,
+      });
+    }
+  }
+
+  const pilotLeader = users.find((u) => u.name === PILOT_LEADER_NAME);
+  if (pilotLeader) {
+    pushUserMonthSample(records, pilotLeader.id, "2026-09", 23, today, 2201);
+    pushUserMonthSample(records, pilotLeader.id, "2026-10", 11, today, 2202);
+    pushUserMonthSample(records, pilotLeader.id, "2026-11", 7, today, 2203);
+  }
+
+  return records;
+}
+
+function pushUserMonthSample(
+  records: QtCompletion[],
+  userId: string,
+  yearMonth: string,
+  count: number,
+  today: string,
+  seed: number,
+): void {
+  const pool = rankingScopeDays(yearMonth, today);
+  if (pool.length === 0 || count <= 0) return;
+  const rng = mulberry32(seed);
+  const picked = sampleN(rng, pool, Math.min(count, pool.length));
+  for (const date of picked) {
+    records.push({ userId, date, completed: true });
+  }
 }
 
 /**
@@ -59,6 +110,22 @@ export function buildEntries(
     const rng = mulberry32(5000 + idx * 13);
     const dates = byUser.get(user.id) ?? [];
     for (const date of dates) {
+      // Fixed plausible Korean entry for the demo QT day.
+      if (user.name === TEST_USER_NAME && date === "2026-11-15") {
+        entries.push({
+          userId: user.id,
+          date,
+          meditation:
+            "오늘 본문에서 주님께서 먼저 찾아오신다는 말씀이 마음에 남았습니다. 바쁜 하루에도 그분께 먼저 자리를 내어 드리고 싶습니다.",
+          verse: "여호와는 나의 목자시니 내게 부족함이 없으리로다 (시편 23:1)",
+          decisionObedience:
+            "오늘 만난 사람에게 먼저 인사하고 짧은 안부라도 나누겠습니다.",
+          prayer: "가족과 순원들의 건강과 평안을 위해 기도합니다.",
+          updatedAt: `${date}T08:30:00+09:00`,
+        });
+        continue;
+      }
+
       const mode = Math.floor(rng() * 4);
       const meditation = mode === 0 ? pick(rng, MEDITATION_SAMPLES) : "";
       const verse =

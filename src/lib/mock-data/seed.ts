@@ -16,3 +16,22 @@ export function pick<T>(rng: () => number, arr: readonly T[]): T {
 export function chance(rng: () => number, p: number): boolean {
   return rng() < p;
 }
+
+/** Shuffle a copy (Fisher–Yates) with the given PRNG. */
+export function shuffle<T>(rng: () => number, arr: readonly T[]): T[] {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1));
+    const tmp = out[i]!;
+    out[i] = out[j]!;
+    out[j] = tmp;
+  }
+  return out;
+}
+
+/** Pick `n` distinct items (or all if fewer). */
+export function sampleN<T>(rng: () => number, arr: readonly T[], n: number): T[] {
+  if (n <= 0) return [];
+  if (n >= arr.length) return [...arr];
+  return shuffle(rng, arr).slice(0, n);
+}

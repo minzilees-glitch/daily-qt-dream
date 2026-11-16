@@ -40,8 +40,12 @@ export const GROUP_NAMES = [
   "정봉훈 순",
 ] as const;
 
+/** Demo-only 순 for ranking/group pilot numbers — not in sun-list. */
+export const PILOT_GROUP_NAME = "파일럿 순";
+
 export function buildGroups(): Group[] {
-  return GROUP_NAMES.map((name, i) => ({
+  const names = [...GROUP_NAMES, PILOT_GROUP_NAME];
+  return names.map((name, i) => ({
     id: `g-${String(i + 1).padStart(2, "0")}`,
     name,
     leaderId: "", // filled in users.ts
