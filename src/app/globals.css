@@ -280,8 +280,8 @@ html[data-sky-mode="밤모드"] {
 /* Arbitrary Tailwind text-[Npx] loses to .type-section — force sizes here. */
 .qt-field-title {
   font-size: 18px !important; /* was 20; −2pt */
-  font-weight: 600;
-  color: var(--color-black); /* #000917 */
+  font-weight: 600 !important; /* beat body/type utilities in read-only views */
+  color: var(--color-black) !important; /* #000917 */
 }
 
 /* 우리순 graph section titles — 1pt under field title. */
@@ -858,14 +858,15 @@ a {
   box-sizing: border-box;
 }
 
-/* From 「QT는 전체 합쳐…」 / entry fields downward — solid white. */
+/* From 「QT는 전체 합쳐…」 / entry fields downward — solid white.
+ * Top pad 0: match home form-body (QtEntryForm owns pt via --space-stack-lg;
+ * home space-y between Duranno↔form is the mint/white seam, not extra white pad). */
 .premium-history-qt {
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
   flex: 1 1 auto;
   min-height: 0;
-  padding: var(--space-stack) var(--space-page-x)
-    calc(1.5rem + var(--safe-bottom));
+  padding: 0 var(--space-page-x) calc(1.5rem + var(--safe-bottom));
   background: #ffffff !important;
   box-sizing: border-box;
 }

@@ -24,11 +24,12 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
     );
   }
 
+  /* Same top air as QtEntryForm helper block (home form-body). */
   return (
-    <div className="space-y-[var(--space-stack-lg)]">
+    <div className="space-y-[var(--space-stack-lg)] pt-[var(--space-stack-lg)]">
       {rows.map((row) => (
         <div key={row.label}>
-          <p className="qt-field-title mb-3">{row.label}</p>
+          <p className="qt-field-title mb-3 block">{row.label}</p>
           <p className="type-body-lg whitespace-pre-wrap text-text-main">
             {row.value}
           </p>
