@@ -287,7 +287,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   };
   const passageLabel = historyPassageLabel(selected);
   const hasEntry = !!selectedEntry;
-  /** Form-body edit: only when that day's QT is saved (or currently editing). */
+  /** 말씀 header edit: only when that day's QT is saved (or currently editing). */
   const showEdit =
     !future && (hasEntry || selectedCompleted || editing);
 
@@ -431,6 +431,14 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               label={passageLabel}
               embedded
               showLink={isToday}
+              rangeTrailing={
+                showEdit ? (
+                  <PassageEntryActions
+                    editActive={editing}
+                    onEdit={() => setEditing(true)}
+                  />
+                ) : null
+              }
             />
           </div>
         </div>
@@ -439,15 +447,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           key={selected}
           className="premium-content-crossfade premium-history-sheet-body"
         >
-          <div className="premium-history-qt relative">
-            {showEdit ? (
-              <div className="absolute right-[var(--space-page-x)] top-1 z-10">
-                <PassageEntryActions
-                  editActive={editing}
-                  onEdit={() => setEditing(true)}
-                />
-              </div>
-            ) : null}
+          <div className="premium-history-qt">
             {future ? (
               <p className="qt-validation-hint type-caption pt-[var(--space-stack-lg)] text-text-secondary">
                 미래 날짜는 완료할 수 없습니다.

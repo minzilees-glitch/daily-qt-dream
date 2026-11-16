@@ -143,18 +143,19 @@ export function HomeClient({
         }
         sheet={
           <>
-            <HomeDurannoPassage reading={reading} label="오늘의 말씀" />
-            <div className="premium-home-qt relative">
-              {showEdit ? (
-                <div className="absolute right-[var(--space-page-x)] top-1 z-10">
+            <HomeDurannoPassage
+              reading={reading}
+              label="오늘의 말씀"
+              rangeTrailing={
+                showEdit ? (
                   <PassageEntryActions
                     editActive={editActive}
                     onEdit={() => setEditing(true)}
                   />
-                </div>
-              ) : null}
-              {formBody}
-            </div>
+                ) : null
+              }
+            />
+            <div className="premium-home-qt">{formBody}</div>
           </>
         }
       />
