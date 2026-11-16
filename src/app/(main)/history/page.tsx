@@ -330,6 +330,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <MonthPicker
                 value={ym}
+                step={calendarExpanded ? "month" : "week"}
+                focusDate={selected}
+                onFocusDateChange={selectDate}
                 onChange={(next) => {
                   setYm(next);
                   setCalendarExpanded(false);
