@@ -30,7 +30,6 @@ import {
   shareOrCopyText,
 } from "@/lib/qt-share";
 import {
-  addMonths,
   currentYearMonth,
   isFutureDate,
   todaySeoul,
@@ -43,12 +42,21 @@ function parseDateParam(raw: string | null): string | null {
   return raw;
 }
 
+/** Earliest 나의 큐티들 month — hide/block anything before Sep 2026. */
+const HISTORY_MIN_YM = "2026-09";
+const HISTORY_MIN_DATE = "2026-09-01";
+
+function clampHistoryDate(date: string): string {
+  return date < HISTORY_MIN_DATE ? HISTORY_MIN_DATE : date;
+}
+
 function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const { currentUser, completions, isCompleted, getEntry, saveEntry, clearEntry, lastEarnedDate } =
     useApp();
 
-  const [ym, setYm] = useState(yearMonthOf(initialDate));
-  const [selected, setSelected] = useState(initialDate);
+  const startDate = clampHistoryDate(initialDate);
+  const [ym, setYm] = useState(yearMonthOf(startDate));
+  const [selected, setSelected] = useState(startDate);
   const [calendarExpanded, setCalendarExpanded] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -56,7 +64,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const minYm = addMonths(currentYearMonth(), -2);
+  const minYm = HISTORY_MIN_YM;
   const maxYm = currentYearMonth();
 
   const set = useMemo(() => buildCompletionSet(completions), [completions]);
@@ -90,6 +98,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   }, [menuOpen]);
 
   const selectDate = (date: string) => {
+    if (yearMonthOf(date) < HISTORY_MIN_YM) return;
     setSelected(date);
     setEditing(false);
     setMenuOpen(false);
