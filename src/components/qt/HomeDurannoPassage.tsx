@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ChevronRight } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
@@ -36,7 +37,7 @@ export function HomeDurannoPassage({
           height (h-8 buttons vs range text). Far-right = actions. */}
       <div className="relative mt-1">
         <div
-          className={`flex min-w-0 items-center gap-3${
+          className={`flex min-w-0 items-center gap-6${
             rangeTrailing ? " pr-16" : ""
           }`}
         >
@@ -53,6 +54,7 @@ export function HomeDurannoPassage({
               title="말씀보기"
             >
               말씀보기
+              <ChevronRight size={16} strokeWidth={2.25} aria-hidden />
             </a>
           ) : null}
         </div>
