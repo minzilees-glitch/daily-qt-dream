@@ -1,58 +1,51 @@
 import type { Group, User } from "@/types";
-
-/** Canonical 김병준 순 roster — all 다락방장 = admin. 순장 = 김병준. */
-const KIM_BYEONGJUN_SUN_MEMBERS: { name: string; isLeader: boolean }[] = [
-  { name: "이민지", isLeader: false }, // TEST_USER_ID u-001
-  { name: "김병준", isLeader: true },
-  { name: "구민아", isLeader: false },
-  { name: "최현경", isLeader: false },
-  { name: "강민정", isLeader: false },
-  { name: "김철호", isLeader: false },
-];
-
-/** 「김서경 순」 → 「김서경」 placeholder 순장 until real roster lands. */
-function leaderNameFromSun(groupName: string): string {
-  return groupName.replace(/\s*순\s*$/u, "").trim() || groupName;
-}
+import { SUN_ROSTERS } from "./sun-roster";
 
 /**
- * 김병준 순: fixed 6 admins (순장 김병준).
- * Other 순: single placeholder 순장 only — no fabricated QT/participation.
- * u-001 is the default test login: 이민지 · 김병준 순 · admin (not 순장).
+ * Build users from DQ-694 sun roster.
+ * - 김병준 순: 6 admins (다락방장), 순장 김병준; 이민지 = u-001 test login.
+ * - Other 순: full members; leader = name matching 순 title; not admin.
+ * - 파일럿 순: placeholder 순장 only.
  */
 export function buildUsers(groups: Group[]): User[] {
   const users: User[] = [];
   let seq = 1;
+  const byName = new Map(SUN_ROSTERS.map((r) => [r.groupName, r]));
 
   for (const group of groups) {
-    if (group.name === "김병준 순") {
-      for (const member of KIM_BYEONGJUN_SUN_MEMBERS) {
-        const id = `u-${String(seq).padStart(3, "0")}`;
-        users.push({
-          id,
-          name: member.name,
-          groupId: group.id,
-          isAdmin: true,
-          isLeader: member.isLeader,
-        });
-        if (member.isLeader) {
-          group.leaderId = id;
-        }
-        seq += 1;
-      }
+    if (group.name === "파일럿 순") {
+      const id = `u-${String(seq).padStart(3, "0")}`;
+      users.push({
+        id,
+        name: "파일럿",
+        groupId: group.id,
+        isAdmin: false,
+        isLeader: true,
+      });
+      group.leaderId = id;
+      seq += 1;
       continue;
     }
 
-    const id = `u-${String(seq).padStart(3, "0")}`;
-    users.push({
-      id,
-      name: leaderNameFromSun(group.name),
-      groupId: group.id,
-      isAdmin: false,
-      isLeader: true,
-    });
-    group.leaderId = id;
-    seq += 1;
+    const roster = byName.get(group.name);
+    if (!roster) {
+      throw new Error(`Missing sun roster for group: ${group.name}`);
+    }
+
+    for (const member of roster.members) {
+      const id = `u-${String(seq).padStart(3, "0")}`;
+      users.push({
+        id,
+        name: member.name,
+        groupId: group.id,
+        isAdmin: member.isAdmin,
+        isLeader: member.isLeader,
+      });
+      if (member.isLeader) {
+        group.leaderId = id;
+      }
+      seq += 1;
+    }
   }
 
   return users;

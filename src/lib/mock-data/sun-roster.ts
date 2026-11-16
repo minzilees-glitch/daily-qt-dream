@@ -1,0 +1,463 @@
+/**
+ * DQ-694: 순 roster seed from docs/sun-roster-2026-11-17.md (Minzi 2026-11-17).
+ * - 김병준 순 pinned first: 6 members, all admin/다락방장; 순장 김병준.
+ * - Other 순: leader = person matching 순 name; members not admin.
+ * - Note: roster uses 김송하 순 (prior list had 김승하).
+ */
+
+export type RosterMember = {
+  name: string;
+  isLeader: boolean;
+  /** 다락방장 = admin. Only 김병준 순 is fully admin today. */
+  isAdmin: boolean;
+};
+
+export type SunRoster = {
+  groupName: string;
+  members: RosterMember[];
+  note?: string;
+};
+
+export const SUN_ROSTERS: SunRoster[] = [
+  {
+    groupName: "김병준 순",
+    members: [
+      { name: "이민지", isLeader: false, isAdmin: true },
+      { name: "김병준", isLeader: true, isAdmin: true },
+      { name: "구민아", isLeader: false, isAdmin: true },
+      { name: "최현경", isLeader: false, isAdmin: true },
+      { name: "강민정", isLeader: false, isAdmin: true },
+      { name: "김철호", isLeader: false, isAdmin: true },
+    ],
+  },
+  {
+    groupName: "김서경 순",
+    members: [
+      { name: "성노현", isLeader: false, isAdmin: false },
+      { name: "김종연", isLeader: false, isAdmin: false },
+      { name: "정재현", isLeader: false, isAdmin: false },
+      { name: "양동현", isLeader: false, isAdmin: false },
+      { name: "이주성", isLeader: false, isAdmin: false },
+      { name: "김서경", isLeader: true, isAdmin: false },
+      { name: "김내희", isLeader: false, isAdmin: false },
+      { name: "이채원", isLeader: false, isAdmin: false },
+      { name: "김기쁨", isLeader: false, isAdmin: false },
+      { name: "이로윤", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "최다혜 순",
+    members: [
+      { name: "강주혜", isLeader: false, isAdmin: false },
+      { name: "이혜영", isLeader: false, isAdmin: false },
+      { name: "최다혜", isLeader: true, isAdmin: false },
+      { name: "정예빈", isLeader: false, isAdmin: false },
+      { name: "이지현", isLeader: false, isAdmin: false },
+      { name: "김지혜", isLeader: false, isAdmin: false },
+      { name: "남윤주", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "오요섭 순",
+    members: [
+      { name: "염호성", isLeader: false, isAdmin: false },
+      { name: "오승현", isLeader: false, isAdmin: false },
+      { name: "오현화", isLeader: false, isAdmin: false },
+      { name: "오요섭", isLeader: true, isAdmin: false },
+      { name: "박주희", isLeader: false, isAdmin: false },
+      { name: "김성령", isLeader: false, isAdmin: false },
+      { name: "조예령", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "문은미 순",
+    members: [
+      { name: "김희재", isLeader: false, isAdmin: false },
+      { name: "송창현", isLeader: false, isAdmin: false },
+      { name: "이미승", isLeader: false, isAdmin: false },
+      { name: "문은미", isLeader: true, isAdmin: false },
+      { name: "이찬주", isLeader: false, isAdmin: false },
+      { name: "박예진", isLeader: false, isAdmin: false },
+      { name: "이준호", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "장석인 순",
+    members: [
+      { name: "장건", isLeader: false, isAdmin: false },
+      { name: "장석인", isLeader: true, isAdmin: false },
+      { name: "김수진", isLeader: false, isAdmin: false },
+      { name: "주수일", isLeader: false, isAdmin: false },
+      { name: "송윤혁", isLeader: false, isAdmin: false },
+      { name: "이보아", isLeader: false, isAdmin: false },
+      { name: "양주선", isLeader: false, isAdmin: false },
+      { name: "조수현", isLeader: false, isAdmin: false },
+      { name: "배주영", isLeader: false, isAdmin: false },
+      { name: "김은지", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "임인택 순",
+    members: [
+      { name: "이혜준", isLeader: false, isAdmin: false },
+      { name: "김형오", isLeader: false, isAdmin: false },
+      { name: "최정훈", isLeader: false, isAdmin: false },
+      { name: "연도의", isLeader: false, isAdmin: false },
+      { name: "임인택", isLeader: true, isAdmin: false },
+      { name: "최유진", isLeader: false, isAdmin: false },
+      { name: "김기현", isLeader: false, isAdmin: false },
+      { name: "장용섭", isLeader: false, isAdmin: false },
+      { name: "신하림", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "이지행 순",
+    members: [
+      { name: "장나은", isLeader: false, isAdmin: false },
+      { name: "이진영", isLeader: false, isAdmin: false },
+      { name: "이지행", isLeader: true, isAdmin: false },
+      { name: "문예진", isLeader: false, isAdmin: false },
+      { name: "문예은", isLeader: false, isAdmin: false },
+      { name: "김윤지", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "신은영 순",
+    members: [
+      { name: "장예찬", isLeader: false, isAdmin: false },
+      { name: "국중호", isLeader: false, isAdmin: false },
+      { name: "김리안", isLeader: false, isAdmin: false },
+      { name: "신은영", isLeader: true, isAdmin: false },
+      { name: "류시진", isLeader: false, isAdmin: false },
+      { name: "김가현", isLeader: false, isAdmin: false },
+      { name: "김채현", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "정현태 순",
+    members: [
+      { name: "연은주", isLeader: false, isAdmin: false },
+      { name: "한재희", isLeader: false, isAdmin: false },
+      { name: "이장희", isLeader: false, isAdmin: false },
+      { name: "정현태", isLeader: true, isAdmin: false },
+      { name: "장동은", isLeader: false, isAdmin: false },
+      { name: "정민재", isLeader: false, isAdmin: false },
+      { name: "고보경", isLeader: false, isAdmin: false },
+      { name: "이솔빈", isLeader: false, isAdmin: false },
+      { name: "권순호", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "한준희 순",
+    members: [
+      { name: "이상혁", isLeader: false, isAdmin: false },
+      { name: "이헌제", isLeader: false, isAdmin: false },
+      { name: "한진석", isLeader: false, isAdmin: false },
+      { name: "김윤희", isLeader: false, isAdmin: false },
+      { name: "강승구", isLeader: false, isAdmin: false },
+      { name: "정원영", isLeader: false, isAdmin: false },
+      { name: "한준희", isLeader: true, isAdmin: false },
+      { name: "이세영", isLeader: false, isAdmin: false },
+      { name: "유희진", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "이한지 순",
+    members: [
+      { name: "박서희", isLeader: false, isAdmin: false },
+      { name: "오현경", isLeader: false, isAdmin: false },
+      { name: "이진현", isLeader: false, isAdmin: false },
+      { name: "이선아", isLeader: false, isAdmin: false },
+      { name: "이한지", isLeader: true, isAdmin: false },
+      { name: "이진광", isLeader: false, isAdmin: false },
+      { name: "이효정", isLeader: false, isAdmin: false },
+      { name: "임근우", isLeader: false, isAdmin: false },
+      { name: "장제익", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "이유진 순",
+    members: [
+      { name: "김하은", isLeader: false, isAdmin: false },
+      { name: "김윤성", isLeader: false, isAdmin: false },
+      { name: "이유진", isLeader: true, isAdmin: false },
+      { name: "이은혜", isLeader: false, isAdmin: false },
+      { name: "이세영", isLeader: false, isAdmin: false },
+      { name: "장주안", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "박하은 순",
+    members: [
+      { name: "여호수", isLeader: false, isAdmin: false },
+      { name: "박재홍", isLeader: false, isAdmin: false },
+      { name: "박범준", isLeader: false, isAdmin: false },
+      { name: "박하은", isLeader: true, isAdmin: false },
+      { name: "이효민", isLeader: false, isAdmin: false },
+      { name: "박수민", isLeader: false, isAdmin: false },
+      { name: "이은혜", isLeader: false, isAdmin: false },
+      { name: "김수정", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "홍승우 순",
+    members: [
+      { name: "홍승우", isLeader: true, isAdmin: false },
+      { name: "윤수한", isLeader: false, isAdmin: false },
+      { name: "김선우", isLeader: false, isAdmin: false },
+      { name: "김세미", isLeader: false, isAdmin: false },
+      { name: "이성휘", isLeader: false, isAdmin: false },
+      { name: "안신영", isLeader: false, isAdmin: false },
+      { name: "한민정", isLeader: false, isAdmin: false },
+      { name: "임서연", isLeader: false, isAdmin: false },
+      { name: "이유림", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "최진화 순",
+    members: [
+      { name: "이민우", isLeader: false, isAdmin: false },
+      { name: "홍지민", isLeader: false, isAdmin: false },
+      { name: "강한슬", isLeader: false, isAdmin: false },
+      { name: "권아라", isLeader: false, isAdmin: false },
+      { name: "최진화", isLeader: true, isAdmin: false },
+      { name: "정영경", isLeader: false, isAdmin: false },
+      { name: "김경진", isLeader: false, isAdmin: false },
+      { name: "홍승현", isLeader: false, isAdmin: false },
+      { name: "김정우", isLeader: false, isAdmin: false },
+      { name: "송자인", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "박호수 순",
+    members: [
+      { name: "김다은", isLeader: false, isAdmin: false },
+      { name: "강승원", isLeader: false, isAdmin: false },
+      { name: "황예미", isLeader: false, isAdmin: false },
+      { name: "김지영", isLeader: false, isAdmin: false },
+      { name: "박호수", isLeader: true, isAdmin: false },
+      { name: "조안나", isLeader: false, isAdmin: false },
+      { name: "김하은", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "박영수 순",
+    members: [
+      { name: "고찬영", isLeader: false, isAdmin: false },
+      { name: "박영수", isLeader: true, isAdmin: false },
+      { name: "송승창", isLeader: false, isAdmin: false },
+      { name: "김선아", isLeader: false, isAdmin: false },
+      { name: "권은경", isLeader: false, isAdmin: false },
+      { name: "박상욱", isLeader: false, isAdmin: false },
+      { name: "이성희", isLeader: false, isAdmin: false },
+      { name: "강관현", isLeader: false, isAdmin: false },
+      { name: "김진주", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "김이현 순",
+    members: [
+      { name: "노만나", isLeader: false, isAdmin: false },
+      { name: "이충호", isLeader: false, isAdmin: false },
+      { name: "황태웅", isLeader: false, isAdmin: false },
+      { name: "김이현", isLeader: true, isAdmin: false },
+      { name: "임현정", isLeader: false, isAdmin: false },
+      { name: "김예진", isLeader: false, isAdmin: false },
+      { name: "정하영", isLeader: false, isAdmin: false },
+      { name: "박준식", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "김태희 순",
+    members: [
+      { name: "김태리", isLeader: false, isAdmin: false },
+      { name: "정재원", isLeader: false, isAdmin: false },
+      { name: "이성빈", isLeader: false, isAdmin: false },
+      { name: "이은재", isLeader: false, isAdmin: false },
+      { name: "이한나", isLeader: false, isAdmin: false },
+      { name: "김태희", isLeader: true, isAdmin: false },
+      { name: "조현화", isLeader: false, isAdmin: false },
+      { name: "송재혁", isLeader: false, isAdmin: false },
+      { name: "김예은", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "박마광 순",
+    members: [
+      { name: "김성호", isLeader: false, isAdmin: false },
+      { name: "박마광", isLeader: true, isAdmin: false },
+      { name: "유태경", isLeader: false, isAdmin: false },
+      { name: "김준우", isLeader: false, isAdmin: false },
+      { name: "최수정", isLeader: false, isAdmin: false },
+      { name: "한주영", isLeader: false, isAdmin: false },
+      { name: "김영미", isLeader: false, isAdmin: false },
+      { name: "김경아", isLeader: false, isAdmin: false },
+      { name: "유현", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "양은지 순",
+    members: [
+      { name: "박휘광", isLeader: false, isAdmin: false },
+      { name: "정준호", isLeader: false, isAdmin: false },
+      { name: "김영민", isLeader: false, isAdmin: false },
+      { name: "송하담", isLeader: false, isAdmin: false },
+      { name: "양은지", isLeader: true, isAdmin: false },
+      { name: "이예리", isLeader: false, isAdmin: false },
+      { name: "남윤조", isLeader: false, isAdmin: false },
+      { name: "김유진", isLeader: false, isAdmin: false },
+      { name: "조소희", isLeader: false, isAdmin: false },
+      { name: "백성현", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "정지현 순",
+    members: [
+      { name: "이중호", isLeader: false, isAdmin: false },
+      { name: "조경은", isLeader: false, isAdmin: false },
+      { name: "이지유", isLeader: false, isAdmin: false },
+      { name: "양성우", isLeader: false, isAdmin: false },
+      { name: "정지현", isLeader: true, isAdmin: false },
+      { name: "이지혜", isLeader: false, isAdmin: false },
+      { name: "김율하", isLeader: false, isAdmin: false },
+      { name: "정명화", isLeader: false, isAdmin: false },
+      { name: "이정석", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "구현정 순",
+    members: [
+      { name: "이난희", isLeader: false, isAdmin: false },
+      { name: "장세민", isLeader: false, isAdmin: false },
+      { name: "조혜선", isLeader: false, isAdmin: false },
+      { name: "고민석", isLeader: false, isAdmin: false },
+      { name: "구현정", isLeader: true, isAdmin: false },
+      { name: "김지현", isLeader: false, isAdmin: false },
+      { name: "강현승", isLeader: false, isAdmin: false },
+      { name: "이지은", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "김송하 순",
+    note: "Roster spelling 김송하; prior sun-list had 김승하.",
+    members: [
+      { name: "손예찬", isLeader: false, isAdmin: false },
+      { name: "최송복", isLeader: false, isAdmin: false },
+      { name: "김다영", isLeader: false, isAdmin: false },
+      { name: "김송하", isLeader: true, isAdmin: false },
+      { name: "김영빈", isLeader: false, isAdmin: false },
+      { name: "김수민", isLeader: false, isAdmin: false },
+      { name: "정인서", isLeader: false, isAdmin: false },
+      { name: "허지원", isLeader: false, isAdmin: false },
+      { name: "강성민", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "박현수 순",
+    members: [
+      { name: "이광영", isLeader: false, isAdmin: false },
+      { name: "박현수", isLeader: true, isAdmin: false },
+      { name: "정환희", isLeader: false, isAdmin: false },
+      { name: "이나겸", isLeader: false, isAdmin: false },
+      { name: "김지연", isLeader: false, isAdmin: false },
+      { name: "나혜민", isLeader: false, isAdmin: false },
+      { name: "최유라", isLeader: false, isAdmin: false },
+      { name: "이형진", isLeader: false, isAdmin: false },
+      { name: "최민규", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "이성민 순",
+    members: [
+      { name: "장재령", isLeader: false, isAdmin: false },
+      { name: "남세연", isLeader: false, isAdmin: false },
+      { name: "김채영", isLeader: false, isAdmin: false },
+      { name: "이성민", isLeader: true, isAdmin: false },
+      { name: "남하영", isLeader: false, isAdmin: false },
+      { name: "서기문", isLeader: false, isAdmin: false },
+      { name: "신희권", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "한요한 순",
+    members: [
+      { name: "고진엘", isLeader: false, isAdmin: false },
+      { name: "김혜미", isLeader: false, isAdmin: false },
+      { name: "오선민", isLeader: false, isAdmin: false },
+      { name: "한요한", isLeader: true, isAdmin: false },
+      { name: "지혜나", isLeader: false, isAdmin: false },
+      { name: "이진희", isLeader: false, isAdmin: false },
+      { name: "장윤정", isLeader: false, isAdmin: false },
+      { name: "정은주", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "김미림 순",
+    members: [
+      { name: "이삼수", isLeader: false, isAdmin: false },
+      { name: "주찬혁", isLeader: false, isAdmin: false },
+      { name: "남아영", isLeader: false, isAdmin: false },
+      { name: "김미림", isLeader: true, isAdmin: false },
+      { name: "남사라", isLeader: false, isAdmin: false },
+      { name: "강지은", isLeader: false, isAdmin: false },
+      { name: "김성식", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "신의정 순",
+    members: [
+      { name: "이민희", isLeader: false, isAdmin: false },
+      { name: "허강욱", isLeader: false, isAdmin: false },
+      { name: "신의정", isLeader: true, isAdmin: false },
+      { name: "김시현", isLeader: false, isAdmin: false },
+      { name: "정석민", isLeader: false, isAdmin: false },
+      { name: "김정아", isLeader: false, isAdmin: false },
+      { name: "곽아라", isLeader: false, isAdmin: false },
+      { name: "홍광희", isLeader: false, isAdmin: false },
+      { name: "조정원", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "우경식 순",
+    members: [
+      { name: "백진경", isLeader: false, isAdmin: false },
+      { name: "김경구", isLeader: false, isAdmin: false },
+      { name: "김미진", isLeader: false, isAdmin: false },
+      { name: "우경식", isLeader: true, isAdmin: false },
+      { name: "노서영", isLeader: false, isAdmin: false },
+      { name: "윤세영", isLeader: false, isAdmin: false },
+      { name: "황나영", isLeader: false, isAdmin: false },
+      { name: "이재림", isLeader: false, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "임예진 순",
+    members: [
+      { name: "강규리", isLeader: false, isAdmin: false },
+      { name: "정재룡", isLeader: false, isAdmin: false },
+      { name: "문희지", isLeader: false, isAdmin: false },
+      { name: "이요엘", isLeader: false, isAdmin: false },
+      { name: "박찬미", isLeader: false, isAdmin: false },
+      { name: "이화은", isLeader: false, isAdmin: false },
+      { name: "임예진", isLeader: true, isAdmin: false },
+    ],
+  },
+  {
+    groupName: "정봉훈 순",
+    members: [
+      { name: "박영주", isLeader: false, isAdmin: false },
+      { name: "최승희", isLeader: false, isAdmin: false },
+      { name: "전병우", isLeader: false, isAdmin: false },
+      { name: "정봉훈", isLeader: true, isAdmin: false },
+      { name: "김근민", isLeader: false, isAdmin: false },
+      { name: "최정주", isLeader: false, isAdmin: false },
+      { name: "박세라", isLeader: false, isAdmin: false },
+      { name: "신미나", isLeader: false, isAdmin: false },
+      { name: "박수연", isLeader: false, isAdmin: false },
+      { name: "공의애", isLeader: false, isAdmin: false },
+    ],
+  },
+];
+
+export const SUN_GROUP_NAMES = SUN_ROSTERS.map((r) => r.groupName);
+
