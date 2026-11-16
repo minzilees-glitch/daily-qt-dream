@@ -90,37 +90,6 @@ function pushUserMonthSample(
 }
 
 /**
- * Current-month podium around a pinned 2nd-place total (does not inflate 우리순).
- * firstId → gold, secondId → silver at `secondLights`; other 순 stay below silver.
- */
-function enforceDemoPodiumNear(
-  users: User[],
-  records: QtCompletion[],
-  today: string,
-  firstId: string,
-  secondId: string,
-  secondLights: number,
-): void {
-  const ym = currentYearMonth();
-  const dates = rankingScopeDays(ym, today);
-  if (dates.length === 0) return;
-
-  const allGroups = [...new Set(users.map((u) => u.groupId))];
-  const silver = Math.max(0, Math.floor(secondLights));
-  const gold = silver + 4;
-
-  setGroupMonthLights(users, records, ym, secondId, silver, today);
-  setGroupMonthLights(users, records, ym, firstId, gold, today);
-
-  allGroups.forEach((gid, i) => {
-    if (gid === firstId || gid === secondId) return;
-    // Keep bronze-and-below under silver (stable spread).
-    const peer = Math.max(4, silver - 2 - (i % 5));
-    setGroupMonthLights(users, records, ym, gid, peer, today);
-  });
-}
-
-/**
  * Every completed day gets a valid QT entry (combined trimmed fields ≥ 10 chars).
  * Others' entry text is never shown in group UI — only completion counts.
  */
