@@ -107,18 +107,6 @@ export function QtEntryForm({
       />
 
       <div className="flex flex-col gap-[var(--space-stack-sm)]">
-        {editing && onDelete ? (
-          <PrimaryButton
-            type="button"
-            variant="secondary"
-            className="w-full !text-danger [&_svg]:!text-danger"
-            disabled={locked}
-            onClick={onDelete}
-          >
-            삭제
-          </PrimaryButton>
-        ) : null}
-
         <PrimaryButton
           type="button"
           variant="primary"
@@ -139,6 +127,18 @@ export function QtEntryForm({
               ? "수정사항 저장"
               : "저장하고 큐티 완료"}
         </PrimaryButton>
+
+        {editing && onDelete ? (
+          <PrimaryButton
+            type="button"
+            variant="secondary"
+            className="w-full !bg-[color-mix(in_srgb,var(--color-danger)_16%,white)] !text-danger hover:brightness-95 [&_svg]:!text-danger"
+            disabled={locked}
+            onClick={onDelete}
+          >
+            삭제
+          </PrimaryButton>
+        ) : null}
       </div>
     </div>
   );
