@@ -17,13 +17,13 @@ export default function LoginPage() {
 
   return (
     <PhoneShell>
-      <div className="relative flex min-h-[100dvh] flex-col bg-white px-6 pb-10 pt-[calc(48px+var(--safe-top))]">
+      <div className="relative flex min-h-[100dvh] flex-col bg-white px-6 pb-10 pt-[calc(3rem+var(--safe-top))]">
         <div className="animate-fade-up flex flex-1 flex-col items-center justify-center text-center">
           <BrandMark size={80} className="mb-6" />
           <h1 className="type-display-xl text-text-main">
             드림 매일큐티
           </h1>
-          <p className="type-body-lg mt-3 max-w-[280px] text-text-main">
+          <p className="type-body-lg mt-3 max-w-[17.5rem] text-text-main">
             매일의 Quiet Time을 기록하고,
             <br />
             우리 순과 함께 성장해요.
