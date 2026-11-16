@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { ArrowLeft, ChevronRight, LogOut, Shield } from "lucide-react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { useApp } from "@/lib/app-context";
@@ -50,6 +50,22 @@ export default function MeSettingsPage() {
             프로필 사진을 눌러 변경할 수 있어요. 이름·순 변경은 준비 중입니다.
           </p>
         </div>
+
+        {currentUser.isAdmin ? (
+          <div className="premium-panel space-y-2 animate-fade-up">
+            <Link href="/admin" className="premium-list-row">
+              <span className="flex items-center gap-3 type-body font-medium text-text-main">
+                <Shield
+                  size={18}
+                  className="text-[var(--color-ink-blue)]"
+                  strokeWidth={1.75}
+                />
+                관리자
+              </span>
+              <ChevronRight size={18} className="text-text-secondary" />
+            </Link>
+          </div>
+        ) : null}
 
         <div className="premium-panel me-sheet-foot">
           <PrimaryButton

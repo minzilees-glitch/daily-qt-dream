@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { ChevronRight, Shield } from "lucide-react";
 import { MeSky } from "@/components/me/MeSky";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
 import { useApp } from "@/lib/app-context";
@@ -70,22 +68,6 @@ export default function MePage() {
           </div>
           <WeekdayParticipation days={weekdayPart} showPossible={false} />
         </div>
-
-        {currentUser.isAdmin ? (
-          <div className="premium-panel space-y-2">
-            <Link href="/admin" className="premium-list-row">
-              <span className="flex items-center gap-3 type-body font-medium text-text-main">
-                <Shield
-                  size={18}
-                  className="text-[var(--color-ink-blue)]"
-                  strokeWidth={1.75}
-                />
-                관리자
-              </span>
-              <ChevronRight size={18} className="text-text-secondary" />
-            </Link>
-          </div>
-        ) : null}
       </section>
     </div>
   );
