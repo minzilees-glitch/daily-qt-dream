@@ -187,25 +187,40 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     return raw;
   }, []);
 
-  const setDropLive = useCallback((next: number) => {
-    dropRef.current = next;
-    setDrop(next);
+  /** Reveal month grid in the gap as soon as the sheet lowers. */
+  const syncCalendarToDrop = useCallback((d: number) => {
+    const showMonth = d > 10;
+    if (showMonth === calendarExpandedRef.current) return;
+    calendarExpandedRef.current = showMonth;
+    setCalendarExpanded(showMonth);
   }, []);
 
-  const snapDrop = useCallback((current: number, velocityY: number) => {
-    const max = maxDropRef.current;
-    const mid = max * 0.42;
-    /* velocityY: px/ms — flick down → collapse, flick up → open */
-    const open =
-      velocityY < -0.55 || (Math.abs(velocityY) < 0.45 && current < mid);
-    const target = open ? 0 : max;
-    setDragging(false);
-    draggingRef.current = false;
-    dropRef.current = target;
-    setDrop(target);
-    calendarExpandedRef.current = !open;
-    setCalendarExpanded(!open);
-  }, []);
+  const setDropLive = useCallback(
+    (next: number) => {
+      dropRef.current = next;
+      setDrop(next);
+      syncCalendarToDrop(next);
+    },
+    [syncCalendarToDrop],
+  );
+
+  const snapDrop = useCallback(
+    (current: number, velocityY: number) => {
+      const max = maxDropRef.current;
+      const mid = max * 0.42;
+      /* velocityY: px/ms — flick down → collapse, flick up → open */
+      const open =
+        velocityY < -0.55 || (Math.abs(velocityY) < 0.45 && current < mid);
+      const target = open ? 0 : max;
+      setDragging(false);
+      draggingRef.current = false;
+      dropRef.current = target;
+      setDrop(target);
+      calendarExpandedRef.current = !open;
+      setCalendarExpanded(!open);
+    },
+    [],
+  );
 
   const onHandlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
@@ -230,7 +245,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     drag.velocityY = (e.clientY - drag.lastY) / dt;
     drag.lastY = e.clientY;
     drag.lastT = e.timeStamp;
-    /* Live follow finger only — calendar mode switches on snap (smoother). */
     setDropLive(resistDrop(drag.startDrop + dy));
   };
 
@@ -377,25 +391,22 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         }`}
         style={{ top: sheetTop }}
       >
-        <div
-          ref={handleRef}
-          className="premium-history-sheet-drag"
-          role="slider"
-          aria-label="시트 높이 조절"
-          aria-valuemin={0}
-          aria-valuemax={maxDrop}
-          aria-valuenow={Math.round(Math.min(maxDrop, Math.max(0, drop)))}
-          onPointerDown={onHandlePointerDown}
-          onPointerMove={onHandlePointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-        >
-          <span className="premium-sheet-grabber" aria-hidden />
-        </div>
-        <div
-          key={selected}
-          className="premium-content-crossfade premium-history-sheet-body"
-        >
+        <div className="premium-history-mint">
+          <div
+            ref={handleRef}
+            className="premium-history-sheet-drag"
+            role="slider"
+            aria-label="시트 높이 조절"
+            aria-valuemin={0}
+            aria-valuemax={maxDrop}
+            aria-valuenow={Math.round(Math.min(maxDrop, Math.max(0, drop)))}
+            onPointerDown={onHandlePointerDown}
+            onPointerMove={onHandlePointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          >
+            <span className="premium-sheet-grabber" aria-hidden />
+          </div>
           <div className="premium-history-passage pt-3">
             <HomeDurannoPassage
               key={selected}
@@ -445,7 +456,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               }
             />
           </div>
+        </div>
 
+        <div
+          key={selected}
+          className="premium-content-crossfade premium-history-sheet-body"
+        >
           <div className="premium-history-qt">
             {future ? (
               <p className="qt-validation-hint type-caption pt-[var(--space-stack-lg)] text-text-secondary">
