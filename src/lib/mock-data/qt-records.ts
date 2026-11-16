@@ -169,8 +169,6 @@ export function buildEntries(
 }
 
 /** @deprecated alias */
-export const buildReflections = buildEntries;
-
 export function ensureTestUserToday(
   completions: QtCompletion[],
   testUserId: string,
