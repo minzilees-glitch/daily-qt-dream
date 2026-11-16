@@ -30,7 +30,7 @@ export default function RankingPage() {
       <header className="premium-tab-header premium-tab-header--ranking">
         <h1 className="premium-tab-title">랭킹</h1>
         <p className="qt-validation-hint type-caption mt-[var(--space-stack-sm)] text-text-secondary">
-          QT를 당일에 완료한 날마다 빛 1개를 모읍니다. 순 전체 빛 수로 순위를
+          큐티를 당일에 완료한 날마다 빛 1개를 모읍니다. 순 전체 빛 수로 순위를
           매깁니다.
         </p>
       </header>

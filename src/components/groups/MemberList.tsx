@@ -25,7 +25,7 @@ export function MemberList({
                   <Crown size={14} className="shrink-0 text-sky" aria-label="순장" />
                 ) : null}
               </p>
-              <StatLabel className="text-text-secondary">이번 달 QT</StatLabel>
+              <StatLabel className="text-text-secondary">이번 달 큐티</StatLabel>
             </div>
           </div>
           <p className="type-body font-semibold text-text-main">{days}일</p>

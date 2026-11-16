@@ -26,7 +26,7 @@ export function QtEntryForm({
   showClear,
   /** Home: 「나의 큐티 나누기」 shares date + range + non-empty fields. */
   share,
-  /** Optional notice above 「QT는 전체 합쳐…」 helper (e.g. past-empty history). */
+  /** Optional notice above 「큐티는 전체 합쳐…」 helper (e.g. past-empty history). */
   helperNotice,
 }: {
   initial?: QtEntry | null;
@@ -64,7 +64,7 @@ export function QtEntryForm({
           </div>
         ) : null}
         <p className="qt-validation-hint type-caption text-text-secondary">
-          QT는 전체 합쳐{" "}
+          큐티는 전체 합쳐{" "}
           <strong className="type-caption-em">
             최소 {QT_MIN_TOTAL_CHARS}자 이상
           </strong>{" "}

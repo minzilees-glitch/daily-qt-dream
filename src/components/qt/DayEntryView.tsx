@@ -4,7 +4,7 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   if (!entry) {
     return (
       <p className="text-center type-body-sm text-text-secondary">
-        이 날짜에 작성한 QT 기록이 없습니다.
+        이 날짜에 작성한 큐티 기록이 없습니다.
       </p>
     );
   }
@@ -19,7 +19,7 @@ export function DayEntryView({ entry }: { entry: QtEntry | null | undefined }) {
   if (rows.length === 0) {
     return (
       <p className="text-center type-body-sm text-text-secondary">
-        이 날짜에 작성한 QT 기록이 없습니다.
+        이 날짜에 작성한 큐티 기록이 없습니다.
       </p>
     );
   }

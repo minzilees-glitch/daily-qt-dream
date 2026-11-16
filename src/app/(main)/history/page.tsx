@@ -511,7 +511,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
       <ConfirmModal
         open={confirmOpen}
-        title="이 날의 QT 기록을 삭제할까요?"
+        title="이 날의 큐티 기록을 삭제할까요?"
         description="삭제하면 완료도 함께 취소됩니다. 이 작업은 되돌릴 수 없습니다."
         confirmLabel="삭제"
         cancelLabel="취소"
