@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -9,6 +9,8 @@ import {
   totalTrimmedLength,
 } from "@/lib/qt-entry";
 import type { QtEntry } from "@/types";
+
+const QT_LINE_FALLBACK_PX = 36;
 
 export function QtEntryForm({
   initial,
@@ -61,7 +63,7 @@ export function QtEntryForm({
         placeholder="기억에 남는 구절을 적어보세요."
         value={verse}
         disabled={locked}
-        rows={3}
+        minRows={3}
         onChange={setVerse}
       />
       <Field
@@ -70,7 +72,7 @@ export function QtEntryForm({
         placeholder="오늘 말씀을 통해 받은 은혜를 적어보세요."
         value={meditation}
         disabled={locked}
-        rows={5}
+        minRows={5}
         onChange={setMeditation}
       />
       <Field
@@ -79,7 +81,7 @@ export function QtEntryForm({
         placeholder="오늘 결단하고 순종할 것을 적어보세요."
         value={decisionObedience}
         disabled={locked}
-        rows={3}
+        minRows={3}
         onChange={setDecisionObedience}
       />
       <Field
@@ -88,7 +90,7 @@ export function QtEntryForm({
         placeholder="오늘의 기도제목을 적어보세요."
         value={prayer}
         disabled={locked}
-        rows={3}
+        minRows={3}
         onChange={setPrayer}
       />
 
@@ -130,6 +132,21 @@ export function QtEntryForm({
   );
 }
 
+function readLinePx(el: HTMLTextAreaElement): number {
+  const raw = getComputedStyle(el).getPropertyValue("--qt-line").trim();
+  const n = Number.parseFloat(raw);
+  return Number.isFinite(n) && n > 0 ? n : QT_LINE_FALLBACK_PX;
+}
+
+/** Grow one notebook line at a time; no inner scrollbar. */
+function syncAutoGrowHeight(el: HTMLTextAreaElement, minRows: number) {
+  const line = readLinePx(el);
+  const minH = minRows * line;
+  el.style.height = "0px";
+  const needed = Math.max(minH, el.scrollHeight);
+  el.style.height = `${Math.ceil(needed / line) * line}px`;
+}
+
 function Field({
   id,
   label,
@@ -137,7 +154,7 @@ function Field({
   value,
   onChange,
   disabled,
-  rows,
+  minRows,
 }: {
   id: string;
   label: string;
@@ -145,22 +162,32 @@ function Field({
   value: string;
   onChange: (v: string) => void;
   disabled?: boolean;
-  rows: number;
+  minRows: number;
 }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    syncAutoGrowHeight(el, minRows);
+
+    const onResize = () => syncAutoGrowHeight(el, minRows);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [value, minRows]);
+
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="qt-field-title mb-3 block"
-      >
+      <label htmlFor={id} className="qt-field-title mb-3 block">
         {label}
       </label>
       <textarea
+        ref={ref}
         id={id}
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        rows={rows}
+        rows={minRows}
         placeholder={placeholder}
         className="qt-lined-field type-body w-full text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:ring-0 disabled:opacity-60"
       />

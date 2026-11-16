@@ -304,7 +304,8 @@ html[data-sky-mode="밤모드"] {
   box-shadow: none !important;
   outline: none;
   resize: none;
-  overflow: auto;
+  /* Grow with content (JS snaps to --qt-line); sheet scrolls — no inner field scroll. */
+  overflow: hidden;
   background-color: transparent !important;
   background-image: repeating-linear-gradient(
     to bottom,
