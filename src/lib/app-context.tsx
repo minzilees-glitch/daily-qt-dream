@@ -75,9 +75,9 @@ interface AppState {
   confirmAward: (yearMonth: string, groupId: string, lights: number) => void;
   /**
    * Save profile photo for the current user.
-   * Compresses to a JPEG thumbnail first; when Supabase is configured, also
-   * uploads to Storage (`avatars/{userId}/avatar.*`) and updates
-   * `profiles.avatar_url`. Falls back to local-only if cloud upload fails.
+   * Compresses to a JPEG thumbnail first. With Supabase: upload Blob to Storage
+   * first, then persist the public URL only (never a data URL in localStorage);
+   * cloud errors hard-fail. Without Supabase: local data URL only.
    */
   setAvatarUrl: (
     dataUrl: string | null,
@@ -105,7 +105,10 @@ interface Overrides {
   userGroupMap: Record<string, string>;
   leaderMap: Record<string, string>;
   awards: MonthlyAward[];
-  /** Profile photo data URLs keyed by user id. */
+  /**
+   * Profile photo keyed by user id.
+   * Local-only mode: data URLs. Supabase mode: public Storage URLs only.
+   */
   avatarMap: Record<string, string>;
   /** Nickname overrides keyed by user id (profiles.display_name). */
   nameMap?: Record<string, string>;
@@ -194,6 +197,17 @@ function writeSession(id: string | null) {
   else removeKey(SESSION_KEY);
   readFresh();
   emit();
+}
+
+/** Drop base64 data-URL avatars — they blow mobile localStorage quotas. */
+function stripDataUrlAvatars(
+  map: Record<string, string> | undefined,
+): Record<string, string> {
+  const next: Record<string, string> = {};
+  for (const [id, url] of Object.entries(map ?? {})) {
+    if (url && !url.startsWith("data:")) next[id] = url;
+  }
+  return next;
 }
 
 function writeOverrides(next: Overrides) {
@@ -300,6 +314,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         };
       });
       if (avatars.ok) setRemoteAvatars(avatars.data);
+      // Supabase mode: never keep data-URL thumbnails in localStorage.
+      {
+        const cur = getSnapshot().overrides;
+        const pruned = stripDataUrlAvatars(cur.avatarMap);
+        const before = Object.keys(cur.avatarMap ?? {}).length;
+        const after = Object.keys(pruned).length;
+        if (before !== after) {
+          writeOverrides({ ...cur, avatarMap: pruned });
+        }
+      }
       const display = await fetchDisplayName(sessionUserId);
       if (!cancelled && display.ok && display.data) {
         const nameMap = { ...(getSnapshot().overrides.nameMap ?? {}) };
@@ -710,9 +734,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
 
       if (!dataUrl) {
-        const avatarMap = { ...(overrides.avatarMap ?? {}) };
-        delete avatarMap[sessionUserId];
-        writeOverrides({ ...overrides, avatarMap });
         if (supabaseEnabled) {
           const res = await clearAvatar(sessionUserId);
           if (!res.ok) {
@@ -724,6 +745,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
             return next;
           });
         }
+        const avatarMap = { ...(overrides.avatarMap ?? {}) };
+        delete avatarMap[sessionUserId];
+        writeOverrides({ ...overrides, avatarMap });
         return { ok: true, message: "프로필 사진을 삭제했어요." };
       }
 
@@ -737,14 +761,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ok: false, message: detail };
       }
 
-      const avatarMap = { ...(overrides.avatarMap ?? {}) };
-      avatarMap[sessionUserId] = compressed.dataUrl;
-      writeOverrides({ ...overrides, avatarMap });
-
+      // Local-only: persist compressed data URL (no Supabase).
       if (!supabaseEnabled) {
+        const avatarMap = { ...(overrides.avatarMap ?? {}) };
+        avatarMap[sessionUserId] = compressed.dataUrl;
+        writeOverrides({ ...overrides, avatarMap });
         return { ok: true, message: "저장했어요." };
       }
 
+      // Supabase on: upload Blob first; persist public URL only (never data URL).
       const blob =
         compressed.blob.type.startsWith("image/")
           ? compressed.blob
@@ -755,14 +780,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const res = await uploadAndSaveAvatar(sessionUserId, blob);
       if (!res.ok) {
-        // Local thumbnail already saved — pilot can keep using the app offline.
-        return {
-          ok: true,
-          message: `기기에 저장했어요. 클라우드 동기화 실패: ${res.error}`,
-        };
+        return { ok: false, message: res.error };
       }
 
-      avatarMap[sessionUserId] = res.data;
+      const avatarMap = stripDataUrlAvatars({
+        ...(overrides.avatarMap ?? {}),
+        [sessionUserId]: res.data,
+      });
       writeOverrides({ ...overrides, avatarMap });
       setRemoteAvatars((prev) => ({ ...prev, [sessionUserId]: res.data }));
       return { ok: true, message: "프로필 사진을 저장했어요." };
