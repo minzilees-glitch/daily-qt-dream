@@ -900,7 +900,7 @@ a {
   width: 100%;
   box-sizing: border-box;
   padding-top: 22px;
-  background: color-mix(in srgb, var(--color-mint) 30%, white);
+  background: color-mix(in srgb, var(--color-mint) 40%, white);
   border-radius: 36px 36px 0 0;
 }
 
