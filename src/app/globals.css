@@ -1497,12 +1497,14 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
-  /* Overlap sky header; white sheet for QT fields below Duranno mint. */
+  /* Overlap sky header; mint 말씀 + edge-to-edge white form below. */
   margin-top: -1.25rem;
   min-height: 0;
-  background: var(--premium-sheet) !important;
-  /* Mint band owns the sheet-top air (no white pad above it). */
-  padding-top: 0;
+  background: #ffffff !important;
+  /* No side/bottom pad — form body is edge-to-edge white (like history). */
+  padding-top: 0 !important;
+  padding-inline: 0 !important;
+  padding-bottom: 0 !important;
   /* Same drop-shadow token as 나의 QT들 (.premium-qt-sheet). */
   box-shadow: none;
   filter: var(--premium-sheet-filter);
@@ -1511,18 +1513,28 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 
 /*
  * 말씀 header: full-bleed mint in the sheet (not a card).
- * Same --space-page-x pad as QT fields; only background differs.
+ * Sheet has no inline pad — mint + white form each own their own page-x.
  * Top radius matches sheet so mint follows the drawer curve without overflow:hidden.
  */
 .home-duranno-in-sheet {
   box-sizing: border-box;
-  margin: 0 calc(-1 * var(--space-page-x));
+  margin: 0;
+  width: 100%;
   padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
   border-radius: 36px 36px 0 0;
   background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-black); /* #000917 */
   box-shadow: none !important;
   filter: none !important;
+}
+
+/* Form body: solid white edge-to-edge (L/R/bottom), content padded inward. */
+.premium-home-qt {
+  margin-inline: 0;
+  width: 100%;
+  padding: 0 var(--space-page-x) calc(1.5rem + var(--safe-bottom));
+  background: #ffffff !important;
+  box-sizing: border-box;
 }
 
 .home-duranno-in-sheet .reading-passage-range,
