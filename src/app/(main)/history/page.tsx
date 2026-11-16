@@ -440,8 +440,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                     }
                     shareDisabled={!hasEntry}
                     onEdit={() => setEditing(true)}
-                    onDelete={() => setConfirmOpen(true)}
-                    deleteDisabled={!hasEntry && !selectedCompleted}
                   />
                 ) : null
               }
@@ -462,6 +460,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               <QtEntryForm
                 key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
                 initial={selectedEntry}
+                editing
+                onDelete={() => setConfirmOpen(true)}
                 share={share}
                 onSave={async (fields) => {
                   try {

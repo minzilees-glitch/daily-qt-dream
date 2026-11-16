@@ -21,19 +21,21 @@ const QT_LINE_FALLBACK_PX = 36;
 export function QtEntryForm({
   initial,
   onSave,
-  onClear,
+  onDelete,
   disabled,
-  showClear,
-  /** Home: 「나의 큐티 나누기」 shares date + range + non-empty fields. */
+  /** Editing a saved entry: secondary 삭제 + primary 「수정사항 저장」. */
+  editing = false,
+  /** Home: 「나의 큐티 나누기」 shares date + range + non-empty fields (create flow). */
   share,
   /** Optional notice above 「큐티는 전체 합쳐…」 helper (e.g. past-empty history). */
   helperNotice,
 }: {
   initial?: QtEntry | null;
   onSave: (fields: QtEntryFields) => void | Promise<void>;
-  onClear?: () => void | Promise<void>;
+  /** Opens delete confirm (edit mode only). */
+  onDelete?: () => void;
   disabled?: boolean;
-  showClear?: boolean;
+  editing?: boolean;
   share?: {
     dateYmd: string;
     passageRange: string;
@@ -119,7 +121,7 @@ export function QtEntryForm({
       />
 
       <div className="flex flex-col gap-[var(--space-stack-sm)]">
-        {share ? (
+        {share && !editing ? (
           <PrimaryButton
             type="button"
             variant="secondary"
@@ -145,6 +147,18 @@ export function QtEntryForm({
           </PrimaryButton>
         ) : null}
 
+        {editing && onDelete ? (
+          <PrimaryButton
+            type="button"
+            variant="secondary"
+            className="w-full"
+            disabled={locked}
+            onClick={onDelete}
+          >
+            삭제
+          </PrimaryButton>
+        ) : null}
+
         <PrimaryButton
           type="button"
           variant="primary"
@@ -160,28 +174,13 @@ export function QtEntryForm({
           }}
         >
           <Check size={18} strokeWidth={2.25} aria-hidden />
-          {busy ? "저장 중…" : "저장하고 큐티 완료하기"}
+          {busy
+            ? "저장 중…"
+            : editing
+              ? "수정사항 저장"
+              : "저장하고 큐티 완료하기"}
         </PrimaryButton>
       </div>
-
-      {showClear && onClear ? (
-        <PrimaryButton
-          type="button"
-          variant="soft"
-          className="w-full"
-          disabled={locked}
-          onClick={async () => {
-            setBusy(true);
-            try {
-              await onClear();
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          기록 삭제 · 완료 취소
-        </PrimaryButton>
-      ) : null}
     </div>
   );
 }

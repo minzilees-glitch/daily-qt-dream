@@ -79,7 +79,13 @@ export function HomeClient({
       <QtEntryForm
         key={`home-qt-${today}-${editing ? todayEntry?.updatedAt ?? "edit" : "new"}`}
         initial={todayEntry}
+        editing={editing && (hasEntry || doneToday)}
         share={shareOpts}
+        onDelete={
+          editing && (hasEntry || doneToday)
+            ? () => setConfirmOpen(true)
+            : undefined
+        }
         onSave={async (fields) => {
           try {
             const res = await saveEntry(today, fields);
@@ -135,8 +141,6 @@ export function HomeClient({
                     }
                     shareDisabled={!hasEntry}
                     onEdit={() => setEditing(true)}
-                    onDelete={() => setConfirmOpen(true)}
-                    deleteDisabled={!hasEntry && !doneToday}
                   />
                 ) : null
               }
