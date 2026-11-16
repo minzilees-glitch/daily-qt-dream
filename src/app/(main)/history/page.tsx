@@ -12,7 +12,7 @@ import { CalendarDays, MoreHorizontal, Send } from "lucide-react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
-import { LightCount, LightIcon } from "@/components/ui/LightIcon";
+import { LightCount } from "@/components/ui/LightIcon";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { QtCalendar } from "@/components/qt/QtCalendar";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
@@ -206,23 +206,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           <span className="premium-sheet-grabber" />
         </div>
         <div key={selected} className="premium-content-crossfade flex flex-col">
-          <div className="premium-history-passage space-y-[var(--space-stack-sm)] pt-3">
-            {future ? (
-              <div className="flex min-w-0 items-start gap-2">
-                <span className="shrink-0 self-center">
-                  <LightIcon
-                    active={selectedCompleted}
-                    future={future}
-                    size={24}
-                    justEarned={false}
-                  />
-                </span>
-                <p className="type-body-sm text-text-secondary">
-                  미래 날짜는 완료할 수 없습니다.
-                </p>
-              </div>
-            ) : null}
-
+          <div className="premium-history-passage pt-3">
             <HomeDurannoPassage
               key={selected}
               reading={historyPassage}
@@ -272,8 +256,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
             />
           </div>
 
-          {!future && editing ? (
-            <div className="premium-history-qt">
+          <div className="premium-history-qt">
+            {future ? (
+              <p className="qt-validation-hint type-caption pt-[var(--space-stack-lg)] text-text-secondary">
+                미래 날짜는 완료할 수 없습니다.
+              </p>
+            ) : editing ? (
               <QtEntryForm
                 key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
                 initial={selectedEntry}
@@ -290,48 +278,42 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   }
                 }}
               />
-            </div>
-          ) : null}
-
-          {!future && !editing ? (
-            <div className="premium-history-qt">
-              {hasEntry || selectedCompleted ? (
-                <div className="space-y-[var(--space-stack-lg)]">
-                  <DayEntryView entry={selectedEntry} />
-                  <PrimaryButton
-                    type="button"
-                    variant="secondary"
-                    className="w-full"
-                    onClick={shareSavedEntry}
-                  >
-                    <Send size={18} strokeWidth={2.25} aria-hidden />
-                    나의 큐티 나누기
-                  </PrimaryButton>
-                </div>
-              ) : (
-                <QtEntryForm
-                  key={`hist-new-${selected}`}
-                  initial={null}
-                  share={share}
-                  helperNotice={
-                    past && !hasEntry
-                      ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."
-                      : null
+            ) : hasEntry || selectedCompleted ? (
+              <div className="space-y-[var(--space-stack-lg)]">
+                <DayEntryView entry={selectedEntry} />
+                <PrimaryButton
+                  type="button"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={shareSavedEntry}
+                >
+                  <Send size={18} strokeWidth={2.25} aria-hidden />
+                  나의 큐티 나누기
+                </PrimaryButton>
+              </div>
+            ) : (
+              <QtEntryForm
+                key={`hist-new-${selected}`}
+                initial={null}
+                share={share}
+                helperNotice={
+                  past && !hasEntry
+                    ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."
+                    : null
+                }
+                onSave={async (fields) => {
+                  try {
+                    const res = await saveEntry(selected, fields);
+                    showToast(res.message);
+                  } catch (err) {
+                    const detail =
+                      err instanceof Error ? err.message : "알 수 없는 오류";
+                    showToast(`저장 실패: ${detail}`);
                   }
-                  onSave={async (fields) => {
-                    try {
-                      const res = await saveEntry(selected, fields);
-                      showToast(res.message);
-                    } catch (err) {
-                      const detail =
-                        err instanceof Error ? err.message : "알 수 없는 오류";
-                      showToast(`저장 실패: ${detail}`);
-                    }
-                  }}
-                />
-              )}
-            </div>
-          ) : null}
+                }}
+              />
+            )}
+          </div>
         </div>
       </section>
 
