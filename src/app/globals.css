@@ -1377,10 +1377,10 @@ a {
   letter-spacing: var(--tracking-label);
 }
 
-/* Status under date: same size as 말씀 summary (type-body-sm). */
+/* Status under date: same size as 말씀 summary (type-body-sm); weight +1. */
 .premium-home-header-band .home-status-line {
   font-size: var(--fs-body-sm) !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important; /* was 400 → medium */
 }
 
 .premium-home-form-sheet {
