@@ -857,6 +857,14 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-ink-blue) !important; /* #1F3E62 */
 }
 
+/* 밤모드: underline marks today when it is not the selected day. */
+html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-color: currentColor;
+}
+
 .premium-qt-header svg {
   color: var(--sky-mode-ink);
   stroke: currentColor;
@@ -1700,17 +1708,17 @@ a.home-duranno-cta svg {
 }
 
 /*
- * Literal 6px spacer between BookOpen and 「말씀보기」.
+ * Literal 5px spacer between BookOpen and 「말씀보기」.
  * Width/flex-basis (not margin/gap) so it cannot collapse; nbsp keeps
  * the box from being treated as empty in some engines.
  */
 a.home-duranno-cta .home-duranno-cta-icon-gap {
   display: inline-block !important;
   box-sizing: border-box !important;
-  width: 6px !important;
-  min-width: 6px !important;
-  max-width: 6px !important;
-  flex: 0 0 6px !important;
+  width: 5px !important;
+  min-width: 5px !important;
+  max-width: 5px !important;
+  flex: 0 0 5px !important;
   height: 1em !important;
   margin: 0 !important;
   padding: 0 !important;
