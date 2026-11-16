@@ -1432,6 +1432,7 @@ a {
   gap: 0.125rem;
   flex-shrink: 0;
   color: var(--color-black) !important; /* #000917 */
+  opacity: 0.7;
   background: none !important;
   background-color: transparent !important;
   border: 0 !important;
@@ -1446,7 +1447,8 @@ a {
 }
 
 .home-duranno-cta:hover {
-  filter: brightness(0.92) !important;
+  opacity: 0.85;
+  filter: none !important;
 }
 
 .home-duranno-cta:focus-visible {
