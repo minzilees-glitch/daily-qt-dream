@@ -1383,26 +1383,26 @@ a {
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
-  /* Overlap sky header; white sheet for QT fields (mint only in Duranno box). */
+  /* Overlap sky header; white sheet for QT fields below Duranno mint. */
   margin-top: -1.25rem;
   min-height: 0;
   background: var(--premium-sheet) !important;
-  /* Air above the rounded Duranno box. */
-  padding-top: calc(var(--space-stack) + 6px);
+  /* Mint band owns the sheet-top air (no white pad above it). */
+  padding-top: 0;
 }
 
 /*
- * Duranno lead-in: clear rounded mint box (label / range / summary).
- * QT fields below sit on the white sheet.
+ * Duranno lead-in: mint wash from sheet start through summary — no card chrome.
+ * Side pad matches QT inputs (--space-page-x).
  */
 .home-duranno-in-sheet {
   box-sizing: border-box;
-  /* Horizontal inset so white sheet reads beside the mint card. */
-  margin: 0 0.75rem 0.25rem;
-  padding: 1rem 1.15rem;
-  border-radius: var(--radius-card);
+  margin: 0 calc(-1 * var(--space-page-x)) var(--space-stack);
+  padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
+  border-radius: 36px 36px 0 0; /* follow sheet top only; not an inset card */
   background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-ink-blue);
+  box-shadow: none;
 }
 
 .home-duranno-in-sheet .reading-passage-range {

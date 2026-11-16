@@ -3,9 +3,9 @@ import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * Sheet-top Duranno strip (mint wash only through this block):
+ * Sheet-top Duranno mint wash (no card chrome):
  * line1 「오늘의 말씀」; line2 range + book↗; line3 summary title.
- * No passage body embed. Form fields sit on white below.
+ * Mint runs from sheet start through summary; fields sit on white below.
  */
 export function HomeDurannoPassage({
   reading,
