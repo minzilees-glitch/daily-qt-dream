@@ -126,8 +126,6 @@
   --space-stack-sm: 1rem; /* space-y-4 / mt-4 */
   --space-stack: 1.25rem; /* space-y-5 / mt-5 */
   --space-stack-lg: 1.75rem; /* space-y-7 form fields */
-  /* 말씀 header bottom pad ↔ 「QT는 전체 합쳐…」 top pad (same value). */
-  --home-duranno-pad-end: 1rem;
   --space-hero-pb: 1.5rem; /* hero section pb-6 */
   --space-section-pb: 2rem; /* content section pb-8 */
   /* Tab page titles (PageTitle / AppHeader) — was 12px; subtle bump */
@@ -1408,8 +1406,7 @@ a {
 .home-duranno-in-sheet {
   box-sizing: border-box;
   margin: 0 calc(-1 * var(--space-page-x));
-  padding: calc(var(--space-stack) + 6px) var(--space-page-x)
-    var(--home-duranno-pad-end);
+  padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
   border-radius: 36px 36px 0 0;
   background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-black); /* #000917 */
