@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight, LogOut, Shield } from "lucide-react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
@@ -12,13 +12,17 @@ import { useApp } from "@/lib/app-context";
 export default function MeSettingsPage() {
   const { currentUser, groups, logout, setDisplayName } = useApp();
   const router = useRouter();
-  const [nickname, setNickname] = useState("");
+  const userName = currentUser?.name ?? "";
+  const [nickname, setNickname] = useState(userName);
+  const [syncedName, setSyncedName] = useState(userName);
   const [savingName, setSavingName] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  useEffect(() => {
-    setNickname(currentUser?.name ?? "");
-  }, [currentUser?.name]);
+  // Sync draft when profile name changes (render-time adjust — no effect setState).
+  if (userName !== syncedName) {
+    setSyncedName(userName);
+    setNickname(userName);
+  }
 
   if (!currentUser) return null;
 

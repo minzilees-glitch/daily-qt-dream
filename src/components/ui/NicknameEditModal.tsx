@@ -15,15 +15,20 @@ export function NicknameEditModal({
   onClose: () => void;
 }) {
   const { currentUser, setDisplayName } = useApp();
-  const [nickname, setNickname] = useState("");
+  const userName = currentUser?.name ?? "";
+  const [nickname, setNickname] = useState(userName);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [wasOpen, setWasOpen] = useState(false);
 
-  useEffect(() => {
-    if (!open) return;
-    setNickname(currentUser?.name ?? "");
+  // Reset draft when the modal opens (render-time adjust — no effect setState).
+  if (open && !wasOpen) {
+    setWasOpen(true);
+    setNickname(userName);
     setToast(null);
-  }, [open, currentUser?.name]);
+  } else if (!open && wasOpen) {
+    setWasOpen(false);
+  }
 
   useEffect(() => {
     if (!open) return;

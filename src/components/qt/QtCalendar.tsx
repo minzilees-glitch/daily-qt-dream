@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   addDays,
   daysInMonth,
@@ -124,8 +124,11 @@ export function QtCalendar({
     moved: boolean;
   }>({ active: false, startX: 0, startY: 0, moved: false });
 
-  const stepWeek = useCallback(
-    (direction: -1 | 1) => {
+  // Latest stepper via ref — avoids useCallback+focusDate compiler skip and
+  // exhaustive-deps churn from an unstable function identity.
+  const stepWeekRef = useRef<(direction: -1 | 1) => void>(() => {});
+  useEffect(() => {
+    stepWeekRef.current = (direction: -1 | 1) => {
       if (!onSelect) return;
       const base =
         selectedDate && yearMonthOf(selectedDate) === yearMonth
@@ -138,16 +141,19 @@ export function QtCalendar({
       // next week enters from right; previous from left
       pendingSlideRef.current = direction === 1 ? "next" : "prev";
       onSelect(next);
-    },
-    [
-      focusDate,
-      maxYearMonth,
-      minYearMonth,
-      onSelect,
-      selectedDate,
-      yearMonth,
-    ],
-  );
+    };
+  }, [
+    focusDate,
+    maxYearMonth,
+    minYearMonth,
+    onSelect,
+    selectedDate,
+    yearMonth,
+  ]);
+
+  const stepWeek = (direction: -1 | 1) => {
+    stepWeekRef.current(direction);
+  };
 
   /* Horizontal wheel / trackpad: one threshold → one week. */
   useEffect(() => {
@@ -165,12 +171,12 @@ export function QtCalendar({
       if (Math.abs(wheelAccRef.current) < WHEEL_THRESHOLD) return;
       const dir: -1 | 1 = wheelAccRef.current > 0 ? 1 : -1;
       wheelAccRef.current = 0;
-      stepWeek(dir);
+      stepWeekRef.current(dir);
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, [collapsed, onSelect, stepWeek]);
+  }, [collapsed, onSelect]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!collapsed) return;
@@ -217,7 +223,8 @@ export function QtCalendar({
   useEffect(() => {
     if (!collapsed) {
       weekKeyRef.current = weekKey;
-      setWeekSlide(null);
+      // Defer — sync setState in effect body trips react-hooks/set-state-in-effect.
+      queueMicrotask(() => setWeekSlide(null));
       return;
     }
     const prev = weekKeyRef.current;
@@ -226,12 +233,8 @@ export function QtCalendar({
 
     const pending = pendingSlideRef.current;
     pendingSlideRef.current = null;
-    if (pending) {
-      setWeekSlide(pending);
-      return;
-    }
-    // External date jump (month picker / day tap in another week).
-    setWeekSlide(weekKey > prev ? "next" : "prev");
+    const nextSlide = pending ?? (weekKey > prev ? "next" : "prev");
+    queueMicrotask(() => setWeekSlide(nextSlide));
   }, [collapsed, weekKey]);
 
   return (

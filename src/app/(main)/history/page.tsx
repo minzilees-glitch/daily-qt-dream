@@ -95,10 +95,13 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     velocityY: number;
   } | null>(null);
 
-  dropRef.current = drop;
-  maxDropRef.current = maxDrop;
-  calendarExpandedRef.current = calendarExpanded;
-  draggingRef.current = dragging;
+  // Keep gesture refs in sync after paint (not during render — React Compiler).
+  useEffect(() => {
+    dropRef.current = drop;
+    maxDropRef.current = maxDrop;
+    calendarExpandedRef.current = calendarExpanded;
+    draggingRef.current = dragging;
+  }, [drop, maxDrop, calendarExpanded, dragging]);
 
   const minYm = HISTORY_MIN_YM;
   const maxYm = HISTORY_MAX_YM;

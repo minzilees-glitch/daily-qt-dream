@@ -149,36 +149,46 @@ export function LightIcon({
   const wrapRef = useRef<HTMLSpanElement>(null);
   const [open, setOpen] = useState(false);
   const [burst, setBurst] = useState(false);
-  const prevToneRef = useRef<Tone | null>(null);
+  const [prevResolved, setPrevResolved] = useState(resolved);
+  const [prevJustEarned, setPrevJustEarned] = useState(justEarned);
+  const [tonePrimed, setTonePrimed] = useState(false);
 
-  // inactive (or any non-yellow) → earned yellow: one-shot rays, then hide.
-  useEffect(() => {
-    if (!rays) {
-      prevToneRef.current = resolved;
-      setBurst(false);
-      return;
+  // Tone / justEarned → burst: adjust during render (no sync setState in effects).
+  if (!rays) {
+    if (burst) setBurst(false);
+    if (prevResolved !== resolved) setPrevResolved(resolved);
+    if (prevJustEarned !== justEarned) setPrevJustEarned(justEarned);
+    if (tonePrimed) setTonePrimed(false);
+  } else {
+    if (resolved !== prevResolved) {
+      const prev = prevResolved;
+      setPrevResolved(resolved);
+      if (tonePrimed) {
+        const wasLit =
+          isEarnedYellow(prev) || prev === "sky" || prev === "blue";
+        const nowLit =
+          isEarnedYellow(resolved) ||
+          resolved === "sky" ||
+          resolved === "blue";
+        if (!wasLit && nowLit) setBurst(true);
+      } else {
+        setTonePrimed(true); // skip burst for already-active on first sync
+      }
+    } else if (!tonePrimed) {
+      setTonePrimed(true);
     }
-    const prev = prevToneRef.current;
-    prevToneRef.current = resolved;
-    if (prev === null) return; // initial mount — no burst for already-active icons
-    const wasLit =
-      isEarnedYellow(prev) || prev === "sky" || prev === "blue";
-    const nowLit =
-      isEarnedYellow(resolved) || resolved === "sky" || resolved === "blue";
-    const becameEarned = !wasLit && nowLit;
-    if (!becameEarned) return;
-    setBurst(true);
-    const t = window.setTimeout(() => setBurst(false), BURST_MS);
-    return () => window.clearTimeout(t);
-  }, [resolved, rays]);
+    if (justEarned !== prevJustEarned) {
+      setPrevJustEarned(justEarned);
+      if (justEarned) setBurst(true);
+    }
+  }
 
-  // Explicit earn signal (calendar / cross-route completion).
+  // Clear burst after animation — setState only in timeout callback.
   useEffect(() => {
-    if (!rays || !justEarned) return;
-    setBurst(true);
+    if (!burst) return;
     const t = window.setTimeout(() => setBurst(false), BURST_MS);
     return () => window.clearTimeout(t);
-  }, [justEarned, rays]);
+  }, [burst]);
 
   useEffect(() => {
     if (!open) return;
