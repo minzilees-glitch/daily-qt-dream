@@ -37,7 +37,7 @@ export function HomeDurannoPassage({
           height (h-8 buttons vs range text). Far-right = actions. */}
       <div className="relative mt-1">
         <div
-          className={`flex min-w-0 items-center gap-6${
+          className={`flex min-w-0 items-center gap-10${
             rangeTrailing ? " pr-16" : ""
           }`}
         >
@@ -54,7 +54,7 @@ export function HomeDurannoPassage({
               title="말씀보기"
             >
               말씀보기
-              <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
+              <ChevronRight size={16} strokeWidth={2.25} aria-hidden />
             </a>
           ) : null}
         </div>
