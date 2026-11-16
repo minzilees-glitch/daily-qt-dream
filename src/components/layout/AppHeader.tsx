@@ -85,7 +85,7 @@ export function AppHeader({
             </p>
             {dateAccessory}
           </div>
-          {status ? <div className="mt-1">{status}</div> : null}
+          {status ? <div className="mt-2">{status}</div> : null}
         </div>
 
         {showAvatar ? (
