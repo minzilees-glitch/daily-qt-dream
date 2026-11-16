@@ -1060,9 +1060,9 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 
 .premium-qt-root.premium-qt-root--me-sky > .premium-qt-sheet.premium-qt-sheet--me {
   flex: 0 0 auto;
-  /* Flush white sheet through layout nav pad (same as 우리순). */
-  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
-  padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
+  /* Content-fit: layout already pads for bottom nav — don't double-stack empty sheet pad. */
+  margin-bottom: 0;
+  padding-bottom: 1.5rem;
 }
 
 /* 계정 설정: logout sits under profile detail at sheet bottom. */
