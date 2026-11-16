@@ -23,7 +23,7 @@ export function QtEntryForm({
   onClear,
   disabled,
   showClear,
-  /** Home: 「공유하기」 copies date + range + non-empty fields. */
+  /** Home: 「나의 큐티 나누기」 shares date + range + non-empty fields. */
   share,
 }: {
   initial?: QtEntry | null;
@@ -144,7 +144,7 @@ export function QtEntryForm({
             }
           }}
         >
-          공유하기
+          나의 큐티 나누기
         </PrimaryButton>
       ) : null}
 
