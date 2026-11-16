@@ -29,6 +29,7 @@ function decodeHtmlEntities(raw: string): string {
 function normalizeRange(raw: string): string {
   return decodeHtmlEntities(raw)
     .replace(/\s*:\s*/g, ":")
+    .replace(/~/g, "-")
     .replace(/\s+/g, " ")
     .trim();
 }

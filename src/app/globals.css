@@ -1218,8 +1218,7 @@ a {
     .premium-list-row,
     .premium-panel,
     .premium-tab-header,
-    .sky-group-card,
-    .premium-home-passage > *
+    .sky-group-card
   ) {
   border-radius: 0 !important;
 }
@@ -1296,7 +1295,7 @@ a {
   color: var(--color-black); /* #000917 — not sky */
 }
 
-/* Home shell: short = flush under passage; long = peek + drag-up sheet. */
+/* Home shell: sky header + overlapping mint QT sheet (Duranno lives in sheet). */
 .premium-home-root {
   background: var(--color-white);
 }
@@ -1310,42 +1309,25 @@ a {
   height: auto;
   min-height: calc(100dvh - 72px - var(--safe-bottom));
   overflow: visible;
-  /* Mint 50% wash — matches home passage sheet. */
+  /* Mint wash under rounded sheet corners. */
   background: color-mix(in srgb, var(--color-mint) 50%, white);
-}
-
-.premium-home-shell--long {
-  height: calc(100dvh - 72px - var(--safe-bottom));
-  max-height: calc(100dvh - 72px - var(--safe-bottom));
-  overflow: hidden;
 }
 
 .premium-home-top {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* Continuous with header fill so sky↔passage edge is not a translucent band. */
-  background: var(--sky-mode-fill);
-}
-
-.premium-home-shell--short .premium-home-top {
   height: auto;
   overflow: visible;
-}
-
-.premium-home-shell--long .premium-home-top {
-  flex: 1 1 auto;
-  min-height: 0;
-  /* Visible so sheet drop-shadow is not clipped; scroll lives on passage. */
-  overflow: visible;
+  background: var(--sky-mode-fill);
 }
 
 .premium-home-header-band {
   position: relative;
-  z-index: 1; /* sits under the 말씀 panel */
+  z-index: 1; /* sits under the overlapping QT sheet */
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
-  /* Air under status line; keep 1.25rem for passage sheet overlap. */
+  /* Air under status line; keep 1.25rem for sheet overlap. */
   padding-bottom: calc(0.65rem + 1.25rem);
   /* 낮모드/밤모드 — same token as 우리순·랭킹·마이페이지 headers. */
   background: var(--sky-mode-fill);
@@ -1397,100 +1379,40 @@ a {
   font-weight: 400 !important;
 }
 
-/* Passage reads as a fixed mint drawer over the sky header (no drag). */
-.premium-home-passage {
-  position: relative;
-  z-index: 3;
-  /* Pull up over the header so rounded top sits on sky chrome. */
-  margin-top: -1.25rem;
-  padding-inline: var(--space-page-x);
-  /* Top pad without grabber; keep sheet-like air above 「오늘의 말씀」. */
-  padding-top: calc(var(--space-stack) + 6px);
-  padding-bottom: 0.75rem;
-  border-radius: 36px 36px 0 0 !important; /* no grabber; round + shadow only */
-  background: color-mix(in srgb, var(--color-mint) 50%, white);
-  color: var(--color-ink-blue);
-  box-shadow: none;
-  filter:
-    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
-    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
-  pointer-events: auto;
-}
-
-/* Dark reading text on sky passage. */
-.premium-home-passage .text-text-main,
-.premium-home-passage .type-section,
-.premium-home-passage .type-body,
-.premium-home-passage .type-body-sm,
-.premium-home-passage .type-caption,
-.premium-home-passage .reading-passage-range {
-  color: var(--color-ink-blue) !important;
-}
-
-.premium-home-passage .text-text-secondary {
-  color: color-mix(in srgb, var(--color-ink-blue) 72%, transparent) !important;
-}
-
-.premium-home-passage .opacity-80 {
-  opacity: 0.8;
-}
-
-.premium-home-passage .opacity-60 {
-  opacity: 0.55;
-}
-
-.premium-home-shell--short .premium-home-passage {
-  flex: 0 0 auto;
-  overflow: visible;
-  /*
-   * 30px gap lives INSIDE the sky passage (plus sheet overlap pull),
-   * so there is no sibling margin strip / layer seam hairline.
-   */
-  padding-bottom: calc(0.75rem + 30px + 1.25rem);
-}
-
-.premium-home-shell--long .premium-home-passage {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
-  /* Inherit shared .premium-qt-sheet padding-top + sheet drop-shadow. */
-}
-
-.premium-home-shell--short .premium-home-form-sheet {
-  /* Nest into passage sky padding — keep 30px visible gap, no separate spacer. */
+  /* Overlap sky header; shared .premium-qt-sheet padding + grabber UX. */
   margin-top: -1.25rem;
   min-height: 0;
 }
 
-.premium-home-shell--long .premium-home-form-sheet {
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  /* Height set inline from peek + drag rise; keep default sheet overlap. */
-  min-height: 0;
+/*
+ * Duranno lead-in inside the QT sheet:
+ * 「오늘의 말씀」 / range + book↗ CTA. Mint wash; no scripture embed.
+ */
+.home-duranno-in-sheet {
+  margin-inline: calc(-1 * var(--space-page-x));
+  margin-bottom: 0.25rem;
+  padding: 0.75rem var(--space-page-x) 1rem;
+  background: color-mix(in srgb, var(--color-mint) 50%, white);
+  color: var(--color-ink-blue);
 }
 
-/* Home long-mode drag strip + centered gray pill grabber. */
-.premium-home-sheet-drag {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 20px; /* match .premium-sheet-grabber-row */
-  margin: -18px 0 0.35rem; /* match .premium-sheet-grabber-row */
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
+.home-duranno-in-sheet .reading-passage-range {
+  color: var(--color-ink-blue) !important;
 }
 
-.premium-home-sheet-drag:active {
-  cursor: grabbing;
+.home-duranno-in-sheet .text-text-secondary {
+  color: color-mix(in srgb, var(--color-ink-blue) 72%, transparent) !important;
+}
+
+.home-duranno-cta {
+  color: var(--color-ink-blue);
+}
+
+.home-duranno-cta svg {
+  color: inherit;
 }
 
 @keyframes premium-select-pop {

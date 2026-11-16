@@ -66,24 +66,24 @@ export function HomeClient({
             }
           />
         }
-        passage={
-          <HomeDurannoPassage reading={reading} label="오늘의 말씀" />
-        }
         sheet={
-          <QtEntryForm
-            key={`home-qt-${today}`}
-            initial={todayEntry}
-            onSave={async (fields) => {
-              try {
-                const res = await saveEntry(today, fields);
-                showToast(res.message);
-              } catch (err) {
-                const detail =
-                  err instanceof Error ? err.message : "알 수 없는 오류";
-                showToast(`저장 실패: ${detail}`);
-              }
-            }}
-          />
+          <div className="space-y-[var(--space-stack)]">
+            <HomeDurannoPassage reading={reading} label="오늘의 말씀" />
+            <QtEntryForm
+              key={`home-qt-${today}`}
+              initial={todayEntry}
+              onSave={async (fields) => {
+                try {
+                  const res = await saveEntry(today, fields);
+                  showToast(res.message);
+                } catch (err) {
+                  const detail =
+                    err instanceof Error ? err.message : "알 수 없는 오류";
+                  showToast(`저장 실패: ${detail}`);
+                }
+              }}
+            />
+          </div>
         }
       />
       <Toast message={toast} />

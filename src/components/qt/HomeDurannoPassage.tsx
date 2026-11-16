@@ -1,10 +1,11 @@
-import { ExternalLink } from "lucide-react";
-import { ReadingPassageHeader } from "@/components/qt/ReadingPassageHeader";
+import { ArrowUpRight, BookOpen } from "lucide-react";
+import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * Home 본문 strip: Duranno range + title labels only, plus one CTA.
- * Full scripture stays on Duranno — never embed the passage body here.
+ * Sheet-top Duranno strip (mint wash):
+ * line1 「오늘의 말씀」; line2 range + icon-only open-book↗ CTA.
+ * No passage body embed.
  */
 export function HomeDurannoPassage({
   reading,
@@ -13,25 +14,25 @@ export function HomeDurannoPassage({
   reading: DurannoTodayMeta;
   label?: string;
 }) {
+  const range = reading.range || "—";
+
   return (
-    <div className="shadow-none">
-      <ReadingPassageHeader
-        reading={{
-          date: reading.date,
-          range: reading.range || "—",
-          title: reading.title || undefined,
-        }}
-        label={label}
-      />
-      <a
-        href={reading.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn-cta mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[var(--radius-btn)] bg-cta px-[var(--space-control-x)] py-4 type-body font-bold !text-[var(--color-mint)] shadow-none transition hover:brightness-105 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta focus-visible:ring-offset-2 [&_svg]:!text-[var(--color-mint)]"
-      >
-        오늘의 말씀 읽기
-        <ExternalLink size={18} strokeWidth={2} aria-hidden />
-      </a>
+    <div className="home-duranno-in-sheet shadow-none">
+      <StatLabel className="text-text-secondary">{label}</StatLabel>
+      <div className="mt-1 flex items-center gap-2">
+        <p className="reading-passage-range min-w-0 flex-1 truncate">{range}</p>
+        <a
+          href={reading.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="home-duranno-cta inline-flex shrink-0 items-center gap-0.5 rounded-[var(--radius-btn)] p-1.5 text-[var(--color-ink-blue)] transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta focus-visible:ring-offset-2"
+          aria-label="두란노에서 오늘의 말씀 읽기"
+          title="두란노에서 오늘의 말씀 읽기"
+        >
+          <BookOpen size={20} strokeWidth={2} aria-hidden />
+          <ArrowUpRight size={16} strokeWidth={2.25} aria-hidden />
+        </a>
+      </div>
     </div>
   );
 }
