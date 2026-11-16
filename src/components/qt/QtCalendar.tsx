@@ -301,7 +301,7 @@ export function QtCalendar({
                 >
                   {day}
                 </span>
-                <span className="relative z-[1] flex h-5 w-5 items-center justify-center">
+                <span className="relative z-[1] mt-1 flex h-5 w-5 items-center justify-center">
                   {done ? (
                     <LightIcon
                       tone={selected ? "white" : "active"}
@@ -379,7 +379,7 @@ export function QtCalendar({
                         {day}
                       </span>
                       {done ? (
-                        <span className="relative z-[1] mt-0.5 flex h-4 w-4 items-center justify-center">
+                        <span className="relative z-[1] mt-1.5 flex h-4 w-4 items-center justify-center">
                           <LightIcon
                             tone={selected ? "white" : "active"}
                             size={14}
@@ -389,7 +389,7 @@ export function QtCalendar({
                           />
                         </span>
                       ) : (
-                        <span className="mt-0.5 h-4 w-4" aria-hidden />
+                        <span className="mt-1.5 h-4 w-4" aria-hidden />
                       )}
                     </span>
                   </button>
