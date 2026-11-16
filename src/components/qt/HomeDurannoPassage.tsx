@@ -3,7 +3,7 @@ import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * 말씀 header — eyebrow + verse range (+ optional 「말씀보기」 capsule).
+ * 말씀 header — eyebrow + verse range (+ optional sky 「말씀보기」 text link).
  * No 본문 써머리 / title line (home + history).
  * Home: full-bleed mint via `.home-duranno-in-sheet` + Duranno link.
  * History: `embedded` skips mint (parent owns wash); pass `showLink` for today only.
