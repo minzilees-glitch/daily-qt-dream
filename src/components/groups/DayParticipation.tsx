@@ -91,11 +91,11 @@ export function DayParticipation({
             aria-disabled={!isActive}
           >
             {isActive ? (
-              <p className="type-label font-semibold tabular-nums text-[var(--color-black)]">
+              <p className="type-label font-normal tabular-nums text-[var(--color-black)]">
                 {d.count}
               </p>
             ) : (
-              <span className="type-label font-semibold tabular-nums text-text-secondary">
+              <span className="type-label font-normal tabular-nums text-text-secondary">
                 -
               </span>
             )}
