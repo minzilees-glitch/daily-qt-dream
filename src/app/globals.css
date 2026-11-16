@@ -1657,7 +1657,7 @@ a.home-duranno-cta:focus-visible {
   display: inline-flex !important;
   align-items: center;
   align-self: center;
-  gap: calc(0.1rem + 2px); /* +2px between BookOpen and 「말씀보기」 */
+  gap: 0 !important; /* icon↔label space via .home-duranno-cta-label ml */
   flex: 0 0 auto;
   flex-wrap: nowrap !important;
   white-space: nowrap !important;
@@ -1697,6 +1697,12 @@ a.home-duranno-cta svg {
   fill: none !important;
   flex-shrink: 0;
   opacity: 1 !important;
+}
+
+/* Hard 6px between BookOpen and 「말씀보기」 — not flex gap (easy to miss/zero). */
+a.home-duranno-cta .home-duranno-cta-label {
+  display: inline-block;
+  margin-left: 6px !important;
 }
 
 a.home-duranno-cta:hover {

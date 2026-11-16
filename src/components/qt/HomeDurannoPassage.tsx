@@ -67,7 +67,7 @@ export function HomeDurannoPassage({
                   color="var(--color-sky-deep)"
                   aria-hidden
                 />
-                말씀보기
+                <span className="home-duranno-cta-label">말씀보기</span>
               </a>
             </>
           ) : null}
