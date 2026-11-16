@@ -59,18 +59,25 @@ select user_id, entry_date, updated_at
 from public.qt_entries;
 
 -- ---------------------------------------------------------------------------
--- Seed: 김병준 순 + test profile matching app TEST_USER_ID = u-001
--- Demo identity: 본명 이민지 · 김병준 순 · admin (다락방장).
+-- Seed: 김병준 순 roster + test profile matching app TEST_USER_ID = u-001
+-- Members (all admin/다락방장): 이민지, 김병준, 구민아, 최현경, 강민정, 김철호
+-- 순장 (leader): 김병준 (u-002). Test login: 이민지 (u-001, admin, not 순장).
 -- ---------------------------------------------------------------------------
 
 insert into public.groups (id, name, leader_id)
-values ('g-01', '김병준 순', 'u-001')
+values ('g-01', '김병준 순', 'u-002')
 on conflict (id) do update
   set name = excluded.name,
       leader_id = excluded.leader_id;
 
 insert into public.profiles (id, display_name, group_id, role)
-values ('u-001', '이민지', 'g-01', 'admin')
+values
+  ('u-001', '이민지', 'g-01', 'admin'),
+  ('u-002', '김병준', 'g-01', 'admin'),
+  ('u-003', '구민아', 'g-01', 'admin'),
+  ('u-004', '최현경', 'g-01', 'admin'),
+  ('u-005', '강민정', 'g-01', 'admin'),
+  ('u-006', '김철호', 'g-01', 'admin')
 on conflict (id) do update
   set display_name = excluded.display_name,
       group_id = excluded.group_id,

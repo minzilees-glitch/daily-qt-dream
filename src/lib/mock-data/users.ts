@@ -57,11 +57,21 @@ const GIVEN = [
   "시윤",
 ];
 
+/** Canonical 김병준 순 roster — all 다락방장 = admin. 순장 = 김병준. */
+const KIM_BYEONGJUN_SUN_MEMBERS: { name: string; isLeader: boolean }[] = [
+  { name: "이민지", isLeader: false }, // TEST_USER_ID u-001
+  { name: "김병준", isLeader: true },
+  { name: "구민아", isLeader: false },
+  { name: "최현경", isLeader: false },
+  { name: "강민정", isLeader: false },
+  { name: "김철호", isLeader: false },
+];
+
 /**
- * ~300 members across 30 groups (~10 each).
- * First user of each group is leader.
- * u-001 is the default test login: 이민지 · 김병준 순 · admin.
- * Rule: everyone in 김병준 순 is 다락방장 = admin.
+ * ~300 members across 30 groups (~10 each), except 김병준 순 (fixed 6).
+ * First user of other groups is leader.
+ * u-001 is the default test login: 이민지 · 김병준 순 · admin (not 순장).
+ * Rule: everyone in 김병준 순 is 다락방장 = admin; 순장 is 김병준.
  */
 export function buildUsers(groups: Group[]): User[] {
   const rng = mulberry32(20261102);
@@ -69,20 +79,33 @@ export function buildUsers(groups: Group[]): User[] {
   let seq = 1;
 
   for (const group of groups) {
+    if (group.name === "김병준 순") {
+      for (const member of KIM_BYEONGJUN_SUN_MEMBERS) {
+        const id = `u-${String(seq).padStart(3, "0")}`;
+        users.push({
+          id,
+          name: member.name,
+          groupId: group.id,
+          isAdmin: true,
+          isLeader: member.isLeader,
+        });
+        if (member.isLeader) {
+          group.leaderId = id;
+        }
+        seq += 1;
+      }
+      continue;
+    }
+
     const size = 9 + Math.floor(rng() * 3); // 9–11
-    const isDarakbangAdminSun = group.name === "김병준 순";
     for (let i = 0; i < size; i++) {
       const id = `u-${String(seq).padStart(3, "0")}`;
       const isLeader = i === 0;
-      const name =
-        seq === 1
-          ? "이민지"
-          : `${pick(rng, FAMILY)}${pick(rng, GIVEN)}`;
       users.push({
         id,
-        name,
+        name: `${pick(rng, FAMILY)}${pick(rng, GIVEN)}`,
         groupId: group.id,
-        isAdmin: isDarakbangAdminSun,
+        isAdmin: false,
         isLeader,
       });
       if (isLeader) {
