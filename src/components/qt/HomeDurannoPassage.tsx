@@ -4,10 +4,10 @@ import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * 말씀 header — range + summary (+ optional Duranno icon CTA).
+ * 말씀 header — eyebrow + verse range (+ optional Duranno icon CTA).
+ * No 본문 써머리 / title line (home + history).
  * Home: full-bleed mint via `.home-duranno-in-sheet` + Duranno link.
- * History: `embedded` skips mint (parent owns wash); pass `showLink={false}`
- * (past dates are not free on Duranno).
+ * History: `embedded` skips mint (parent owns wash); pass `showLink={false}`.
  */
 export function HomeDurannoPassage({
   reading,
@@ -18,15 +18,14 @@ export function HomeDurannoPassage({
   /** Right-aligned on the label row (e.g. history ⋮ menu). */
   labelTrailing,
 }: {
-  reading: Pick<DurannoTodayMeta, "range" | "title"> &
-    Partial<Pick<DurannoTodayMeta, "url">>;
+  reading: Pick<DurannoTodayMeta, "range"> &
+    Partial<Pick<DurannoTodayMeta, "url" | "title">>;
   label?: string;
   embedded?: boolean;
   showLink?: boolean;
   labelTrailing?: ReactNode;
 }) {
   const range = reading.range || "—";
-  const title = reading.title?.trim();
   const linkUrl = showLink ? reading.url?.trim() : "";
 
   const body = (
@@ -55,11 +54,6 @@ export function HomeDurannoPassage({
           </a>
         ) : null}
       </div>
-      {title ? (
-        <p className="home-duranno-summary mt-1 type-body-sm font-medium">
-          {title}
-        </p>
-      ) : null}
     </>
   );
 

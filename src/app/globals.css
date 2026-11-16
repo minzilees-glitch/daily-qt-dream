@@ -1421,13 +1421,11 @@ a {
 }
 
 .home-duranno-in-sheet .reading-passage-range,
-.home-duranno-meta .reading-passage-range,
-.home-duranno-in-sheet .home-duranno-summary,
-.home-duranno-meta .home-duranno-summary {
+.home-duranno-meta .reading-passage-range {
   color: var(--color-black) !important; /* #000917 */
 }
 
-/* 「오늘의 말씀」 label + Duranno icons @ 50%; range/summary stay full. */
+/* 「오늘의 말씀」 label + Duranno icons @ 50%; range stays full. */
 .home-duranno-in-sheet .home-duranno-label,
 .home-duranno-meta .home-duranno-label {
   color: var(--color-black) !important; /* #000917 */
