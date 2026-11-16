@@ -309,13 +309,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   initial={null}
                   share={share}
                   helperNotice={
-                    past && !hasEntry ? (
-                      <>
-                        지난 큐티완료는 빛을 획득할 수 없습니다.
-                        <br />
-                        그러나 지난 큐티는 당신 심령에 남을거에요.
-                      </>
-                    ) : null
+                    past && !hasEntry
+                      ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."
+                      : null
                   }
                   onSave={async (fields) => {
                     try {
