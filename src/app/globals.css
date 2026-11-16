@@ -1103,13 +1103,14 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 
 .premium-qt-root.premium-qt-root--group-sky > .premium-qt-sheet.premium-qt-sheet--group {
   flex: 0 0 auto;
-  /* Pull white sheet through layout nav pad so it sits flush to the screen bottom. */
-  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
-  padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
+  /* Match mypage sheet: layout already pads for bottom nav. */
+  margin-bottom: 0;
+  padding-bottom: 1.5rem;
 }
 
 .premium-qt-sheet.premium-qt-sheet--group > .premium-panel + .premium-panel {
-  margin-top: 10px; /* 「날짜별 참여」 spacing */
+  /* Stack gap between chart sections (no divider band). */
+  margin-top: var(--space-stack);
   padding-top: 0;
 }
 
