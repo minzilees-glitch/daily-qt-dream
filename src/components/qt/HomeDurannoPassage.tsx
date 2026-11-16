@@ -37,11 +37,11 @@ export function HomeDurannoPassage({
           height (h-8 buttons vs range text). Far-right = actions. */}
       <div className="relative mt-1">
         <div
-          className={`flex min-w-0 items-center${
+          className={`home-duranno-range-row flex min-w-0 items-center${
             rangeTrailing ? (linkUrl ? " pr-24" : " pr-16") : ""
           }`}
         >
-          <p className="reading-passage-range m-0 w-auto max-w-full shrink truncate leading-none">
+          <p className="reading-passage-range m-0 w-auto max-w-full shrink self-center truncate leading-none">
             {range}
           </p>
           {linkUrl ? (

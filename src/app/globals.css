@@ -1621,13 +1621,20 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
 }
 
+/* Range + 「말씀보기」 row: force vertical center (range 22px vs caption CTA). */
+.home-duranno-range-row {
+  display: flex !important;
+  align-items: center !important;
+}
+
 .home-duranno-in-sheet .reading-passage-range,
 .home-duranno-meta .reading-passage-range {
   color: var(--color-black) !important; /* #000917 */
   margin: 0;
-  line-height: 1.15;
+  line-height: 1 !important; /* leading-none — optical middle with CTA */
   display: flex;
   align-items: center;
+  align-self: center;
 }
 
 /* 「오늘의 말씀」 label @ 50%; range stays full. */
@@ -1648,6 +1655,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   min-width: 1.5rem;
   height: 1px;
   flex: 0 0 1.5rem;
+  align-self: center;
   pointer-events: none;
 }
 
