@@ -89,7 +89,7 @@ export function AppHeader({
         </div>
 
         {showAvatar ? (
-          <div className="mt-1.5 flex shrink-0 items-start self-stretch">
+          <div className="mt-3 flex shrink-0 items-start self-stretch">
             <ProfileAvatarButton light={light} size={avatarSize} />
           </div>
         ) : null}
