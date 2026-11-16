@@ -35,7 +35,7 @@ export function WeekdayParticipation({
             title={`${d.label}: ${d.count}/${d.possible}`}
           >
             {showCount ? (
-              <p className="type-label font-normal tabular-nums text-[var(--color-black)]">
+              <p className="type-label !font-normal tabular-nums text-[var(--color-black)]">
                 {d.count}
               </p>
             ) : (
