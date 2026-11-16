@@ -4,6 +4,17 @@ export type ProfileRepoResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
+/**
+ * Profile row helpers (Postgres `profiles`, not Storage).
+ *
+ * Architecture (Minzi / DQ-693):
+ * - She sends 순 roster (members + leader) → seed `groups` + `profiles.group_id`.
+ * - Kakao login matches phone → user id (auth not wired yet).
+ * - Nickname / avatar URL / QT / stars live on the profile (+ `qt_entries`).
+ * - Stars aggregate per 순 and on me page.
+ * Full roster import waits for her roster file; this module only scaffolds writes.
+ */
+
 /** Read display_name for one profile (pilot nickname). */
 export async function fetchDisplayName(
   userId: string,
@@ -46,4 +57,44 @@ export async function updateDisplayName(
 
   if (error) return { ok: false, error: error.message };
   return { ok: true, data: name };
+}
+
+/** Read profiles.group_id for one user (순 membership). */
+export async function fetchProfileGroupId(
+  userId: string,
+): Promise<ProfileRepoResult<string | null>> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+
+  const { data, error } = await sb
+    .from("profiles")
+    .select("group_id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, data: data?.group_id ?? null };
+}
+
+/**
+ * Persist 순 membership → profiles.group_id.
+ * Scaffold for DQ-693; roster seed / Kakao phone match still pending her file.
+ */
+export async function updateProfileGroupId(
+  userId: string,
+  groupId: string | null,
+): Promise<ProfileRepoResult<string | null>> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      group_id: groupId,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId);
+
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, data: groupId };
 }

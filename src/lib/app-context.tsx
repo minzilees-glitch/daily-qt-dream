@@ -39,7 +39,9 @@ import {
 } from "@/lib/supabase/avatar-repo";
 import {
   fetchDisplayName,
+  fetchProfileGroupId,
   updateDisplayName,
+  updateProfileGroupId,
 } from "@/lib/supabase/profile-repo";
 import {
   deleteQtEntry,
@@ -324,6 +326,53 @@ export function AppProvider({ children }: { children: ReactNode }) {
           writeOverrides({ ...cur, avatarMap: pruned });
         }
       }
+
+      // DQ-691: flush any leftover localStorage QT text → qt_entries, then drop local copies.
+      {
+        const cur = getSnapshot().overrides;
+        const localMine = (cur.reflections ?? []).filter(
+          (r) => r.userId === sessionUserId,
+        );
+        if (localMine.length > 0) {
+          const flushed: QtEntry[] = [];
+          for (const entry of localMine) {
+            const res = await upsertQtEntry(sessionUserId, entry.date, {
+              meditation: entry.meditation,
+              verse: entry.verse,
+              decisionObedience: entry.decisionObedience,
+              prayer: entry.prayer,
+            });
+            if (res.ok) flushed.push(res.data);
+          }
+          if (!cancelled && flushed.length > 0) {
+            setRemoteQt((prev) => {
+              const map = new Map<string, QtEntry>();
+              for (const e of prev.myEntries) {
+                map.set(`${e.userId}|${e.date}`, e);
+              }
+              for (const e of flushed) {
+                map.set(`${e.userId}|${e.date}`, e);
+              }
+              return {
+                ...prev,
+                myEntries: [...map.values()],
+                loadedFor: sessionUserId,
+              };
+            });
+          }
+          writeOverrides({
+            ...getSnapshot().overrides,
+            reflections: (getSnapshot().overrides.reflections ?? []).filter(
+              (r) => r.userId !== sessionUserId,
+            ),
+            // Completions for this user come from qt_entry_presence / qt_entries.
+            completions: (getSnapshot().overrides.completions ?? []).filter(
+              (c) => c.userId !== sessionUserId,
+            ),
+          });
+        }
+      }
+
       const display = await fetchDisplayName(sessionUserId);
       if (!cancelled && display.ok && display.data) {
         const nameMap = { ...(getSnapshot().overrides.nameMap ?? {}) };
@@ -331,6 +380,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (!nameMap[sessionUserId]) {
           nameMap[sessionUserId] = display.data;
           writeOverrides({ ...getSnapshot().overrides, nameMap });
+        }
+      }
+
+      // DQ-693 scaffold: hydrate 순 from profiles.group_id (roster file still pending).
+      const group = await fetchProfileGroupId(sessionUserId);
+      if (!cancelled && group.ok && group.data) {
+        const userGroupMap = {
+          ...(getSnapshot().overrides.userGroupMap ?? {}),
+        };
+        if (!userGroupMap[sessionUserId]) {
+          userGroupMap[sessionUserId] = group.data;
+          writeOverrides({ ...getSnapshot().overrides, userGroupMap });
         }
       }
       setRemoteTick((t) => t + 1);
@@ -382,16 +443,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       map.set(`${c.userId}|${c.date}`, c.completed);
     }
 
-    if (remoteReady) {
-      // Prefer Supabase presence for light counts; clear mock days for the
-      // logged-in user so lights = their real qt_entries only.
-      if (sessionUserId) {
-        for (const key of [...map.keys()]) {
-          if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
-        }
+    if (supabaseEnabled && sessionUserId) {
+      // Logged-in user lights come from qt_entries / presence only (not localStorage).
+      for (const key of [...map.keys()]) {
+        if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
       }
-      for (const c of remoteQt.presence) {
-        map.set(`${c.userId}|${c.date}`, c.completed);
+      if (remoteReady) {
+        for (const c of remoteQt.presence) {
+          map.set(`${c.userId}|${c.date}`, c.completed);
+        }
       }
     } else if (!supabaseEnabled) {
       for (const c of overrides.completions) {
@@ -417,12 +477,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
     }
 
-    if (remoteReady && sessionUserId) {
+    if (supabaseEnabled && sessionUserId) {
+      // DQ-691: QT text for the session user is Postgres qt_entries only (not Storage / local).
       for (const key of [...map.keys()]) {
         if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
       }
-      for (const r of remoteQt.myEntries) {
-        map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
+      if (remoteReady) {
+        for (const r of remoteQt.myEntries) {
+          map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
+        }
       }
     } else if (!supabaseEnabled) {
       for (const r of overrides.reflections) {
@@ -693,8 +756,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...overrides,
         userGroupMap: { ...overrides.userGroupMap, [userId]: groupId },
       });
+      // DQ-693 scaffold: profiles.group_id (full roster seed waits for Minzi’s file).
+      if (supabaseEnabled) {
+        void updateProfileGroupId(userId, groupId);
+      }
     },
-    [overrides],
+    [overrides, supabaseEnabled],
   );
 
   const assignUsersToGroup = useCallback(
@@ -702,8 +769,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const map = { ...overrides.userGroupMap };
       for (const id of userIds) map[id] = groupId;
       writeOverrides({ ...overrides, userGroupMap: map });
+      if (supabaseEnabled) {
+        for (const id of userIds) {
+          void updateProfileGroupId(id, groupId);
+        }
+      }
     },
-    [overrides],
+    [overrides, supabaseEnabled],
   );
 
   const setGroupLeader = useCallback(

@@ -86,6 +86,10 @@ export async function fetchQtPresence(): Promise<
   };
 }
 
+/**
+ * Persist QT text to Postgres `qt_entries` (not Storage).
+ * Columns: meditation, verse, decision_obedience, prayer.
+ */
 export async function upsertQtEntry(
   userId: string,
   date: string,
