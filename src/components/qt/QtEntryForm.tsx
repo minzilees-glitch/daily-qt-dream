@@ -8,6 +8,7 @@ import {
   fieldsFromEntry,
   totalTrimmedLength,
 } from "@/lib/qt-entry";
+import { copyTextToClipboard, formatQtShareText } from "@/lib/qt-share";
 import type { QtEntry } from "@/types";
 
 const QT_LINE_FALLBACK_PX = 36;
@@ -18,12 +19,20 @@ export function QtEntryForm({
   onClear,
   disabled,
   showClear,
+  /** Home: 「공유하기」 copies date + range + non-empty fields. */
+  share,
 }: {
   initial?: QtEntry | null;
   onSave: (fields: QtEntryFields) => void | Promise<void>;
   onClear?: () => void | Promise<void>;
   disabled?: boolean;
   showClear?: boolean;
+  share?: {
+    dateYmd: string;
+    passageRange: string;
+    onCopied?: () => void;
+    onError?: (message: string) => void;
+  };
 }) {
   const seed = fieldsFromEntry(initial);
   const [meditation, setMeditation] = useState(seed.meditation);
@@ -109,6 +118,30 @@ export function QtEntryForm({
       >
         {busy ? "저장 중…" : "저장하고 QT 완료하기"}
       </PrimaryButton>
+
+      {share ? (
+        <PrimaryButton
+          type="button"
+          variant="soft"
+          className="w-full"
+          disabled={locked}
+          onClick={async () => {
+            const text = formatQtShareText({
+              dateYmd: share.dateYmd,
+              passageRange: share.passageRange,
+              fields,
+            });
+            try {
+              await copyTextToClipboard(text);
+              share.onCopied?.();
+            } catch {
+              share.onError?.("복사에 실패했어요");
+            }
+          }}
+        >
+          공유하기
+        </PrimaryButton>
+      ) : null}
 
       {showClear && onClear ? (
         <PrimaryButton

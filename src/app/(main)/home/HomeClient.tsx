@@ -72,6 +72,12 @@ export function HomeClient({
             <QtEntryForm
               key={`home-qt-${today}`}
               initial={todayEntry}
+              share={{
+                dateYmd: today,
+                passageRange: reading.range,
+                onCopied: () => showToast("클립보드에 복사했어요"),
+                onError: (message) => showToast(message),
+              }}
               onSave={async (fields) => {
                 try {
                   const res = await saveEntry(today, fields);
