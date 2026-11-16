@@ -70,7 +70,9 @@ export default function GroupPage() {
             members={members}
             memberCount={myRank?.memberCount ?? 0}
             lights={myRank?.lights ?? 0}
-            rankLabel={`${myRank?.rank ?? "-"}위`}
+            rankLabel={
+              myRank && myRank.lights > 0 ? `${myRank.rank}위` : "-"
+            }
           />
         </div>
       </header>

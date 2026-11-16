@@ -54,6 +54,7 @@
   --muted: #f2f2f2; /* LightIcon inactive */
   --medal-gold: #e8b923; /* ranking trophy 1위 */
   --medal-silver: #a8b0b8; /* ranking trophy 2위 */
+  --medal-bronze: #c47a3a; /* ranking trophy 3위 */
   /* SkyWalkers / illustration palette (reusable scene colors) */
   --skywalker-sand: #f4e8d8;
   --skywalker-sand-edge: #d9c4a8;
@@ -196,6 +197,7 @@ html[data-sky-mode="밤모드"] {
   --color-muted: var(--muted);
   --color-medal-gold: var(--medal-gold);
   --color-medal-silver: var(--medal-silver);
+  --color-medal-bronze: var(--medal-bronze);
   --color-skywalker-sand: var(--skywalker-sand);
   --color-skywalker-sand-edge: var(--skywalker-sand-edge);
   --color-skywalker-wood: var(--skywalker-wood);
