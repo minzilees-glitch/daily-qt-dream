@@ -455,9 +455,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         >
           <div className="premium-history-qt">
             {future ? (
-              <p className="qt-validation-hint type-caption pt-[var(--space-stack-lg)] text-text-secondary">
-                미래 날짜는 완료할 수 없습니다.
-              </p>
+              <div className="pt-[var(--space-stack-lg)]">
+                {/* Same helper chrome as QtEntryForm 「큐티는 전체 합쳐…」. */}
+                <p className="qt-validation-hint type-caption break-keep text-text-secondary">
+                  미래 날짜는 완료할 수 없습니다.
+                </p>
+              </div>
             ) : editing ? (
               <QtEntryForm
                 key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
