@@ -7,6 +7,8 @@
   --color-gray: #f2f2f2; /* 그레이 */
   --color-mint: #caebf2; /* 민트 — former soft “sky” chrome */
   --color-sky: #6dc2ff; /* 하늘색 */
+  /* 「말씀보기」+arrow only — deeper than --color-sky; do not reuse for chrome. */
+  --color-sky-deep: #3ba8f0;
   --color-sora: #94deee; /* 소라 */
   --color-ink-blue: #1f3e62; /* 잉크블루 / 어두운 파란색 */
   --color-black: #000917; /* 검정 */
@@ -24,6 +26,7 @@
   --색-그레이: var(--color-gray);
   --색-민트: var(--color-mint);
   --색-하늘: var(--color-sky);
+  --색-하늘딥: var(--color-sky-deep);
   --색-소라: var(--color-sora);
   --색-잉크블루: var(--color-ink-blue);
   --색-검정: var(--color-black);
@@ -174,6 +177,7 @@ html[data-sky-mode="밤모드"] {
   --color-gray: #f2f2f2;
   --color-mint: #caebf2; /* 민트 — soft chrome (former --color-sky) */
   --color-sky: #6dc2ff; /* 하늘색; brand chrome remains --sky #5FBCFC */
+  --color-sky-deep: #3ba8f0; /* 말씀보기 CTA only */
   --color-sora: #94deee; /* 소라 #94DEEE */
   --color-ink-blue: #1f3e62;
   --color-black: #000917;
@@ -1638,8 +1642,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 /*
- * 「말씀보기」 + ArrowUpRight — force sky #6DC2FF @ 100%.
- * Hex + nested selectors beat inherit/a/ink-blue leftovers (DQ-646).
+ * 「말씀보기」 + ArrowUpRight — dedicated deep sky (not --color-sky).
+ * Nested selectors + token beat inherit/a leftovers.
  */
 .home-duranno-in-sheet a.home-duranno-cta,
 .home-duranno-meta a.home-duranno-cta,
@@ -1676,8 +1680,8 @@ a.home-duranno-cta:focus-visible {
   -webkit-appearance: none;
   appearance: none;
   text-decoration: none !important;
-  color: #6dc2ff !important; /* sky — hard hex, not ink-blue */
-  -webkit-text-fill-color: #6dc2ff !important;
+  color: var(--color-sky-deep) !important; /* #3BA8F0 */
+  -webkit-text-fill-color: var(--color-sky-deep) !important;
   font-size: var(--fs-caption);
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -1688,8 +1692,8 @@ a.home-duranno-cta:focus-visible {
 .home-duranno-in-sheet a.home-duranno-cta svg,
 .home-duranno-meta a.home-duranno-cta svg,
 a.home-duranno-cta svg {
-  color: #6dc2ff !important;
-  stroke: #6dc2ff !important;
+  color: var(--color-sky-deep) !important;
+  stroke: var(--color-sky-deep) !important;
   fill: none !important;
   flex-shrink: 0;
   opacity: 1 !important;
@@ -1701,12 +1705,12 @@ a.home-duranno-cta:hover {
   filter: none !important;
   text-decoration: underline !important;
   text-underline-offset: 2px;
-  color: #6dc2ff !important;
-  -webkit-text-fill-color: #6dc2ff !important;
+  color: var(--color-sky-deep) !important;
+  -webkit-text-fill-color: var(--color-sky-deep) !important;
 }
 
 a.home-duranno-cta:focus-visible {
-  outline: 2px solid #6dc2ff;
+  outline: 2px solid var(--color-sky-deep);
   outline-offset: 2px;
   border-radius: 0 !important;
   background: transparent !important;
