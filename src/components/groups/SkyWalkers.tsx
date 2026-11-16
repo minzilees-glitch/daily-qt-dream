@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
 import { WalkerFace } from "@/components/ui/WalkerFace";
+import { SKY_CLOUDS_BG } from "@/lib/sky-assets";
 import type { User } from "@/types";
 
 /** Four discrete sizes (~11px baseline +5%): smaller / base / larger / largest. */
@@ -448,7 +449,7 @@ export function SkyWalkers({
       {/* Photo bg only — no solid sky color fill behind it. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/group/sky-clouds-bg.png"
+        src={SKY_CLOUDS_BG}
         alt=""
         className="sky-clouds-bg pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
         draggable={false}
