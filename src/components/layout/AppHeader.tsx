@@ -14,6 +14,8 @@ export function AppHeader({
   homeLayout = false,
   dateLabel,
   showAvatar = true,
+  /** Home: nickname under profile avatar. */
+  nickname,
   /** Home: status row rendered tight under the date (left column). */
   status,
   /** Home: sits on the date line right after the weekday (e.g. light icon). */
@@ -25,6 +27,7 @@ export function AppHeader({
   dateLabel?: string;
   /** When false, hide top-right profile avatar (e.g. history/group/ranking). */
   showAvatar?: boolean;
+  nickname?: string;
   status?: ReactNode;
   dateAccessory?: ReactNode;
 }) {
@@ -83,8 +86,18 @@ export function AppHeader({
         </div>
 
         {showAvatar ? (
-          <div className="mt-3 flex shrink-0 items-start self-stretch">
+          <div className="mt-3 flex shrink-0 flex-col items-center gap-1 self-start">
             <ProfileAvatarButton light={light} size={avatarSize} />
+            {nickname ? (
+              <p
+                className={`home-profile-name max-w-[5.5rem] truncate text-center ${
+                  light ? "text-white/90" : "text-text-main"
+                }`}
+                title={nickname}
+              >
+                {nickname}
+              </p>
+            ) : null}
           </div>
         ) : null}
       </header>

@@ -1,19 +1,42 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight, LogOut, Shield } from "lucide-react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { Toast } from "@/components/ui/Toast";
 import { useApp } from "@/lib/app-context";
 
 export default function MeSettingsPage() {
-  const { currentUser, groups, logout } = useApp();
+  const { currentUser, groups, logout, setDisplayName } = useApp();
   const router = useRouter();
+  const [nickname, setNickname] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    setNickname(currentUser?.name ?? "");
+  }, [currentUser?.name]);
 
   if (!currentUser) return null;
 
   const group = groups.find((g) => g.id === currentUser.groupId);
+  const nameDirty = nickname.trim() !== currentUser.name.trim();
+
+  const showToast = (message: string) => {
+    setToast(message);
+    window.setTimeout(() => setToast(null), 2400);
+  };
+
+  const onSaveNickname = async () => {
+    if (savingName || !nameDirty) return;
+    setSavingName(true);
+    const res = await setDisplayName(nickname);
+    setSavingName(false);
+    showToast(res.message);
+  };
 
   return (
     <div className="premium-qt-root">
@@ -34,20 +57,39 @@ export default function MeSettingsPage() {
         <div className="premium-panel animate-fade-up">
           <div className="flex flex-col items-center gap-3 py-2">
             <ProfileAvatarButton size={88} fallback="initial" />
-            <div className="text-center">
-              <p className="type-stat text-text-main">{currentUser.name}</p>
-              <p className="mt-1 type-body-sm text-text-secondary">
+            <div className="w-full max-w-xs text-center">
+              <label className="qt-field-title mb-2 block text-left" htmlFor="nickname">
+                닉네임
+              </label>
+              <input
+                id="nickname"
+                type="text"
+                value={nickname}
+                maxLength={40}
+                autoComplete="nickname"
+                onChange={(e) => setNickname(e.target.value)}
+                className="w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 text-center type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]"
+              />
+              <p className="mt-2 type-body-sm text-text-secondary">
                 {group?.name ?? "-"}
                 {currentUser.isLeader ? " · 순장" : ""}
                 {currentUser.isAdmin ? " · 관리자" : ""}
               </p>
+              <PrimaryButton
+                type="button"
+                className="mt-3 w-full"
+                disabled={!nameDirty || savingName || !nickname.trim()}
+                onClick={() => void onSaveNickname()}
+              >
+                {savingName ? "저장 중…" : "닉네임 저장"}
+              </PrimaryButton>
             </div>
           </div>
         </div>
 
         <div className="premium-panel animate-fade-up">
           <p className="type-body-sm text-text-secondary">
-            프로필 사진을 눌러 변경할 수 있어요. 이름·순 변경은 준비 중입니다.
+            프로필 사진을 눌러 변경할 수 있어요. 순 변경은 준비 중입니다.
           </p>
         </div>
 
@@ -86,6 +128,7 @@ export default function MeSettingsPage() {
           </p>
         </div>
       </section>
+      <Toast message={toast} />
     </div>
   );
 }

@@ -117,6 +117,7 @@ export function HomeClient({
             homeLayout
             title="오늘은"
             dateLabel={formatDisplayDate(today)}
+            nickname={currentUser.name}
             dateAccessory={
               <LightIcon
                 active={doneToday}

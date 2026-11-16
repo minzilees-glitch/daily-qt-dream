@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Camera, UserRound } from "lucide-react";
 import { useApp } from "@/lib/app-context";
+import { compressAvatarImage } from "@/lib/avatar-image";
 
 export function ProfileAvatarButton({
   light = false,
@@ -38,16 +39,29 @@ export function ProfileAvatarButton({
       : "bg-sky-light text-sky hover:bg-sky-light";
 
   const onPick = (file: File | null) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === "string" ? reader.result : null;
-      if (!result) return;
-      setPreview(result);
-      setError(null);
+    if (!file) return;
+    if (file.type && !file.type.startsWith("image/")) {
+      setError("이미지 파일만 업로드할 수 있어요.");
       setOpen(true);
-    };
-    reader.readAsDataURL(file);
+      setPreview(null);
+      return;
+    }
+    void (async () => {
+      setError(null);
+      try {
+        const { dataUrl } = await compressAvatarImage(file);
+        setPreview(dataUrl);
+        setOpen(true);
+      } catch (err) {
+        setPreview(null);
+        setOpen(true);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "이미지를 열 수 없어요. JPEG/PNG로 다시 선택해 주세요.",
+        );
+      }
+    })();
   };
 
   const onSave = async () => {
@@ -108,7 +122,7 @@ export function ProfileAvatarButton({
         }}
       />
 
-      {open && preview ? (
+      {open ? (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-[var(--space-page-x)]"
           role="dialog"
@@ -125,14 +139,16 @@ export function ProfileAvatarButton({
             <p className="type-body font-semibold text-text-main">
               프로필 사진 변경
             </p>
-            <div className="mt-[var(--space-stack-sm)] flex justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={preview}
-                alt="미리보기"
-                className="h-36 w-36 rounded-full object-cover"
-              />
-            </div>
+            {preview ? (
+              <div className="mt-[var(--space-stack-sm)] flex justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={preview}
+                  alt="미리보기"
+                  className="h-36 w-36 rounded-full object-cover"
+                />
+              </div>
+            ) : null}
             {error ? (
               <p className="qt-validation-hint mt-3 text-center type-caption text-danger">
                 {error}
@@ -145,11 +161,11 @@ export function ProfileAvatarButton({
                 className="rounded-full bg-sky-light px-4 py-3 type-body-sm font-semibold text-text-main disabled:opacity-50"
                 onClick={() => setOpen(false)}
               >
-                취소
+                {preview ? "취소" : "닫기"}
               </button>
               <button
                 type="button"
-                disabled={saving}
+                disabled={saving || !preview}
                 className="btn-cta bg-cta rounded-full px-4 py-3 type-body-sm font-semibold !text-[var(--color-mint)] disabled:opacity-50"
                 onClick={() => void onSave()}
               >

@@ -12,11 +12,17 @@ export function loadJson<T>(key: string, fallback: T): T {
 }
 
 export function saveJson<T>(key: string, value: T): void {
-  if (typeof window === "undefined") return;
+  trySaveJson(key, value);
+}
+
+/** Returns false when quota/private-mode blocks persistence. */
+export function trySaveJson<T>(key: string, value: T): boolean {
+  if (typeof window === "undefined") return false;
   try {
     window.localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    return true;
   } catch {
-    // ignore quota / private mode
+    return false;
   }
 }
 
