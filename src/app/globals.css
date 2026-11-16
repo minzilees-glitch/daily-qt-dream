@@ -1436,7 +1436,7 @@ a {
   letter-spacing: var(--tracking-label);
   line-height: 1.2;
   white-space: nowrap;
-  color: var(--color-sky) !important; /* #6DC2FF — readable on mint */
+  color: var(--color-black) !important; /* #000917 */
   background: none !important;
   background-color: transparent !important;
   border: 0 !important;
@@ -1455,7 +1455,7 @@ a {
 }
 
 .home-duranno-cta:focus-visible {
-  outline: 2px solid var(--color-sky);
+  outline: 2px solid var(--color-black);
   outline-offset: 3px;
   border-radius: 2px !important; /* square focus, never pill */
 }
