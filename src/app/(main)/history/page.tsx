@@ -2,13 +2,16 @@
 
 import {
   Suspense,
+  useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { CalendarDays, MoreHorizontal, Send } from "lucide-react";
+import { CalendarDays, MoreHorizontal, Rows2, Send } from "lucide-react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
@@ -45,6 +48,10 @@ function parseDateParam(raw: string | null): string | null {
 /** Earliest 나의 큐티들 month — hide/block anything before Sep 2026. */
 const HISTORY_MIN_YM = "2026-09";
 const HISTORY_MIN_DATE = "2026-09-01";
+/** Sheet overlaps header so rounded corners sit on sky. */
+const SHEET_OVERLAP_PX = 20;
+/** Fallback week→month header delta until both modes are measured. */
+const FALLBACK_MAX_DROP_PX = 180;
 
 function clampHistoryDate(date: string): string {
   return date < HISTORY_MIN_DATE ? HISTORY_MIN_DATE : date;
@@ -57,12 +64,38 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const startDate = clampHistoryDate(initialDate);
   const [ym, setYm] = useState(yearMonthOf(startDate));
   const [selected, setSelected] = useState(startDate);
+  /** false = week strip (sheet max open); true = month grid (sheet min). */
   const [calendarExpanded, setCalendarExpanded] = useState(false);
+  /** Continuous sheet drop px: 0 = week/open, maxDrop = month/collapsed. */
+  const [drop, setDrop] = useState(0);
+  const [maxDrop, setMaxDrop] = useState(FALLBACK_MAX_DROP_PX);
+  const [sheetTop, setSheetTop] = useState(200);
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
   const menuRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const handleRef = useRef<HTMLDivElement>(null);
+  const weekHeaderHRef = useRef(0);
+  const monthHeaderHRef = useRef(0);
+  const dropRef = useRef(0);
+  const maxDropRef = useRef(FALLBACK_MAX_DROP_PX);
+  const calendarExpandedRef = useRef(false);
+  const dragRef = useRef<{
+    pointerId: number;
+    startY: number;
+    startDrop: number;
+    lastY: number;
+    lastT: number;
+    velocityY: number;
+  } | null>(null);
+
+  dropRef.current = drop;
+  maxDropRef.current = maxDrop;
+  calendarExpandedRef.current = calendarExpanded;
 
   const minYm = HISTORY_MIN_YM;
   const maxYm = currentYearMonth();
@@ -96,6 +129,123 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, [menuOpen]);
+
+  const recomputeSheetTop = useCallback(() => {
+    const weekH = weekHeaderHRef.current;
+    const monthH = monthHeaderHRef.current;
+    if (weekH > 0 && monthH > weekH) {
+      const nextMax = Math.max(48, monthH - weekH);
+      if (nextMax !== maxDropRef.current) {
+        maxDropRef.current = nextMax;
+        setMaxDrop(nextMax);
+      }
+    }
+    const base = (weekHeaderHRef.current || headerRef.current?.offsetHeight || 180) - SHEET_OVERLAP_PX;
+    const nextTop = Math.max(80, Math.round(base + dropRef.current));
+    setSheetTop(nextTop);
+  }, []);
+
+  const measureHeader = useCallback(() => {
+    const h = headerRef.current?.offsetHeight ?? 0;
+    if (h <= 0) return;
+    if (calendarExpandedRef.current) {
+      monthHeaderHRef.current = h;
+    } else {
+      weekHeaderHRef.current = h;
+    }
+    recomputeSheetTop();
+  }, [recomputeSheetTop]);
+
+  useLayoutEffect(() => {
+    measureHeader();
+  }, [measureHeader, calendarExpanded, ym]);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => measureHeader());
+    ro.observe(el);
+    window.addEventListener("resize", measureHeader);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measureHeader);
+    };
+  }, [measureHeader]);
+
+  useEffect(() => {
+    recomputeSheetTop();
+  }, [drop, recomputeSheetTop]);
+
+  const setDropClamped = useCallback((next: number) => {
+    const clamped = Math.min(maxDropRef.current, Math.max(0, next));
+    dropRef.current = clamped;
+    setDrop(clamped);
+    /* Mid-drag: switch calendar when past ~40% toward month. */
+    const ratio = maxDropRef.current > 0 ? clamped / maxDropRef.current : 0;
+    if (ratio >= 0.4 && !calendarExpandedRef.current) {
+      calendarExpandedRef.current = true;
+      setCalendarExpanded(true);
+    } else if (ratio < 0.4 && calendarExpandedRef.current) {
+      calendarExpandedRef.current = false;
+      setCalendarExpanded(false);
+    }
+  }, []);
+
+  const snapDrop = useCallback((next: number, velocityY: number) => {
+    const mid = maxDropRef.current * 0.45;
+    const open = velocityY < -0.5 || (velocityY <= 0.5 && next < mid);
+    const target = open ? 0 : maxDropRef.current;
+    dropRef.current = target;
+    setDrop(target);
+    calendarExpandedRef.current = !open;
+    setCalendarExpanded(!open);
+  }, []);
+
+  const onHandlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+    handleRef.current?.setPointerCapture(e.pointerId);
+    dragRef.current = {
+      pointerId: e.pointerId,
+      startY: e.clientY,
+      startDrop: dropRef.current,
+      lastY: e.clientY,
+      lastT: e.timeStamp,
+      velocityY: 0,
+    };
+  };
+
+  const onHandlePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    const dy = e.clientY - drag.startY; /* down → collapse */
+    const dt = Math.max(1, e.timeStamp - drag.lastT);
+    drag.velocityY = (e.clientY - drag.lastY) / dt;
+    drag.lastY = e.clientY;
+    drag.lastT = e.timeStamp;
+    setDropClamped(drag.startDrop + dy);
+  };
+
+  const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    const velocityY = drag.velocityY;
+    dragRef.current = null;
+    try {
+      handleRef.current?.releasePointerCapture(e.pointerId);
+    } catch {
+      /* already released */
+    }
+    snapDrop(dropRef.current, velocityY);
+  };
+
+  const toggleCalendar = () => {
+    const next = !calendarExpanded;
+    setCalendarExpanded(next);
+    calendarExpandedRef.current = next;
+    const target = next ? maxDropRef.current : 0;
+    dropRef.current = target;
+    setDrop(target);
+  };
 
   const selectDate = (date: string) => {
     if (yearMonthOf(date) < HISTORY_MIN_YM) return;
@@ -145,8 +295,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   };
 
   return (
-    <div className="premium-qt-root">
-      <header className="premium-qt-header">
+    <div ref={rootRef} className="premium-qt-root premium-qt-root--history">
+      <header ref={headerRef} className="premium-qt-header">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -155,6 +305,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 onChange={(next) => {
                   setYm(next);
                   setCalendarExpanded(false);
+                  calendarExpandedRef.current = false;
+                  dropRef.current = 0;
+                  setDrop(0);
                 }}
                 min={minYm}
                 max={maxYm}
@@ -176,14 +329,18 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           </div>
           <button
             type="button"
-            onClick={() => setCalendarExpanded((v) => !v)}
+            onClick={toggleCalendar}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/15 text-[var(--color-mint)] transition hover:bg-white/25"
             aria-expanded={calendarExpanded}
             aria-label={
               calendarExpanded ? "주간 달력 보기" : "전체 달 보기"
             }
           >
-            <CalendarDays size={20} strokeWidth={1.75} />
+            {calendarExpanded ? (
+              <Rows2 size={20} strokeWidth={1.75} aria-hidden />
+            ) : (
+              <CalendarDays size={20} strokeWidth={1.75} aria-hidden />
+            )}
           </button>
         </div>
 
@@ -201,11 +358,26 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         </div>
       </header>
 
-      <section className="premium-qt-sheet premium-qt-sheet--history">
-        <div className="premium-sheet-grabber-row" aria-hidden>
-          <span className="premium-sheet-grabber" />
+      <section
+        className="premium-qt-sheet premium-qt-sheet--history"
+        style={{ top: sheetTop }}
+      >
+        <div
+          ref={handleRef}
+          className="premium-history-sheet-drag"
+          role="slider"
+          aria-label="시트 높이 조절"
+          aria-valuemin={0}
+          aria-valuemax={maxDrop}
+          aria-valuenow={Math.round(drop)}
+          onPointerDown={onHandlePointerDown}
+          onPointerMove={onHandlePointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+        >
+          <span className="premium-sheet-grabber" aria-hidden />
         </div>
-        <div key={selected} className="premium-content-crossfade flex flex-col">
+        <div key={selected} className="premium-content-crossfade flex min-h-0 flex-1 flex-col overflow-y-auto">
           <div className="premium-history-passage pt-3">
             <HomeDurannoPassage
               key={selected}

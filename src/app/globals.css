@@ -835,10 +835,33 @@ a {
 }
 
 /*
+ * 나의 QT들: fixed-height shell; sheet is absolute and fills to page bottom.
+ * Continuous grabber drag moves `top` between week (open) and month (collapsed).
+ */
+.premium-qt-root--history {
+  position: relative;
+  height: calc(100dvh - 72px - var(--safe-bottom));
+  max-height: calc(100dvh - 72px - var(--safe-bottom));
+  overflow: hidden;
+}
+
+@media (min-width: 520px) {
+  .premium-qt-root--history {
+    height: calc(100dvh - 48px - 72px - var(--safe-bottom));
+    max-height: calc(100dvh - 48px - 72px - var(--safe-bottom));
+  }
+}
+
+.premium-qt-root--history > .premium-qt-header {
+  flex: 0 0 auto;
+}
+
+/*
  * 나의 QT들 sheet: top pad + grabber + passage share one mint wash;
  * QT hint + fields sit on solid white below.
  * !important: beat earlier `.premium-qt-sheet` / sky sheet rules.
  */
+.premium-qt-root--history > .premium-qt-sheet.premium-qt-sheet--history,
 .premium-qt-root:has(> .premium-qt-header)
   > .premium-qt-sheet.premium-qt-sheet--history {
   /* Same as .premium-history-passage — no white band above 말씀. */
@@ -847,6 +870,18 @@ a {
   flex-direction: column;
   /* Keep shared .premium-qt-sheet padding-top (28px); only clear bottom. */
   padding-bottom: 0;
+}
+
+.premium-qt-root--history > .premium-qt-sheet.premium-qt-sheet--history {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* `top` set inline from drag (week open → month collapsed). */
+  margin-top: 0;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
 }
 
 .premium-qt-sheet.premium-qt-sheet--history > .premium-content-crossfade {
@@ -1057,6 +1092,24 @@ a {
   height: 20px;
   margin: -18px 0 0.35rem; /* nudge pill slightly toward sheet top */
   pointer-events: none;
+}
+
+/* History: interactive drag handle (continuous slide). */
+.premium-history-sheet-drag {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 28px;
+  margin: -10px 0 0.15rem;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.premium-history-sheet-drag:active {
+  cursor: grabbing;
 }
 
 .premium-cal-day-selected {
