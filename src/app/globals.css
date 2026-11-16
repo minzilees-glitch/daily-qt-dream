@@ -1389,20 +1389,23 @@ a {
   background: var(--premium-sheet) !important;
   /* Mint band owns the sheet-top air (no white pad above it). */
   padding-top: 0;
+  /* Clip full-bleed mint to drawer top curve — no separate card radius. */
+  overflow: hidden;
 }
 
 /*
- * Duranno lead-in: mint wash from sheet start through summary — no card chrome.
- * Side pad matches QT inputs (--space-page-x).
+ * 말씀 header: full-bleed mint in the sheet (not a card).
+ * Same --space-page-x pad as QT fields; only background differs.
  */
 .home-duranno-in-sheet {
   box-sizing: border-box;
-  margin: 0 calc(-1 * var(--space-page-x)) var(--space-stack);
+  margin: 0 calc(-1 * var(--space-page-x));
   padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
-  border-radius: 36px 36px 0 0; /* follow sheet top only; not an inset card */
+  border-radius: 0 !important;
   background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-ink-blue);
-  box-shadow: none;
+  box-shadow: none !important;
+  filter: none !important;
 }
 
 .home-duranno-in-sheet .reading-passage-range {

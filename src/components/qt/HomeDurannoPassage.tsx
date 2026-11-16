@@ -3,9 +3,8 @@ import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * Sheet-top Duranno mint wash (no card chrome):
- * line1 「오늘의 말씀」; line2 range + book↗; line3 summary title.
- * Mint runs from sheet start through summary; fields sit on white below.
+ * Sheet-top 말씀 header — full-bleed mint (no card radius/inset).
+ * Same horizontal pad as QT fields; only mint bg differs.
  */
 export function HomeDurannoPassage({
   reading,
