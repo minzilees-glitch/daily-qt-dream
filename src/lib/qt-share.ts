@@ -54,3 +54,37 @@ export async function copyTextToClipboard(text: string): Promise<void> {
   document.body.removeChild(ta);
   if (!ok) throw new Error("clipboard copy failed");
 }
+
+export function isShareAbortError(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "name" in err &&
+    (err as { name?: string }).name === "AbortError"
+  );
+}
+
+/**
+ * Mobile-first: `navigator.share({ text })` when available (Kakao / Messages / Copy).
+ * Falls back to clipboard when Share API is missing or rejects (except user cancel).
+ */
+export async function shareOrCopyText(
+  text: string,
+): Promise<"share" | "clipboard"> {
+  if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+    const data: ShareData = { text };
+    const can =
+      typeof navigator.canShare !== "function" || navigator.canShare(data);
+    if (can) {
+      try {
+        await navigator.share(data);
+        return "share";
+      } catch (err) {
+        if (isShareAbortError(err)) throw err;
+        /* fall through to clipboard */
+      }
+    }
+  }
+  await copyTextToClipboard(text);
+  return "clipboard";
+}

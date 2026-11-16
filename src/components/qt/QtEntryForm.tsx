@@ -8,7 +8,11 @@ import {
   fieldsFromEntry,
   totalTrimmedLength,
 } from "@/lib/qt-entry";
-import { copyTextToClipboard, formatQtShareText } from "@/lib/qt-share";
+import {
+  formatQtShareText,
+  isShareAbortError,
+  shareOrCopyText,
+} from "@/lib/qt-share";
 import type { QtEntry } from "@/types";
 
 const QT_LINE_FALLBACK_PX = 36;
@@ -30,7 +34,7 @@ export function QtEntryForm({
   share?: {
     dateYmd: string;
     passageRange: string;
-    onCopied?: () => void;
+    onShared?: (via: "share" | "clipboard") => void;
     onError?: (message: string) => void;
   };
 }) {
@@ -132,10 +136,11 @@ export function QtEntryForm({
               fields,
             });
             try {
-              await copyTextToClipboard(text);
-              share.onCopied?.();
-            } catch {
-              share.onError?.("복사에 실패했어요");
+              const via = await shareOrCopyText(text);
+              share.onShared?.(via);
+            } catch (err) {
+              if (isShareAbortError(err)) return;
+              share.onError?.("공유에 실패했어요");
             }
           }}
         >

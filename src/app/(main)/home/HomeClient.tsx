@@ -75,7 +75,12 @@ export function HomeClient({
               share={{
                 dateYmd: today,
                 passageRange: reading.range,
-                onCopied: () => showToast("클립보드에 복사했어요"),
+                onShared: (via) =>
+                  showToast(
+                    via === "share"
+                      ? "공유했어요"
+                      : "클립보드에 복사했어요",
+                  ),
                 onError: (message) => showToast(message),
               }}
               onSave={async (fields) => {
