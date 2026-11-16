@@ -5,11 +5,14 @@ export function WeekdayParticipation({
   showPossible = true,
   /** Count above each bar (same as mypage 「나의 일주일」). */
   showCount = true,
+  /** Track height utility; 우리순 uses shorter `h-14`. */
+  trackClassName = "h-20",
 }: {
   days: { weekday: number; label: string; count: number; possible: number }[];
   /** Per-bar `/{possible}` under each weekday. Default true. */
   showPossible?: boolean;
   showCount?: boolean;
+  trackClassName?: string;
 }) {
   if (days.length === 0 || days.every((d) => d.possible === 0 && d.count === 0)) {
     return (
@@ -39,7 +42,9 @@ export function WeekdayParticipation({
               <span className="h-0 w-full" aria-hidden />
             )}
             {/* Track: light sora tint · Fill: sora · Labels: black */}
-            <div className="flex h-20 w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sora)_32%,white)]">
+            <div
+              className={`flex w-8 items-end overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-sora)_32%,white)] ${trackClassName}`}
+            >
               <div
                 className="w-full rounded-full bg-[var(--color-sora)] transition-all"
                 style={{

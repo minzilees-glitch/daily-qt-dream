@@ -87,6 +87,7 @@ export default function GroupPage() {
           <WeekdayParticipation
             days={weekBars}
             showPossible={false}
+            trackClassName="h-14"
           />
         </div>
 
