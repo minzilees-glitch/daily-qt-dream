@@ -73,7 +73,7 @@ export function NicknameEditModal({
         }}
       >
         <div
-          className="w-full max-w-[360px] rounded-[var(--radius-md)] bg-white p-[var(--space-card)] shadow-none"
+          className="w-full max-w-[22.5rem] rounded-[var(--radius-md)] bg-white p-[var(--space-card)] shadow-none"
           onClick={(e) => e.stopPropagation()}
         >
           <h2

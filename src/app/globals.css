@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Mobile-first root — rem tokens resolve against this (browser default 16px). */
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 :root {
   /* ——— Color ——— */
   /* User palette (premium QT) — English + Korean aliases */
@@ -84,24 +91,28 @@
     #f3f8fc 100%
   );
   /* App-wide atmosphere behind glass SoftCards — milder than #61 */
-  --wash-blur: 36px;
+  --wash-blur: 2.25rem;
   --wash-blue-core: rgba(95, 188, 252, 0.72);
   --wash-blue-mid: rgba(0, 140, 255, 0.22);
   --wash-blue-soft: rgba(131, 174, 238, 0.28);
 
-  /* ——— Typography (scale +1pt from prior 11…33) ——— */
-  --fs-nav: 12px;
-  --fs-micro: 13px; /* calendar weekday headers, tiny chrome */
-  --fs-caption: 16px; /* hint / notice captions — matches .qt-validation-hint */
-  --fs-label: 15px;
-  --fs-body-sm: 18px;
-  --fs-body: 19px;
-  --fs-section: 18px;
-  --fs-body-lg: 19px;
-  --fs-stat: 20px;
-  --fs-display: 24px;
-  --fs-page: 24px;
-  --fs-display-xl: 34px; /* login hero */
+  /*
+   * Typography / radii / spacing — rem (+ clamp) so the phone column
+   * scales with root font-size while matching the prior 16px-base look.
+   * Hairlines stay 1px; micro CTA spacers stay px on purpose.
+   */
+  --fs-nav: 0.75rem; /* 12px */
+  --fs-micro: 0.8125rem; /* 13px — calendar weekday headers */
+  --fs-caption: 1rem; /* 16px — hints / .qt-validation-hint */
+  --fs-label: 0.9375rem; /* 15px */
+  --fs-body-sm: 1.125rem; /* 18px */
+  --fs-body: 1.1875rem; /* 19px */
+  --fs-section: 1.125rem; /* 18px */
+  --fs-body-lg: 1.1875rem; /* 19px */
+  --fs-stat: 1.25rem; /* 20px */
+  --fs-display: clamp(1.375rem, 0.6rem + 3.2vw, 1.5rem); /* ~22–24 */
+  --fs-page: clamp(1.375rem, 0.6rem + 3.2vw, 1.5rem); /* home date / titles */
+  --fs-display-xl: clamp(1.875rem, 1rem + 4vw, 2.125rem); /* login hero ~30–34 */
   --lh-relaxed: 1.625;
   --lh-caption: 1.35; /* notices / type-caption — tighter than body-lg */
   --lh-page-title: 1.15;
@@ -110,10 +121,11 @@
   --tracking-month: 0.02em;
 
   /* ——— Radii: 12 / 20 / 32 (+ pill) + BrandMark 28 ——— */
-  --radius-sm: 12px;
-  --radius-md: 20px;
-  --radius-brand: 28px; /* BrandMark tile */
-  --radius-lg: 32px;
+  --radius-sm: 0.75rem;
+  --radius-md: 1.25rem;
+  --radius-brand: 1.75rem; /* BrandMark tile */
+  --radius-lg: 2rem;
+  --radius-sheet: 2.25rem; /* drawer top corners (was 36px) */
   --radius-pill: 9999px;
   /* Semantic aliases */
   --radius-day: var(--radius-sm);
@@ -124,7 +136,7 @@
   --radius-btn: var(--radius-pill);
 
   /* ——— Spacing ——— */
-  --space-page-x: 24px; /* page horizontal gutters */
+  --space-page-x: clamp(1rem, 0.55rem + 3.5vw, 1.5rem); /* ~16–24 gutters */
   --space-card: 1.25rem; /* SoftCard / modal pad = former p-5 */
   --space-control-x: 1.25rem; /* button / control horizontal pad */
   --space-stack-sm: 1rem; /* space-y-4 / mt-4 */
@@ -132,33 +144,35 @@
   --space-stack-lg: 1.75rem; /* space-y-7 form fields */
   --space-hero-pb: 1.5rem; /* hero section pb-6 */
   --space-section-pb: 2rem; /* content section pb-8 */
-  /* Tab page titles (PageTitle / AppHeader) — was 12px; subtle bump */
-  --space-title-pt: 18px;
+  /* Tab page titles (PageTitle / AppHeader) */
+  --space-title-pt: clamp(0.875rem, 0.5rem + 2vw, 1.125rem); /* ~14–18 */
 
   /* ——— Effects: glass frames + nav; soft wash behind ——— */
   --shadow-soft: none;
   --shadow-nav: none;
-  --shadow-nav-float: 0 10px 30px rgba(0, 60, 130, 0.42);
+  --shadow-nav-float: 0 0.625rem 1.875rem rgba(0, 60, 130, 0.42);
   /* Shared premium sheet lift (Home + 나의 QT들 + other tabs). */
   --premium-sheet-filter:
-    drop-shadow(0 -8px 14px rgba(0, 9, 23, 0.07))
-    drop-shadow(0 -2px 5px rgba(31, 62, 98, 0.05));
+    drop-shadow(0 -0.5rem 0.875rem rgba(0, 9, 23, 0.07))
+    drop-shadow(0 -0.125rem 0.3125rem rgba(31, 62, 98, 0.05));
   /* Icon-only bottom nav: dark blue capsule */
   --nav-glass-bg: var(--color-black);
   --nav-glass-border: rgba(255, 255, 255, 0.18);
-  --nav-glass-blur: 28px;
+  --nav-glass-blur: 1.75rem;
   /* SoftCard / primary frames — stronger frosted glass than #62 */
   --frame-glass-bg: rgba(255, 255, 255, 0.16);
   --frame-glass-border: rgba(255, 255, 255, 0.85);
-  --frame-glass-blur: 48px;
+  --frame-glass-blur: 3rem;
   --frame-glass-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
     inset 0 -1px 0 rgba(95, 188, 252, 0.14),
-    0 10px 28px rgba(0, 70, 140, 0.08);
+    0 0.625rem 1.75rem rgba(0, 70, 140, 0.08);
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
-  --phone-max: 480px;
+  --phone-max: 30rem; /* 480px @ 16px root */
+  --nav-reserve: 4.5rem; /* bottom nav capsule stack (~72px) */
+  --desktop-shell-chrome: 3rem; /* desktop phone-shell vertical inset */
 
   /* ——— Premium QT calendar (나의 QT들) — 낮모드/밤모드 fill + white sheet ——— */
   --premium-cal-bg: var(--sky-mode-fill);
@@ -226,16 +240,16 @@ html[data-sky-mode="밤모드"] {
   --tracking-title: 0.04em;
   --tracking-label: 0.06em;
   --tracking-month: 0.02em;
-  --radius-sm: 12px;
-  --radius-md: 20px;
-  --radius-brand: 28px;
-  --radius-lg: 32px;
-  --radius-day: 12px;
-  --radius-input: 12px;
-  --radius-card: 20px;
-  --radius-panel: 20px;
+  --radius-sm: 0.75rem;
+  --radius-md: 1.25rem;
+  --radius-brand: 1.75rem;
+  --radius-lg: 2rem;
+  --radius-day: 0.75rem;
+  --radius-input: 0.75rem;
+  --radius-card: 1.25rem;
+  --radius-panel: 1.25rem;
   --radius-pill: 9999px;
-  --radius-shell: 32px;
+  --radius-shell: 2rem;
 }
 
 /* Role utilities — size + weight + tracking/leading bundled for shared chrome */
@@ -285,19 +299,19 @@ html[data-sky-mode="밤모드"] {
 
 /* Arbitrary Tailwind text-[Npx] loses to .type-section — force sizes here. */
 .qt-field-title {
-  font-size: 18px !important; /* was 20; −2pt */
+  font-size: 1.125rem !important; /* 18px @ 16 root */
   font-weight: 600 !important; /* beat body/type utilities in read-only views */
   color: var(--color-black) !important; /* #000917 */
 }
 
 /* 우리순 graph section titles — 1pt under field title. */
 .qt-field-title--sm {
-  font-size: 17px !important;
+  font-size: 1.0625rem !important; /* 17px */
 }
 
 /* Chart/section titles (우리순 · 나의 일주일) — +2pt over field title. */
 .qt-field-title--lg {
-  font-size: 20px !important;
+  font-size: 1.25rem !important; /* 20px */
 }
 
 /* Home QT validation hint + all similar instructional notices. */
@@ -308,8 +322,8 @@ html[data-sky-mode="밤모드"] {
 /* QT textareas: notebook lines under every row.
  * Avoid background-attachment:local — WebKit often paints nothing on <textarea>. */
 .qt-lined-field {
-  /* 19px body × ~1.9 ≈ 36 → lock px so gradient matches line boxes. */
-  --qt-line: 36px;
+  /* Body × ~1.9 so underline rows track font-size when rem scales. */
+  --qt-line: calc(var(--fs-body) * 1.9);
   font-size: var(--fs-body);
   line-height: var(--qt-line) !important;
   padding: 0 !important;
@@ -338,7 +352,7 @@ html[data-sky-mode="밤모드"] {
 }
 
 .reading-passage-range {
-  font-size: 22px !important; /* matches .qt-field-title */
+  font-size: 1.375rem !important; /* 22px — passage range emphasis */
   font-weight: 600;
   color: var(--text-main);
 }
@@ -373,7 +387,7 @@ html[data-sky-mode="밤모드"] {
 .cta-label,
 .bg-cta,
 .btn-cta {
-  font-size: 18px !important;
+  font-size: 1.125rem !important;
 }
 
 /* Primary filled CTAs: black fill + sky label/icons, pill, flat */
@@ -671,7 +685,7 @@ a {
   touch-action: pan-y;
 }
 
-@media (min-width: 520px) {
+@media (min-width: 32.5rem) {
   body {
     background:
       radial-gradient(ellipse at top, #d9edf9 0%, transparent 55%),
@@ -679,10 +693,11 @@ a {
   }
 
   .phone-shell {
-    height: calc(100dvh - 48px);
-    min-height: calc(100dvh - 48px);
-    margin-top: 24px;
-    margin-bottom: 24px;
+    width: min(100% - 2rem, var(--phone-max));
+    height: calc(100dvh - 3rem);
+    min-height: calc(100dvh - 3rem);
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
     border-radius: var(--radius-lg);
     box-shadow: none;
     overflow: hidden;
@@ -703,7 +718,7 @@ a {
 .sky-walkers-bleed {
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
-  margin-bottom: -36px;
+  margin-bottom: calc(-1 * var(--radius-sheet));
   position: relative;
   z-index: 1;
 }
@@ -712,7 +727,7 @@ a {
   min-height: 360px;
   width: 100%;
   /* Extra pad so absolute photo covers the sheet underlap / rounded ears. */
-  padding-bottom: 36px;
+  padding-bottom: var(--radius-sheet);
   background: var(--sky-mode-fill); /* under cloud photo */
   border-radius: 0 !important;
 }
@@ -725,7 +740,7 @@ a {
   flex: 1 1 auto;
   min-height: 280px;
   height: 100%;
-  padding-bottom: 44px;
+  padding-bottom: calc(var(--radius-sheet) + 0.5rem);
 }
 
 .me-sky-card .me-sky-stage {
@@ -790,7 +805,7 @@ a {
 .premium-qt-root {
   position: relative;
   z-index: 1;
-  min-height: calc(100dvh - 72px - var(--safe-bottom));
+  min-height: calc(100dvh - var(--nav-reserve) - var(--safe-bottom));
   background: var(--premium-cal-bg);
   color: var(--text-main);
   /* Allow sheet drop-shadow to paint above the rounded top. */
@@ -878,15 +893,15 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
  */
 .premium-qt-root--history {
   position: relative;
-  height: calc(100dvh - 72px - var(--safe-bottom));
-  max-height: calc(100dvh - 72px - var(--safe-bottom));
+  height: calc(100dvh - var(--nav-reserve) - var(--safe-bottom));
+  max-height: calc(100dvh - var(--nav-reserve) - var(--safe-bottom));
   overflow: hidden;
 }
 
-@media (min-width: 520px) {
+@media (min-width: 32.5rem) {
   .premium-qt-root--history {
-    height: calc(100dvh - 48px - 72px - var(--safe-bottom));
-    max-height: calc(100dvh - 48px - 72px - var(--safe-bottom));
+    height: calc(100dvh - var(--desktop-shell-chrome) - var(--nav-reserve) - var(--safe-bottom));
+    max-height: calc(100dvh - var(--desktop-shell-chrome) - var(--nav-reserve) - var(--safe-bottom));
   }
 }
 
@@ -939,7 +954,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   box-sizing: border-box;
   padding-top: 10px; /* was 22 — grabber sits higher */
   background: color-mix(in srgb, var(--color-mint) 40%, white);
-  border-radius: 36px 36px 0 0;
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
 }
 
 .premium-qt-sheet.premium-qt-sheet--history > .premium-content-crossfade,
@@ -988,12 +1003,12 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   z-index: 2;
   /* Overlap content above so 36px TL/TR corners sit on top (not under a square edge). */
   margin-top: -1.25rem;
-  min-height: calc(100dvh - 280px);
+  min-height: calc(100dvh - 17.5rem); /* ~header+passage reserve */
   /* Top pad 32px on all tabs: home, 나의 QT들, 우리순, 랭킹, 마이페이지. */
   padding-top: 32px;
   padding-inline: var(--space-page-x);
   padding-bottom: calc(1.5rem + var(--safe-bottom));
-  border-radius: 36px 36px 0 0 !important;
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0 !important;
   background: var(--premium-sheet);
   color: var(--text-main);
   /* Shape-following lift on the sheet itself (all tabs). */
@@ -1009,7 +1024,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 .premium-qt-root:has(> .premium-tab-header) {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - 72px - var(--safe-bottom));
+  min-height: calc(100dvh - var(--nav-reserve) - var(--safe-bottom));
   background: var(--color-mint); /* mint #CAEBF2 — seam under rounded sheet */
 }
 
@@ -1069,7 +1084,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  margin-bottom: -44px; /* match me-sky-card pad; sheet rounds sit over sky */
+  margin-bottom: calc(-1 * (var(--radius-sheet) + 0.5rem)); /* match me-sky-card pad */
 }
 
 .premium-qt-root.premium-qt-root--me-sky > .premium-qt-sheet.premium-qt-sheet--me {
@@ -1145,7 +1160,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 /* Gray capsule grabber — Home + 나의 QT들 sheet tops. */
 .premium-sheet-grabber {
   display: block;
-  width: 28px;
+  width: 1.75rem;
   height: 5px;
   border-radius: 9999px;
   background: #c8cdd3;
@@ -1158,7 +1173,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   justify-content: center;
   align-items: center;
   height: 20px;
-  margin: -18px 0 0.35rem; /* nudge pill slightly toward sheet top */
+  margin: -1.125rem 0 0.35rem; /* nudge pill slightly toward sheet top */
   pointer-events: none;
 }
 
@@ -1168,7 +1183,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   justify-content: center;
   align-items: center;
   flex: 0 0 auto;
-  height: 22px;
+  height: 1.375rem;
   margin: 0 0 10px; /* more air below grabber → pill reads higher */
   width: 100%;
   background: transparent;
@@ -1451,7 +1466,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 
 .premium-home-shell--short {
   height: auto;
-  min-height: calc(100dvh - 72px - var(--safe-bottom));
+  min-height: calc(100dvh - var(--nav-reserve) - var(--safe-bottom));
   overflow: visible;
   /* Mint wash under rounded sheet corners. */
   background: color-mix(in srgb, var(--color-mint) 50%, white);
@@ -1545,7 +1560,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 36px;
+  min-height: 2.25rem;
   padding: 0 12px;
   border: 0;
   border-radius: 9999px;
@@ -1598,7 +1613,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   margin: 0;
   width: 100%;
   padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
-  border-radius: 36px 36px 0 0;
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
   background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-black); /* #000917 */
   box-shadow: none !important;
@@ -1611,14 +1626,14 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   margin-inline: 0;
   width: 100%;
   min-height: 0;
-  padding: 0 var(--space-page-x) calc(1.5rem + 72px + var(--safe-bottom));
+  padding: 0 var(--space-page-x) calc(1.5rem + var(--nav-reserve) + var(--safe-bottom));
   background: #ffffff !important;
   box-sizing: border-box;
 }
 
 /* Pull white through layout nav pad (same flush as 나의 QT들 / 우리순). */
 .premium-home-form-sheet {
-  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
+  margin-bottom: calc(-1 * (var(--nav-reserve) + var(--safe-bottom)));
 }
 
 /* Range + 「말씀보기」 row: force vertical center (range 22px vs caption CTA). */

@@ -273,7 +273,7 @@ export function QtCalendar({
                 }}
                 aria-label={`${date}${done ? ", 완료" : ""}`}
                 aria-pressed={selected}
-                className={`premium-cal-day relative flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-[22px] px-1 py-2 transition ${
+                className={`premium-cal-day relative flex min-h-[4.5rem] flex-col items-center justify-center gap-1 rounded-[1.375rem] px-1 py-2 transition ${
                   selected ? "premium-cal-day-selected" : ""
                 } ${!inMonth ? "opacity-40" : ""}`}
               >
@@ -287,7 +287,7 @@ export function QtCalendar({
                   {WEEKDAYS[i]}
                 </span>
                 <span
-                  className={`relative z-[1] text-[17px] font-semibold tabular-nums leading-none ${
+                  className={`relative z-[1] text-[1.0625rem] font-semibold tabular-nums leading-none ${
                     selected
                       ? "text-white"
                       : isToday
@@ -356,15 +356,15 @@ export function QtCalendar({
                     onClick={() => onSelect?.(date)}
                     aria-label={`${date}${done ? ", 완료" : ""}`}
                     aria-pressed={selected}
-                    className="group relative flex min-h-[44px] aspect-square items-center justify-center overflow-visible touch-pan-y"
+                    className="group relative flex min-h-[2.75rem] aspect-square items-center justify-center overflow-visible touch-pan-y"
                   >
                     <span
-                      className={`relative flex h-[42px] w-[42px] flex-col items-center justify-center rounded-full transition ${
+                      className={`relative flex h-[2.625rem] w-[2.625rem] flex-col items-center justify-center rounded-full transition ${
                         selected ? "premium-cal-glow" : ""
                       }`}
                     >
                       <span
-                        className={`relative z-[1] text-center text-[15px] leading-none font-semibold tabular-nums ${
+                        className={`relative z-[1] text-center text-[0.9375rem] leading-none font-semibold tabular-nums ${
                           selected
                             ? "text-white"
                             : isToday
