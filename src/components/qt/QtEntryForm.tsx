@@ -108,7 +108,7 @@ export function QtEntryForm({
         onChange={setPrayer}
       />
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-[var(--space-stack-sm)]">
         {share ? (
           <PrimaryButton
             type="button"
