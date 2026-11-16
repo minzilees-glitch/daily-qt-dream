@@ -814,32 +814,25 @@ a {
   opacity: 0.45;
 }
 
-/* Legacy alias — prefer .premium-cal-day-future. */
-.premium-qt-header .premium-cal-day-muted {
-  color: color-mix(in srgb, var(--muted) 70%, transparent) !important;
-}
-
-/* Past incomplete (inactive): readable ink on sky/black. */
-.premium-qt-header .premium-cal-day-past {
-  color: var(--sky-mode-ink) !important;
-  opacity: 0.72;
-}
-
-/* Future (not yet open): softer than past idle. */
+/* Date state contrast: color alpha only — same font-size/weight as siblings. */
+.premium-qt-header .premium-cal-day-muted,
 .premium-qt-header .premium-cal-day-future {
   color: color-mix(in srgb, var(--muted) 70%, transparent) !important;
 }
 
-/* 밤모드: push future much dimmer; keep past idle brighter. */
+/* Past incomplete (deactivated): brighter than future, still softened. */
+.premium-qt-header .premium-cal-day-past {
+  color: color-mix(in srgb, var(--sky-mode-ink) 72%, transparent) !important;
+}
+
+/* 밤모드: past idle clearer; future much dimmer — no size/weight change. */
 html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-past {
-  color: var(--color-white) !important;
-  opacity: 0.78;
+  color: color-mix(in srgb, var(--color-white) 78%, transparent) !important;
 }
 
 html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-future,
 html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: color-mix(in srgb, var(--color-white) 26%, transparent) !important;
-  opacity: 1;
 }
 
 /* Today accent (selected uses .premium-cal-day-selected white). */
