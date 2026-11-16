@@ -187,14 +187,19 @@ html[data-sky-mode="밤모드"] {
 }
 
 /*
- * MeSky + SkyWalkers cloud photo (`/group/sky-clouds-bg.png`) stays mounted.
- * 밤모드: keep photo visible but darken over `--sky-mode-fill` (#000917)
- * so the scene reads as night sky (not daytime clouds, not a blank hole).
+ * MeSky + SkyWalkers base fill = same token as AppHeader band / tab headers:
+ * `--sky-mode-fill` (낮모드 sky #6DC2FF · 밤모드 black #000917).
+ * Cloud PNG is texture on top — opacity lets that token read as the sky color.
  */
-html[data-sky-mode="밤모드"] .sky-group-card > img.sky-clouds-bg {
-  opacity: 1;
+.sky-group-card > img.sky-clouds-bg {
+  opacity: 0.72;
   visibility: visible;
-  filter: brightness(0.38) saturate(0.5) contrast(1.08);
+  mix-blend-mode: soft-light;
+}
+
+html[data-sky-mode="밤모드"] .sky-group-card > img.sky-clouds-bg {
+  opacity: 0.42;
+  filter: brightness(0.55) saturate(0.45);
 }
 
 @theme inline {
@@ -608,9 +613,9 @@ a {
   backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
   -webkit-backdrop-filter: blur(var(--frame-glass-blur)) saturate(1.65);
 }
-/* SkyWalkers / MeSky: cloud photo over 낮모드/밤모드 solid fill. */
+/* SkyWalkers / MeSky: same base as AppHeader (`.premium-home-header-band`). */
 .soft-card.sky-group-card {
-  background: var(--sky-mode-fill);
+  background-color: var(--sky-mode-fill) !important;
   border: none;
   border-radius: 0 !important;
   box-shadow: var(--shadow-soft);
@@ -740,7 +745,8 @@ a {
   width: 100%;
   /* Extra pad so absolute photo covers the sheet underlap / rounded ears. */
   padding-bottom: var(--radius-sheet);
-  background: var(--sky-mode-fill); /* under cloud photo */
+  /* Identical token to AppHeader / `.premium-home-header-band` / tab headers. */
+  background-color: var(--sky-mode-fill) !important;
   border-radius: 0 !important;
 }
 
