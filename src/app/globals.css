@@ -1109,7 +1109,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 .premium-qt-sheet.premium-qt-sheet--group > .premium-panel + .premium-panel {
-  margin-top: 2.75rem; /* nudge 「이번달 날짜별」 slightly lower */
+  margin-top: 10px; /* 「날짜별 참여」 spacing */
   padding-top: 0;
 }
 

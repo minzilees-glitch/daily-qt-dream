@@ -92,7 +92,7 @@ export function DayParticipation({
           >
             {/* Active: sora track/fill · Future: muted deactivated track */}
             <div
-              className={`flex h-14 w-8 items-end overflow-hidden rounded-full ${
+              className={`flex h-20 w-8 items-end overflow-hidden rounded-full ${
                 isActive
                   ? "bg-[color-mix(in_srgb,var(--color-sora)_32%,white)]"
                   : "bg-[color-mix(in_srgb,var(--muted)_55%,white)]"
