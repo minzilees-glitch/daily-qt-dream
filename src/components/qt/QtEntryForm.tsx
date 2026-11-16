@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
+import { Send } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -107,22 +108,6 @@ export function QtEntryForm({
         onChange={setPrayer}
       />
 
-      <PrimaryButton
-        type="button"
-        className="w-full"
-        disabled={locked}
-        onClick={async () => {
-          setBusy(true);
-          try {
-            await onSave(fields);
-          } finally {
-            setBusy(false);
-          }
-        }}
-      >
-        {busy ? "저장 중…" : "저장하고 QT 완료하기"}
-      </PrimaryButton>
-
       {share ? (
         <PrimaryButton
           type="button"
@@ -144,9 +129,26 @@ export function QtEntryForm({
             }
           }}
         >
+          <Send size={18} strokeWidth={2.25} aria-hidden />
           나의 큐티 나누기
         </PrimaryButton>
       ) : null}
+
+      <PrimaryButton
+        type="button"
+        className="w-full"
+        disabled={locked}
+        onClick={async () => {
+          setBusy(true);
+          try {
+            await onSave(fields);
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        {busy ? "저장 중…" : "저장하고 큐티 완료하기"}
+      </PrimaryButton>
 
       {showClear && onClear ? (
         <PrimaryButton
