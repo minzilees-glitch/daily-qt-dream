@@ -53,11 +53,17 @@ export function HomeDurannoPassage({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="home-duranno-cta inline-flex shrink-0 whitespace-nowrap self-center"
+                style={{ color: "#6DC2FF", WebkitTextFillColor: "#6DC2FF", opacity: 1 }}
                 aria-label="말씀보기"
                 title="말씀보기"
               >
                 말씀보기
-                <ArrowUpRight size={18} strokeWidth={2.25} aria-hidden />
+                <ArrowUpRight
+                  size={18}
+                  strokeWidth={2.25}
+                  color="#6DC2FF"
+                  aria-hidden
+                />
               </a>
             </>
           ) : null}

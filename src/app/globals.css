@@ -1407,6 +1407,11 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-mint) !important;
 }
 
+/* Own 순 name (e.g. 김병준 순): medium, not bold. */
+.premium-rank-row--mine .type-body {
+  font-weight: 500 !important;
+}
+
 .premium-mine-pill {
   display: inline-flex;
   flex-shrink: 0;
@@ -1632,13 +1637,19 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   pointer-events: none;
 }
 
-/* 「말씀보기」 plain ink-blue text + ArrowUpRight — no capsule/pill chrome. */
-.home-duranno-cta,
-.home-duranno-cta:link,
-.home-duranno-cta:visited,
-.home-duranno-cta:hover,
-.home-duranno-cta:active,
-.home-duranno-cta:focus {
+/*
+ * 「말씀보기」 + ArrowUpRight — force sky #6DC2FF @ 100%.
+ * Hex + nested selectors beat inherit/a/ink-blue leftovers (DQ-646).
+ */
+.home-duranno-in-sheet a.home-duranno-cta,
+.home-duranno-meta a.home-duranno-cta,
+a.home-duranno-cta,
+a.home-duranno-cta:link,
+a.home-duranno-cta:visited,
+a.home-duranno-cta:hover,
+a.home-duranno-cta:active,
+a.home-duranno-cta:focus,
+a.home-duranno-cta:focus-visible {
   display: inline-flex !important;
   align-items: center;
   align-self: center;
@@ -1665,7 +1676,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   -webkit-appearance: none;
   appearance: none;
   text-decoration: none !important;
-  color: var(--color-sky) !important; /* #6DC2FF */
+  color: #6dc2ff !important; /* sky — hard hex, not ink-blue */
+  -webkit-text-fill-color: #6dc2ff !important;
   font-size: var(--fs-caption);
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -1673,24 +1685,28 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   opacity: 1 !important;
 }
 
-.home-duranno-cta svg {
-  color: inherit !important;
-  stroke: currentColor !important;
+.home-duranno-in-sheet a.home-duranno-cta svg,
+.home-duranno-meta a.home-duranno-cta svg,
+a.home-duranno-cta svg {
+  color: #6dc2ff !important;
+  stroke: #6dc2ff !important;
+  fill: none !important;
   flex-shrink: 0;
   opacity: 1 !important;
 }
 
-.home-duranno-cta:hover {
+a.home-duranno-cta:hover {
   opacity: 1 !important;
   background: transparent !important;
   filter: none !important;
   text-decoration: underline !important;
   text-underline-offset: 2px;
-  color: var(--color-sky) !important;
+  color: #6dc2ff !important;
+  -webkit-text-fill-color: #6dc2ff !important;
 }
 
-.home-duranno-cta:focus-visible {
-  outline: 2px solid var(--color-sky);
+a.home-duranno-cta:focus-visible {
+  outline: 2px solid #6dc2ff;
   outline-offset: 2px;
   border-radius: 0 !important;
   background: transparent !important;
