@@ -3,17 +3,17 @@
 import {
   Suspense,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { CalendarDays, MoreHorizontal } from "lucide-react";
+import { CalendarDays, MoreHorizontal, Send } from "lucide-react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { QtCalendar } from "@/components/qt/QtCalendar";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
 import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
@@ -21,10 +21,15 @@ import { DayEntryView } from "@/components/qt/DayEntryView";
 import { useApp } from "@/lib/app-context";
 import { getReadingForDate } from "@/lib/mock-data";
 import { durannoUrlForDate } from "@/lib/duranno";
+import { fieldsFromEntry } from "@/lib/qt-entry";
+import {
+  formatQtShareText,
+  isShareAbortError,
+  shareOrCopyText,
+} from "@/lib/qt-share";
 import {
   addMonths,
   currentYearMonth,
-  formatDisplayDate,
   isFutureDate,
   parseYmd,
   todaySeoul,
@@ -35,49 +40,6 @@ import { buildCompletionSet, buildLightSet, userMonthStats } from "@/lib/stats";
 function parseDateParam(raw: string | null): string | null {
   if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
   return raw;
-}
-
-const DATE_TITLE_MAX_PX = 22; /* --fs-display 24 − 2pt */
-const DATE_TITLE_MIN_PX = 14; /* --fs-caption 16 − 2pt */
-
-/** Single-line title that shrinks to the largest font size that still fits. */
-function FitDateTitle({ text }: { text: string }) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLHeadingElement>(null);
-
-  useLayoutEffect(() => {
-    const wrap = wrapRef.current;
-    const el = textRef.current;
-    if (!wrap || !el) return;
-
-    const fit = () => {
-      let size = DATE_TITLE_MAX_PX;
-      el.style.fontSize = `${size}px`;
-      el.style.whiteSpace = "nowrap";
-      while (size > DATE_TITLE_MIN_PX && el.scrollWidth > wrap.clientWidth) {
-        size -= 0.5;
-        el.style.fontSize = `${size}px`;
-      }
-    };
-
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(wrap);
-    return () => ro.disconnect();
-  }, [text]);
-
-  return (
-    <div ref={wrapRef} className="min-w-0 flex-1 overflow-hidden">
-      <h2
-        ref={textRef}
-        className="type-month whitespace-nowrap text-text-main"
-        style={{ fontSize: DATE_TITLE_MAX_PX }}
-        suppressHydrationWarning
-      >
-        {text}
-      </h2>
-    </div>
-  );
 }
 
 function HistoryPageInner({ initialDate }: { initialDate: string }) {
@@ -155,6 +117,29 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     window.setTimeout(() => setToast(null), 2400);
   };
 
+  const share = {
+    dateYmd: selected,
+    passageRange: duranno.range,
+    onShared: (via: "share" | "clipboard") =>
+      showToast(via === "share" ? "공유했어요" : "클립보드에 복사했어요"),
+    onError: (message: string) => showToast(message),
+  };
+
+  const shareSavedEntry = async () => {
+    const text = formatQtShareText({
+      dateYmd: share.dateYmd,
+      passageRange: share.passageRange,
+      fields: fieldsFromEntry(selectedEntry),
+    });
+    try {
+      const via = await shareOrCopyText(text);
+      share.onShared(via);
+    } catch (err) {
+      if (isShareAbortError(err)) return;
+      share.onError("공유에 실패했어요");
+    }
+  };
+
   return (
     <div className="premium-qt-root">
       <header className="premium-qt-header">
@@ -219,29 +204,28 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         <div key={selected} className="premium-content-crossfade flex flex-col">
           <div className="premium-history-passage space-y-[var(--space-stack-sm)]">
             <div className="flex items-start justify-between gap-3 pt-3">
-              <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="shrink-0 self-center">
-                    <LightIcon
-                      active={selectedCompleted}
-                      future={future}
-                      size={24}
-                      justEarned={selectedCompleted && !future}
-                    />
-                  </span>
-                  <FitDateTitle text={formatDisplayDate(selected)} />
+              <div className="flex min-w-0 flex-1 items-start gap-2">
+                <span className="shrink-0 self-center">
+                  <LightIcon
+                    active={selectedCompleted}
+                    future={future}
+                    size={24}
+                    justEarned={selectedCompleted && !future}
+                  />
+                </span>
+                <div className="min-w-0 flex-1">
+                  {future ? (
+                    <p className="type-body-sm text-text-secondary">
+                      미래 날짜는 완료할 수 없습니다.
+                    </p>
+                  ) : past ? (
+                    <p className="qt-validation-hint type-caption break-keep text-text-secondary">
+                      지난 큐티완료는 빛을 획득할 수 없습니다.
+                      <br />
+                      그러나 지난 큐티는 당신 심령에 남을거에요.
+                    </p>
+                  ) : null}
                 </div>
-                {future ? (
-                  <p className="mt-1 type-body-sm text-text-secondary">
-                    미래 날짜는 완료할 수 없습니다.
-                  </p>
-                ) : past ? (
-                  <p className="qt-validation-hint type-caption mt-1 break-keep text-text-secondary">
-                    지난 큐티완료는 빛을 획득할 수 없습니다.
-                    <br />
-                    그러나 지난 큐티는 당신 심령에 남을거에요.
-                  </p>
-                ) : null}
               </div>
 
               {!future ? (
@@ -297,6 +281,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               <QtEntryForm
                 key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
                 initial={selectedEntry}
+                share={share}
                 onSave={async (fields) => {
                   try {
                     const res = await saveEntry(selected, fields);
@@ -315,11 +300,23 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           {!future && !editing ? (
             <div className="premium-history-qt">
               {hasEntry || selectedCompleted ? (
-                <DayEntryView entry={selectedEntry} />
+                <div className="space-y-[var(--space-stack-lg)]">
+                  <DayEntryView entry={selectedEntry} />
+                  <PrimaryButton
+                    type="button"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={shareSavedEntry}
+                  >
+                    <Send size={18} strokeWidth={2.25} aria-hidden />
+                    나의 큐티 나누기
+                  </PrimaryButton>
+                </div>
               ) : (
                 <QtEntryForm
                   key={`hist-new-${selected}`}
                   initial={null}
+                  share={share}
                   onSave={async (fields) => {
                     try {
                       const res = await saveEntry(selected, fields);
