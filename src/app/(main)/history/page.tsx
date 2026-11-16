@@ -70,6 +70,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const [drop, setDrop] = useState(0);
   const [maxDrop, setMaxDrop] = useState(FALLBACK_MAX_DROP_PX);
   const [sheetTop, setSheetTop] = useState(200);
+  const [dragging, setDragging] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -84,6 +85,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const dropRef = useRef(0);
   const maxDropRef = useRef(FALLBACK_MAX_DROP_PX);
   const calendarExpandedRef = useRef(false);
+  const draggingRef = useRef(false);
   const dragRef = useRef<{
     pointerId: number;
     startY: number;
@@ -96,6 +98,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   dropRef.current = drop;
   maxDropRef.current = maxDrop;
   calendarExpandedRef.current = calendarExpanded;
+  draggingRef.current = dragging;
 
   const minYm = HISTORY_MIN_YM;
   const maxYm = currentYearMonth();
@@ -176,25 +179,28 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     recomputeSheetTop();
   }, [drop, recomputeSheetTop]);
 
-  const setDropClamped = useCallback((next: number) => {
-    const clamped = Math.min(maxDropRef.current, Math.max(0, next));
-    dropRef.current = clamped;
-    setDrop(clamped);
-    /* Mid-drag: switch calendar when past ~40% toward month. */
-    const ratio = maxDropRef.current > 0 ? clamped / maxDropRef.current : 0;
-    if (ratio >= 0.4 && !calendarExpandedRef.current) {
-      calendarExpandedRef.current = true;
-      setCalendarExpanded(true);
-    } else if (ratio < 0.4 && calendarExpandedRef.current) {
-      calendarExpandedRef.current = false;
-      setCalendarExpanded(false);
-    }
+  /** Soft rubber-band past ends while dragging. */
+  const resistDrop = useCallback((raw: number) => {
+    const max = maxDropRef.current;
+    if (raw < 0) return raw * 0.28;
+    if (raw > max) return max + (raw - max) * 0.28;
+    return raw;
   }, []);
 
-  const snapDrop = useCallback((next: number, velocityY: number) => {
-    const mid = maxDropRef.current * 0.45;
-    const open = velocityY < -0.5 || (velocityY <= 0.5 && next < mid);
-    const target = open ? 0 : maxDropRef.current;
+  const setDropLive = useCallback((next: number) => {
+    dropRef.current = next;
+    setDrop(next);
+  }, []);
+
+  const snapDrop = useCallback((current: number, velocityY: number) => {
+    const max = maxDropRef.current;
+    const mid = max * 0.42;
+    /* velocityY: px/ms — flick down → collapse, flick up → open */
+    const open =
+      velocityY < -0.55 || (Math.abs(velocityY) < 0.45 && current < mid);
+    const target = open ? 0 : max;
+    setDragging(false);
+    draggingRef.current = false;
     dropRef.current = target;
     setDrop(target);
     calendarExpandedRef.current = !open;
@@ -204,6 +210,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const onHandlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
     handleRef.current?.setPointerCapture(e.pointerId);
+    setDragging(true);
+    draggingRef.current = true;
     dragRef.current = {
       pointerId: e.pointerId,
       startY: e.clientY,
@@ -222,7 +230,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     drag.velocityY = (e.clientY - drag.lastY) / dt;
     drag.lastY = e.clientY;
     drag.lastT = e.timeStamp;
-    setDropClamped(drag.startDrop + dy);
+    /* Live follow finger only — calendar mode switches on snap (smoother). */
+    setDropLive(resistDrop(drag.startDrop + dy));
   };
 
   const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -235,11 +244,15 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     } catch {
       /* already released */
     }
-    snapDrop(dropRef.current, velocityY);
+    const max = maxDropRef.current;
+    const clamped = Math.min(max, Math.max(0, dropRef.current));
+    snapDrop(clamped, velocityY);
   };
 
   const toggleCalendar = () => {
     const next = !calendarExpanded;
+    setDragging(false);
+    draggingRef.current = false;
     setCalendarExpanded(next);
     calendarExpandedRef.current = next;
     const target = next ? maxDropRef.current : 0;
@@ -359,7 +372,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       </header>
 
       <section
-        className="premium-qt-sheet premium-qt-sheet--history"
+        className={`premium-qt-sheet premium-qt-sheet--history${
+          dragging ? " is-dragging" : ""
+        }`}
         style={{ top: sheetTop }}
       >
         <div
@@ -369,7 +384,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           aria-label="시트 높이 조절"
           aria-valuemin={0}
           aria-valuemax={maxDrop}
-          aria-valuenow={Math.round(drop)}
+          aria-valuenow={Math.round(Math.min(maxDrop, Math.max(0, drop)))}
           onPointerDown={onHandlePointerDown}
           onPointerMove={onHandlePointerMove}
           onPointerUp={endDrag}
@@ -377,7 +392,10 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
         >
           <span className="premium-sheet-grabber" aria-hidden />
         </div>
-        <div key={selected} className="premium-content-crossfade flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <div
+          key={selected}
+          className="premium-content-crossfade premium-history-sheet-body"
+        >
           <div className="premium-history-passage pt-3">
             <HomeDurannoPassage
               key={selected}

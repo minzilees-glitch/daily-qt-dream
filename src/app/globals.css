@@ -864,11 +864,10 @@ a {
 .premium-qt-root--history > .premium-qt-sheet.premium-qt-sheet--history,
 .premium-qt-root:has(> .premium-qt-header)
   > .premium-qt-sheet.premium-qt-sheet--history {
-  /* Same as .premium-history-passage — no white band above 말씀. */
+  /* Mint wash behind grabber + 말씀; white form paints over below. */
   background: color-mix(in srgb, var(--color-mint) 30%, white) !important;
   display: flex;
   flex-direction: column;
-  /* Keep shared .premium-qt-sheet padding-top (28px); only clear bottom. */
   padding-bottom: 0;
 }
 
@@ -882,17 +881,27 @@ a {
   min-height: 0;
   height: auto;
   overflow: hidden;
+  will-change: top;
+  transition: top 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.premium-qt-sheet.premium-qt-sheet--history > .premium-content-crossfade {
+.premium-qt-root--history
+  > .premium-qt-sheet.premium-qt-sheet--history.is-dragging {
+  transition: none;
+}
+
+.premium-qt-sheet.premium-qt-sheet--history > .premium-content-crossfade,
+.premium-history-sheet-body {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* scroll lives in .premium-history-qt so white fills */
 }
 
 /* Date + passage: same mint wash as sheet top (pad + grabber). */
 .premium-history-passage {
+  flex: 0 0 auto;
   margin-inline: calc(-1 * var(--space-page-x));
   width: calc(100% + 2 * var(--space-page-x));
   padding: 0 var(--space-page-x) var(--space-stack);
@@ -900,17 +909,18 @@ a {
   box-sizing: border-box;
 }
 
-/* From 「QT는 전체 합쳐…」 / entry fields downward — solid white.
- * Top pad 0: match home form-body (QtEntryForm owns pt via --space-stack-lg;
- * home space-y between Duranno↔form is the mint/white seam, not extra white pad). */
+/* From 「QT는 전체 합쳐…」 / entry fields downward — solid white fills rest. */
 .premium-history-qt {
-  margin-inline: calc(-1 * var(--space-page-x));
-  width: calc(100% + 2 * var(--space-page-x));
   flex: 1 1 auto;
   min-height: 0;
+  margin-inline: calc(-1 * var(--space-page-x));
+  width: calc(100% + 2 * var(--space-page-x));
   padding: 0 var(--space-page-x) calc(1.5rem + var(--safe-bottom));
   background: #ffffff !important;
   box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Future-only (no QT band): keep bottom pad on the sky passage. */
@@ -1094,14 +1104,16 @@ a {
   pointer-events: none;
 }
 
-/* History: interactive drag handle (continuous slide). */
+/* History: interactive drag handle (continuous slide). Mint band with 말씀. */
 .premium-history-sheet-drag {
   display: flex;
   justify-content: center;
   align-items: center;
   flex: 0 0 auto;
   height: 28px;
-  margin: -10px 0 0.15rem;
+  margin: -10px calc(-1 * var(--space-page-x)) 0;
+  width: calc(100% + 2 * var(--space-page-x));
+  background: color-mix(in srgb, var(--color-mint) 30%, white);
   cursor: grab;
   touch-action: none;
   user-select: none;
