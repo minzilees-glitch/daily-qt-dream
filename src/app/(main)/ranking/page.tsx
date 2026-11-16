@@ -35,7 +35,7 @@ export default function RankingPage() {
         </p>
       </header>
 
-      <section className="premium-qt-sheet">
+      <section className="premium-qt-sheet premium-qt-sheet--ranking">
         <div className="premium-sheet-grabber-row" aria-hidden>
           <span className="premium-sheet-grabber" />
         </div>

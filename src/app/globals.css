@@ -291,6 +291,11 @@ html[data-sky-mode="밤모드"] {
   font-size: 17px !important;
 }
 
+/* Chart/section titles (우리순 · 나의 일주일) — +2pt over field title. */
+.qt-field-title--lg {
+  font-size: 20px !important;
+}
+
 /* Home QT validation hint + all similar instructional notices. */
 .qt-validation-hint {
   font-size: var(--fs-caption) !important; /* 16px */
@@ -708,19 +713,19 @@ a {
   border-radius: 0 !important;
 }
 
-/* Mypage sky: fills leftover viewport above content-fit bottom sheet.
+/* Mypage sky: content-sized above fill-to-bottom sheet.
  * Slightly deeper underlap than base 36px so rounded sheet ears don't clip photo. */
 .sky-group-card.me-sky-card {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 280px;
-  height: 100%;
+  height: auto;
   padding-bottom: 44px;
 }
 
 .me-sky-card .me-sky-stage {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 96px;
   background: transparent;
 }
@@ -894,7 +899,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  /* Pull white through layout nav pad (same flush as 우리순 / home). */
+  bottom: calc(-1 * (72px + var(--safe-bottom)));
   /* `top` set inline from drag (week open → month collapsed). */
   margin-top: 0;
   min-height: 0;
@@ -949,7 +955,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   min-height: 0;
   margin-inline: 0;
   width: 100%;
-  padding: 0 var(--space-page-x) calc(1.5rem + var(--safe-bottom));
+  padding: 0 var(--space-page-x) calc(1.5rem + 72px + var(--safe-bottom));
   background: #ffffff !important;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -960,7 +966,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 /* Future-only (no QT band): keep bottom pad on the sky passage. */
 .premium-qt-sheet.premium-qt-sheet--history:not(:has(.premium-history-qt))
   .premium-history-passage {
-  padding-bottom: calc(var(--space-stack) + 1.5rem + var(--safe-bottom));
+  padding-bottom: calc(var(--space-stack) + 1.5rem + 72px + var(--safe-bottom));
   flex: 1 1 auto;
 }
 
@@ -1035,27 +1041,45 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 /*
- * 마이페이지 (sky): content-fit sheet anchored to bottom;
- * header/sky grows into the leftover viewport.
+ * 마이페이지 (sky): white drawer fills leftover viewport to screen bottom;
+ * MeSky header stays content-sized above the sheet (same as 우리순).
  */
 .premium-qt-root.premium-qt-root--me-sky > .premium-tab-header--me {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
 
 .premium-qt-root.premium-qt-root--me-sky > .premium-tab-header--me .sky-walkers-bleed {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   margin-bottom: -44px; /* match me-sky-card pad; sheet rounds sit over sky */
 }
 
 .premium-qt-root.premium-qt-root--me-sky > .premium-qt-sheet.premium-qt-sheet--me {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   /* Flush white sheet through layout nav pad (same as 우리순). */
+  margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
+  padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
+}
+
+/*
+ * 랭킹: white drawer fills leftover viewport to screen bottom (same as 우리순).
+ */
+.premium-qt-root:has(> .premium-tab-header--ranking) > .premium-tab-header--ranking {
+  flex: 0 0 auto;
+}
+
+.premium-qt-root:has(> .premium-tab-header--ranking)
+  > .premium-qt-sheet.premium-qt-sheet--ranking {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
   padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
 }
