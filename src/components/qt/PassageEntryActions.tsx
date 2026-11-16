@@ -43,12 +43,7 @@ export function PassageEntryActions({
             : `${idleIcon} rounded-full`
         }
       >
-        <Pencil
-          size={18}
-          strokeWidth={editActive ? 2.75 : 1.75}
-          absoluteStrokeWidth={editActive}
-          aria-hidden
-        />
+        <Pencil size={18} strokeWidth={1.75} aria-hidden />
       </button>
     </div>
   );
