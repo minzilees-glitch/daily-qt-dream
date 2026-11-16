@@ -25,7 +25,7 @@ export function HomeDurannoPassage({
           href={reading.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="home-duranno-cta inline-flex shrink-0 items-center gap-0.5 text-[var(--color-sky)] transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta focus-visible:ring-offset-2"
+          className="home-duranno-cta shrink-0"
           aria-label="두란노에서 오늘의 말씀 읽기"
           title="두란노에서 오늘의 말씀 읽기"
         >

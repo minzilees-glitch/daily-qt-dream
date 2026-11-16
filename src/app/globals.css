@@ -1420,17 +1420,39 @@ a {
   color: var(--color-black) !important; /* #000917 */
 }
 
-/* Icon-only Duranno link — no capsule; sky reads on mint vs black copy. */
-.home-duranno-cta {
-  color: var(--color-sky); /* #6DC2FF */
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+/* Icon-only Duranno link — strip every capsule cue (bg/border/radius/pad). */
+.home-duranno-cta,
+.home-duranno-cta:link,
+.home-duranno-cta:visited,
+.home-duranno-cta:hover,
+.home-duranno-cta:active,
+.home-duranno-cta:focus {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.125rem;
+  color: var(--color-sky) !important; /* #6DC2FF — readable on mint */
+  background: none !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.home-duranno-cta:focus-visible {
+  outline: 2px solid var(--color-sky);
+  outline-offset: 3px;
+  border-radius: 2px !important; /* square focus, never pill */
 }
 
 .home-duranno-cta svg {
-  color: inherit;
+  color: inherit !important;
+  background: none !important;
+  box-shadow: none !important;
 }
 
 @keyframes premium-select-pop {

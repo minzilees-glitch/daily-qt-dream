@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { Check, Send } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -112,7 +112,7 @@ export function QtEntryForm({
         {share ? (
           <PrimaryButton
             type="button"
-            variant="soft"
+            variant="secondary"
             className="w-full"
             disabled={locked}
             onClick={async () => {
@@ -137,6 +137,7 @@ export function QtEntryForm({
 
         <PrimaryButton
           type="button"
+          variant="primary"
           className="w-full"
           disabled={locked}
           onClick={async () => {
@@ -148,6 +149,7 @@ export function QtEntryForm({
             }
           }}
         >
+          <Check size={18} strokeWidth={2.25} aria-hidden />
           {busy ? "저장 중…" : "저장하고 큐티 완료하기"}
         </PrimaryButton>
       </div>
