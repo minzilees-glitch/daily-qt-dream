@@ -283,6 +283,20 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     if (yearMonthOf(date) !== ym) setYm(yearMonthOf(date));
   };
 
+  const jumpToToday = () => {
+    const todayYmd = clampHistoryDate(todaySeoul());
+    setSelected(todayYmd);
+    setYm(yearMonthOf(todayYmd));
+    setEditing(false);
+    setMenuOpen(false);
+    setDragging(false);
+    draggingRef.current = false;
+    calendarExpandedRef.current = false;
+    setCalendarExpanded(false);
+    dropRef.current = 0;
+    setDrop(0);
+  };
+
   if (!currentUser) return null;
 
   const selectedCompleted = isCompleted(currentUser.id, selected);
@@ -346,6 +360,15 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 max={maxYm}
                 align="start"
               />
+              <button
+                type="button"
+                onClick={jumpToToday}
+                disabled={selected === todaySeoul()}
+                className="shrink-0 rounded-full bg-white/15 px-3 py-1.5 type-caption font-semibold text-[var(--color-mint)] transition hover:bg-white/25 disabled:opacity-40"
+                aria-label="오늘 날짜로 이동"
+              >
+                오늘
+              </button>
               <div
                 className="inline-flex items-center"
                 title="이번달 내가 모은 빛"
