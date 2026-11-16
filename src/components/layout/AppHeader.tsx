@@ -89,7 +89,11 @@ export function AppHeader({
 
         {showAvatar ? (
           <div className="mt-3 flex shrink-0 flex-col items-center gap-1 self-start">
-            <ProfileAvatarButton light={light} size={avatarSize} />
+            <ProfileAvatarButton
+              light={light}
+              size={avatarSize}
+              fallback="initial"
+            />
             {nickname ? (
               <button
                 type="button"
@@ -128,7 +132,7 @@ export function AppHeader({
         light ? "text-white" : "text-text-main"
       }`}
     >
-      <ProfileAvatarButton light={light} />
+      <ProfileAvatarButton light={light} fallback="initial" />
     </header>
   );
 }

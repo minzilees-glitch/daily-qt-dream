@@ -11,8 +11,8 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
+import { WalkerFace } from "@/components/ui/WalkerFace";
 import { useApp } from "@/lib/app-context";
-import type { User } from "@/types";
 
 /** Four discrete sizes (~11px baseline +5%): smaller / base / larger / largest. */
 const SKY_LIGHT_SIZES = [8.4, 10.5, 12.6, 14.7] as const;
@@ -37,14 +37,6 @@ const BODY_VARIANTS = [
   "blue",
   "purple",
   "pink",
-] as const;
-
-const AVATAR_STYLES = [
-  "avataaars",
-  "lorelei",
-  "notionists",
-  "thumbs",
-  "shapes",
 ] as const;
 
 type SkySpark = {
@@ -151,16 +143,6 @@ function buildMeSkySparks(
     sparks,
     capped: sparks.length < show,
   };
-}
-
-function fallbackAvatarUrl(userId: string): string {
-  const style = AVATAR_STYLES[0]!;
-  const seed = encodeURIComponent(userId);
-  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundType=gradientLinear&radius=50`;
-}
-
-function walkerFaceSrc(user: User): string {
-  return user.avatarUrl || fallbackAvatarUrl(user.id);
 }
 
 function bodyUrlFor(userId: string): string {
@@ -308,7 +290,6 @@ export function MeSky({
   if (!currentUser) return null;
 
   const avatar = currentUser.avatarUrl ?? null;
-  const faceSrc = walkerFaceSrc(currentUser);
   const bodySrc = bodyUrlFor(currentUser.id);
 
   return (
@@ -436,19 +417,10 @@ export function MeSky({
               width: WALKER_FIGURE_W,
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={faceSrc}
-              alt=""
-              width={WALKER_FACE_PX}
-              height={WALKER_FACE_PX}
-              className="pointer-events-none absolute left-1/2 z-[3] -translate-x-1/2 rounded-full bg-white object-cover"
-              style={{
-                top: WALKER_FACE_TOP,
-                width: WALKER_FACE_PX,
-                height: WALKER_FACE_PX,
-              }}
-              draggable={false}
+            <WalkerFace
+              user={currentUser}
+              size={WALKER_FACE_PX}
+              style={{ top: WALKER_FACE_TOP }}
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
