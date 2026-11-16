@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArrowRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
