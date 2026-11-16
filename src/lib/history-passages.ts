@@ -142,7 +142,9 @@ export function getHistoryPassage(dateYmd: string): HistoryPassageDay {
   return { range: range || HISTORY_PASSAGE_PLACEHOLDER };
 }
 
-/** Eyebrow: `YYYY/MM/DD 의 말씀` */
+/** Eyebrow: `YYYY년 M월 D일의 말씀` (e.g. 2026년 10월 31일의 말씀) */
 export function historyPassageLabel(dateYmd: string): string {
-  return `${dateYmd.replaceAll("-", "/")} 의 말씀`;
+  const [y, m, d] = dateYmd.split("-").map(Number);
+  if (!y || !m || !d) return "말씀";
+  return `${y}년 ${m}월 ${d}일의 말씀`;
 }
