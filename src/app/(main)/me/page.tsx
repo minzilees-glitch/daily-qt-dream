@@ -3,17 +3,13 @@
 import { MeSky } from "@/components/me/MeSky";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
 import { useApp } from "@/lib/app-context";
-import {
-  currentYearMonth,
-  parseYmd,
-  todaySeoul,
-} from "@/lib/dates";
+import { currentYearMonth, TERM_14_LABEL } from "@/lib/dates";
 import {
   buildCompletionSet,
   buildLightSet,
   userMonthStats,
+  userTermLights,
   userWeekdayParticipation,
-  userYearLights,
 } from "@/lib/stats";
 
 export default function MePage() {
@@ -25,16 +21,10 @@ export default function MePage() {
   const set = buildCompletionSet(completions);
   const lightSet = buildLightSet(completions);
   const ym = currentYearMonth();
-  const year = parseYmd(todaySeoul()).year;
   const month = userMonthStats(currentUser.id, ym, set, lightSet);
-  const weekdayPart = userWeekdayParticipation(
-    currentUser.id,
-    year,
-    set,
-    todaySeoul(),
-  );
-  // On-time lights this year (past backfills excluded) — also drives sky sparks.
-  const yearDays = userYearLights(currentUser.id, year, lightSet, todaySeoul());
+  const weekdayPart = userWeekdayParticipation(currentUser.id, set);
+  // On-time lights this 기 (past backfills excluded) — also drives sky sparks.
+  const termLights = userTermLights(currentUser.id, lightSet);
 
   const groupLabel = [
     group?.name ?? "-",
@@ -51,8 +41,8 @@ export default function MePage() {
         <div className="sky-walkers-bleed mt-2 animate-fade-up">
           <MeSky
             monthLights={month.lights}
-            yearLights={yearDays}
-            yearLabel={String(year)}
+            yearLights={termLights}
+            cumulativeLabel={`${TERM_14_LABEL} 누적`}
             groupLabel={groupLabel}
           />
         </div>
@@ -61,9 +51,9 @@ export default function MePage() {
       <section className="premium-qt-sheet premium-qt-sheet--me">
         <div className="premium-panel animate-fade-up">
           <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <h2 className="premium-panel-title mb-0">나의 일주일</h2>
+            <h2 className="qt-field-title mb-0">나의 일주일</h2>
             <span className="type-caption font-medium text-text-secondary">
-              {year}년 누적 기준
+              {TERM_14_LABEL} 누적 기준
             </span>
           </div>
           <WeekdayParticipation days={weekdayPart} showPossible={false} />

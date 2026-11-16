@@ -182,12 +182,13 @@ function walkBand(height: number): { minY: number; maxY: number } {
 export function MeSky({
   monthLights,
   yearLights,
-  yearLabel,
+  cumulativeLabel,
   groupLabel,
 }: {
   monthLights: number;
   yearLights: number;
-  yearLabel: string;
+  /** e.g. 「14기 누적」 */
+  cumulativeLabel: string;
   groupLabel: string;
 }) {
   const { currentUser } = useApp();
@@ -403,7 +404,7 @@ export function MeSky({
           </div>
           <div className="sky-stat-tile bg-white/50 px-2 py-3 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]">
             <StatLabel className="text-[var(--color-ink-blue)]">
-              {yearLabel}년 누적
+              {cumulativeLabel}
             </StatLabel>
             <div className="mt-1 flex justify-center">
               <LightCount

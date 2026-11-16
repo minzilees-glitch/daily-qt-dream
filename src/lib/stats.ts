@@ -6,7 +6,9 @@ import type {
 } from "@/types";
 import {
   rankingScopeDays,
+  TERM_14_START,
   todaySeoul,
+  termScopeDays,
   weekDatesSunFirst,
   weekdaySunFirst,
 } from "@/lib/dates";
@@ -81,6 +83,24 @@ export function userYearLights(
   todayLimit: string,
 ): number {
   return userYearDays(userId, year, lightSet, todayLimit);
+}
+
+/** Term cumulative lights from `start` through today (on-time only). */
+export function userTermLights(
+  userId: string,
+  lightSet: Set<string>,
+  start: string = TERM_14_START,
+  todayLimit: string = todaySeoul(),
+): number {
+  if (todayLimit < start) return 0;
+  let count = 0;
+  for (const key of lightSet) {
+    const [uid, date] = key.split("|");
+    if (uid !== userId || !date) continue;
+    if (date < start || date > todayLimit) continue;
+    count += 1;
+  }
+  return count;
 }
 
 export function groupMonthStats(
@@ -248,11 +268,11 @@ export function groupWeekdayParticipation(
   return buckets;
 }
 
-/** Personal QT completions by weekday (Sun→Sat) for year cumulative scope. */
+/** Personal QT completions by weekday (Sun→Sat) for 기 cumulative scope. */
 export function userWeekdayParticipation(
   userId: string,
-  year: number,
   completionSet: Set<string>,
+  start: string = TERM_14_START,
   todayLimit: string = todaySeoul(),
 ): { weekday: number; label: string; count: number; possible: number }[] {
   const labels = ["일", "월", "화", "수", "목", "금", "토"];
@@ -263,17 +283,12 @@ export function userWeekdayParticipation(
     possible: 0,
   }));
 
-  // Year cumulative through today (same scope as 「N년 누적」 lights).
-  for (let month = 1; month <= 12; month++) {
-    const ym = `${year}-${String(month).padStart(2, "0")}`;
-    for (const date of rankingScopeDays(ym, todayLimit)) {
-      if (!date.startsWith(`${year}-`)) continue;
-      if (date > todayLimit) continue;
-      const sunFirst = weekdaySunFirst(date);
-      buckets[sunFirst]!.possible += 1;
-      if (completionSet.has(completionSetKey(userId, date))) {
-        buckets[sunFirst]!.count += 1;
-      }
+  // Term cumulative through today (same scope as 「14기 누적」 lights).
+  for (const date of termScopeDays(start, todayLimit)) {
+    const sunFirst = weekdaySunFirst(date);
+    buckets[sunFirst]!.possible += 1;
+    if (completionSet.has(completionSetKey(userId, date))) {
+      buckets[sunFirst]!.count += 1;
     }
   }
 
