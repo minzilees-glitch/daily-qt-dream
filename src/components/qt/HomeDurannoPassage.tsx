@@ -19,7 +19,7 @@ export function HomeDurannoPassage({
   rangeTrailing,
 }: {
   reading: Pick<DurannoTodayMeta, "range"> &
-    Partial<Pick<DurannoTodayMeta, "url" | "title">>;
+    Partial<Pick<DurannoTodayMeta, "url">>;
   label?: string;
   embedded?: boolean;
   showLink?: boolean;

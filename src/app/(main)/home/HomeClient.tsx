@@ -30,7 +30,6 @@ export function HomeClient({
 }) {
   const {
     currentUser,
-    groups,
     isCompleted,
     getEntry,
     saveEntry,
@@ -44,11 +43,10 @@ export function HomeClient({
 
   if (!currentUser) return null;
 
-  const group = groups.find((g) => g.id === currentUser.groupId);
   const doneToday = isCompleted(currentUser.id, today);
   const todayEntry = getEntry(currentUser.id, today);
   const hasEntry = Boolean(todayEntry);
-  const showMenu = doneToday || editing || hasEntry;
+  const showActions = doneToday || editing || hasEntry;
 
   const showToast = (message: string) => {
     setToast(message);
@@ -119,8 +117,6 @@ export function HomeClient({
             homeLayout
             title="오늘은"
             dateLabel={formatDisplayDate(today)}
-            userName={currentUser.name}
-            groupName={group?.name ?? "순"}
             dateAccessory={
               <LightIcon
                 active={doneToday}
@@ -144,7 +140,7 @@ export function HomeClient({
               reading={reading}
               label="오늘의 말씀"
               rangeTrailing={
-                showMenu ? (
+                showActions ? (
                   <PassageEntryActions
                     onEdit={() => setEditing(true)}
                     onDelete={() => setConfirmOpen(true)}

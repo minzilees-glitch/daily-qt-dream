@@ -9,13 +9,10 @@ const HOME_AVATAR_MAX = 96;
 
 export function AppHeader({
   title,
-  subtitle,
   light = false,
   /** Home: 「오늘은」 + large date; avatar only top-right (no name/순 labels). */
   homeLayout = false,
   dateLabel,
-  userName: _userName,
-  groupName: _groupName,
   showAvatar = true,
   /** Home: status row rendered tight under the date (left column). */
   status,
@@ -23,12 +20,9 @@ export function AppHeader({
   dateAccessory,
 }: {
   title?: string;
-  subtitle?: string;
   light?: boolean;
   homeLayout?: boolean;
   dateLabel?: string;
-  userName?: string;
-  groupName?: string;
   /** When false, hide top-right profile avatar (e.g. history/group/ranking). */
   showAvatar?: boolean;
   status?: ReactNode;
