@@ -287,6 +287,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   };
   const passageLabel = historyPassageLabel(selected);
   const hasEntry = !!selectedEntry;
+  /** 말씀 header edit/delete: only when that day's QT is already saved. */
+  const showPassageActions =
+    !future && (hasEntry || selectedCompleted || editing);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -429,7 +432,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               embedded
               showLink={isToday}
               rangeTrailing={
-                !future ? (
+                showPassageActions ? (
                   <PassageEntryActions
                     onEdit={() => setEditing(true)}
                     onDelete={() => setConfirmOpen(true)}
