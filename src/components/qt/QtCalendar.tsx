@@ -301,8 +301,10 @@ export function QtCalendar({
                       : isToday
                         ? "premium-cal-day-today"
                         : future
-                          ? "premium-cal-day-muted"
-                          : "text-text-main"
+                          ? "premium-cal-day-future"
+                          : done
+                            ? "text-text-main"
+                            : "premium-cal-day-past"
                   }`}
                 >
                   {day}
@@ -376,8 +378,10 @@ export function QtCalendar({
                             : isToday
                               ? "premium-cal-day-today"
                               : future
-                                ? "premium-cal-day-muted"
-                                : "text-text-main"
+                                ? "premium-cal-day-future"
+                                : done
+                                  ? "text-text-main"
+                                  : "premium-cal-day-past"
                         }`}
                       >
                         {day}

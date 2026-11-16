@@ -808,15 +808,38 @@ a {
   color: var(--sky-mode-ink) !important;
 }
 
-/* Future / muted day nums on calendar chrome. */
+/* Out-of-month / disabled chrome. */
 .premium-qt-header .premium-cal-day .opacity-40,
 .premium-qt-header button:disabled {
   opacity: 0.45;
 }
 
-/* Inactive/future dates: #F2F2F2 at 50% (don't inherit --sky-mode-ink). */
+/* Legacy alias — prefer .premium-cal-day-future. */
 .premium-qt-header .premium-cal-day-muted {
-  color: color-mix(in srgb, var(--muted) 70%, transparent) !important; /* #F2F2F2 @ 70% */
+  color: color-mix(in srgb, var(--muted) 70%, transparent) !important;
+}
+
+/* Past incomplete (inactive): readable ink on sky/black. */
+.premium-qt-header .premium-cal-day-past {
+  color: var(--sky-mode-ink) !important;
+  opacity: 0.72;
+}
+
+/* Future (not yet open): softer than past idle. */
+.premium-qt-header .premium-cal-day-future {
+  color: color-mix(in srgb, var(--muted) 70%, transparent) !important;
+}
+
+/* 밤모드: push future much dimmer; keep past idle brighter. */
+html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-past {
+  color: var(--color-white) !important;
+  opacity: 0.78;
+}
+
+html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-future,
+html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
+  color: color-mix(in srgb, var(--color-white) 26%, transparent) !important;
+  opacity: 1;
 }
 
 /* Today accent (selected uses .premium-cal-day-selected white). */
