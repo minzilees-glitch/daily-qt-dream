@@ -1,17 +1,51 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
 import { useApp } from "@/lib/app-context";
+import type { User } from "@/types";
 
 /** Four discrete sizes (~11px baseline +5%): smaller / base / larger / largest. */
 const SKY_LIGHT_SIZES = [8.4, 10.5, 12.6, 14.7] as const;
 
 /** Bump hash salt when board layout changes so sparks re-place on the new sky. */
 const ME_SKY_LAYOUT_SALT = 20261111.1;
+
+/** Same figure metrics as SkyWalkers. */
+const WALKER_FACE_PX = 35;
+const WALKER_BODY_H = 54;
+const WALKER_FIGURE_H = 62;
+const WALKER_FIGURE_W = 52;
+const WALKER_FACE_TOP = 2;
+const FLOOR_INSET_PX = 2;
+
+const BODY_VARIANTS = [
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "teal",
+  "blue",
+  "purple",
+  "pink",
+] as const;
+
+const AVATAR_STYLES = [
+  "avataaars",
+  "lorelei",
+  "notionists",
+  "thumbs",
+  "shapes",
+] as const;
 
 type SkySpark = {
   left: number;
@@ -65,7 +99,7 @@ function sparksOverlap(
   return dx * dx + dy * dy < minDist * minDist;
 }
 
-/** Scatter year-lights in free sky under the stats tiles (no walkers). */
+/** Scatter year-lights in free sky under the stats tiles (above walker). */
 function buildMeSkySparks(
   lights: number,
   band: SkyBandPx | null,
@@ -119,8 +153,30 @@ function buildMeSkySparks(
   };
 }
 
+function fallbackAvatarUrl(userId: string): string {
+  const style = AVATAR_STYLES[0]!;
+  const seed = encodeURIComponent(userId);
+  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundType=gradientLinear&radius=50`;
+}
+
+function walkerFaceSrc(user: User): string {
+  return user.avatarUrl || fallbackAvatarUrl(user.id);
+}
+
+function bodyUrlFor(userId: string): string {
+  const n = userId.charCodeAt(userId.length - 1) % BODY_VARIANTS.length;
+  return `/group/bodies/body-${BODY_VARIANTS[n]!}.png`;
+}
+
+function walkBand(height: number): { minY: number; maxY: number } {
+  const maxY = Math.max(0, height - WALKER_FIGURE_H - FLOOR_INSET_PX);
+  const span = Math.max(10, height * 0.08);
+  const minY = Math.min(maxY, Math.max(0, maxY - span));
+  return { minY, maxY };
+}
+
 /**
- * Mypage sky banner: cloud photo + year-light sparks (no walkers).
+ * Mypage sky banner: cloud photo + year-light sparks + solo jumping walker.
  * Profile row navigates to account settings.
  */
 export function MeSky({
@@ -137,6 +193,8 @@ export function MeSky({
   const { currentUser } = useApp();
   const cardRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const walkerRef = useRef<HTMLDivElement>(null);
   const [skyBand, setSkyBand] = useState<SkyBandPx | null>(null);
 
   useLayoutEffect(() => {
@@ -152,12 +210,16 @@ export function MeSky({
       const statsLeft = sr.left - cr.left;
       const statsRight = sr.right - cr.left;
       const lightTop = statsBottom + STATS_GAP_PX;
-      const lightBottom = Math.max(lightTop + 48, cr.height - 28);
+      // Leave lower stage for the solo walker feet zone.
+      const lightBottom = Math.min(
+        cr.height * 0.58,
+        cr.height - WALKER_FIGURE_H - 24,
+      );
       setSkyBand({
         cardW: cr.width,
         cardH: cr.height,
         lightTop,
-        lightBottom,
+        lightBottom: Math.max(lightTop + 12, lightBottom),
         statsLeft,
         statsRight,
         statsTop,
@@ -172,6 +234,71 @@ export function MeSky({
     return () => ro.disconnect();
   }, []);
 
+  // Solo walker: current user only — hop/jump + gentle stroll.
+  useEffect(() => {
+    const stage = stageRef.current;
+    const el = walkerRef.current;
+    if (!stage || !el || !currentUser) return;
+
+    const { minY, maxY } = walkBand(stage.clientHeight);
+    const state = {
+      x: Math.max(8, (stage.clientWidth - WALKER_FIGURE_W) / 2),
+      y: (minY + maxY) / 2,
+      vx: 14,
+      facing: 1 as 1 | -1,
+      phase: 0,
+    };
+
+    const paint = () => {
+      // Jump: abs(sin) lifts off the ground (stronger than group bob).
+      const jump = -Math.abs(Math.sin(state.phase)) * 10;
+      el.style.transform = `translate3d(${state.x}px, ${state.y + jump}px, 0)`;
+      const figure = el.querySelector<HTMLElement>("[data-figure]");
+      if (figure) figure.style.transform = `scaleX(${state.facing})`;
+    };
+
+    paint();
+
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+
+    let raf = 0;
+    let last = performance.now();
+
+    const tick = (now: number) => {
+      const dt = Math.min(0.048, (now - last) / 1000);
+      last = now;
+      const width = stage.clientWidth;
+      const height = stage.clientHeight;
+      const band = walkBand(height);
+
+      state.phase += 5.2 * dt;
+      state.x += state.vx * dt;
+
+      if (state.x < 8) {
+        state.x = 8;
+        state.vx = Math.abs(state.vx);
+        state.facing = 1;
+      } else if (state.x > width - WALKER_FIGURE_W - 8) {
+        state.x = width - WALKER_FIGURE_W - 8;
+        state.vx = -Math.abs(state.vx);
+        state.facing = -1;
+      }
+
+      state.y += Math.sin(state.phase * 0.25) * 3 * dt;
+      if (state.y < band.minY) state.y = band.minY;
+      if (state.y > band.maxY) state.y = band.maxY;
+
+      paint();
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [currentUser]);
+
   const { sparks, capped } = useMemo(
     () => buildMeSkySparks(yearLights, skyBand),
     [yearLights, skyBand],
@@ -180,6 +307,8 @@ export function MeSky({
   if (!currentUser) return null;
 
   const avatar = currentUser.avatarUrl ?? null;
+  const faceSrc = walkerFaceSrc(currentUser);
+  const bodySrc = bodyUrlFor(currentUser.id);
 
   return (
     <div ref={cardRef} className="sky-group-card me-sky-card relative overflow-hidden">
@@ -287,8 +416,50 @@ export function MeSky({
         </div>
       </div>
 
-      {/* Explicit free-sky band under stats so year-lights aren’t cramped. */}
-      <div className="me-sky-stage relative z-10 w-full" aria-hidden />
+      <div
+        ref={stageRef}
+        className="me-sky-stage sky-walkers-stage relative z-10 w-full overflow-hidden"
+        aria-label={`${currentUser.name}이(가) 구름 위에서 뛰고 있어요`}
+      >
+        <div
+          ref={walkerRef}
+          className="absolute left-0 top-0 z-[1] will-change-transform"
+          style={{ width: WALKER_FIGURE_W }}
+          data-walker-id={currentUser.id}
+        >
+          <div
+            data-figure
+            className="relative"
+            style={{
+              height: WALKER_FIGURE_H,
+              width: WALKER_FIGURE_W,
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={faceSrc}
+              alt=""
+              width={WALKER_FACE_PX}
+              height={WALKER_FACE_PX}
+              className="pointer-events-none absolute left-1/2 z-[3] -translate-x-1/2 rounded-full bg-white object-cover"
+              style={{
+                top: WALKER_FACE_TOP,
+                width: WALKER_FACE_PX,
+                height: WALKER_FACE_PX,
+              }}
+              draggable={false}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={bodySrc}
+              alt=""
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] w-full object-contain object-bottom"
+              style={{ height: WALKER_BODY_H }}
+              draggable={false}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1439,8 +1439,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   z-index: 1; /* sits under the overlapping QT sheet */
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
-  /* Air under status line; keep 1.25rem for sheet overlap. */
-  padding-bottom: calc(0.65rem + 1.25rem);
+  /* Extra air under status line; keep 1.25rem for sheet overlap. */
+  padding-bottom: calc(1.15rem + 1.25rem);
   /* 낮모드/밤모드 — same token as 우리순·랭킹·마이페이지 headers. */
   background: var(--sky-mode-fill);
   color: var(--sky-mode-ink);
@@ -1490,6 +1490,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 .premium-home-header-band .home-status-line {
   font-size: var(--fs-body-sm) !important;
   font-weight: 500 !important; /* was 400 → medium */
+  opacity: 0.8; /* 「오늘의 큐티를 …」 soft under date */
 }
 
 .premium-home-form-sheet {
