@@ -1066,19 +1066,17 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 /*
- * 우리순: content-fit bottom sheet (charts hug content);
- * SkyWalkers header grows into leftover viewport (like mypage MeSky).
+ * 우리순: white drawer fills leftover viewport to screen bottom (like history);
+ * SkyWalkers header stays content-sized above the sheet.
  */
 .premium-qt-root.premium-qt-root--group-sky > .premium-tab-header--group {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
 
 .premium-qt-root.premium-qt-root--group-sky > .premium-tab-header--group .sky-walkers-bleed {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
@@ -1086,25 +1084,28 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 .premium-qt-root.premium-qt-root--group-sky .sky-group-card {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 0;
-  height: 100%;
+  height: auto;
 }
 
 .premium-qt-root.premium-qt-root--group-sky .sky-walkers-stage {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 210px;
 }
 
 .premium-qt-root.premium-qt-root--group-sky > .premium-qt-sheet.premium-qt-sheet--group {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   /* Pull white sheet through layout nav pad so it sits flush to the screen bottom. */
   margin-bottom: calc(-1 * (72px + var(--safe-bottom)));
   padding-bottom: calc(1.5rem + 72px + var(--safe-bottom));
 }
 
 .premium-qt-sheet.premium-qt-sheet--group > .premium-panel + .premium-panel {
-  margin-top: 2rem; /* gap between 이번주 / 이번달 날짜별 charts */
+  margin-top: 2.75rem; /* nudge 「이번달 날짜별」 slightly lower */
   padding-top: 0;
 }
 
