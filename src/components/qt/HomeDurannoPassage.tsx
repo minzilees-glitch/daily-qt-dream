@@ -37,25 +37,29 @@ export function HomeDurannoPassage({
           height (h-8 buttons vs range text). Far-right = actions. */}
       <div className="relative mt-1">
         <div
-          className={`flex min-w-0 items-center gap-14${
+          className={`flex min-w-0 items-center${
             rangeTrailing ? (linkUrl ? " pr-24" : " pr-16") : ""
           }`}
         >
-          <p className="reading-passage-range m-0 min-w-0 shrink truncate leading-none">
+          <p className="reading-passage-range m-0 w-auto max-w-full shrink truncate leading-none">
             {range}
           </p>
           {linkUrl ? (
-            <a
-              href={linkUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="home-duranno-cta inline-flex shrink-0 whitespace-nowrap self-center"
-              aria-label="말씀보기"
-              title="말씀보기"
-            >
-              말씀보기
-              <ArrowUpRight size={15} strokeWidth={2.25} aria-hidden />
-            </a>
+            <>
+              {/* Dedicated spacer — not flex gap (gap was easy to miss / override). */}
+              <span className="home-duranno-cta-gap shrink-0" aria-hidden />
+              <a
+                href={linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="home-duranno-cta inline-flex shrink-0 whitespace-nowrap self-center"
+                aria-label="말씀보기"
+                title="말씀보기"
+              >
+                말씀보기
+                <ArrowUpRight size={15} strokeWidth={2.25} aria-hidden />
+              </a>
+            </>
           ) : null}
         </div>
         {rangeTrailing ? (
