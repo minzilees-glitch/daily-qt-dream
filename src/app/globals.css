@@ -189,19 +189,15 @@ html[data-sky-mode="밤모드"] {
 }
 
 /*
- * MeSky + SkyWalkers base fill = same token as AppHeader band / tab headers:
- * `--sky-mode-fill` (낮모드 sky #6DC2FF · 밤모드 black #000917).
- * Cloud PNG is texture on top — opacity lets that token read as the sky color.
+ * MeSky + SkyWalkers: transparent cloud PNG over `--sky-mode-fill`
+ * (same token as AppHeader / `.premium-home-header-band` — day sky / night black).
+ * Asset: `/group/sky-clouds-bg.png` (RGBA; sky keyed out). No blend/opacity hacks.
  */
 .sky-group-card > img.sky-clouds-bg {
-  opacity: 0.72;
+  opacity: 1;
   visibility: visible;
-  mix-blend-mode: soft-light;
-}
-
-html[data-sky-mode="밤모드"] .sky-group-card > img.sky-clouds-bg {
-  opacity: 0.42;
-  filter: brightness(0.55) saturate(0.45);
+  mix-blend-mode: normal;
+  filter: none;
 }
 
 @theme inline {
