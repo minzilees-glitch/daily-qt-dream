@@ -852,14 +852,22 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-sora) !important;
 }
 
-/* Inactive today (not selected): ink-blue numeral + underline (day & night).
+/* Inactive today (not selected): solid numeral + underline (day & night).
  * Selected today uses .premium-cal-day-selected / glow — no today class → no underline. */
 .premium-qt-header .premium-cal-day-today {
   color: var(--color-ink-blue) !important; /* #1F3E62 */
+  opacity: 1 !important;
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  text-underline-offset: 5px; /* more air under the number */
-  text-decoration-color: currentColor;
+  text-underline-offset: 8px; /* further below the numeral */
+  text-decoration-color: var(--color-ink-blue);
+}
+
+/* 밤모드: brighter today ink so underline/numeral read full-strength on black. */
+html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
+  color: var(--color-mint) !important; /* #CAEBF2 */
+  opacity: 1 !important;
+  text-decoration-color: var(--color-mint);
 }
 
 .premium-qt-header svg {
