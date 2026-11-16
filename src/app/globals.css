@@ -1420,7 +1420,7 @@ a {
   color: var(--color-black) !important; /* #000917 */
 }
 
-/* Icon-only Duranno link — strip every capsule cue (bg/border/radius/pad). */
+/* Text Duranno CTA 「말씀 보러 가기」— no capsule (bg/border/radius/pad). */
 .home-duranno-cta,
 .home-duranno-cta:link,
 .home-duranno-cta:visited,
@@ -1429,7 +1429,13 @@ a {
 .home-duranno-cta:focus {
   display: inline-flex !important;
   align-items: center;
-  gap: 0.125rem;
+  gap: 0.2rem;
+  flex-shrink: 0;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+  line-height: 1.2;
+  white-space: nowrap;
   color: var(--color-sky) !important; /* #6DC2FF — readable on mint */
   background: none !important;
   background-color: transparent !important;
@@ -1441,6 +1447,11 @@ a {
   filter: none !important;
   -webkit-appearance: none;
   appearance: none;
+  text-decoration: none !important;
+}
+
+.home-duranno-cta:hover {
+  filter: brightness(0.92) !important;
 }
 
 .home-duranno-cta:focus-visible {
@@ -1453,6 +1464,7 @@ a {
   color: inherit !important;
   background: none !important;
   box-shadow: none !important;
+  flex-shrink: 0;
 }
 
 @keyframes premium-select-pop {
