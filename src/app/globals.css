@@ -1486,12 +1486,54 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   letter-spacing: var(--tracking-label);
 }
 
+/* Home date: slightly tighter than default --tracking-title (0.04em). */
+.premium-home-header-band .type-page-title {
+  letter-spacing: 0.02em;
+}
+
 /* Status under date: same size as 말씀 summary (type-body-sm). */
 .premium-home-header-band .home-status-line {
   font-size: var(--fs-body-sm) !important;
   font-weight: 400 !important; /* regular */
   letter-spacing: 0.02em; /* slightly open */
   opacity: 0.8; /* 「오늘의 큐티를 …」 soft under date */
+}
+
+/* History calendar: top-right segmented week/month (+ optional 오늘). */
+.premium-cal-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.premium-cal-mode-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-mint);
+  opacity: 0.72;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.premium-cal-mode-toggle__btn.is-active {
+  background: rgba(255, 255, 255, 0.22);
+  opacity: 1;
+}
+
+.premium-cal-mode-toggle__btn:disabled {
+  opacity: 0.4;
+}
+
+.premium-cal-mode-toggle__btn:not(:disabled):hover {
+  opacity: 1;
 }
 
 .premium-home-form-sheet {

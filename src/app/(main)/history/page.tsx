@@ -34,7 +34,6 @@ import {
   shareOrCopyText,
 } from "@/lib/qt-share";
 import {
-  currentYearMonth,
   isFutureDate,
   todaySeoul,
   yearMonthOf,
@@ -46,9 +45,10 @@ function parseDateParam(raw: string | null): string | null {
   return raw;
 }
 
-/** Earliest 나의 큐티들 month — hide/block anything before Sep 2026. */
+/** 나의 큐티들 calendar span: Sep 2026 → Dec 2027. */
 const HISTORY_MIN_YM = "2026-09";
 const HISTORY_MIN_DATE = "2026-09-01";
+const HISTORY_MAX_YM = "2027-12";
 /** Sheet overlaps header so rounded corners sit on sky. */
 const SHEET_OVERLAP_PX = 20;
 /** Fallback week→month header delta until both modes are measured. */
@@ -102,7 +102,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   draggingRef.current = dragging;
 
   const minYm = HISTORY_MIN_YM;
-  const maxYm = currentYearMonth();
+  const maxYm = HISTORY_MAX_YM;
 
   const set = useMemo(() => buildCompletionSet(completions), [completions]);
   const lightSet = useMemo(() => buildLightSet(completions), [completions]);
@@ -360,15 +360,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 max={maxYm}
                 align="start"
               />
-              <button
-                type="button"
-                onClick={jumpToToday}
-                disabled={selected === todaySeoul()}
-                className="shrink-0 rounded-full bg-white/15 px-3 py-1.5 type-caption font-semibold text-[var(--color-mint)] transition hover:bg-white/25 disabled:opacity-40"
-                aria-label="오늘 날짜로 이동"
-              >
-                오늘
-              </button>
               <div
                 className="inline-flex items-center"
                 title="이번달 내가 모은 빛"
@@ -383,21 +374,49 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               </div>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={toggleCalendar}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/15 text-[var(--color-mint)] transition hover:bg-white/25"
-            aria-expanded={calendarExpanded}
-            aria-label={
-              calendarExpanded ? "주간 달력 보기" : "전체 달 보기"
-            }
+          <div
+            className="premium-cal-mode-toggle shrink-0"
+            role="group"
+            aria-label="달력 보기"
           >
-            {calendarExpanded ? (
-              <Rows2 size={20} strokeWidth={1.75} aria-hidden />
-            ) : (
-              <CalendarDays size={20} strokeWidth={1.75} aria-hidden />
-            )}
-          </button>
+            <button
+              type="button"
+              className={`premium-cal-mode-toggle__btn${
+                !calendarExpanded ? " is-active" : ""
+              }`}
+              aria-pressed={!calendarExpanded}
+              aria-label="주간 달력"
+              onClick={() => {
+                if (!calendarExpanded) return;
+                toggleCalendar();
+              }}
+            >
+              <Rows2 size={18} strokeWidth={1.75} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className={`premium-cal-mode-toggle__btn${
+                calendarExpanded ? " is-active" : ""
+              }`}
+              aria-pressed={calendarExpanded}
+              aria-label="월간 달력"
+              onClick={() => {
+                if (calendarExpanded) return;
+                toggleCalendar();
+              }}
+            >
+              <CalendarDays size={18} strokeWidth={1.75} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="premium-cal-mode-toggle__btn type-caption font-semibold"
+              onClick={jumpToToday}
+              disabled={selected === todaySeoul()}
+              aria-label="오늘 날짜로 이동"
+            >
+              오늘
+            </button>
+          </div>
         </div>
 
         <div className={`mt-5 ${calendarExpanded ? "pb-6" : "pb-2"}`}>
