@@ -69,10 +69,117 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
     }
   });
 
+  // Demo: pin 사랑순 (test user’s 우리순) Sep/Oct lights; scale peers nearby.
+  enforceDemoMonthTotals(users, records, today, {
+    "2026-09": { groupId: "g-01", lights: 30 },
+    "2026-10": { groupId: "g-01", lights: 61 },
+  });
+
   // Demo ranking UI: 믿음순 1위 (gold), 사랑순 2위 (silver) for current month.
   enforceDemoPodium(users, records, today, "g-05", "g-01");
 
   return records;
+}
+
+/** Exact light count for one group in one month (add/trim completions). */
+function setGroupMonthLights(
+  users: User[],
+  records: QtCompletion[],
+  yearMonth: string,
+  groupId: string,
+  target: number,
+  today: string,
+): void {
+  const dates = rankingScopeDays(yearMonth, today);
+  if (dates.length === 0) return;
+
+  const key = (userId: string, date: string) => `${userId}|${date}`;
+  const present = new Set(
+    records.filter((c) => c.completed).map((c) => key(c.userId, c.date)),
+  );
+  const members = users.filter((u) => u.groupId === groupId);
+
+  const memberLights = (userId: string) => {
+    let n = 0;
+    for (const d of dates) {
+      if (present.has(key(userId, d))) n += 1;
+    }
+    return n;
+  };
+
+  const count = () => members.reduce((n, u) => n + memberLights(u.id), 0);
+
+  const addOne = (): boolean => {
+    // Spread adds toward members with the fewest lights.
+    const sorted = [...members].sort(
+      (a, b) => memberLights(a.id) - memberLights(b.id),
+    );
+    for (const u of sorted) {
+      for (const d of dates) {
+        const k = key(u.id, d);
+        if (present.has(k)) continue;
+        present.add(k);
+        records.push({ userId: u.id, date: d, completed: true });
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const removeOne = (): boolean => {
+    // Trim from members with the most lights first.
+    const sorted = [...members].sort(
+      (a, b) => memberLights(b.id) - memberLights(a.id),
+    );
+    for (const u of sorted) {
+      for (const d of [...dates].reverse()) {
+        const k = key(u.id, d);
+        if (!present.has(k)) continue;
+        present.delete(k);
+        const idx = records.findIndex(
+          (c) => c.userId === u.id && c.date === d && c.completed,
+        );
+        if (idx >= 0) records.splice(idx, 1);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const goal = Math.max(0, Math.floor(target));
+  let guard = 0;
+  while (count() < goal && guard++ < 5000) {
+    if (!addOne()) break;
+  }
+  guard = 0;
+  while (count() > goal && guard++ < 5000) {
+    if (!removeOne()) break;
+  }
+}
+
+/**
+ * Pin 우리순 month totals, then place other 순 nearby so ranking/charts look sane.
+ */
+function enforceDemoMonthTotals(
+  users: User[],
+  records: QtCompletion[],
+  today: string,
+  targets: Record<string, { groupId: string; lights: number }>,
+): void {
+  const allGroups = [...new Set(users.map((u) => u.groupId))];
+
+  for (const [yearMonth, { groupId, lights }] of Object.entries(targets)) {
+    setGroupMonthLights(users, records, yearMonth, groupId, lights, today);
+
+    const peers = allGroups.filter((g) => g !== groupId);
+    peers.forEach((gid, i) => {
+      // Spread peers around the pinned total (±~35%) with stable per-group jitter.
+      const factor = 0.72 + ((i * 17) % 13) * 0.035; // ~0.72–1.14
+      const jitter = ((i * 11) % 9) - 4;
+      const peerTarget = Math.max(6, Math.round(lights * factor) + jitter);
+      setGroupMonthLights(users, records, yearMonth, gid, peerTarget, today);
+    });
+  }
 }
 
 /** Pad/trim current-month lights so `firstId` ranks 1 and `secondId` ranks 2 alone. */
