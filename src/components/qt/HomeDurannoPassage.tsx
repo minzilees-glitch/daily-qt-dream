@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight, BookOpen } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
@@ -26,11 +26,11 @@ export function HomeDurannoPassage({
           target="_blank"
           rel="noopener noreferrer"
           className="home-duranno-cta shrink-0"
-          aria-label="말씀 보러 가기"
-          title="말씀 보러 가기"
+          aria-label="두란노에서 오늘의 말씀 읽기"
+          title="두란노에서 오늘의 말씀 읽기"
         >
-          말씀 보러 가기
-          <ArrowRight size={16} strokeWidth={2.25} aria-hidden />
+          <BookOpen size={24} strokeWidth={2} aria-hidden />
+          <ArrowUpRight size={20} strokeWidth={2.25} aria-hidden />
         </a>
       </div>
       {title ? (

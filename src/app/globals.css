@@ -1420,7 +1420,7 @@ a {
   color: var(--color-black) !important; /* #000917 */
 }
 
-/* Text Duranno CTA 「말씀 보러 가기」— no capsule (bg/border/radius/pad). */
+/* Icon-only Duranno CTA (BookOpen + ArrowUpRight) — black, no capsule. */
 .home-duranno-cta,
 .home-duranno-cta:link,
 .home-duranno-cta:visited,
@@ -1429,13 +1429,8 @@ a {
 .home-duranno-cta:focus {
   display: inline-flex !important;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.125rem;
   flex-shrink: 0;
-  font-size: var(--fs-label);
-  font-weight: 700;
-  letter-spacing: var(--tracking-label);
-  line-height: 1.2;
-  white-space: nowrap;
   color: var(--color-black) !important; /* #000917 */
   background: none !important;
   background-color: transparent !important;
