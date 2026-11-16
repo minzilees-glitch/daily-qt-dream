@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
@@ -54,7 +54,7 @@ export function HomeDurannoPassage({
               title="말씀보기"
             >
               말씀보기
-              <ChevronRight size={16} strokeWidth={2.25} aria-hidden />
+              <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
             </a>
           ) : null}
         </div>
