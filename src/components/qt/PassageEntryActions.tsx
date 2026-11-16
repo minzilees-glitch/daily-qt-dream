@@ -39,13 +39,14 @@ export function PassageEntryActions({
         onClick={onEdit}
         className={
           editActive
-            ? "flex h-9 w-9 items-center justify-center rounded-full bg-sky-light text-sky opacity-100 shadow-none transition"
+            ? "flex h-9 w-9 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] opacity-100 shadow-none transition"
             : `${idleIcon} rounded-full`
         }
       >
         <Pencil
           size={18}
-          strokeWidth={editActive ? 2.25 : 1.75}
+          strokeWidth={editActive ? 2.75 : 1.75}
+          absoluteStrokeWidth={editActive}
           aria-hidden
         />
       </button>
