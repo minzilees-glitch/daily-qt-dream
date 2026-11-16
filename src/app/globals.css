@@ -1109,8 +1109,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 .premium-qt-sheet.premium-qt-sheet--group > .premium-panel + .premium-panel {
-  /* Stack gap between chart sections (no divider band). */
-  margin-top: var(--space-stack);
+  /* Extra air before 「이번달 날짜별」 title under weekday chart. */
+  margin-top: calc(var(--space-stack) + 0.75rem); /* 1.25rem + 12px */
   padding-top: 0;
 }
 
