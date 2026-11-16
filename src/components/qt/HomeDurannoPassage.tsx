@@ -3,9 +3,9 @@ import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * Sheet-top Duranno strip (mint wash):
- * line1 「오늘의 말씀」; line2 range + icon-only open-book↗ CTA.
- * No passage body embed.
+ * Sheet-top Duranno strip (mint wash only through this block):
+ * line1 「오늘의 말씀」; line2 range + book↗; line3 summary title.
+ * No passage body embed. Form fields sit on white below.
  */
 export function HomeDurannoPassage({
   reading,
@@ -15,6 +15,7 @@ export function HomeDurannoPassage({
   label?: string;
 }) {
   const range = reading.range || "—";
+  const title = reading.title?.trim();
 
   return (
     <div className="home-duranno-in-sheet shadow-none">
@@ -33,6 +34,11 @@ export function HomeDurannoPassage({
           <ArrowUpRight size={16} strokeWidth={2.25} aria-hidden />
         </a>
       </div>
+      {title ? (
+        <p className="home-duranno-summary mt-1 type-body-sm font-medium text-text-secondary">
+          {title}
+        </p>
+      ) : null}
     </div>
   );
 }

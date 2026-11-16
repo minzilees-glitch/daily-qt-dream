@@ -1383,23 +1383,23 @@ a {
 .premium-home-form-sheet {
   flex: 0 0 auto;
   z-index: 3;
-  /* Overlap sky header; continuous mint from rounded top (no grabber / no white pad). */
+  /* Overlap sky header; white sheet for QT fields (mint only on Duranno block). */
   margin-top: -1.25rem;
   min-height: 0;
-  /* Same mint wash as 「오늘의 말씀」 block — fills top pad through Duranno. */
-  background: color-mix(in srgb, var(--color-mint) 50%, white) !important;
-  /* No grabber row; keep air above 「오늘의 말씀」 in the mint wash. */
-  padding-top: calc(var(--space-stack) + 6px);
+  background: var(--premium-sheet) !important;
+  /* Top air lives inside the mint Duranno block — avoid a white pad above it. */
+  padding-top: 0;
 }
 
 /*
- * Duranno lead-in inside the QT sheet:
- * 「오늘의 말씀」 / range + book↗ CTA. Inherits sheet mint; no scripture embed.
+ * Duranno lead-in: mint wash only through label / range / summary.
+ * QT fields below sit on the white sheet.
  */
 .home-duranno-in-sheet {
-  margin: 0 0 0.25rem;
-  padding: 0 0 1rem;
-  background: transparent;
+  margin-inline: calc(-1 * var(--space-page-x));
+  margin-bottom: 0.25rem;
+  padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
+  background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-ink-blue);
 }
 
@@ -1407,7 +1407,8 @@ a {
   color: var(--color-ink-blue) !important;
 }
 
-.home-duranno-in-sheet .text-text-secondary {
+.home-duranno-in-sheet .text-text-secondary,
+.home-duranno-in-sheet .home-duranno-summary {
   color: color-mix(in srgb, var(--color-ink-blue) 72%, transparent) !important;
 }
 
