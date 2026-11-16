@@ -450,7 +450,7 @@ export function SkyWalkers({
       <img
         src="/group/sky-clouds-bg.png"
         alt=""
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+        className="sky-clouds-bg pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
         draggable={false}
       />
 

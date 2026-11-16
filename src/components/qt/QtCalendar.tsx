@@ -287,7 +287,7 @@ export function QtCalendar({
                   {WEEKDAYS[i]}
                 </span>
                 <span
-                  className={`relative z-[1] text-[1.0625rem] font-semibold tabular-nums leading-none ${
+                  className={`relative z-[1] text-[0.9375rem] font-semibold tabular-nums leading-none ${
                     selected
                       ? "text-white"
                       : isToday
@@ -364,7 +364,7 @@ export function QtCalendar({
                       }`}
                     >
                       <span
-                        className={`relative z-[1] text-center text-[0.9375rem] leading-none font-semibold tabular-nums ${
+                        className={`relative z-[1] text-center text-[0.8125rem] leading-none font-semibold tabular-nums ${
                           selected
                             ? "text-white"
                             : isToday
