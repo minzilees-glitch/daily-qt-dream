@@ -36,7 +36,9 @@ export function ProfileAvatarButton({
   const shell =
     light
       ? "bg-white/20 text-white hover:bg-white/30"
-      : "bg-sky-light text-sky hover:bg-sky-light";
+      : fallback === "initial"
+        ? "bg-sky-light text-[var(--color-ink-blue)] hover:bg-sky-light"
+        : "bg-sky-light text-sky hover:bg-sky-light";
 
   const onPick = (file: File | null) => {
     if (!file) return;

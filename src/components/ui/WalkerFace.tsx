@@ -21,7 +21,9 @@ export function WalkerFace({
   return (
     <span
       className={`pointer-events-none absolute left-1/2 z-[3] flex -translate-x-1/2 items-center justify-center overflow-hidden rounded-full ${
-        avatar ? "bg-white" : "bg-sky-light font-semibold text-sky"
+        avatar
+          ? "bg-white"
+          : "bg-sky-light font-semibold text-[var(--color-ink-blue)]"
       } ${className}`}
       style={{
         width: size,

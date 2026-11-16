@@ -347,7 +347,7 @@ export function MeSky({
           className="mb-3 flex items-center gap-3 rounded-[8px] bg-white/50 px-3 py-2.5 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]"
           aria-label="계정 설정"
         >
-          <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-light type-stat text-sky">
+          <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-light type-stat text-[var(--color-ink-blue)]">
             {avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={avatar} alt="" className="h-full w-full object-cover" />

@@ -49,7 +49,7 @@ export function HomeDurannoPassage({
               href={linkUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="home-duranno-cta self-center shrink-0"
+              className="home-duranno-cta inline-flex shrink-0 whitespace-nowrap self-center"
               aria-label="말씀보기"
               title="말씀보기"
             >
