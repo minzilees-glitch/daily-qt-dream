@@ -1,21 +1,20 @@
 import type { ReactNode } from "react";
-import { ArrowUpRight, BookOpen } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 
 /**
- * 말씀 header — eyebrow + verse range (+ optional Duranno icon CTA).
+ * 말씀 header — eyebrow + verse range (+ optional 「말씀보기」 capsule).
  * No 본문 써머리 / title line (home + history).
  * Home: full-bleed mint via `.home-duranno-in-sheet` + Duranno link.
- * History: `embedded` skips mint (parent owns wash); pass `showLink={false}`.
+ * History: `embedded` skips mint (parent owns wash); pass `showLink` for today only.
  */
 export function HomeDurannoPassage({
   reading,
   label = "오늘의 말씀",
   embedded = false,
-  /** Home only — history omits the external bible link. Default true. */
+  /** Home + today history — Duranno bible URL. Default true. */
   showLink = true,
-  /** Right-aligned on the 말씀구절 (range) row (e.g. edit + delete icons). */
+  /** Right-aligned on the 말씀구절 (range) row (e.g. share + edit icons). */
   rangeTrailing,
 }: {
   reading: Pick<DurannoTodayMeta, "range"> &
@@ -33,11 +32,11 @@ export function HomeDurannoPassage({
       <StatLabel className="home-duranno-label min-w-0 truncate text-text-secondary">
         {label}
       </StatLabel>
-      {/* Trailing edit/delete stay absolute so they don't inflate range-row
+      {/* Trailing share/edit stay absolute so they don't inflate range-row
           height (h-8 buttons vs range text). Far-right = actions. */}
       <div className="relative mt-1">
         <div
-          className={`flex min-w-0 items-center gap-4${
+          className={`flex min-w-0 items-center gap-3${
             rangeTrailing ? " pr-16" : ""
           }`}
         >
@@ -49,12 +48,11 @@ export function HomeDurannoPassage({
               href={linkUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="home-duranno-cta inline-flex shrink-0 items-center gap-0.5"
-              aria-label="두란노에서 오늘의 말씀 읽기"
-              title="두란노에서 오늘의 말씀 읽기"
+              className="home-duranno-cta type-caption shrink-0"
+              aria-label="말씀보기"
+              title="말씀보기"
             >
-              <BookOpen size={22} strokeWidth={1.5} aria-hidden />
-              <ArrowUpRight size={18} strokeWidth={1.5} aria-hidden />
+              말씀보기
             </a>
           ) : null}
         </div>

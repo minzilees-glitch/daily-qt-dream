@@ -1607,14 +1607,14 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-black) !important; /* #000917 */
 }
 
-/* 「오늘의 말씀」 label + Duranno icons @ 50%; range stays full. */
+/* 「오늘의 말씀」 label @ 50%; range stays full. */
 .home-duranno-in-sheet .home-duranno-label,
 .home-duranno-meta .home-duranno-label {
   color: var(--color-black) !important; /* #000917 */
   opacity: 0.5;
 }
 
-/* Icon-only Duranno CTA (BookOpen + ArrowUpRight) — black @ 50%, no capsule. */
+/* 「말씀보기」 capsule — same Duranno bible URL (home + today history). */
 .home-duranno-cta,
 .home-duranno-cta:link,
 .home-duranno-cta:visited,
@@ -1623,39 +1623,34 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 .home-duranno-cta:focus {
   display: inline-flex !important;
   align-items: center;
-  gap: 0.125rem;
+  justify-content: center;
   flex-shrink: 0;
-  color: var(--color-black) !important; /* #000917 */
-  opacity: 0.5;
-  background: none !important;
-  background-color: transparent !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
+  height: 1.75rem;
+  padding: 0 0.7rem !important;
   margin: 0 !important;
+  border: 0 !important;
+  border-radius: 9999px !important;
+  background: color-mix(in srgb, var(--color-black) 8%, white) !important;
+  color: var(--color-black) !important; /* #000917 */
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
   box-shadow: none !important;
   filter: none !important;
   -webkit-appearance: none;
   appearance: none;
   text-decoration: none !important;
+  opacity: 1;
 }
 
 .home-duranno-cta:hover {
-  opacity: 0.7;
+  background: color-mix(in srgb, var(--color-black) 12%, white) !important;
   filter: none !important;
 }
 
 .home-duranno-cta:focus-visible {
   outline: 2px solid var(--color-black);
-  outline-offset: 3px;
-  border-radius: 2px !important; /* square focus, never pill */
-}
-
-.home-duranno-cta svg {
-  color: inherit !important;
-  background: none !important;
-  box-shadow: none !important;
-  flex-shrink: 0;
+  outline-offset: 2px;
 }
 
 @keyframes premium-select-pop {
