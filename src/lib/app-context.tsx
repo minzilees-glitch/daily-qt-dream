@@ -77,12 +77,12 @@ interface AppState {
   confirmAward: (yearMonth: string, groupId: string, lights: number) => void;
   /**
    * Save profile photo for the current user.
-   * Compresses to a JPEG thumbnail first. With Supabase: upload Blob to Storage
-   * first, then persist the public URL only (never a data URL in localStorage);
+   * Accepts a compressed JPEG `Blob` (preferred) or a data URL.
+   * With Supabase: upload Blob → write `profiles.avatar_url` (public URL only);
    * cloud errors hard-fail. Without Supabase: local data URL only.
    */
   setAvatarUrl: (
-    dataUrl: string | null,
+    image: Blob | string | null,
   ) => Promise<{ ok: boolean; message: string }>;
   /** Update nickname (profiles.display_name when Supabase is on). */
   setDisplayName: (
@@ -800,12 +800,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const setAvatarUrl = useCallback(
-    async (dataUrl: string | null) => {
+    async (image: Blob | string | null) => {
       if (!sessionUserId) {
         return { ok: false, message: "로그인이 필요해요." };
       }
 
-      if (!dataUrl) {
+      if (!image) {
         if (supabaseEnabled) {
           const res = await clearAvatar(sessionUserId);
           if (!res.ok) {
@@ -823,10 +823,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ok: true, message: "프로필 사진을 삭제했어요." };
       }
 
-      // Always compress to a JPEG thumbnail before persist/upload.
+      // Prefer an already-compressed JPEG Blob from the picker; otherwise compress.
       let compressed: { dataUrl: string; blob: Blob };
       try {
-        compressed = await compressAvatarImage(dataUrl);
+        if (image instanceof Blob && image.type.startsWith("image/")) {
+          // Re-run through canvas so every upload is JPEG @ MAX_EDGE (idempotent).
+          compressed = await compressAvatarImage(image);
+        } else if (typeof image === "string") {
+          compressed = await compressAvatarImage(image);
+        } else {
+          return { ok: false, message: "이미지 파일만 업로드할 수 있어요." };
+        }
       } catch (err) {
         const detail =
           err instanceof Error ? err.message : "이미지 변환에 실패했어요.";

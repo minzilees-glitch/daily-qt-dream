@@ -18,6 +18,8 @@ export function ProfileAvatarButton({
   const { currentUser, setAvatarUrl } = useApp();
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  /** Compressed JPEG from picker — upload this Blob (avoid data-URL roundtrip). */
+  const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +41,7 @@ export function ProfileAvatarButton({
     if (saving) return;
     setOpen(false);
     setPreview(null);
+    setPreviewBlob(null);
     setError(null);
     setSaving(false);
   };
@@ -49,16 +52,19 @@ export function ProfileAvatarButton({
       setError("이미지 파일만 업로드할 수 있어요.");
       setOpen(true);
       setPreview(null);
+      setPreviewBlob(null);
       return;
     }
     void (async () => {
       setError(null);
       try {
-        const { dataUrl } = await compressAvatarImage(file);
+        const { dataUrl, blob } = await compressAvatarImage(file);
         setPreview(dataUrl);
+        setPreviewBlob(blob);
         setOpen(true);
       } catch (err) {
         setPreview(null);
+        setPreviewBlob(null);
         setOpen(true);
         setError(
           err instanceof Error
@@ -70,10 +76,10 @@ export function ProfileAvatarButton({
   };
 
   const onSave = async () => {
-    if (!preview || saving) return;
+    if ((!previewBlob && !preview) || saving) return;
     setSaving(true);
     setError(null);
-    const res = await setAvatarUrl(preview);
+    const res = await setAvatarUrl(previewBlob ?? preview);
     setSaving(false);
     if (!res.ok) {
       setError(res.message || "저장에 실패했어요.");
@@ -81,6 +87,7 @@ export function ProfileAvatarButton({
     }
     setOpen(false);
     setPreview(null);
+    setPreviewBlob(null);
     setError(null);
   };
 
