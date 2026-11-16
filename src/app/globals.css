@@ -1699,10 +1699,33 @@ a.home-duranno-cta svg {
   opacity: 1 !important;
 }
 
-/* Hard 6px between BookOpen and 「말씀보기」 — not flex gap (easy to miss/zero). */
+/*
+ * Literal 6px spacer between BookOpen and 「말씀보기」.
+ * Width/flex-basis (not margin/gap) so it cannot collapse; nbsp keeps
+ * the box from being treated as empty in some engines.
+ */
+a.home-duranno-cta .home-duranno-cta-icon-gap {
+  display: inline-block !important;
+  box-sizing: border-box !important;
+  width: 6px !important;
+  min-width: 6px !important;
+  max-width: 6px !important;
+  flex: 0 0 6px !important;
+  height: 1em !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  user-select: none;
+}
+
 a.home-duranno-cta .home-duranno-cta-label {
   display: inline-block;
-  margin-left: 6px !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 a.home-duranno-cta:hover {

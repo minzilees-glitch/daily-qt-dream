@@ -67,6 +67,10 @@ export function HomeDurannoPassage({
                   color="var(--color-sky-deep)"
                   aria-hidden
                 />
+                {/* Fixed-width spacer — margins/gap were collapsing visually. */}
+                <span className="home-duranno-cta-icon-gap" aria-hidden>
+                  {"\u00A0"}
+                </span>
                 <span className="home-duranno-cta-label">말씀보기</span>
               </a>
             </>
