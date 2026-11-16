@@ -11,12 +11,11 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { CalendarDays, Rows2, Send } from "lucide-react";
+import { CalendarDays, Rows2 } from "lucide-react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { LightCount } from "@/components/ui/LightIcon";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { QtCalendar } from "@/components/qt/QtCalendar";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
 import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
@@ -434,6 +433,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               rangeTrailing={
                 showPassageActions ? (
                   <PassageEntryActions
+                    onShare={
+                      hasEntry || selectedCompleted
+                        ? shareSavedEntry
+                        : undefined
+                    }
+                    shareDisabled={!hasEntry}
                     onEdit={() => setEditing(true)}
                     onDelete={() => setConfirmOpen(true)}
                     deleteDisabled={!hasEntry && !selectedCompleted}
@@ -471,18 +476,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 }}
               />
             ) : hasEntry || selectedCompleted ? (
-              <div className="space-y-[var(--space-stack-lg)]">
-                <DayEntryView entry={selectedEntry} />
-                <PrimaryButton
-                  type="button"
-                  variant="secondary"
-                  className="w-full"
-                  onClick={shareSavedEntry}
-                >
-                  <Send size={18} strokeWidth={2.25} aria-hidden />
-                  나의 큐티 나누기
-                </PrimaryButton>
-              </div>
+              <DayEntryView entry={selectedEntry} />
             ) : (
               <QtEntryForm
                 key={`hist-new-${selected}`}

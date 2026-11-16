@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Send } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { LightIcon } from "@/components/ui/LightIcon";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Toast } from "@/components/ui/Toast";
 import { DayEntryView } from "@/components/qt/DayEntryView";
@@ -95,18 +93,7 @@ export function HomeClient({
         }}
       />
     ) : (
-      <div className="space-y-[var(--space-stack-lg)]">
-        <DayEntryView entry={todayEntry} />
-        <PrimaryButton
-          type="button"
-          variant="secondary"
-          className="w-full"
-          onClick={shareSavedEntry}
-        >
-          <Send size={18} strokeWidth={2.25} aria-hidden />
-          나의 큐티 나누기
-        </PrimaryButton>
-      </div>
+      <DayEntryView entry={todayEntry} />
     );
 
   return (
@@ -143,6 +130,10 @@ export function HomeClient({
               rangeTrailing={
                 showActions ? (
                   <PassageEntryActions
+                    onShare={
+                      hasEntry || doneToday ? shareSavedEntry : undefined
+                    }
+                    shareDisabled={!hasEntry}
                     onEdit={() => setEditing(true)}
                     onDelete={() => setConfirmOpen(true)}
                     deleteDisabled={!hasEntry && !doneToday}
