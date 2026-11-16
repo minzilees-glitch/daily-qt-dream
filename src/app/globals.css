@@ -1397,7 +1397,8 @@ a {
  */
 .home-duranno-in-sheet {
   box-sizing: border-box;
-  margin: 0 0 0.25rem;
+  /* Horizontal inset so white sheet reads beside the mint card. */
+  margin: 0 0.75rem 0.25rem;
   padding: 1rem 1.15rem;
   border-radius: var(--radius-card);
   background: color-mix(in srgb, var(--color-mint) 50%, white);
