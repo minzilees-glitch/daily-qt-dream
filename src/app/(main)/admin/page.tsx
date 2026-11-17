@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Toast } from "@/components/ui/Toast";
@@ -489,16 +489,27 @@ export default function AdminPage() {
                             <span className="type-body font-semibold text-text-main">
                               {sun.groupName}
                             </span>
-                            <span className="type-caption text-text-secondary">
-                              {sun.memberNames.length === 0
-                                ? "자유 입력"
-                                : `가입 ${counts.joined}/${counts.total}`}
-                              <span
-                                className="admin-roster-acc__chev"
-                                aria-hidden
-                              >
-                                {open ? "▾" : "▸"}
+                            <span className="admin-roster-acc__meta">
+                              <span className="type-caption text-text-secondary">
+                                {sun.memberNames.length === 0
+                                  ? "자유 입력"
+                                  : `가입 ${counts.joined}/${counts.total}`}
                               </span>
+                              {open ? (
+                                <ChevronUp
+                                  size={20}
+                                  strokeWidth={2}
+                                  className="text-cta"
+                                  aria-hidden
+                                />
+                              ) : (
+                                <ChevronDown
+                                  size={20}
+                                  strokeWidth={2}
+                                  className="text-cta"
+                                  aria-hidden
+                                />
+                              )}
                             </span>
                           </button>
                           {open ? (

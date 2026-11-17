@@ -1543,10 +1543,11 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   cursor: pointer;
 }
 
-.admin-roster-acc__chev {
-  display: inline-block;
-  margin-left: 0.45rem;
-  color: var(--text-secondary);
+.admin-roster-acc__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
 }
 
 .admin-roster-acc__body {
