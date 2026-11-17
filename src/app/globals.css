@@ -1558,8 +1558,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   z-index: 1; /* sits under the overlapping QT sheet */
   flex: 0 0 auto;
   padding-inline: var(--space-page-x);
-  /* Extra air under status line; keep 1.25rem for sheet overlap. */
-  padding-bottom: calc(1.15rem + 1.25rem);
+  /* Extra air under status line (살짝 타이트); keep 1.25rem for sheet overlap. */
+  padding-bottom: calc(0.85rem + 1.25rem);
   /* 낮모드/밤모드 — same token as 우리순·랭킹·마이페이지 headers. */
   background: var(--sky-mode-fill);
   color: var(--sky-mode-ink);

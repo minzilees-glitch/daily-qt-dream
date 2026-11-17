@@ -1,13 +1,19 @@
-import type { ReactNode } from "react";
+"use client";
+
+import type { ReactNode, MouseEvent } from "react";
 import { BookOpen } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
+import { openInSystemBrowser } from "@/lib/open-external";
 
 /**
  * 말씀 header — eyebrow + verse range (+ optional deep-sky 「말씀보기」 link).
  * No 본문 써머리 / title line (home + history).
  * Home: full-bleed mint via `.home-duranno-in-sheet` + Duranno link.
  * History: `embedded` skips mint (parent owns wash); pass `showLink` for today only.
+ *
+ * 「말씀보기」 always opens Duranno in the system browser (Safari/Chrome),
+ * not as an in-app same-shell navigation.
  */
 export function HomeDurannoPassage({
   reading,
@@ -27,6 +33,16 @@ export function HomeDurannoPassage({
 }) {
   const range = reading.range || "—";
   const linkUrl = showLink ? reading.url?.trim() : "";
+
+  const onOpenExternal = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!linkUrl) return;
+    // Let modified clicks (new tab / window via browser chrome) keep default.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      return;
+    }
+    e.preventDefault();
+    openInSystemBrowser(linkUrl);
+  };
 
   const body = (
     <>
@@ -58,8 +74,9 @@ export function HomeDurannoPassage({
                   WebkitTextFillColor: "var(--color-sky-deep)",
                   opacity: 1,
                 }}
-                aria-label="말씀보기"
-                title="말씀보기"
+                aria-label="말씀보기 (외부 브라우저)"
+                title="외부 브라우저에서 말씀보기"
+                onClick={onOpenExternal}
               >
                 <BookOpen
                   size={16}
