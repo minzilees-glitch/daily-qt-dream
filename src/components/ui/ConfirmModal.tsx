@@ -30,11 +30,21 @@ export function ConfirmModal({
       if (e.key === "Escape") onCancel();
     };
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
+    // Body lock alone is not enough when `.phone-shell--page-scroll` is the
+    // real scroller (verify/login) — lock that too, then restore.
+    const prevBody = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const shells = Array.from(
+      document.querySelectorAll<HTMLElement>(".phone-shell--page-scroll"),
+    );
+    const prevShell = shells.map((el) => el.style.overflow);
+    for (const el of shells) el.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevBody;
+      shells.forEach((el, i) => {
+        el.style.overflow = prevShell[i] ?? "";
+      });
     };
   }, [open, onCancel]);
 

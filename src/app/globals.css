@@ -645,6 +645,32 @@ a {
   touch-action: pan-y;
 }
 
+/*
+ * Long auth pages (verify / login): one scroller on the shell.
+ * Nested `.phone-scroll` inside `overflow:hidden` + `transform: translateZ(0)`
+ * fails touch pan in some iOS / Kakao in-app WebViews once 본명 chips make
+ * the form taller than the viewport.
+ */
+.phone-shell.phone-shell--page-scroll {
+  transform: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
+  touch-action: pan-y;
+}
+
+.phone-shell.phone-shell--page-scroll > .phone-scroll {
+  overflow: visible;
+  flex: 0 0 auto;
+  min-height: min-content;
+  height: auto;
+  max-height: none;
+  touch-action: auto;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: auto;
+}
+
 @media (min-width: 32.5rem) {
   body {
     background: var(--page-bg); /* #ffffff */

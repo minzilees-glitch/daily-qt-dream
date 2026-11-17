@@ -55,9 +55,9 @@ export default function LoginPage() {
   };
 
   return (
-    <PhoneShell>
+    <PhoneShell scroll="page">
       <div className="phone-scroll">
-        <div className="relative flex min-h-full flex-col bg-white px-6 pb-10 pt-[calc(3rem+var(--safe-top))]">
+        <div className="relative flex min-h-full flex-col bg-white px-6 pb-[calc(2.5rem+var(--safe-bottom))] pt-[calc(3rem+var(--safe-top))]">
           <div className="animate-fade-up flex flex-1 flex-col items-center justify-center text-center">
             <BrandMark size={80} className="mb-6" />
             <h1 className="type-display-xl text-text-main">드림 매일큐티</h1>
