@@ -30,7 +30,7 @@ const NAME_TAKEN_MSG =
 /* Chevron/padding live in globals.css `.verify-field` — avoid Tailwind px/bg
  * utilities that override appearance + padding-right + background-image. */
 const selectClassName =
-  "verify-field w-full rounded-[var(--radius-sm)] py-3 pl-3 type-body font-semibold text-text-main outline-none";
+  "verify-field w-full rounded-full py-3 pl-4 type-body font-semibold text-text-main outline-none";
 
 const fieldClassName =
   "w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]";
