@@ -64,7 +64,7 @@ export default function AdminPage() {
     assignUserGroup,
     supabaseEnabled,
   } = useApp();
-  const [tab, setTab] = useState<Tab>("placement");
+  const [tab, setTab] = useState<Tab>("users");
   const [ym, setYm] = useState(currentYearMonth());
   const [toast, setToast] = useState<string | null>(null);
   const [userQuery, setUserQuery] = useState("");
@@ -267,9 +267,9 @@ export default function AdminPage() {
         <div className="admin-tabs" role="tablist" aria-label="관리자 메뉴">
           {(
             [
-              ["placement", "배정 대기"],
-              ["roster", "명단"],
               ["users", "유저 빛"],
+              ["roster", "명단"],
+              ["placement", "배정 대기"],
             ] as const
           ).map(([id, label]) => (
             <button
