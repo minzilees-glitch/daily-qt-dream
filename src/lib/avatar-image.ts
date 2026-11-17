@@ -1,8 +1,8 @@
 /**
  * Profile thumbnail defaults (client-side, before Storage upload):
- * max edge 384px, JPEG quality ~0.65 (bucket limit 2 MiB).
+ * max edge 200px, JPEG quality ~0.65 (bucket limit 2 MiB).
  */
-const MAX_EDGE = 384;
+const MAX_EDGE = 200;
 const JPEG_QUALITY = 0.65;
 /** Soft target under Storage 2 MiB after base64 overhead. */
 const MAX_BYTES = 1_500_000;

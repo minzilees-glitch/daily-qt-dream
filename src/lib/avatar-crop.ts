@@ -5,7 +5,8 @@
 
 import { blobToDataUrl } from "@/lib/avatar-image";
 
-const OUT_EDGE = 384;
+/** Exported avatar edge — enough for ~50–96 CSS px at 2–3× retina. */
+const OUT_EDGE = 200;
 const JPEG_QUALITY = 0.72;
 const MAX_BYTES = 1_500_000;
 
@@ -70,7 +71,7 @@ function canvasToJpegBlob(
 }
 
 /**
- * Render the visible square crop to a 384×384 JPEG ready for Storage upload.
+ * Render the visible square crop to a 200×200 JPEG ready for Storage upload.
  */
 export async function exportSquareAvatarCrop(
   source: Blob | string,
