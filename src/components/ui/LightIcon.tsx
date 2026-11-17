@@ -285,14 +285,17 @@ export function LightCount({
 }) {
   const resolvedTone: Tone = lights > 0 ? tone : "inactive";
   return (
-    <span className={`inline-flex items-center gap-1 overflow-visible ${className}`}>
+    <span
+      className={`inline-flex items-center gap-1 overflow-visible opacity-100 ${className}`}
+    >
       <LightIcon
         tone={resolvedTone}
         size={size}
         label={`빛 ${lights}`}
         rays={rays}
+        className="opacity-100"
       />
-      <span className={textClassName}>{lights}</span>
+      <span className={`opacity-100 ${textClassName}`}>{lights}</span>
     </span>
   );
 }

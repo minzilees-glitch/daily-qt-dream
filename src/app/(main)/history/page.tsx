@@ -344,7 +344,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 align="start"
               />
               <div
-                className="inline-flex items-center"
+                className="history-month-lights inline-flex items-center opacity-100"
                 title="이번달 내가 모은 빛"
                 aria-label={`이번달 내가 모은 빛 ${stats.lights}`}
               >
@@ -352,7 +352,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   lights={stats.lights}
                   size={22}
                   rays={false}
-                  textClassName="type-stat font-semibold tabular-nums text-[var(--color-mint)]"
+                  className="opacity-100"
+                  textClassName="type-stat font-semibold tabular-nums text-[var(--color-mint)] opacity-100"
                 />
               </div>
             </div>
