@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
@@ -17,7 +17,7 @@ export function ConfirmModal({
 }: {
   open: boolean;
   title: string;
-  description?: string;
+  description?: ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
   confirmTone?: "danger" | "primary";
