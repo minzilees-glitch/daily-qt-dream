@@ -56,7 +56,8 @@ export default function GroupPage() {
         <h1 className="premium-tab-title">
           우리순은 {group?.name ?? "순"}
         </h1>
-        <div className="mt-[var(--space-stack-sm)]">
+        {/* Tighter air: title → month → 3 dashboards (was stack-sm + mt-2). */}
+        <div className="mt-2">
           <MonthPicker
             value={ym}
             onChange={setYm}
@@ -65,7 +66,7 @@ export default function GroupPage() {
             align="center"
           />
         </div>
-        <div className="sky-walkers-bleed mt-2 animate-fade-up">
+        <div className="sky-walkers-bleed mt-0.5 animate-fade-up">
           <SkyWalkers
             members={members}
             memberCount={myRank?.memberCount ?? 0}
