@@ -898,7 +898,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-ink-blue) !important; /* #1F3E62 */
   opacity: 1 !important;
   text-decoration: underline;
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: 3px; /* thicker when today is not selected */
   text-underline-offset: 12px; /* air under the numeral; not tight */
   text-decoration-color: var(--color-ink-blue);
 }
@@ -944,19 +944,15 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 }
 
 /*
- * 나의 QT들 sheet: top pad + grabber + passage share one mint wash;
- * QT hint + fields sit on solid white below.
+ * 나의 QT들 sheet: mint only on grabber + 말씀 header bands.
+ * Everything below 말씀 (future notice / form / completed QT / empty
+ * drawer fill) is solid white — not mint.
  * !important: beat earlier `.premium-qt-sheet` / sky sheet rules.
  */
 .premium-qt-root--history > .premium-qt-sheet.premium-qt-sheet--history,
 .premium-qt-root:has(> .premium-qt-header)
   > .premium-qt-sheet.premium-qt-sheet--history {
-  /*
-   * Mint chrome for the whole sheet top — grabber stays mint while 말씀
-   * scrolls away (white only on `.premium-history-qt`). Avoids a white
-   * gap under the pinned handle.
-   */
-  background: color-mix(in srgb, var(--color-mint) 40%, white) !important;
+  background: #ffffff !important;
   display: flex;
   flex-direction: column;
   padding-bottom: 0;
@@ -1012,8 +1008,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* Transparent so sheet mint shows under grabber while 말씀 scrolls. */
-  background: transparent;
+  /* White fill under 말씀 — future / completed / short content stay white. */
+  background: #ffffff;
 }
 
 /* Single drawer scroller: 말씀 header + QT body travel together. */
@@ -1024,7 +1020,9 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  background: transparent;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
 }
 
 /* Date + passage inside mint band. */
@@ -1038,13 +1036,12 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 }
 
 /* Form body: solid white edge-to-edge; scroll owned by .premium-history-sheet-scroll.
- * Sheet height already clears the floating nav via --nav-reserve.
- * flex-grow so white fills the rest of the mint drawer (no mint strip under form). */
+ * flex-grow fills remaining drawer so short QT / future notice don't leave mint. */
 .premium-history-qt {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   margin-inline: 0;
   width: 100%;
-  min-height: min-content;
+  min-height: 0;
   padding: 0 var(--space-page-x) 1.5rem;
   background: #ffffff !important;
   box-sizing: border-box;
