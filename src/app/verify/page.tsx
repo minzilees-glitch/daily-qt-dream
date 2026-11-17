@@ -294,7 +294,7 @@ export default function CommunityVerifyPage() {
                   disabled={busy || !legalName.trim()}
                   onClick={() => void onConfirmName()}
                 >
-                  {busy ? "확인 중…" : "명단과 맞추기"}
+                  {busy ? "확인 중…" : "내가 맞아요"}
                 </PrimaryButton>
               ) : null}
             </div>
