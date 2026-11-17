@@ -1609,12 +1609,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.7rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--divider, #e5eaf0) 70%, white);
-}
-
-.admin-roster-member:last-child {
-  border-bottom: none;
+  padding: 0.55rem 0;
 }
 
 .admin-field {
