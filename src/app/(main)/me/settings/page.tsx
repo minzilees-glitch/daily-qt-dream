@@ -85,7 +85,7 @@ export default function MeSettingsPage() {
                 disabled={!nameDirty || savingName || !nickname.trim()}
                 onClick={() => void onSaveNickname()}
               >
-                {savingName ? "저장 중…" : "닉네임 저장"}
+                {savingName ? "저장 중…" : "별명 변경"}
               </PrimaryButton>
             </div>
           </div>
