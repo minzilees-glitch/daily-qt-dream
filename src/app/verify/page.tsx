@@ -353,6 +353,10 @@ export default function CommunityVerifyPage() {
                 <p className="type-caption text-text-secondary">
                   입장 후에, 별명과 썸네일을 재 설정할 수 있습니다.
                 </p>
+                <p className="type-caption text-text-secondary">
+                  가입에 문제 생긴 경우, 순장님 또는 다락방장님께 문의주시면 빠르게
+                  처리해 드리겠습니다.
+                </p>
               </div>
               {!unassigned ? (
                 <PrimaryButton
