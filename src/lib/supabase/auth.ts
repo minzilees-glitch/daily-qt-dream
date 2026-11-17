@@ -30,41 +30,21 @@ export function getAppOrigin(): string {
 }
 
 /**
- * Start Kakao login.
- * 1) Preferred: app-owned OIDC (`/api/auth/kakao/start`) — no account_email.
- * 2) Fallback: Supabase `signInWithOAuth` (may KOE205 until GoTrue omits email
- *    or Minzi enables 카카오계정(이메일) as optional on a Biz app).
+ * Start Kakao login via app-owned OIDC (`/api/auth/kakao/start`).
+ *
+ * Never fall back to Supabase `signInWithOAuth({ provider: "kakao" })` —
+ * GoTrue still hardcodes `account_email` and that surfaces as Kakao KOE205
+ * when the consent item is unset. Missing Kakao env is handled by the start
+ * route (`/login?kakao_error=missing_kakao_env`), not by a silent OAuth fallback.
  */
 export async function signInWithKakao(): Promise<AuthResult<void>> {
-  // Public REST key present → use OIDC path (secret is server-only on the API).
-  const restKey = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY?.trim();
-  if (restKey && typeof window !== "undefined") {
-    window.location.assign("/api/auth/kakao/start");
-    return { ok: true, data: undefined };
-  }
-
-  const sb = getSupabaseBrowser();
-  if (!sb) {
+  if (typeof window === "undefined") {
     return {
       ok: false,
-      error:
-        "Supabase가 설정되지 않았어요. NEXT_PUBLIC_SUPABASE_URL / ANON_KEY를 확인하세요.",
+      error: "브라우저에서만 카카오 로그인을 시작할 수 있어요.",
     };
   }
-
-  const redirectTo = `${getAppOrigin()}/auth/callback`;
-  const { error } = await sb.auth.signInWithOAuth({
-    provider: "kakao",
-    options: {
-      redirectTo,
-      // Nickname + profile only — never account_email / email / phone.
-      // Supabase may still append account_email server-side (see KAKAO_PROFILE_SCOPES note).
-      scopes: KAKAO_PROFILE_SCOPES,
-      skipBrowserRedirect: false,
-    },
-  });
-
-  if (error) return { ok: false, error: error.message };
+  window.location.assign("/api/auth/kakao/start");
   return { ok: true, data: undefined };
 }
 

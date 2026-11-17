@@ -27,11 +27,6 @@ type Step = "darakbang" | "sun" | "name";
 const NAME_TAKEN_MSG =
   "이미 인증된 본명이에요. 다른 이름을 선택하거나 예외 신청해 주세요.";
 
-/* Chevron/padding live in globals.css `.verify-field` — avoid Tailwind px/bg
- * utilities that override appearance + padding-right + background-image. */
-const selectClassName =
-  "verify-field w-full rounded-full py-3 pl-4 type-body font-semibold text-text-main outline-none";
-
 const fieldClassName =
   "w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]";
 
@@ -59,11 +54,14 @@ export default function CommunityVerifyPage() {
   const [legalName, setLegalName] = useState("");
   const [exceptionNote, setExceptionNote] = useState("");
   const [showException, setShowException] = useState(false);
+  /** Exception / empty-roster path needs free-text 본명 (dropdown alone cannot). */
+  const [exceptionNameMode, setExceptionNameMode] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [claimedNames, setClaimedNames] = useState<Set<string>>(new Set());
   const nameSectionRef = useRef<HTMLDivElement>(null);
+  const exceptionSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -107,9 +105,16 @@ export default function CommunityVerifyPage() {
     [memberNames, claimedNames],
   );
   const hiddenClaimedCount = memberNames.length - availableMemberNames.length;
-  const freeTextName = Boolean(sunName && usesFreeTextLegalName(sunName));
+  const rosterFreeText = Boolean(sunName && usesFreeTextLegalName(sunName));
   const unassigned = Boolean(sunName && isUnassignedSun(sunName));
   const newFamily = Boolean(sunName && isNewFamilySun(sunName));
+  const rosterEmptyClaimed =
+    Boolean(sunName) &&
+    !rosterFreeText &&
+    memberNames.length > 0 &&
+    availableMemberNames.length === 0;
+  /** Free-text 본명: 미배정/새가족, empty claimed roster, or user opened 예외. */
+  const freeTextName = rosterFreeText || exceptionNameMode || rosterEmptyClaimed;
 
   // 미배정: open exception path once 순 is chosen.
   // Also open exception when every roster 본명 is already claimed.
@@ -117,12 +122,14 @@ export default function CommunityVerifyPage() {
     if (!sunName) return;
     if (unassigned) {
       setShowException(true);
+      setExceptionNameMode(true);
       return;
     }
-    if (!freeTextName && memberNames.length > 0 && availableMemberNames.length === 0) {
+    if (rosterEmptyClaimed) {
       setShowException(true);
+      setExceptionNameMode(true);
     }
-  }, [sunName, unassigned, freeTextName, memberNames.length, availableMemberNames.length]);
+  }, [sunName, unassigned, rosterEmptyClaimed]);
 
   // Clear selection if the chosen 본명 becomes unavailable (claimed).
   useEffect(() => {
@@ -143,11 +150,29 @@ export default function CommunityVerifyPage() {
     return () => window.cancelAnimationFrame(id);
   }, [sunName]);
 
+  // When exception opens (empty roster / 명단에 없어요), keep the form reachable.
+  useEffect(() => {
+    if (!showException || !exceptionSectionRef.current) return;
+    const el = exceptionSectionRef.current;
+    const id = window.requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [showException, exceptionNameMode]);
+
   const pickSun = (next: string) => {
     setSunName(next);
     setLegalName("");
     setShowException(false);
+    setExceptionNameMode(false);
     setStep("name");
+    setError(null);
+  };
+
+  const openExceptionPath = () => {
+    setShowException(true);
+    setExceptionNameMode(true);
+    setLegalName("");
     setError(null);
   };
 
@@ -163,7 +188,7 @@ export default function CommunityVerifyPage() {
       return;
     }
 
-    // 새가족 (and any free-text): reject names already verified.
+    // Free-text paths (새가족 / 예외 mode / empty roster): reject claimed names.
     if (newFamily || freeTextName) {
       const taken = await isLegalNameTaken(name);
       if (!taken.ok) {
@@ -176,6 +201,15 @@ export default function CommunityVerifyPage() {
       }
     } else if (claimedNames.has(name)) {
       setError(NAME_TAKEN_MSG);
+      return;
+    }
+
+    // Exception-only free-text (명단에 없어요 / all claimed): do not auto-verify.
+    if (exceptionNameMode && !newFamily && !unassigned) {
+      setShowException(true);
+      setError(
+        "명단 자동 확인 대신 아래 예외 신청으로 관리자 확인을 요청해 주세요.",
+      );
       return;
     }
 
@@ -297,6 +331,7 @@ export default function CommunityVerifyPage() {
                         setSunName("");
                         setLegalName("");
                         setShowException(false);
+                        setExceptionNameMode(false);
                         setStep("sun");
                         setError(null);
                       }}
@@ -332,7 +367,8 @@ export default function CommunityVerifyPage() {
               </div>
             ) : null}
 
-            {/* Step 3: 본명 — gate on sunName only (step can lag on odd remounts). */}
+            {/* Step 3: 본명 — chips (not native <select>): same mobile WebView
+                reliability as 순. Gate on sunName only. */}
             {sunName ? (
               <div ref={nameSectionRef}>
                 <p className="qt-field-title mb-2">3. 본명</p>
@@ -357,30 +393,47 @@ export default function CommunityVerifyPage() {
                         새가족은 본명을 직접 입력해 주세요.
                       </p>
                     ) : null}
+                    {rosterEmptyClaimed ? (
+                      <p className="mt-2 type-caption font-semibold text-text-secondary">
+                        이 순의 본명이 모두 인증되었어요. 본명을 적고 예외
+                        신청해 주세요.
+                      </p>
+                    ) : null}
+                    {exceptionNameMode &&
+                    !rosterFreeText &&
+                    !rosterEmptyClaimed ? (
+                      <p className="mt-2 type-caption text-text-secondary">
+                        명단에 없는 본명이에요. 아래에 예외 신청해 주세요.
+                      </p>
+                    ) : null}
                   </>
                 ) : availableMemberNames.length > 0 ? (
-                  <select
-                    value={legalName}
-                    onChange={(e) => {
-                      setLegalName(e.target.value);
-                      setError(null);
-                    }}
-                    className={selectClassName}
-                  >
-                    <option value="">본명을 선택하세요</option>
-                    {availableMemberNames.map((name) => (
-                      <option key={name} value={name}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="grid grid-cols-2 gap-2">
+                    {availableMemberNames.map((name) => {
+                      const active = legalName === name;
+                      return (
+                        <button
+                          key={name}
+                          type="button"
+                          onClick={() => {
+                            setLegalName(name);
+                            setExceptionNameMode(false);
+                            setError(null);
+                          }}
+                          className={chipClassName(active)}
+                        >
+                          {name}
+                        </button>
+                      );
+                    })}
+                  </div>
                 ) : (
                   <p className="type-caption font-semibold text-text-secondary">
                     이 순의 본명이 모두 인증되었어요. 아래 예외 신청을 이용해
                     주세요.
                   </p>
                 )}
-                {hiddenClaimedCount > 0 && !freeTextName ? (
+                {hiddenClaimedCount > 0 && !rosterFreeText ? (
                   <p className="mt-2 type-caption text-text-secondary">
                     이미 인증된 본명 {hiddenClaimedCount}개는 목록에서 빼
                     두었어요.
@@ -403,7 +456,8 @@ export default function CommunityVerifyPage() {
                   </p>
                 </div>
                 {!unassigned &&
-                (freeTextName || availableMemberNames.length > 0) ? (
+                !exceptionNameMode &&
+                (newFamily || availableMemberNames.length > 0) ? (
                   <PrimaryButton
                     type="button"
                     className="mt-3 w-full"
@@ -424,6 +478,15 @@ export default function CommunityVerifyPage() {
                     {busy ? "확인 중…" : "내가 맞아요"}
                   </PrimaryButton>
                 ) : null}
+                {!rosterFreeText && !showException ? (
+                  <button
+                    type="button"
+                    className="mt-3 w-full type-caption font-semibold text-text-secondary underline-offset-2 hover:underline"
+                    onClick={openExceptionPath}
+                  >
+                    명단에 내 이름이 없어요
+                  </button>
+                ) : null}
               </div>
             ) : null}
 
@@ -432,8 +495,14 @@ export default function CommunityVerifyPage() {
             ) : null}
 
             {showException ? (
-              <div className="space-y-2 border-t border-[var(--color-divider,#e5eaf0)] pt-4">
+              <div
+                ref={exceptionSectionRef}
+                className="space-y-2 border-t border-[var(--color-divider,#e5eaf0)] pt-4"
+              >
                 <p className="qt-field-title">명단에 없나요? 예외 신청</p>
+                <p className="type-caption text-text-secondary">
+                  위의 본명을 확인한 뒤, 필요하면 메모를 남기고 요청해 주세요.
+                </p>
                 <textarea
                   value={exceptionNote}
                   onChange={(e) => setExceptionNote(e.target.value)}
