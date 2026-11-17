@@ -180,11 +180,13 @@ function pickActivity(index: number): Activity {
   return cycle[index % cycle.length]!;
 }
 
-/** Aggressive lower ground band — squeezed toward card floor. */
+/** Roam band raised into the mid-sky (not glued to the card floor). */
 function walkBand(height: number): { minY: number; maxY: number } {
-  const maxY = Math.max(0, height - WALKER_FIGURE_H - FLOOR_INSET_PX);
-  // Narrow strip near the floor (top of band also shifts down).
-  const span = Math.max(10, height * 0.08);
+  const floorMax = Math.max(0, height - WALKER_FIGURE_H - FLOOR_INSET_PX);
+  // Lift the whole band so walkers sit higher than the previous floor strip.
+  const lift = Math.max(18, height * 0.16);
+  const maxY = Math.max(0, floorMax - lift);
+  const span = Math.max(28, height * 0.24);
   const minY = Math.min(maxY, Math.max(0, maxY - span));
   return { minY, maxY };
 }
@@ -451,7 +453,8 @@ export function SkyWalkers({
       <img
         src={SKY_CLOUDS_BG}
         alt=""
-        className="sky-clouds-bg pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+        className="sky-clouds-bg pointer-events-none absolute inset-0 h-full w-full object-cover"
+        style={{ objectPosition: "center 28%" }}
         draggable={false}
       />
 
