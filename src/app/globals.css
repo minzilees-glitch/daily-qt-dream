@@ -1494,6 +1494,47 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   border-bottom-color: var(--color-ink-blue);
 }
 
+.admin-roster-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-roster-chip {
+  border: none;
+  border-radius: 9999px;
+  background: var(--color-gray, #f2f2f2);
+  color: var(--text-main);
+  padding: 0.55rem 0.9rem;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-roster-chip.is-active {
+  background: color-mix(in srgb, var(--color-sky) 28%, white);
+  color: var(--color-ink-blue);
+}
+
+.admin-roster-members {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-roster-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--divider, #e5eaf0);
+}
+
+.admin-roster-member:last-child {
+  border-bottom: none;
+}
+
 .admin-field {
   box-sizing: border-box;
   display: block;
