@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell } from "@/components/layout/PhoneShell";
 import { BrandMark } from "@/components/ui/BrandMark";
@@ -35,6 +35,13 @@ const selectClassName =
 const fieldClassName =
   "w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]";
 
+const chipClassName = (active: boolean) =>
+  `rounded-[var(--radius-sm)] px-3 py-3 text-left type-body font-semibold transition-colors ${
+    active
+      ? "bg-[var(--cta)] text-white"
+      : "bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] text-text-main"
+  }`;
+
 export default function CommunityVerifyPage() {
   const router = useRouter();
   const {
@@ -56,6 +63,7 @@ export default function CommunityVerifyPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [claimedNames, setClaimedNames] = useState<Set<string>>(new Set());
+  const nameSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -104,11 +112,17 @@ export default function CommunityVerifyPage() {
   const newFamily = Boolean(sunName && isNewFamilySun(sunName));
 
   // 미배정: open exception path once 순 is chosen.
+  // Also open exception when every roster 본명 is already claimed.
   useEffect(() => {
-    if (step === "name" && unassigned) {
+    if (!sunName) return;
+    if (unassigned) {
+      setShowException(true);
+      return;
+    }
+    if (!freeTextName && memberNames.length > 0 && availableMemberNames.length === 0) {
       setShowException(true);
     }
-  }, [step, unassigned]);
+  }, [sunName, unassigned, freeTextName, memberNames.length, availableMemberNames.length]);
 
   // Clear selection if the chosen 본명 becomes unavailable (claimed).
   useEffect(() => {
@@ -117,6 +131,25 @@ export default function CommunityVerifyPage() {
       setLegalName("");
     }
   }, [claimedNames, legalName]);
+
+  // After 순 pick, bring step 3 into view inside .phone-scroll (iOS often
+  // leaves new content below the fold with no automatic scroll).
+  useEffect(() => {
+    if (!sunName || !nameSectionRef.current) return;
+    const el = nameSectionRef.current;
+    const id = window.requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [sunName]);
+
+  const pickSun = (next: string) => {
+    setSunName(next);
+    setLegalName("");
+    setShowException(false);
+    setStep("name");
+    setError(null);
+  };
 
   const onConfirmName = async () => {
     setError(null);
@@ -267,11 +300,7 @@ export default function CommunityVerifyPage() {
                         setStep("sun");
                         setError(null);
                       }}
-                      className={`rounded-[var(--radius-sm)] px-3 py-3 text-left type-body font-semibold transition-colors ${
-                        active
-                          ? "bg-[var(--cta)] text-white"
-                          : "bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] text-text-main"
-                      }`}
+                      className={chipClassName(active)}
                     >
                       {d.name}
                     </button>
@@ -280,34 +309,32 @@ export default function CommunityVerifyPage() {
               </div>
             </div>
 
-            {/* Step 2: 순 */}
+            {/* Step 2: 순 — buttons (not native <select>): iOS/Kakao WebView
+                select change often fails to surface step 3 / leaves it off-screen. */}
             {step !== "darakbang" && darakbangId ? (
               <div>
                 <p className="qt-field-title mb-2">2. 순</p>
-                <select
-                  value={sunName}
-                  onChange={(e) => {
-                    setSunName(e.target.value);
-                    setLegalName("");
-                    setShowException(false);
-                    setStep("name");
-                    setError(null);
-                  }}
-                  className={selectClassName}
-                >
-                  <option value="">순을 선택하세요</option>
-                  {suns.map((s) => (
-                    <option key={s.groupName} value={s.groupName}>
-                      {s.groupName}
-                    </option>
-                  ))}
-                </select>
+                <div className="grid grid-cols-2 gap-2">
+                  {suns.map((s) => {
+                    const active = sunName === s.groupName;
+                    return (
+                      <button
+                        key={s.groupName}
+                        type="button"
+                        onClick={() => pickSun(s.groupName)}
+                        className={chipClassName(active)}
+                      >
+                        {s.groupName}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             ) : null}
 
-            {/* Step 3: 본명 — dropdown when roster has members; free-text for 미배정/새가족 */}
-            {step === "name" && sunName ? (
-              <div>
+            {/* Step 3: 본명 — gate on sunName only (step can lag on odd remounts). */}
+            {sunName ? (
+              <div ref={nameSectionRef}>
                 <p className="qt-field-title mb-2">3. 본명</p>
                 {freeTextName ? (
                   <>
@@ -331,7 +358,7 @@ export default function CommunityVerifyPage() {
                       </p>
                     ) : null}
                   </>
-                ) : (
+                ) : availableMemberNames.length > 0 ? (
                   <select
                     value={legalName}
                     onChange={(e) => {
@@ -347,6 +374,11 @@ export default function CommunityVerifyPage() {
                       </option>
                     ))}
                   </select>
+                ) : (
+                  <p className="type-caption font-semibold text-text-secondary">
+                    이 순의 본명이 모두 인증되었어요. 아래 예외 신청을 이용해
+                    주세요.
+                  </p>
                 )}
                 {hiddenClaimedCount > 0 && !freeTextName ? (
                   <p className="mt-2 type-caption text-text-secondary">
@@ -370,7 +402,8 @@ export default function CommunityVerifyPage() {
                     다락방장의 갠톡으로 연락주세요.
                   </p>
                 </div>
-                {!unassigned ? (
+                {!unassigned &&
+                (freeTextName || availableMemberNames.length > 0) ? (
                   <PrimaryButton
                     type="button"
                     className="mt-3 w-full"

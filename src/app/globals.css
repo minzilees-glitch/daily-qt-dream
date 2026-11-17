@@ -616,8 +616,13 @@ a {
   max-width: var(--phone-max);
   height: 100dvh;
   min-height: 100dvh;
+  /* svh tracks the visible viewport when mobile chrome collapses/expands */
+  height: 100svh;
+  min-height: 100svh;
   margin: 0 auto;
   position: relative;
+  display: flex;
+  flex-direction: column;
   /* Contain position:fixed nav inside the phone column (mobile + desktop mock) */
   transform: translateZ(0);
   /* Overall shell fill — white; headers/sky bands keep --sky-mode-fill */
@@ -628,11 +633,14 @@ a {
 .phone-scroll {
   position: relative;
   z-index: 1;
-  height: 100%;
+  /* Flex child must shrink (min-height:0) or overflow-y never engages on iOS. */
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+  overscroll-behavior-y: contain;
   /* Vertical finger pans scroll the page (incl. starting over controls). */
   touch-action: pan-y;
 }
@@ -646,6 +654,8 @@ a {
     width: min(100% - 2rem, var(--phone-max));
     height: calc(100dvh - 3rem);
     min-height: calc(100dvh - 3rem);
+    height: calc(100svh - 3rem);
+    min-height: calc(100svh - 3rem);
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
     border-radius: var(--radius-lg);
