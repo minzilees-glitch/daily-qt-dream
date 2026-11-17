@@ -44,7 +44,7 @@ export function BottomNav() {
         Floating capsule: each <Link> fills its grid cell so taps near the
         icon (not only the glyph) navigate.
       */}
-      <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-2">
+      <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-1.5">
         {TABS.map(({ href, label, icon: Icon, light }) => {
           const active = isActive(pathname, href);
           return (

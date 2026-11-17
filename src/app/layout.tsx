@@ -22,7 +22,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
-  themeColor: "#5fbcfc", /* --sky */
+  themeColor: "#6dc2ff", /* --color-sky / --sky-mode-fill (낮) */
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

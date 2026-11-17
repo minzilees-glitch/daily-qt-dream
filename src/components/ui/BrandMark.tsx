@@ -1,4 +1,4 @@
-/** Shared brand mark: sky tile + white light spark (`--radius-brand` = 28). */
+/** Shared brand mark: Maeil QT Bible tile (sky art). */
 export function BrandMark({
   size = 80,
   className = "",
@@ -9,34 +9,21 @@ export function BrandMark({
   className?: string;
   rounded?: number | string;
 }) {
-  const spark = Math.round(size * 0.68);
   return (
-    <div
-      className={`flex shrink-0 items-center justify-center shadow-none ${className}`}
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/icons/brand-maeil-qt.png"
+      alt=""
+      width={size}
+      height={size}
+      className={`shrink-0 object-cover shadow-none ${className}`}
       style={{
         width: size,
         height: size,
         borderRadius: rounded ?? "var(--radius-brand)",
-        backgroundColor: "var(--sky)",
       }}
       aria-hidden
-    >
-      <span
-        className="inline-block"
-        style={{
-          width: spark,
-          height: spark,
-          backgroundColor: "var(--white)",
-          WebkitMaskImage: "url(/icons/light-icon.png)",
-          maskImage: "url(/icons/light-icon.png)",
-          WebkitMaskSize: "contain",
-          maskSize: "contain",
-          WebkitMaskRepeat: "no-repeat",
-          maskRepeat: "no-repeat",
-          WebkitMaskPosition: "center",
-          maskPosition: "center",
-        }}
-      />
-    </div>
+      draggable={false}
+    />
   );
 }
