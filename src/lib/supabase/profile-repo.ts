@@ -446,3 +446,70 @@ export function isCommunityVerified(profile: ProfileRow | null | undefined): boo
   if (!profile.community_status && profile.group_id) return true;
   return false;
 }
+
+/**
+ * Admin queue: 새가족 (verified, no 순) + 미배정/예외 (exception, usually no 순).
+ * Requires admin SELECT (profiles_select_admin).
+ */
+export async function fetchPlacementQueueProfiles(): Promise<
+  ProfileRepoResult<ProfileRow[]>
+> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+
+  const { data, error } = await sb
+    .from("profiles")
+    .select(
+      "id, display_name, group_id, role, avatar_url, legal_name, community_status, created_at, updated_at",
+    )
+    .is("group_id", null)
+    .or("community_status.eq.verified,community_status.eq.exception")
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    if (/legal_name|community_status|42703|PGRST204/i.test(error.message)) {
+      return {
+        ok: false,
+        error:
+          "본명·상태 컬럼이 없어요. 20261117_kakao_community_verify.sql 을 적용해 주세요.",
+      };
+    }
+    return { ok: false, error: error.message };
+  }
+
+  return { ok: true, data: (data ?? []) as ProfileRow[] };
+}
+
+/**
+ * Admin: assign 미배정/새가족 to a real 순.
+ * Sets group_id, role=member, community_status=verified.
+ */
+export async function adminAssignProfileToGroup(
+  userId: string,
+  groupId: string,
+): Promise<ProfileRepoResult<ProfileRow>> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+  if (!groupId.trim()) {
+    return { ok: false, error: "배정할 순을 선택해 주세요." };
+  }
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      group_id: groupId,
+      role: "member",
+      community_status: "verified",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId);
+
+  if (error) return { ok: false, error: error.message };
+
+  const refreshed = await fetchProfile(userId);
+  if (!refreshed.ok) return refreshed;
+  if (!refreshed.data) {
+    return { ok: false, error: "배정 후 프로필을 읽지 못했어요." };
+  }
+  return { ok: true, data: refreshed.data };
+}
