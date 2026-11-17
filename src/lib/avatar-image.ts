@@ -137,31 +137,32 @@ async function drawSourceToCanvas(
   source: Blob | string,
 ): Promise<HTMLCanvasElement> {
   let bitmap: ImageBitmap | null = null;
+  let drawable: CanvasImageSource | null = null;
   let w = 0;
   let h = 0;
-  let drawable: CanvasImageSource;
 
   if (typeof source !== "string" && typeof createImageBitmap === "function") {
     try {
       bitmap = await createImageBitmap(source);
+      drawable = bitmap;
       w = bitmap.width;
       h = bitmap.height;
-      drawable = bitmap;
     } catch {
       bitmap = null;
+      drawable = null;
     }
   }
 
-  if (!bitmap) {
+  if (!drawable) {
     const src =
       typeof source === "string" ? source : await blobToDataUrl(source);
     const img = await loadImage(src);
+    drawable = img;
     w = img.naturalWidth || img.width;
     h = img.naturalHeight || img.height;
-    drawable = img;
   }
 
-  if (!w || !h) {
+  if (!drawable || !w || !h) {
     bitmap?.close();
     throw new Error("이미지를 열 수 없어요.");
   }
