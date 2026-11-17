@@ -43,10 +43,11 @@ export function HomeClient({
 
   if (!currentUser) return null;
 
-  const doneToday = isCompleted(currentUser.id, today);
   const todayEntry = getEntry(currentUser.id, today);
   /** Completion flags without QT text (fetch miss / empty row) → compose, not empty copy. */
   const hasContent = entryHasQtContent(todayEntry);
+  /** Home light/status follow real QT text — not presence-only completion. */
+  const doneToday = hasContent && isCompleted(currentUser.id, today);
   const showEdit = hasContent;
   const editActive = editing && showEdit;
   /** Read-only view only when there is real saved text; otherwise open the form. */

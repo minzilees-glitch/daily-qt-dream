@@ -87,12 +87,50 @@ export async function fetchProfileAvatarMap(): Promise<
   return { ok: true, data: map };
 }
 
+const AVATAR_UPLOAD_TIMEOUT_MS = 25_000;
+
+function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  message: string,
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      },
+    );
+  });
+}
+
 /**
  * Upload image bytes to Storage, write `profiles.avatar_url`, return public URL.
  * Path: `avatars/{userId}/avatar.{ext}` (upsert).
  * Callers must hard-fail on `{ ok: false }` and must not persist data URLs.
  */
 export async function uploadAndSaveAvatar(
+  userId: string,
+  blob: Blob,
+): Promise<AvatarRepoResult<string>> {
+  try {
+    return await withTimeout(
+      uploadAndSaveAvatarInner(userId, blob),
+      AVATAR_UPLOAD_TIMEOUT_MS,
+      "업로드가 너무 오래 걸려요. 네트워크를 확인하고 다시 시도해 주세요.",
+    );
+  } catch (err) {
+    const raw = err instanceof Error ? err.message : String(err);
+    return { ok: false, error: explainAvatarCloudError(raw) };
+  }
+}
+
+async function uploadAndSaveAvatarInner(
   userId: string,
   blob: Blob,
 ): Promise<AvatarRepoResult<string>> {
@@ -121,19 +159,26 @@ export async function uploadAndSaveAvatar(
     return { ok: false, error: explainAvatarCloudError(uploadError.message) };
   }
 
-  // Drop sibling avatar.* (e.g. old .png after new .jpg) so the folder has one file.
-  try {
-    const { data: listed } = await sb.storage.from(AVATARS_BUCKET).list(userId);
-    const stale = (listed ?? [])
-      .map((f) => f.name)
-      .filter((name) => name.startsWith("avatar.") && name !== path.split("/").pop())
-      .map((name) => `${userId}/${name}`);
-    if (stale.length) {
-      await sb.storage.from(AVATARS_BUCKET).remove(stale);
+  // Stale sibling cleanup is best-effort and must not block the profile write.
+  void (async () => {
+    try {
+      const { data: listed } = await sb.storage
+        .from(AVATARS_BUCKET)
+        .list(userId);
+      const stale = (listed ?? [])
+        .map((f) => f.name)
+        .filter(
+          (name) =>
+            name.startsWith("avatar.") && name !== path.split("/").pop(),
+        )
+        .map((name) => `${userId}/${name}`);
+      if (stale.length) {
+        await sb.storage.from(AVATARS_BUCKET).remove(stale);
+      }
+    } catch {
+      // Non-fatal: public URL write below is the source of truth.
     }
-  } catch {
-    // Non-fatal: public URL write below is the source of truth.
-  }
+  })();
 
   const { data: pub } = sb.storage.from(AVATARS_BUCKET).getPublicUrl(path);
   // Bust CDN/browser cache after replace

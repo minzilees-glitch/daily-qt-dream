@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { connection } from "next/server";
 import { HomeClient } from "./HomeClient";
 import {
@@ -7,24 +8,36 @@ import {
 } from "@/lib/duranno";
 import { todaySeoul } from "@/lib/dates";
 
-/** Request-time Duranno fetch — not eligible for instant-nav prerender. */
+/** Request-time Seoul "today" — not eligible for static prerender. */
 export const instant = false;
 
-export default async function HomePage() {
-  // Request-time: Seoul "today" + live Duranno meta (Cache Components).
-  await connection();
-  const today = todaySeoul();
+function emptyReading(date: string): DurannoTodayMeta {
+  return {
+    date,
+    range: "",
+    title: "",
+    url: DURANNO_BIBLE_URL,
+  };
+}
+
+/** Stream Duranno behind Suspense so soft-nav is not blocked by the scrape. */
+async function HomeWithDuranno({ today }: { today: string }) {
   let reading: DurannoTodayMeta;
   try {
     reading = await fetchDurannoTodayMeta(today);
   } catch {
-    reading = {
-      date: today,
-      range: "",
-      title: "",
-      url: DURANNO_BIBLE_URL,
-    };
+    reading = emptyReading(today);
   }
-
   return <HomeClient reading={reading} />;
+}
+
+export default async function HomePage() {
+  // Must run before todaySeoul() — Cache Components forbids bare `new Date()` at prerender.
+  await connection();
+  const today = todaySeoul();
+  return (
+    <Suspense fallback={<HomeClient reading={emptyReading(today)} />}>
+      <HomeWithDuranno today={today} />
+    </Suspense>
+  );
 }
