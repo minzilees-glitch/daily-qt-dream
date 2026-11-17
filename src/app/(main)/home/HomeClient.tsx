@@ -132,6 +132,8 @@ export function HomeClient() {
                 size={22}
                 justEarned={doneToday || lastEarnedDate === today}
                 label=""
+                /* Default (미완료) light: 50% opacity next to the home date. */
+                className={doneToday ? undefined : "opacity-50"}
               />
             }
             status={
