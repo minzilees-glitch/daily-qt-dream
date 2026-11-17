@@ -284,7 +284,7 @@ export default function AdminPage() {
         </p>
       </header>
 
-      <section className="premium-qt-sheet">
+      <section className="premium-qt-sheet premium-qt-sheet--fill admin-sheet">
         <div className="admin-tabs" role="tablist" aria-label="관리자 메뉴">
           {(
             [
@@ -313,7 +313,7 @@ export default function AdminPage() {
             id="admin-panel-placement"
             role="tabpanel"
             aria-labelledby="admin-tab-placement"
-            className="premium-panel animate-fade-up"
+            className="premium-panel admin-panel--fill animate-fade-up"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -411,7 +411,7 @@ export default function AdminPage() {
             id="admin-panel-roster"
             role="tabpanel"
             aria-labelledby="admin-tab-roster"
-            className="premium-panel animate-fade-up"
+            className="premium-panel admin-panel--fill animate-fade-up"
           >
             <div className="flex items-start justify-between gap-3">
               <h2 className="premium-panel-title mb-0">명단</h2>
@@ -562,7 +562,7 @@ export default function AdminPage() {
             id="admin-panel-users"
             role="tabpanel"
             aria-labelledby="admin-tab-users"
-            className="premium-panel animate-fade-up"
+            className="premium-panel admin-panel--fill animate-fade-up"
           >
             <div className="mb-[var(--space-stack-sm)] flex items-center justify-between gap-3">
               <MonthPicker
