@@ -1816,6 +1816,8 @@ button.home-duranno-cta svg {
   fill: none !important;
   flex-shrink: 0;
   opacity: 1 !important;
+  /* Optical align: book glyph sits a hair high vs 「말씀보기」 caption. */
+  transform: translateY(2px);
 }
 
 /*
