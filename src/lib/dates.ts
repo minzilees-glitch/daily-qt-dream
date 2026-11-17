@@ -95,6 +95,8 @@ export function currentYearMonth(): string {
 
 /** 14기 term start (Asia/Seoul civil date). Cumulative 「14기 누적」 from this day. */
 export const TERM_14_START = "2026-11-15";
+/** First calendar month of 14기 (YYYY-MM). Ranking / term month nav min. */
+export const TERM_14_START_YM = yearMonthOf(TERM_14_START);
 export const TERM_14_LABEL = "14기";
 
 /** Inclusive civil dates from `start` through `today` (empty if today is before start). */
