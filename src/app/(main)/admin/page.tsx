@@ -79,9 +79,7 @@ export default function AdminPage() {
   const [rosterDarakbangId, setRosterDarakbangId] = useState(
     DARAKBANGS[0]?.id ?? "",
   );
-  const [rosterSunName, setRosterSunName] = useState(
-    DARAKBANGS[0]?.suns[0]?.groupName ?? "",
-  );
+  const [openSuns, setOpenSuns] = useState<Set<string>>(() => new Set());
 
   const lightRows = useMemo(() => {
     const set = buildCompletionSet(completions);
@@ -172,29 +170,22 @@ export default function AdminPage() {
   }, [supabaseEnabled]);
 
   const selectedRosterRoom = useMemo(
-    () =>
-      DARAKBANGS.find((d) => d.id === rosterDarakbangId) ?? DARAKBANGS[0],
+    () => DARAKBANGS.find((d) => d.id === rosterDarakbangId) ?? DARAKBANGS[0],
     [rosterDarakbangId],
   );
 
-  const selectedRosterSun = useMemo(() => {
-    const room = selectedRosterRoom;
-    if (!room) return null;
-    return (
-      room.suns.find((s) => s.groupName === rosterSunName) ?? room.suns[0] ?? null
-    );
-  }, [selectedRosterRoom, rosterSunName]);
+  const toggleSun = (key: string) => {
+    setOpenSuns((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
-  const selectedSunJoined = useMemo(() => {
-    const members = selectedRosterSun?.memberNames ?? [];
-    const joined = members.filter((n) => joinedNames.has(n)).length;
-    return { total: members.length, joined };
-  }, [selectedRosterSun, joinedNames]);
-
-  const selectRosterDarakbang = (id: string) => {
-    setRosterDarakbangId(id);
-    const room = DARAKBANGS.find((d) => d.id === id);
-    setRosterSunName(room?.suns[0]?.groupName ?? "");
+  const sunJoinCount = (names: string[]) => {
+    const joined = names.filter((n) => joinedNames.has(n)).length;
+    return { total: names.length, joined };
   };
 
   useEffect(() => {
@@ -405,7 +396,7 @@ export default function AdminPage() {
               <div>
                 <h2 className="premium-panel-title">명단</h2>
                 <p className="type-caption text-text-secondary">
-                  다락방과 순을 고른 뒤, 그 순의 가입 현황만 봅니다.
+                  위에서 다락방을 고르고, 순을 펼쳐 가입 여부를 확인합니다.
                 </p>
               </div>
               <button
@@ -427,7 +418,7 @@ export default function AdminPage() {
             <div
               className="admin-roster-chips mt-4"
               role="tablist"
-              aria-label="다락방 선택"
+              aria-label="다락방"
             >
               {DARAKBANGS.map((room) => {
                 const active = room.id === selectedRosterRoom?.id;
@@ -438,7 +429,10 @@ export default function AdminPage() {
                     role="tab"
                     aria-selected={active}
                     className={`admin-roster-chip${active ? " is-active" : ""}`}
-                    onClick={() => selectRosterDarakbang(room.id)}
+                    onClick={() => {
+                      setRosterDarakbangId(room.id);
+                      setOpenSuns(new Set());
+                    }}
                   >
                     {room.name.replace(/\s*다락방\s*$/, "")}
                   </button>
@@ -446,81 +440,75 @@ export default function AdminPage() {
               })}
             </div>
 
-            <div className="mt-4 space-y-3">
-              <label className="block type-caption text-text-secondary">
-                다락방
-                <select
-                  className="admin-field mt-1"
-                  value={selectedRosterRoom?.id ?? ""}
-                  onChange={(e) => selectRosterDarakbang(e.target.value)}
-                >
-                  {DARAKBANGS.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      {room.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+            <p className="mt-4 type-body font-bold text-text-main">
+              {selectedRosterRoom?.name ?? "다락방"}
+              {rosterLoading ? (
+                <span className="ml-2 type-caption font-medium text-text-secondary">
+                  불러오는 중…
+                </span>
+              ) : null}
+            </p>
 
-              <label className="block type-caption text-text-secondary">
-                순
-                <select
-                  className="admin-field mt-1"
-                  value={selectedRosterSun?.groupName ?? ""}
-                  onChange={(e) => setRosterSunName(e.target.value)}
-                >
-                  {(selectedRosterRoom?.suns ?? []).map((sun) => (
-                    <option key={sun.groupName} value={sun.groupName}>
-                      {sun.groupName}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <div className="mt-5 flex items-baseline justify-between gap-2">
-              <h3 className="type-body font-bold text-text-main">
-                {selectedRosterSun?.groupName ?? "순"}
-              </h3>
-              <p className="type-caption text-text-secondary">
-                {selectedRosterSun && selectedRosterSun.memberNames.length === 0
-                  ? "자유 입력"
-                  : `가입 ${selectedSunJoined.joined} / ${selectedSunJoined.total}`}
-                {rosterLoading ? " · …" : ""}
-              </p>
-            </div>
-
-            {!selectedRosterSun ? (
-              <p className="py-8 text-center type-body-sm text-text-secondary">
-                순을 선택해 주세요.
-              </p>
-            ) : selectedRosterSun.memberNames.length === 0 ? (
-              <p className="mt-4 type-body-sm text-text-secondary">
-                이 항목은 고정 명단이 없어요. verify에서 본명을 직접 입력합니다.
-              </p>
-            ) : (
-              <ul className="admin-roster-members mt-3">
-                {selectedRosterSun.memberNames.map((name) => {
-                  const joined = joinedNames.has(name);
-                  return (
-                    <li key={name} className="admin-roster-member">
+            <ul className="admin-roster-accordion mt-3">
+              {(selectedRosterRoom?.suns ?? []).map((sun) => {
+                const sunKey = `${selectedRosterRoom?.id ?? ""}:${sun.groupName}`;
+                const open = openSuns.has(sunKey);
+                const counts = sunJoinCount(sun.memberNames);
+                return (
+                  <li key={sunKey} className="admin-roster-acc">
+                    <button
+                      type="button"
+                      className="admin-roster-acc__head"
+                      aria-expanded={open}
+                      onClick={() => toggleSun(sunKey)}
+                    >
                       <span className="type-body font-semibold text-text-main">
-                        {name}
+                        {sun.groupName}
                       </span>
-                      <span
-                        className={`type-caption font-semibold ${
-                          joined
-                            ? "text-[var(--color-sky-deep)]"
-                            : "text-text-secondary"
-                        }`}
-                      >
-                        {joined ? "가입" : "미가입"}
+                      <span className="type-caption text-text-secondary">
+                        {sun.memberNames.length === 0
+                          ? "자유 입력"
+                          : `가입 ${counts.joined}/${counts.total}`}
+                        <span className="admin-roster-acc__chev" aria-hidden>
+                          {open ? "▾" : "▸"}
+                        </span>
                       </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+                    </button>
+                    {open ? (
+                      <div className="admin-roster-acc__body">
+                        {sun.memberNames.length === 0 ? (
+                          <p className="type-body-sm text-text-secondary">
+                            고정 명단 없음 · verify에서 본명을 직접 입력합니다.
+                          </p>
+                        ) : (
+                          <ul className="admin-roster-members">
+                            {sun.memberNames.map((name) => {
+                              const joined = joinedNames.has(name);
+                              return (
+                                <li key={name} className="admin-roster-member">
+                                  <span className="type-body font-semibold text-text-main">
+                                    {name}
+                                  </span>
+                                  <span
+                                    className={`type-caption font-semibold ${
+                                      joined
+                                        ? "text-[var(--color-sky-deep)]"
+                                        : "text-text-secondary"
+                                    }`}
+                                  >
+                                    {joined ? "가입" : "미가입"}
+                                  </span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </div>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         ) : null}
 

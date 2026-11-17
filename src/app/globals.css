@@ -1516,6 +1516,43 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   color: var(--color-ink-blue);
 }
 
+.admin-roster-accordion {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-roster-acc {
+  border-bottom: 1px solid var(--divider, #e5eaf0);
+}
+
+.admin-roster-acc:last-child {
+  border-bottom: none;
+}
+
+.admin-roster-acc__head {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: none;
+  background: transparent;
+  padding: 0.95rem 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-roster-acc__chev {
+  display: inline-block;
+  margin-left: 0.45rem;
+  color: var(--text-secondary);
+}
+
+.admin-roster-acc__body {
+  padding: 0 0 0.85rem;
+}
+
 .admin-roster-members {
   list-style: none;
   margin: 0;
@@ -1527,8 +1564,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--divider, #e5eaf0);
+  padding: 0.7rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--divider, #e5eaf0) 70%, white);
 }
 
 .admin-roster-member:last-child {
