@@ -448,6 +448,39 @@ export function isCommunityVerified(profile: ProfileRow | null | undefined): boo
 }
 
 /**
+ * Admin: all verified 본명 values (for roster join / 가입 여부).
+ * Requires admin SELECT (profiles_select_admin).
+ */
+export async function fetchVerifiedLegalNames(): Promise<
+  ProfileRepoResult<string[]>
+> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+
+  const { data, error } = await sb
+    .from("profiles")
+    .select("legal_name")
+    .eq("community_status", "verified")
+    .not("legal_name", "is", null);
+
+  if (error) {
+    if (/legal_name|community_status|42703|PGRST204/i.test(error.message)) {
+      return {
+        ok: false,
+        error:
+          "본명·상태 컬럼이 없어요. 20261117_kakao_community_verify.sql 을 적용해 주세요.",
+      };
+    }
+    return { ok: false, error: error.message };
+  }
+
+  const names = (data ?? [])
+    .map((row) => (row.legal_name ?? "").trim())
+    .filter(Boolean);
+  return { ok: true, data: Array.from(new Set(names)) };
+}
+
+/**
  * Admin queue: 새가족 (verified, no 순) + 미배정/예외 (exception, usually no 순).
  * Requires admin SELECT (profiles_select_admin).
  */

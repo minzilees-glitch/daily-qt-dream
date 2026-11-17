@@ -19,13 +19,15 @@ import {
   userMonthStats,
   userTermLights,
 } from "@/lib/stats";
+import { DARAKBANGS } from "@/lib/community/darakbang-roster";
 import {
   adminAssignProfileToGroup,
   fetchPlacementQueueProfiles,
+  fetchVerifiedLegalNames,
   type ProfileRow,
 } from "@/lib/supabase/profile-repo";
 
-type Tab = "placement" | "users";
+type Tab = "placement" | "roster" | "users";
 
 type UserLightRow = {
   userId: string;
@@ -71,6 +73,10 @@ export default function AdminPage() {
   const [queueError, setQueueError] = useState<string | null>(null);
   const [assignDraft, setAssignDraft] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [joinedNames, setJoinedNames] = useState<Set<string>>(new Set());
+  const [rosterLoading, setRosterLoading] = useState(false);
+  const [rosterError, setRosterError] = useState<string | null>(null);
+  const [rosterQuery, setRosterQuery] = useState("");
 
   const lightRows = useMemo(() => {
     const set = buildCompletionSet(completions);
@@ -142,10 +148,75 @@ export default function AdminPage() {
     });
   }, [supabaseEnabled, groups]);
 
+  const loadJoinedNames = useCallback(async () => {
+    if (!supabaseEnabled) {
+      setJoinedNames(new Set());
+      setRosterError("Supabase가 설정되지 않아 가입 여부를 불러올 수 없어요.");
+      return;
+    }
+    setRosterLoading(true);
+    setRosterError(null);
+    const res = await fetchVerifiedLegalNames();
+    setRosterLoading(false);
+    if (!res.ok) {
+      setJoinedNames(new Set());
+      setRosterError(res.error);
+      return;
+    }
+    setJoinedNames(new Set(res.data));
+  }, [supabaseEnabled]);
+
+  const filteredDarakbangs = useMemo(() => {
+    const q = rosterQuery.trim();
+    if (!q) return DARAKBANGS;
+    return DARAKBANGS.map((room) => {
+      const suns = room.suns
+        .map((sun) => {
+          const members = sun.memberNames.filter(
+            (name) =>
+              name.includes(q) ||
+              sun.groupName.includes(q) ||
+              room.name.includes(q),
+          );
+          if (
+            room.name.includes(q) ||
+            sun.groupName.includes(q) ||
+            members.length > 0
+          ) {
+            return {
+              ...sun,
+              memberNames:
+                room.name.includes(q) || sun.groupName.includes(q)
+                  ? sun.memberNames
+                  : members,
+            };
+          }
+          return null;
+        })
+        .filter((s): s is (typeof room.suns)[number] => s !== null);
+      return suns.length > 0 ? { ...room, suns } : null;
+    }).filter((r): r is (typeof DARAKBANGS)[number] => r !== null);
+  }, [rosterQuery]);
+
+  const rosterJoinedCount = useMemo(() => {
+    let total = 0;
+    let joined = 0;
+    for (const room of DARAKBANGS) {
+      for (const sun of room.suns) {
+        for (const name of sun.memberNames) {
+          total += 1;
+          if (joinedNames.has(name)) joined += 1;
+        }
+      }
+    }
+    return { total, joined };
+  }, [joinedNames]);
+
   useEffect(() => {
     if (!currentUser?.isAdmin) return;
     void loadQueue();
-  }, [currentUser?.isAdmin, loadQueue]);
+    void loadJoinedNames();
+  }, [currentUser?.isAdmin, loadQueue, loadJoinedNames]);
 
   if (!currentUser) return null;
 
@@ -191,6 +262,10 @@ export default function AdminPage() {
     }
     assignUserGroup(profile.id, groupId);
     setQueue((prev) => prev.filter((p) => p.id !== profile.id));
+    const legal = profile.legal_name?.trim();
+    if (legal) {
+      setJoinedNames((prev) => new Set(prev).add(legal));
+    }
     showToast(`${displayName(profile)} → ${groupName} 배정 완료`);
   };
 
@@ -208,7 +283,7 @@ export default function AdminPage() {
           <h1 className="premium-tab-title mb-0">관리자</h1>
         </div>
         <p className="qt-validation-hint type-caption mt-[var(--space-stack-sm)] text-text-secondary">
-          미배정·새가족 순 배정과 유저 빛을 관리합니다.
+          배정 대기 · 명단 가입 현황 · 유저 빛을 관리합니다.
         </p>
       </header>
 
@@ -217,6 +292,7 @@ export default function AdminPage() {
           {(
             [
               ["placement", "배정 대기"],
+              ["roster", "명단"],
               ["users", "유저 빛"],
             ] as const
           ).map(([id, label]) => (
@@ -330,6 +406,114 @@ export default function AdminPage() {
                 );
               })}
             </ul>
+          </div>
+        ) : null}
+
+        {tab === "roster" ? (
+          <div
+            id="admin-panel-roster"
+            role="tabpanel"
+            aria-labelledby="admin-tab-roster"
+            className="premium-panel animate-fade-up"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="premium-panel-title">다락방 · 순 · 명단</h2>
+                <p className="type-caption text-text-secondary">
+                  정식 명단 기준입니다. 가입은 본명 인증(
+                  <span className="font-semibold">verified</span>)과 일치할 때
+                  표시됩니다.
+                </p>
+                <p className="mt-1 type-caption text-text-secondary">
+                  가입 {rosterJoinedCount.joined} / 명단{" "}
+                  {rosterJoinedCount.total}
+                  {rosterLoading ? " · 불러오는 중…" : ""}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="shrink-0 type-caption font-semibold text-[var(--color-sky-deep)]"
+                onClick={() => void loadJoinedNames()}
+                disabled={rosterLoading}
+              >
+                {rosterLoading ? "불러오는 중…" : "새로고침"}
+              </button>
+            </div>
+
+            {rosterError ? (
+              <p className="mt-3 type-caption font-semibold text-red-600">
+                {rosterError}
+              </p>
+            ) : null}
+
+            <input
+              value={rosterQuery}
+              onChange={(e) => setRosterQuery(e.target.value)}
+              placeholder="다락방 · 순 · 본명 검색"
+              className="admin-field mt-3 mb-3"
+            />
+
+            <div className="space-y-5">
+              {filteredDarakbangs.map((room) => (
+                <section key={room.id} className="admin-roster-room">
+                  <h3 className="type-body font-bold text-text-main">
+                    {room.name}
+                  </h3>
+                  <ul className="admin-group-list mt-2">
+                    {room.suns.map((sun) => (
+                      <li key={`${room.id}-${sun.groupName}`} className="admin-group-row">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <p className="type-body font-semibold text-text-main">
+                            {sun.groupName}
+                          </p>
+                          <p className="type-caption text-text-secondary">
+                            {sun.memberNames.length === 0
+                              ? "자유 입력"
+                              : `${sun.memberNames.filter((n) => joinedNames.has(n)).length}/${sun.memberNames.length} 가입`}
+                          </p>
+                        </div>
+                        {sun.memberNames.length === 0 ? (
+                          <p className="mt-2 type-caption text-text-secondary">
+                            명단 없음 · verify에서 본명을 직접 입력합니다.
+                          </p>
+                        ) : (
+                          <ul className="mt-2 space-y-1.5">
+                            {sun.memberNames.map((name) => {
+                              const joined = joinedNames.has(name);
+                              return (
+                                <li
+                                  key={`${sun.groupName}-${name}`}
+                                  className="flex items-center justify-between gap-2"
+                                >
+                                  <span className="type-body-sm font-medium text-text-main">
+                                    {name}
+                                  </span>
+                                  <span
+                                    className={`type-caption font-semibold ${
+                                      joined
+                                        ? "text-[var(--color-sky-deep)]"
+                                        : "text-text-secondary"
+                                    }`}
+                                  >
+                                    {joined ? "가입" : "미가입"}
+                                  </span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </div>
+
+            {filteredDarakbangs.length === 0 ? (
+              <p className="py-8 text-center type-body-sm text-text-secondary">
+                검색 결과가 없습니다.
+              </p>
+            ) : null}
           </div>
         ) : null}
 
