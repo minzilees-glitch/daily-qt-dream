@@ -36,7 +36,7 @@ export function getMockData(): MockDataset {
 
   const groups = buildGroups();
   const users = buildUsers(groups);
-  // Seeded demo: 이민지 Sep/Oct + 11-15; 파일럿 순 Sep/Oct/Nov. Others 0.
+  // Seeded demo: 이민지 Sep/Oct + 11-15. Others 0.
   const completions = buildQtCompletions(users);
   const reflections = buildEntries(users, completions);
   const awards = buildAwards();
