@@ -350,7 +350,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               >
                 <LightCount
                   lights={stats.lights}
-                  size={22}
+                  size={21}
                   rays={false}
                   className="opacity-100"
                   textClassName="type-stat font-semibold tabular-nums text-[var(--color-mint)] opacity-100"
