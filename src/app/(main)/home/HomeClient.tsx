@@ -13,8 +13,8 @@ import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
 import { PassageEntryActions } from "@/components/qt/PassageEntryActions";
 import { HomePremiumShell } from "@/components/qt/HomePremiumShell";
 import { useApp } from "@/lib/app-context";
-import type { DurannoTodayMeta } from "@/lib/duranno";
 import { formatDisplayDate } from "@/lib/dates";
+import { useDurannoToday } from "@/hooks/useDurannoToday";
 import { useSeoulToday } from "@/hooks/useSeoulToday";
 import { entryHasQtContent, fieldsFromEntry } from "@/lib/qt-entry";
 import {
@@ -23,11 +23,7 @@ import {
   shareOrCopyText,
 } from "@/lib/qt-share";
 
-export function HomeClient({
-  reading,
-}: {
-  reading: DurannoTodayMeta;
-}) {
+export function HomeClient() {
   const {
     currentUser,
     isCompleted,
@@ -37,6 +33,7 @@ export function HomeClient({
     lastEarnedDate,
   } = useApp();
   const today = useSeoulToday();
+  const reading = useDurannoToday(today);
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
