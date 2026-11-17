@@ -280,7 +280,7 @@ export default function AdminPage() {
           <h1 className="premium-tab-title mb-0">관리자</h1>
         </div>
         <p className="qt-validation-hint type-caption mt-[var(--space-stack-sm)] text-text-secondary">
-          배정 대기 · 명단 가입 현황 · 유저 빛을 관리합니다.
+          명단 · 배정 대기 · 유저 별 빛을 관리합니다.
         </p>
       </header>
 
@@ -576,7 +576,7 @@ export default function AdminPage() {
               className="admin-field mb-3"
             />
 
-            <div className="admin-user-table" role="table" aria-label="유저 빛">
+            <div className="admin-user-table" role="table" aria-label="유저 별 빛">
               <div className="admin-user-table__head" role="row">
                 <span className="admin-user-table__rank" role="columnheader">
                   순위
