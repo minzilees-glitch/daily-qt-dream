@@ -69,7 +69,7 @@ function canvasToJpegBlob(
   });
 }
 
-async function blobToDataUrl(blob: Blob): Promise<string> {
+export async function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -80,6 +80,25 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
     reader.onerror = () => reject(new Error("이미지 형식을 읽지 못했어요."));
     reader.readAsDataURL(blob);
   });
+}
+
+/**
+ * True when the picker already produced a small JPEG thumbnail —
+ * skip a second canvas pass (main-thread freeze on mobile).
+ */
+export function isPrecompressedAvatarJpeg(blob: Blob): boolean {
+  return (
+    blob.type === "image/jpeg" &&
+    blob.size > 0 &&
+    blob.size <= MAX_BYTES
+  );
+}
+
+/** Build avatar payload from an already-compressed JPEG without re-encoding. */
+export async function jpegBlobToAvatarPayload(
+  blob: Blob,
+): Promise<{ dataUrl: string; blob: Blob }> {
+  return { dataUrl: await blobToDataUrl(blob), blob };
 }
 
 /**

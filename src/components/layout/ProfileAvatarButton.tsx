@@ -79,16 +79,25 @@ export function ProfileAvatarButton({
     if ((!previewBlob && !preview) || saving) return;
     setSaving(true);
     setError(null);
-    const res = await setAvatarUrl(previewBlob ?? preview);
-    setSaving(false);
-    if (!res.ok) {
-      setError(res.message || "저장에 실패했어요.");
-      return;
+    try {
+      const res = await setAvatarUrl(previewBlob ?? preview);
+      if (!res.ok) {
+        setError(res.message || "저장에 실패했어요.");
+        return;
+      }
+      setOpen(false);
+      setPreview(null);
+      setPreviewBlob(null);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "저장에 실패했어요. 다시 시도해 주세요.",
+      );
+    } finally {
+      setSaving(false);
     }
-    setOpen(false);
-    setPreview(null);
-    setPreviewBlob(null);
-    setError(null);
   };
 
   return (

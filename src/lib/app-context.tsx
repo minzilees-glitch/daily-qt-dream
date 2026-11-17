@@ -26,11 +26,16 @@ import {
 import { isFutureDate, todaySeoul } from "@/lib/dates";
 import { loadJson, removeKey, saveJson, trySaveJson } from "@/lib/storage";
 import {
+  entryHasQtContent,
   normalizeEntry,
   trimFields,
   validationMessage,
 } from "@/lib/qt-entry";
-import { compressAvatarImage } from "@/lib/avatar-image";
+import {
+  compressAvatarImage,
+  isPrecompressedAvatarJpeg,
+  jpegBlobToAvatarPayload,
+} from "@/lib/avatar-image";
 import {
   clearAvatar,
   dataUrlToBlob,
@@ -449,7 +454,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
       }
       if (remoteReady) {
+        // Session user: presence alone can outrun / miss QT text (empty row,
+        // fetch lag). Only count days that still have saved QT content.
+        const myContentDates = new Set(
+          remoteQt.myEntries
+            .filter((e) => entryHasQtContent(e))
+            .map((e) => e.date),
+        );
         for (const c of remoteQt.presence) {
+          if (
+            c.userId === sessionUserId &&
+            !myContentDates.has(c.date)
+          ) {
+            continue;
+          }
           map.set(`${c.userId}|${c.date}`, c.completed);
         }
       }
@@ -824,10 +842,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
 
       // Prefer an already-compressed JPEG Blob from the picker; otherwise compress.
+      // Re-encoding a second time freezes the UI on large phone photos.
       let compressed: { dataUrl: string; blob: Blob };
       try {
-        if (image instanceof Blob && image.type.startsWith("image/")) {
-          // Re-run through canvas so every upload is JPEG @ MAX_EDGE (idempotent).
+        if (image instanceof Blob && isPrecompressedAvatarJpeg(image)) {
+          compressed = await jpegBlobToAvatarPayload(image);
+        } else if (
+          image instanceof Blob &&
+          image.type.startsWith("image/")
+        ) {
           compressed = await compressAvatarImage(image);
         } else if (typeof image === "string") {
           compressed = await compressAvatarImage(image);
@@ -857,7 +880,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ok: false, message: "이미지 형식을 읽지 못했어요." };
       }
 
-      const res = await uploadAndSaveAvatar(sessionUserId, blob);
+      let res: Awaited<ReturnType<typeof uploadAndSaveAvatar>>;
+      try {
+        res = await uploadAndSaveAvatar(sessionUserId, blob);
+      } catch (err) {
+        const detail =
+          err instanceof Error ? err.message : "클라우드 저장에 실패했어요.";
+        return { ok: false, message: detail };
+      }
       if (!res.ok) {
         return { ok: false, message: res.error };
       }
