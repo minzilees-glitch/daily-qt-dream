@@ -1507,19 +1507,23 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   outline: none;
 }
 
-/* Native select chevron sits flush on the edge — replace with inset arrow. */
+/* Native select chevron sits flush on the edge — replace with inset arrow.
+ * Use !important so Tailwind px-* / bg-* utilities cannot wipe padding-right
+ * or background-image (verify selects previously looked flush for this reason). */
 select.admin-field,
 select.verify-field {
-  -webkit-appearance: none;
-  appearance: none;
-  padding-right: 2.35rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23768896' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center; /* inset from the right edge */
-  background-size: 12px 8px;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  padding-right: 2.75rem !important; /* ~pr-11 — room for inset chevron */
+  background-color: color-mix(in srgb, var(--color-mint) 35%, white);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23768896' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 1.15rem center !important; /* inset from right edge */
+  background-size: 12px 8px !important;
 }
 
-.admin-field:focus {
+.admin-field:focus,
+.verify-field:focus {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-sky) 55%, transparent);
 }
 
