@@ -528,18 +528,21 @@ export function SkyWalkers({
 
       <div
         ref={stageRef}
-        className="sky-walkers-stage relative z-10 min-h-[13.125rem] w-full overflow-hidden"
+        className="sky-walkers-stage relative z-10 min-h-[13.125rem] w-full overflow-visible"
         aria-label="순원들이 구름 위에서 걷고 차를 마시며 책을 읽는 장면"
       >
-        <div ref={layerRef} className="absolute inset-0">
+        <div ref={layerRef} className="absolute inset-0 overflow-visible">
           {visible.map((u, i) => {
             const selected = selectedId === u.id;
             const activity = pickActivity(i);
+            const avatar = u.avatarUrl ?? null;
             return (
               <div
                 key={u.id}
                 data-walker-id={u.id}
-                className="absolute left-0 top-0 z-[1] will-change-transform"
+                className={`absolute left-0 top-0 will-change-transform ${
+                  selected ? "z-30" : "z-[1]"
+                }`}
                 style={{ width: WALKER_FIGURE_W }}
               >
                 <button
@@ -553,8 +556,31 @@ export function SkyWalkers({
                   }}
                 >
                   {selected ? (
-                    <span className="absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-text-main px-2.5 py-1 type-micro text-white">
-                      {u.name}
+                    <span className="pointer-events-none absolute bottom-full left-1/2 z-40 mb-1.5 flex w-max -translate-x-1/2 flex-col items-center gap-1.5">
+                      <span
+                        className={`flex h-16 w-16 items-center justify-center overflow-hidden rounded-full shadow-[0_2px_10px_rgba(0,9,23,0.28)] ring-2 ring-white ${
+                          avatar
+                            ? "bg-white"
+                            : "bg-sky-light font-semibold text-[var(--color-ink-blue)]"
+                        }`}
+                        style={{ fontSize: 26 }}
+                        aria-hidden
+                      >
+                        {avatar ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={avatar}
+                            alt=""
+                            className="h-full w-full object-cover"
+                            draggable={false}
+                          />
+                        ) : (
+                          u.name.slice(0, 1)
+                        )}
+                      </span>
+                      <span className="whitespace-nowrap rounded-full bg-text-main px-2.5 py-1 type-micro text-white">
+                        {u.name}
+                      </span>
                     </span>
                   ) : null}
 
