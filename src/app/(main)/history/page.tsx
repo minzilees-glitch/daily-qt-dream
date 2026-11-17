@@ -127,6 +127,23 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     return s;
   }, [completions, currentUser, ym]);
 
+  /** Same-day earned lights only — past backfills stay in completedDates as outline. */
+  const lightDates = useMemo(() => {
+    const s = new Set<string>();
+    if (!currentUser) return s;
+    for (const c of completions) {
+      if (
+        c.userId === currentUser.id &&
+        c.completed &&
+        c.earnsLight !== false &&
+        yearMonthOf(c.date) === ym
+      ) {
+        s.add(c.date);
+      }
+    }
+    return s;
+  }, [completions, currentUser, ym]);
+
   const recomputeSheetTop = useCallback(() => {
     const weekH = weekHeaderHRef.current;
     const monthH = monthHeaderHRef.current;
@@ -398,6 +415,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
           <QtCalendar
             yearMonth={ym}
             completedDates={completedDates}
+            lightDates={lightDates}
             selectedDate={selected}
             onSelect={selectDate}
             collapsed={!calendarExpanded}

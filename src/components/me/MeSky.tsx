@@ -46,6 +46,8 @@ type SkySpark = {
   size: number;
   delay: number;
   dur: number;
+  /** Past QT with no earned light — outline stroke only. */
+  outline?: boolean;
 };
 
 type SkyBandPx = {
@@ -92,12 +94,15 @@ function sparksOverlap(
   return dx * dx + dy * dy < minDist * minDist;
 }
 
-/** Scatter year-lights in free sky under the stats tiles (above walker). */
+/** Scatter earned + outline lights in free sky under the stats tiles. */
 function buildMeSkySparks(
   lights: number,
+  outlineLights: number,
   band: SkyBandPx | null,
 ): { sparks: SkySpark[]; capped: boolean } {
-  const show = Math.max(0, Math.floor(lights));
+  const filled = Math.max(0, Math.floor(lights));
+  const outlines = Math.max(0, Math.floor(outlineLights));
+  const show = filled + outlines;
   if (!band || band.cardW < 8 || band.cardH < 8) {
     return { sparks: [], capped: false };
   }
@@ -112,6 +117,7 @@ function buildMeSkySparks(
   const spanY = Math.max(8, maxY - minY);
 
   for (let i = 0; i < show; i++) {
+    const outline = i >= filled;
     const size =
       SKY_LIGHT_SIZES[Math.floor(hash01(i + 41) * SKY_LIGHT_SIZES.length)]!;
     let placed: SkySpark | null = null;
@@ -131,6 +137,7 @@ function buildMeSkySparks(
         size,
         delay: a * 2.6,
         dur: 3.4 + b * 2.2,
+        outline,
       };
       if (sparks.some((s) => sparksOverlap(candidate, s))) continue;
       placed = candidate;
@@ -165,11 +172,14 @@ function walkBand(height: number): { minY: number; maxY: number } {
 export function MeSky({
   monthLights,
   yearLights,
+  /** Past-date QT outline sparks (not counted in month/year dashboards). */
+  outlineLights = 0,
   cumulativeLabel,
   groupLabel,
 }: {
   monthLights: number;
   yearLights: number;
+  outlineLights?: number;
   /** e.g. 「14기 누적」 */
   cumulativeLabel: string;
   groupLabel: string;
@@ -285,8 +295,8 @@ export function MeSky({
   }, [currentUser]);
 
   const { sparks, capped } = useMemo(
-    () => buildMeSkySparks(yearLights, skyBand),
-    [yearLights, skyBand],
+    () => buildMeSkySparks(yearLights, outlineLights, skyBand),
+    [yearLights, outlineLights, skyBand],
   );
 
   if (!currentUser) return null;
@@ -324,6 +334,7 @@ export function MeSky({
               tone="active"
               size={s.size}
               rays={false}
+              outline={Boolean(s.outline)}
               label=""
               className="drop-shadow-[0_0_1px_rgba(255,255,255,0.35)]"
             />

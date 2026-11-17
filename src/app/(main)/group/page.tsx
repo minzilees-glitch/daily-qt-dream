@@ -9,8 +9,10 @@ import { useApp } from "@/lib/app-context";
 import { addMonths, currentYearMonth, todaySeoul } from "@/lib/dates";
 import {
   buildCompletionSet,
+  buildOutlineSet,
   computeGroupRanking,
   groupDayParticipation,
+  groupMonthStats,
   groupThisWeekWeekdayParticipation,
 } from "@/lib/stats";
 
@@ -19,6 +21,10 @@ export default function GroupPage() {
   const [ym, setYm] = useState(currentYearMonth());
 
   const set = useMemo(() => buildCompletionSet(completions), [completions]);
+  const outlineSet = useMemo(
+    () => buildOutlineSet(completions),
+    [completions],
+  );
 
   const members = useMemo(() => {
     if (!currentUser) return [];
@@ -41,6 +47,13 @@ export default function GroupPage() {
     currentUser.groupId,
   );
   const myRank = ranking.find((r) => r.groupId === currentUser.groupId);
+  const outlineLights = groupMonthStats(
+    currentUser.groupId,
+    users,
+    ym,
+    set,
+    outlineSet,
+  ).lights;
   const dayPart = groupDayParticipation(currentUser.groupId, users, ym, set);
   const today = todaySeoul();
   const weekBars = groupThisWeekWeekdayParticipation(
@@ -71,6 +84,7 @@ export default function GroupPage() {
             members={members}
             memberCount={myRank?.memberCount ?? 0}
             lights={myRank?.lights ?? 0}
+            outlineLights={outlineLights}
             rankLabel={
               myRank && myRank.lights > 0 ? `${myRank.rank}위` : "-"
             }

@@ -81,15 +81,46 @@ function RayBurst({ size, color }: { size: number; color: string }) {
   );
 }
 
+/** Inner mask scale for outline stroke (empty fill, yellow/white ring). */
+const OUTLINE_INNER = "58% 58%";
+
 function LightGlyph({
   tone,
   size,
+  outline = false,
   className = "",
 }: {
   tone: Tone;
   size: number;
+  /** Stroke-only spark (past QT completed, no light earned). */
+  outline?: boolean;
   className?: string;
 }) {
+  if (outline) {
+    // Dual mask + exclude/xor → ring of the spark shape, transparent center.
+    return (
+      <span
+        className={`inline-block shrink-0 ${className}`}
+        style={{
+          width: size,
+          height: size,
+          backgroundColor: toneColor(tone),
+          WebkitMaskImage: `url(${SRC}), url(${SRC})`,
+          maskImage: `url(${SRC}), url(${SRC})`,
+          WebkitMaskSize: `100% 100%, ${OUTLINE_INNER}`,
+          maskSize: `100% 100%, ${OUTLINE_INNER}`,
+          WebkitMaskPosition: "center, center",
+          maskPosition: "center, center",
+          WebkitMaskRepeat: "no-repeat, no-repeat",
+          maskRepeat: "no-repeat, no-repeat",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
+        }}
+        aria-hidden
+      />
+    );
+  }
+
   return (
     <span
       className={`inline-block shrink-0 ${className}`}
@@ -120,6 +151,11 @@ export function LightIcon({
   tip,
   future = false,
   /**
+   * Outline-only spark (past-date QT saved, no light earned).
+   * Skips earn burst; still uses active/white tones for stroke color.
+   */
+  outline = false,
+  /**
    * Allow the one-shot earn burst. Default true.
    * Pass false to never show rays (e.g. 「이번달 내가 모은 빛」).
    */
@@ -137,13 +173,14 @@ export function LightIcon({
   label?: string;
   tip?: string;
   future?: boolean;
+  outline?: boolean;
   rays?: boolean;
   justEarned?: boolean;
 }) {
   const resolved: Tone = future
     ? "inactive"
     : (tone ?? (active ? "active" : "inactive"));
-  const isInactive = resolved === "inactive";
+  const isInactive = resolved === "inactive" && !outline;
   const tipText = tip ?? (future ? FUTURE_TIP : INACTIVE_TIP);
   const tipId = useId();
   const wrapRef = useRef<HTMLSpanElement>(null);
@@ -152,9 +189,11 @@ export function LightIcon({
   const [prevResolved, setPrevResolved] = useState(resolved);
   const [prevJustEarned, setPrevJustEarned] = useState(justEarned);
   const [tonePrimed, setTonePrimed] = useState(false);
+  // Outline never earns — no ray burst.
+  const raysOn = rays && !outline;
 
   // Tone / justEarned → burst: adjust during render (no sync setState in effects).
-  if (!rays) {
+  if (!raysOn) {
     if (burst) setBurst(false);
     if (prevResolved !== resolved) setPrevResolved(resolved);
     if (prevJustEarned !== justEarned) setPrevJustEarned(justEarned);
@@ -207,13 +246,24 @@ export function LightIcon({
 
   const aria =
     label ??
-    (future ? "아직 열리지 않은 빛" : isInactive ? "빛 미수집" : "빛 수집됨");
+    (future
+      ? "아직 열리지 않은 빛"
+      : outline
+        ? "지난 큐티 완료 (빛 미획득)"
+        : isInactive
+          ? "빛 미수집"
+          : "빛 수집됨");
 
-  const showBurst = rays && burst && !isInactive;
+  const showBurst = raysOn && burst && !isInactive;
 
-  if (!isInactive) {
+  if (!isInactive || outline) {
     // Layout box is always `size`×`size` so earn rays/zoom never shift
     // the glyph center in flex rows (home title, history date, calendar).
+    const glyphTone: Tone = outline
+      ? resolved === "inactive"
+        ? "active"
+        : resolved
+      : resolved;
     return (
       <span
         className={`relative inline-flex shrink-0 items-center justify-center overflow-visible ${className}`}
@@ -228,10 +278,10 @@ export function LightIcon({
           }`}
         >
           {showBurst ? (
-            <RayBurst size={size} color={toneColor(resolved)} />
+            <RayBurst size={size} color={toneColor(glyphTone)} />
           ) : null}
           <span className="relative z-[1] inline-flex">
-            <LightGlyph tone={resolved} size={size} />
+            <LightGlyph tone={glyphTone} size={size} outline={outline} />
           </span>
         </span>
       </span>

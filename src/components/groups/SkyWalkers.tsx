@@ -27,6 +27,8 @@ type SkySpark = {
   size: number;
   delay: number;
   dur: number;
+  /** Past QT with no earned light — outline stroke only. */
+  outline?: boolean;
 };
 
 type SkyBandPx = {
@@ -78,14 +80,17 @@ function sparksOverlap(
 
 /**
  * Scatter in free sky: top = stats SoftCard bottom + 5px.
+ * Filled = earned lights; outline = past backfills (not in dashboard count).
  * Avoids stats AABB, no icon overlap, stays above walker feet zone.
  */
 function buildSkySparks(
   lights: number,
+  outlineLights: number,
   band: SkyBandPx | null,
 ): { sparks: SkySpark[]; capped: boolean } {
-  /* 1:1 with 「우리순 전체」 period lights (not memberCount). */
-  const show = Math.max(0, Math.floor(lights));
+  const filled = Math.max(0, Math.floor(lights));
+  const outlines = Math.max(0, Math.floor(outlineLights));
+  const show = filled + outlines;
   if (!band || band.cardW < 8 || band.cardH < 8) {
     return { sparks: [], capped: false };
   }
@@ -100,6 +105,7 @@ function buildSkySparks(
   const spanY = Math.max(8, maxY - minY);
 
   for (let i = 0; i < show; i++) {
+    const outline = i >= filled;
     const size =
       SKY_LIGHT_SIZES[Math.floor(hash01(i + 41) * SKY_LIGHT_SIZES.length)]!;
     let placed: SkySpark | null = null;
@@ -120,6 +126,7 @@ function buildSkySparks(
         size,
         delay: a * 2.6,
         dur: 3.4 + b * 2.2,
+        outline,
       };
       if (sparks.some((s) => sparksOverlap(candidate, s))) continue;
       placed = candidate;
@@ -276,11 +283,14 @@ export function SkyWalkers({
   members,
   memberCount,
   lights,
+  /** Past-date QT outline sparks (not counted in 「우리순 전체」). */
+  outlineLights = 0,
   rankLabel,
 }: {
   members: User[];
   memberCount: number;
   lights: number;
+  outlineLights?: number;
   rankLabel: string;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -437,10 +447,10 @@ export function SkyWalkers({
   }, [selectedId]);
 
   const visible = members.slice(0, 12);
-  /* Decorative stars = 「우리순 전체」 lights for the selected period. */
+  /* Decorative stars = earned lights + outline past backfills. */
   const { sparks, capped } = useMemo(
-    () => buildSkySparks(lights, skyBand),
-    [lights, skyBand],
+    () => buildSkySparks(lights, outlineLights, skyBand),
+    [lights, outlineLights, skyBand],
   );
 
   return (
@@ -479,6 +489,7 @@ export function SkyWalkers({
               tone="active"
               size={s.size}
               rays={false}
+              outline={Boolean(s.outline)}
               label=""
               className="drop-shadow-[0_0_1px_rgba(255,255,255,0.35)]"
             />
