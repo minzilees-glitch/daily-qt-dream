@@ -8,7 +8,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { createPortal } from "react-dom";
-import { Camera, UserRound } from "lucide-react";
+import { UserRound } from "lucide-react";
 import { useApp } from "@/lib/app-context";
 import {
   clampCropOffset,
@@ -396,13 +396,6 @@ export function ProfileAvatarButton({
           ) : (
             <UserRound size={Math.round(size * 0.45)} strokeWidth={1.75} />
           )}
-        </span>
-        <span
-          className={`absolute -bottom-0.5 -right-0.5 z-10 flex h-6 w-6 items-center justify-center rounded-full ${
-            light ? "bg-white/90 text-sky" : "bg-sky text-white"
-          }`}
-        >
-          <Camera size={14} strokeWidth={2.2} aria-hidden />
         </span>
       </button>
 
