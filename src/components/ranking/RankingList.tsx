@@ -102,7 +102,16 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
               ) : null}
             </div>
             <div className="premium-rank-table__col-lights" role="cell">
-              <LightCount lights={row.lights} size={18} />
+              <LightCount
+                lights={row.lights}
+                size={18}
+                className="justify-end"
+                textClassName={
+                  row.isMine
+                    ? "type-body font-semibold"
+                    : "type-body font-semibold text-text-main"
+                }
+              />
             </div>
           </li>
         ))}

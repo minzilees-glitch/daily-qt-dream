@@ -1461,6 +1461,10 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   border-radius: 0 !important;
 }
 
+.premium-qt-root .premium-rank-row--mine {
+  border-radius: 12px !important;
+}
+
 .premium-stat-tile {
   border-radius: 16px !important;
   background: rgb(255 255 255 / 0.5);
@@ -1485,9 +1489,10 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   color: inherit;
 }
 
-/* Ranking: table rows (no gray cards). Mine keeps ink-blue highlight. */
+/* Ranking: table rows (no gray cards/fill). Mine keeps rounded ink-blue. */
 .premium-rank-table {
   width: 100%;
+  background: transparent;
 }
 
 .premium-rank-table__head {
@@ -1495,7 +1500,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   align-items: center;
   gap: 0.75rem;
   border-bottom: 1px solid rgb(0 9 23 / 0.12);
-  padding: 0.35rem 0.25rem 0.55rem;
+  background: transparent;
+  padding: 0.25rem 0.25rem 0.45rem;
   font-size: var(--fs-nav);
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -1506,6 +1512,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   list-style: none;
   margin: 0;
   padding: 0;
+  background: transparent;
 }
 
 .premium-rank-table__col-rank {
@@ -1525,8 +1532,10 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 .premium-rank-table__col-lights {
   display: flex;
   flex-shrink: 0;
+  align-items: center;
   justify-content: flex-end;
-  min-width: 3.25rem;
+  min-width: 3.5rem;
+  margin-left: auto;
 }
 
 .premium-rank-row {
@@ -1535,8 +1544,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   gap: 0.75rem;
   border-radius: 0 !important;
   border-bottom: 1px solid rgb(0 9 23 / 0.08);
-  background: transparent;
-  padding: 0.85rem 0.25rem;
+  background: transparent !important;
+  padding: 0.5rem 0.25rem;
   box-shadow: none;
   scroll-margin-top: 5.5rem;
   scroll-margin-bottom: 5.5rem;
@@ -1697,12 +1706,12 @@ select.admin-field {
 }
 
 .premium-rank-row--mine {
-  background: var(--color-ink-blue); /* #1F3E62 */
+  background: var(--color-ink-blue) !important; /* #1F3E62 */
   border-bottom-color: transparent;
   outline: none;
-  margin-inline: -0.25rem;
-  padding-inline: 0.5rem;
-  border-radius: 6px !important;
+  margin-inline: -0.35rem;
+  padding-inline: 0.6rem;
+  border-radius: 12px !important;
 }
 
 .premium-rank-row--mine .type-body,
