@@ -486,7 +486,7 @@ export default function AdminPage() {
                             aria-expanded={open}
                             onClick={() => toggleSun(sunKey)}
                           >
-                            <span className="type-body font-semibold text-text-main">
+                            <span className="admin-roster-acc__title">
                               {sun.groupName}
                             </span>
                             <span className="admin-roster-acc__meta">

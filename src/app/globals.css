@@ -1556,6 +1556,15 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   cursor: pointer;
 }
 
+/* 다락방 title: type-body 17px + 2pt → 19px, bold ink */
+.admin-roster-acc__title {
+  font-size: 1.1875rem; /* 19px */
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-black, #000917);
+  opacity: 1;
+}
+
 .admin-roster-acc__meta {
   display: inline-flex;
   flex-direction: row;
