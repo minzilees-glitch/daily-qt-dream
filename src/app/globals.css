@@ -1508,7 +1508,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 }
 
 /* Native select chevron sits flush on the edge — replace with inset arrow. */
-select.admin-field {
+select.admin-field,
+select.verify-field {
   -webkit-appearance: none;
   appearance: none;
   padding-right: 2.35rem;

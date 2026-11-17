@@ -10,13 +10,19 @@ import {
   DARAKBANGS,
   findRosterMember,
   getSunsForDarakbang,
+  isNewFamilySun,
+  isUnassignedSun,
   roleFromRosterMember,
   sunNameToGroupId,
+  usesFreeTextLegalName,
 } from "@/lib/community/darakbang-roster";
 
 type Step = "darakbang" | "sun" | "name";
 
 const selectClassName =
+  "verify-field w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]";
+
+const fieldClassName =
   "w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]";
 
 export default function CommunityVerifyPage() {
@@ -58,14 +64,16 @@ export default function CommunityVerifyPage() {
   const selectedDarakbang = DARAKBANGS.find((d) => d.id === darakbangId);
   const selectedSun = suns.find((s) => s.groupName === sunName);
   const memberNames = selectedSun?.members.map((m) => m.name) ?? [];
-  const hasMemberList = memberNames.length > 0;
+  const freeTextName = Boolean(sunName && usesFreeTextLegalName(sunName));
+  const unassigned = Boolean(sunName && isUnassignedSun(sunName));
+  const newFamily = Boolean(sunName && isNewFamilySun(sunName));
 
-  // 미배정 (empty roster): open exception path once 순 is chosen.
+  // 미배정: open exception path once 순 is chosen.
   useEffect(() => {
-    if (step === "name" && sunName && !hasMemberList) {
+    if (step === "name" && unassigned) {
       setShowException(true);
     }
-  }, [step, sunName, hasMemberList]);
+  }, [step, unassigned]);
 
   const onConfirmName = async () => {
     setError(null);
@@ -75,9 +83,27 @@ export default function CommunityVerifyPage() {
       return;
     }
     if (!name) {
-      setError("본명을 선택해 주세요.");
+      setError(freeTextName ? "본명을 입력해 주세요." : "본명을 선택해 주세요.");
       return;
     }
+
+    // 새가족: free-text → verified member, no 순 yet.
+    if (newFamily) {
+      setBusy(true);
+      const res = await applyRosterVerification({
+        legalName: name,
+        groupId: null,
+        role: "member",
+      });
+      setBusy(false);
+      if (!res.ok) {
+        setError(res.message);
+        return;
+      }
+      router.replace("/home");
+      return;
+    }
+
     const member = findRosterMember(sunName, name);
     if (!member) {
       setError(
@@ -213,11 +239,33 @@ export default function CommunityVerifyPage() {
             </div>
           ) : null}
 
-          {/* Step 3: 본명 — dropdown when roster has members; free-text for 미배정 */}
+          {/* Step 3: 본명 — dropdown when roster has members; free-text for 미배정/새가족 */}
           {step === "name" && sunName ? (
             <div>
               <p className="qt-field-title mb-2">3. 본명</p>
-              {hasMemberList ? (
+              {freeTextName ? (
+                <>
+                  <input
+                    type="text"
+                    value={legalName}
+                    maxLength={40}
+                    autoComplete="name"
+                    placeholder="본명을 입력해 주세요"
+                    onChange={(e) => setLegalName(e.target.value)}
+                    className={fieldClassName}
+                  />
+                  {unassigned ? (
+                    <p className="mt-2 type-caption text-text-secondary">
+                      미배정은 명단이 없어요. 본명을 적고 예외 신청해 주세요.
+                    </p>
+                  ) : null}
+                  {newFamily ? (
+                    <p className="mt-2 type-caption text-text-secondary">
+                      새가족은 본명을 직접 입력해 주세요.
+                    </p>
+                  ) : null}
+                </>
+              ) : (
                 <select
                   value={legalName}
                   onChange={(e) => {
@@ -233,23 +281,11 @@ export default function CommunityVerifyPage() {
                     </option>
                   ))}
                 </select>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    value={legalName}
-                    maxLength={40}
-                    autoComplete="name"
-                    placeholder="본명을 입력해 주세요"
-                    onChange={(e) => setLegalName(e.target.value)}
-                    className={selectClassName}
-                  />
-                  <p className="mt-2 type-caption text-text-secondary">
-                    미배정은 명단이 없어요. 본명을 적고 예외 신청해 주세요.
-                  </p>
-                </>
               )}
-              {hasMemberList ? (
+              <p className="mt-2 type-caption text-text-secondary">
+                본인 인증 후에 별명을 재설정 할 수 있어요
+              </p>
+              {!unassigned ? (
                 <PrimaryButton
                   type="button"
                   className="mt-3 w-full"

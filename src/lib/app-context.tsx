@@ -83,7 +83,7 @@ interface AppState {
   ) => Promise<void>;
   applyRosterVerification: (input: {
     legalName: string;
-    groupId: string;
+    groupId: string | null;
     role: "admin" | "leader" | "member";
   }) => Promise<{ ok: boolean; message: string }>;
   submitVerificationException: (
@@ -824,7 +824,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const applyRosterVerification = useCallback(
     async (input: {
       legalName: string;
-      groupId: string;
+      groupId: string | null;
       role: "admin" | "leader" | "member";
     }) => {
       if (!sessionUserId) {
@@ -839,12 +839,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!res.ok) return { ok: false, message: res.error };
       setAuthProfile(res.data);
       setCommunityStatus("verified");
+      const userGroupMap = {
+        ...(getSnapshot().overrides.userGroupMap ?? {}),
+      };
+      if (input.groupId) {
+        userGroupMap[sessionUserId] = input.groupId;
+      } else {
+        delete userGroupMap[sessionUserId];
+      }
       writeOverrides({
         ...getSnapshot().overrides,
-        userGroupMap: {
-          ...(getSnapshot().overrides.userGroupMap ?? {}),
-          [sessionUserId]: input.groupId,
-        },
+        userGroupMap,
       });
       return { ok: true, message: "공동체 확인이 완료됐어요." };
     },

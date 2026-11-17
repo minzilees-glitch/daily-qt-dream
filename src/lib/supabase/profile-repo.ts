@@ -248,7 +248,8 @@ export async function ensureKakaoProfile(
 export type CommunityVerificationInput = {
   userId: string;
   legalName: string;
-  groupId: string;
+  /** Null for 새가족 (no 순 yet). */
+  groupId: string | null;
   role: "admin" | "leader" | "member";
   /** Keep existing Kakao nickname unless empty. */
   displayNameFallback?: string;

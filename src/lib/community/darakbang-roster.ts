@@ -5,9 +5,10 @@
  * Display 순 as 「{이름} 순」. 김송하 순 (not 김승하).
  * 임예진 순 includes 임예진 (순장) even though header count was 6 listed.
  * 김병준 순 (admin set) stays in mock `sun-roster` for app prefs.
- * Verify: **기타 → 어드민** joins **김병준 순** (g-01) with
- * 이민지·김병준·구민아·최현경·강민정·김철호 (all admin).
- * **기타 → 미배정** first in dropdown; no members (free-text + exception).
+ * Verify: **기타** 순 order = 미배정 → 새가족 → 어드민.
+ * 어드민 joins **김병준 순** (g-01) with the six admins.
+ * 미배정 / 새가족: free-text 본명 (no dropdown); 미배정 → exception,
+ * 새가족 → verified member with no 순 yet (group_id null).
  */
 
 import { SUN_ROSTERS, type RosterMember, type SunRoster } from "@/lib/mock-data/sun-roster";
@@ -403,9 +404,10 @@ export const DARAKBANGS: Darakbang[] = [
     id: "d-etc",
     name: "기타",
     suns: [
-      // Order: 미배정 first, then 어드민.
+      // Order: 미배정 → 새가족 → 어드민.
       sun("미배정", []),
-      // UI label 「어드민」 → membership = 김병준 순 (g-01), all admin.
+      sun("새가족", []),
+      // 「어드민」 → membership = 김병준 순 (g-01), all admin.
       sun("어드민", [
         "이민지",
         "김병준",
@@ -422,6 +424,20 @@ export const DARAKBANGS: Darakbang[] = [
 const KIM_BYEONGJUN_GROUP_ID = "g-01";
 const ADMIN_SUN = "어드민";
 const UNASSIGNED_SUN = "미배정";
+const NEW_FAMILY_SUN = "새가족";
+
+/** 본명 free-text (not dropdown): 미배정, 새가족. */
+export function usesFreeTextLegalName(sunName: string): boolean {
+  return sunName === UNASSIGNED_SUN || sunName === NEW_FAMILY_SUN;
+}
+
+export function isUnassignedSun(sunName: string): boolean {
+  return sunName === UNASSIGNED_SUN;
+}
+
+export function isNewFamilySun(sunName: string): boolean {
+  return sunName === NEW_FAMILY_SUN;
+}
 
 function leaderNameFromSun(groupName: string): string {
   return groupName.replace(/\s*순\s*$/, "").trim();
@@ -478,8 +494,8 @@ export function findRosterMember(
 export function sunNameToGroupId(sunName: string): string | null {
   // 기타 → 어드민 joins 김병준 순.
   if (sunName === ADMIN_SUN) return KIM_BYEONGJUN_GROUP_ID;
-  // 미배정: no seed group — verify match won't succeed (empty members).
-  if (sunName === UNASSIGNED_SUN) return null;
+  // 미배정 / 새가족: no seed 순 group yet.
+  if (sunName === UNASSIGNED_SUN || sunName === NEW_FAMILY_SUN) return null;
   const idx = SUN_ROSTERS.findIndex((r) => r.groupName === sunName);
   if (idx < 0) return null;
   return `g-${String(idx + 1).padStart(2, "0")}`;
