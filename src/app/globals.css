@@ -1498,9 +1498,10 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 /* —— Admin (premium sheet; no SoftCard / ivory chrome) —— */
 .admin-tabs {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.35rem;
   margin-bottom: var(--space-stack);
   border-bottom: 1px solid var(--divider);
+  background: transparent;
 }
 
 .admin-tabs__btn {
@@ -1508,17 +1509,20 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   border: none;
   border-bottom: 2px solid transparent;
   background: transparent;
-  padding: 0.65rem 0.35rem 0.7rem;
+  padding: 0.7rem 0.25rem 0.75rem;
   margin-bottom: -1px;
   font-size: var(--fs-body-sm);
   font-weight: 600;
   line-height: 1.2;
-  color: var(--text-secondary);
+  color: var(--text-secondary) !important;
   cursor: pointer;
+  opacity: 1;
+  visibility: visible;
 }
 
+.admin-tabs__btn.is-active,
 .admin-tabs__btn[aria-selected="true"] {
-  color: var(--color-ink-blue);
+  color: var(--color-ink-blue) !important;
   border-bottom-color: var(--color-ink-blue);
 }
 

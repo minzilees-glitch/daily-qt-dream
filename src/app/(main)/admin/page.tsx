@@ -165,7 +165,7 @@ export default function AdminPage() {
         </p>
       </header>
 
-      <section className="premium-qt-sheet premium-qt-sheet--fill premium-qt-sheet--me">
+      <section className="premium-qt-sheet">
         <div
           className="admin-tabs"
           role="tablist"
@@ -182,9 +182,11 @@ export default function AdminPage() {
               key={id}
               type="button"
               role="tab"
+              id={`admin-tab-${id}`}
               aria-selected={tab === id}
+              aria-controls={`admin-panel-${id}`}
               onClick={() => setTab(id)}
-              className="admin-tabs__btn"
+              className={`admin-tabs__btn${tab === id ? " is-active" : ""}`}
             >
               {label}
             </button>
@@ -192,7 +194,12 @@ export default function AdminPage() {
         </div>
 
         {tab === "batch" ? (
-          <div className="premium-panel animate-fade-up">
+          <div
+            id="admin-panel-batch"
+            role="tabpanel"
+            aria-labelledby="admin-tab-batch"
+            className="premium-panel animate-fade-up"
+          >
             <h2 className="premium-panel-title">순 일괄 배정</h2>
             <p className="type-caption text-text-secondary">
               멤버가 스스로 순에 가입하지 않습니다. 아래에서 여러 명을 선택한 뒤
@@ -305,7 +312,12 @@ export default function AdminPage() {
         ) : null}
 
         {tab === "groups" ? (
-          <div className="premium-panel animate-fade-up">
+          <div
+            id="admin-panel-groups"
+            role="tabpanel"
+            aria-labelledby="admin-tab-groups"
+            className="premium-panel animate-fade-up"
+          >
             <p className="type-caption text-text-secondary">
               전체 {groups.length}개 순 · 멤버십은 일괄 배정 탭에서 관리
             </p>
@@ -347,7 +359,12 @@ export default function AdminPage() {
         ) : null}
 
         {tab === "users" ? (
-          <div className="premium-panel animate-fade-up">
+          <div
+            id="admin-panel-users"
+            role="tabpanel"
+            aria-labelledby="admin-tab-users"
+            className="premium-panel animate-fade-up"
+          >
             <div className="mb-[var(--space-stack-sm)] flex items-center justify-between gap-3">
               <MonthPicker
                 value={ym}
