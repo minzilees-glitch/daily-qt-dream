@@ -358,8 +358,8 @@ export default function CommunityVerifyPage() {
                   입장 후에, 별명과 썸네일을 재 설정할 수 있습니다.
                 </p>
                 <p className="type-caption font-normal text-text-secondary">
-                  가입에 문제가 생긴 경우, 순장님 또는 이민지 다락방장의 갠톡으로
-                  연락주세요.
+                  가입에 문제가 생긴 경우, 순장님께 문의 주시거나 이민지
+                  다락방장의 갠톡으로 연락주세요.
                 </p>
               </div>
               {!unassigned ? (
