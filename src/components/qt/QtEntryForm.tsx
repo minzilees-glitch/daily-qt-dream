@@ -53,7 +53,7 @@ export function QtEntryForm({
           </div>
         ) : null}
         <p className="qt-validation-hint type-caption text-text-secondary">
-          큐티는 전체 합쳐{" "}
+          큐티는 전체{" "}
           <strong className="type-caption-em">
             최소 {QT_MIN_TOTAL_CHARS}자 이상
           </strong>{" "}
@@ -65,7 +65,7 @@ export function QtEntryForm({
                 : "text-text-secondary/70"
             }`}
           >
-            (지금 {totalLen}자)
+            (현재 {totalLen}자)
           </span>
         </p>
       </div>
