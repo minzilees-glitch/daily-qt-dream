@@ -125,7 +125,7 @@ export function HomeClient({
             dateAccessory={
               <LightIcon
                 active={doneToday}
-                size={20}
+                size={22}
                 justEarned={doneToday || lastEarnedDate === today}
                 label=""
               />

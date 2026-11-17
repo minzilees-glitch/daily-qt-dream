@@ -945,8 +945,12 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 .premium-qt-root--history > .premium-qt-sheet.premium-qt-sheet--history,
 .premium-qt-root:has(> .premium-qt-header)
   > .premium-qt-sheet.premium-qt-sheet--history {
-  /* Sheet chrome is white; mint lives only in .premium-history-mint. */
-  background: #ffffff !important;
+  /*
+   * Mint chrome for the whole sheet top — grabber stays mint while 말씀
+   * scrolls away (white only on `.premium-history-qt`). Avoids a white
+   * gap under the pinned handle.
+   */
+  background: color-mix(in srgb, var(--color-mint) 40%, white) !important;
   display: flex;
   flex-direction: column;
   padding-bottom: 0;
@@ -1002,7 +1006,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #ffffff;
+  /* Transparent so sheet mint shows under grabber while 말씀 scrolls. */
+  background: transparent;
 }
 
 /* Single drawer scroller: 말씀 header + QT body travel together. */
@@ -1013,7 +1018,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  background: #ffffff;
+  background: transparent;
 }
 
 /* Date + passage inside mint band. */
@@ -1027,9 +1032,10 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 }
 
 /* Form body: solid white edge-to-edge; scroll owned by .premium-history-sheet-scroll.
- * Sheet height already clears the floating nav via --nav-reserve. */
+ * Sheet height already clears the floating nav via --nav-reserve.
+ * flex-grow so white fills the rest of the mint drawer (no mint strip under form). */
 .premium-history-qt {
-  flex: 0 0 auto;
+  flex: 1 0 auto;
   margin-inline: 0;
   width: 100%;
   min-height: min-content;
