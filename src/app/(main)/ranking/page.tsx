@@ -2,7 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
-import { RankingList } from "@/components/ranking/RankingList";
+import {
+  RankingList,
+  RANKING_MY_ROW_ID,
+} from "@/components/ranking/RankingList";
 import { useApp } from "@/lib/app-context";
 import { addMonths, currentYearMonth } from "@/lib/dates";
 import { computeGroupRanking } from "@/lib/stats";
@@ -23,6 +26,13 @@ export default function RankingPage() {
     [groups, users, completions, ym, currentUser?.groupId],
   );
 
+  const hasMine = rows.some((r) => r.isMine);
+
+  const scrollToMyGroup = () => {
+    const el = document.getElementById(RANKING_MY_ROW_ID);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   if (!currentUser) return null;
 
   return (
@@ -36,11 +46,8 @@ export default function RankingPage() {
       </header>
 
       <section className="premium-qt-sheet">
-        <div className="premium-sheet-grabber-row" aria-hidden>
-          <span className="premium-sheet-grabber" />
-        </div>
         <div className="animate-fade-up">
-          <div className="mb-[var(--space-stack)]">
+          <div className="mb-[var(--space-stack)] flex items-center justify-between gap-3">
             <MonthPicker
               value={ym}
               onChange={setYm}
@@ -48,6 +55,14 @@ export default function RankingPage() {
               max={currentYearMonth()}
               align="start"
             />
+            <button
+              type="button"
+              className="premium-find-my-rank shrink-0"
+              onClick={scrollToMyGroup}
+              disabled={!hasMine}
+            >
+              내순 찾기
+            </button>
           </div>
           <RankingList rows={rows} />
         </div>

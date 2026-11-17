@@ -2,6 +2,8 @@ import { Trophy } from "lucide-react";
 import type { GroupRankRow } from "@/types";
 import { LightCount } from "@/components/ui/LightIcon";
 
+export const RANKING_MY_ROW_ID = "ranking-my-group";
+
 function RankMark({ row }: { row: GroupRankRow }) {
   // No place when the 순 has zero lights/completions.
   if (row.lights <= 0) {
@@ -61,30 +63,50 @@ export function RankingList({ rows }: { rows: GroupRankRow[] }) {
   }
 
   return (
-    <ul className="space-y-2.5">
-      {rows.map((row) => (
-        <li
-          key={row.groupId}
-          className={`premium-rank-row ${row.isMine ? "premium-rank-row--mine" : ""}`}
-        >
-          <div className="flex w-10 flex-col items-center">
-            <RankMark row={row} />
-          </div>
-          <div className="flex min-w-0 flex-1 items-center gap-1.5">
-            <p
-              className={`min-w-0 truncate type-body text-text-main ${
-                row.isMine ? "font-medium" : "font-bold"
-              }`}
+    <div className="premium-rank-table" role="table" aria-label="순 랭킹">
+      <div className="premium-rank-table__head" role="row">
+        <span className="premium-rank-table__col-rank" role="columnheader">
+          순위
+        </span>
+        <span className="premium-rank-table__col-name" role="columnheader">
+          순
+        </span>
+        <span className="premium-rank-table__col-lights" role="columnheader">
+          빛
+        </span>
+      </div>
+      <ul className="premium-rank-table__body" role="rowgroup">
+        {rows.map((row) => (
+          <li
+            key={row.groupId}
+            id={row.isMine ? RANKING_MY_ROW_ID : undefined}
+            role="row"
+            className={`premium-rank-row ${row.isMine ? "premium-rank-row--mine" : ""}`}
+          >
+            <div className="premium-rank-table__col-rank" role="cell">
+              <RankMark row={row} />
+            </div>
+            <div
+              className="premium-rank-table__col-name flex min-w-0 items-center gap-1.5"
+              role="cell"
             >
-              {row.groupName}
-            </p>
-            {row.isMine ? (
-              <span className="premium-mine-pill">내 순</span>
-            ) : null}
-          </div>
-          <LightCount lights={row.lights} size={18} />
-        </li>
-      ))}
-    </ul>
+              <p
+                className={`min-w-0 truncate type-body text-text-main ${
+                  row.isMine ? "font-medium" : "font-bold"
+                }`}
+              >
+                {row.groupName}
+              </p>
+              {row.isMine ? (
+                <span className="premium-mine-pill">내 순</span>
+              ) : null}
+            </div>
+            <div className="premium-rank-table__col-lights" role="cell">
+              <LightCount lights={row.lights} size={18} />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

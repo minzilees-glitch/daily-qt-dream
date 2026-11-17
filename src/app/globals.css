@@ -1458,7 +1458,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 }
 
 .premium-qt-root .premium-rank-row {
-  border-radius: 12px !important;
+  border-radius: 0 !important;
 }
 
 .premium-stat-tile {
@@ -1485,14 +1485,61 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   color: inherit;
 }
 
+/* Ranking: table rows (no gray cards). Mine keeps ink-blue highlight. */
+.premium-rank-table {
+  width: 100%;
+}
+
+.premium-rank-table__head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgb(0 9 23 / 0.12);
+  padding: 0.35rem 0.25rem 0.55rem;
+  font-size: var(--fs-nav);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary, #5c6570);
+}
+
+.premium-rank-table__body {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.premium-rank-table__col-rank {
+  display: flex;
+  width: 2.5rem;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.premium-rank-table__col-name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.premium-rank-table__col-lights {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: flex-end;
+  min-width: 3.25rem;
+}
+
 .premium-rank-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  border-radius: 12px !important;
-  background: var(--color-gray);
-  padding: 1.15rem 1rem;
+  border-radius: 0 !important;
+  border-bottom: 1px solid rgb(0 9 23 / 0.08);
+  background: transparent;
+  padding: 0.85rem 0.25rem;
   box-shadow: none;
+  scroll-margin-top: 5.5rem;
+  scroll-margin-bottom: 5.5rem;
 }
 
 /* —— Admin (premium sheet; no SoftCard / ivory chrome) —— */
@@ -1651,7 +1698,11 @@ select.admin-field {
 
 .premium-rank-row--mine {
   background: var(--color-ink-blue); /* #1F3E62 */
+  border-bottom-color: transparent;
   outline: none;
+  margin-inline: -0.25rem;
+  padding-inline: 0.5rem;
+  border-radius: 6px !important;
 }
 
 .premium-rank-row--mine .type-body,
@@ -1677,6 +1728,25 @@ select.admin-field {
   font-weight: 700;
   line-height: 1;
   color: var(--color-black); /* #000917 — not sky */
+}
+
+.premium-find-my-rank {
+  border: none;
+  background: transparent;
+  padding: 0.35rem 0;
+  font-size: var(--fs-caption, var(--fs-nav));
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-ink-blue, #1f3e62);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.premium-find-my-rank:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  text-decoration: none;
 }
 
 /* Home shell: sky header + overlapping mint QT sheet (Duranno lives in sheet). */
