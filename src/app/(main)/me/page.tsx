@@ -7,6 +7,7 @@ import { currentYearMonth, TERM_14_LABEL } from "@/lib/dates";
 import {
   buildCompletionSet,
   buildLightSet,
+  buildOutlineSet,
   userMonthStats,
   userTermLights,
   userWeekdayParticipation,
@@ -20,11 +21,14 @@ export default function MePage() {
   const group = groups.find((g) => g.id === currentUser.groupId);
   const set = buildCompletionSet(completions);
   const lightSet = buildLightSet(completions);
+  const outlineSet = buildOutlineSet(completions);
   const ym = currentYearMonth();
   const month = userMonthStats(currentUser.id, ym, set, lightSet);
   const weekdayPart = userWeekdayParticipation(currentUser.id, set);
-  // On-time lights this 기 (past backfills excluded) — also drives sky sparks.
+  // On-time lights this 기 (past backfills excluded) — filled sky sparks + counts.
   const termLights = userTermLights(currentUser.id, lightSet);
+  // Past backfills this 기 — outline sky only; never in dashboard counts.
+  const termOutline = userTermLights(currentUser.id, outlineSet);
 
   const groupLabel = [
     group?.name ?? "-",
@@ -42,6 +46,7 @@ export default function MePage() {
           <MeSky
             monthLights={month.lights}
             yearLights={termLights}
+            outlineLights={termOutline}
             cumulativeLabel={`${TERM_14_LABEL} 누적`}
             groupLabel={groupLabel}
           />

@@ -73,6 +73,11 @@ function collapsedWeekRows(
 export function QtCalendar({
   yearMonth,
   completedDates,
+  /**
+   * Dates that earned a filled light. Completions in `completedDates` but not
+   * here render as outline-only (past backfill). Defaults to all completed.
+   */
+  lightDates,
   selectedDate,
   onSelect,
   /** When true, render a single premium week strip (accordion collapsed). */
@@ -85,6 +90,7 @@ export function QtCalendar({
 }: {
   yearMonth: string;
   completedDates: Set<string>;
+  lightDates?: Set<string>;
   selectedDate?: string | null;
   onSelect?: (date: string) => void;
   collapsed?: boolean;
@@ -255,6 +261,8 @@ export function QtCalendar({
             const day = Number(date.slice(8, 10));
             const inMonth = yearMonthOf(date) === yearMonth;
             const done = completedDates.has(date);
+            const earned = done && (lightDates ? lightDates.has(date) : true);
+            const outline = done && !earned;
             const future = isFutureDate(date, today);
             const selected = selectedDate === date;
             const isToday = date === today;
@@ -307,8 +315,13 @@ export function QtCalendar({
                       tone={selected ? "white" : "active"}
                       size={16}
                       rays={false}
-                      label="빛 수집됨"
-                      justEarned={justEarnedDate === date}
+                      outline={outline}
+                      label={
+                        outline
+                          ? "지난 큐티 완료 (빛 미획득)"
+                          : "빛 수집됨"
+                      }
+                      justEarned={!outline && justEarnedDate === date}
                     />
                   ) : selected ? (
                     <span
@@ -344,6 +357,8 @@ export function QtCalendar({
                 }
                 const date = formatYmd(y, m, day);
                 const done = completedDates.has(date);
+                const earned = done && (lightDates ? lightDates.has(date) : true);
+                const outline = done && !earned;
                 const future = isFutureDate(date, today);
                 const selected = selectedDate === date;
                 const isToday = date === today;
@@ -384,8 +399,13 @@ export function QtCalendar({
                             tone={selected ? "white" : "active"}
                             size={14}
                             rays={false}
-                            label="빛 수집됨"
-                            justEarned={justEarnedDate === date}
+                            outline={outline}
+                            label={
+                              outline
+                                ? "지난 큐티 완료 (빛 미획득)"
+                                : "빛 수집됨"
+                            }
+                            justEarned={!outline && justEarnedDate === date}
                           />
                         </span>
                       ) : (

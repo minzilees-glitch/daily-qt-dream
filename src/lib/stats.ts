@@ -38,6 +38,20 @@ export function buildLightSet(completions: QtCompletion[]): Set<string> {
   return set;
 }
 
+/**
+ * Past-date completions that saved content but earned no light.
+ * Shown as outline sparks on calendar / MeSky / SkyWalkers — not counted.
+ */
+export function buildOutlineSet(completions: QtCompletion[]): Set<string> {
+  const set = new Set<string>();
+  for (const c of completions) {
+    if (c.completed && c.earnsLight === false) {
+      set.add(completionSetKey(c.userId, c.date));
+    }
+  }
+  return set;
+}
+
 /** On-time completed QT day = 1 light. Past backfills complete but earn 0. */
 export function userMonthStats(
   userId: string,
