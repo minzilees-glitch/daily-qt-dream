@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export const dynamic = "force-dynamic";
-
 /**
  * Kakao → us (OIDC). Exchange code for id_token, stash in httpOnly cookie,
  * then hand off to `/auth/callback?kakao_oidc=1` (no account_email).

@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export const dynamic = "force-dynamic";
-
 /** One-shot read of the httpOnly Kakao id_token cookie, then clear it. */
 export async function POST() {
   const jar = await cookies();

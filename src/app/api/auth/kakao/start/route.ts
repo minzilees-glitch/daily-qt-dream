@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { KAKAO_OIDC_SCOPE } from "@/lib/supabase/auth";
 
-export const dynamic = "force-dynamic";
-
 /**
  * App-owned Kakao authorize (OIDC).
  * scope = openid + profile only — never account_email (avoids KOE205).
