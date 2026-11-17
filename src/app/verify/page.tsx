@@ -428,7 +428,7 @@ export default function CommunityVerifyPage() {
       <ConfirmModal
         open={confirmOpen}
         title={`${legalName.trim()}님이 맞나요?`}
-        description="본인 이름이 맞을 때만 확인해 주세요. 다른 사람의 이름으로 입장하면 안 됩니다."
+        description="본인 이름이 맞는지 한번 더 확인해 주세요. 지금 이 이름으로 입장하시면, 다른 사람이 동일한 이름으로 로그인 할 수 없습니다."
         confirmLabel="네, 맞아요"
         cancelLabel="다시 선택"
         confirmTone="primary"
