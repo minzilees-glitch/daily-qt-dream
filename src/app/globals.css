@@ -958,9 +958,9 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 }
 
 /*
- * 나의 QT들 sheet: light gray on grabber + 말씀 header bands.
+ * 나의 QT들 sheet: mint only on grabber + 말씀 header bands.
  * Everything below 말씀 (future notice / form / completed QT / empty
- * drawer fill) is solid white — not gray.
+ * drawer fill) is solid white — not mint.
  * !important: beat earlier `.premium-qt-sheet` / sky sheet rules.
  */
 .premium-qt-root--history > .premium-qt-sheet.premium-qt-sheet--history,
@@ -995,11 +995,11 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   transition: none;
 }
 
-/* Light gray wash shared by pinned grabber + scrolling 말씀 band. */
+/* Mint wash shared by pinned grabber + scrolling 말씀 band. */
 .premium-history-mint {
   width: 100%;
   box-sizing: border-box;
-  background: var(--color-gray); /* #f2f2f2 — 옅은 회색 */
+  background: color-mix(in srgb, var(--color-mint) 40%, white);
 }
 
 /* Grabber only — pinned at sheet top so drag still works after 말씀 scrolls away. */
@@ -1850,18 +1850,18 @@ select.admin-field {
 }
 
 /*
- * 말씀 header: full-bleed light gray in the sheet (not a card).
- * Sheet has no inline pad — gray + white form each own their own page-x.
- * Top radius matches sheet so gray follows the drawer curve without overflow:hidden.
+ * 말씀 header: full-bleed mint in the sheet (not a card).
+ * Sheet has no inline pad — mint + white form each own their own page-x.
+ * Top radius matches sheet so mint follows the drawer curve without overflow:hidden.
  */
 .home-duranno-in-sheet {
   box-sizing: border-box;
   margin: 0;
   width: 100%;
   padding: calc(var(--space-stack) + 6px) var(--space-page-x) 1rem;
-  /* Parent `.premium-home-form-sheet` owns the curve + clip; keep gray flush. */
+  /* Parent `.premium-home-form-sheet` owns the curve + clip; keep mint flush. */
   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
-  background: var(--color-gray); /* #f2f2f2 — 옅은 회색 */
+  background: color-mix(in srgb, var(--color-mint) 50%, white);
   color: var(--color-black); /* #000917 */
   box-shadow: none !important;
   filter: none !important;
