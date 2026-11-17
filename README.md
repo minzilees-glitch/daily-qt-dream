@@ -2,17 +2,18 @@
 
 매일 Quiet Time을 기록하고, 순(그룹) 참여 현황과 월간 랭킹을 확인하는 웹 앱 **「드림 매일큐티」 Phase 1 프론트엔드 프로토타입**입니다.
 
-> 실제 카카오 로그인 / Supabase는 포함되어 있지 않습니다. 테스트 로그인만 제공합니다.
+> 카카오 로그인(Supabase Auth) + 공동체 확인(다락방→순→본명)이 연결되어 있습니다.
 
 ## 기술 스택
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
-- Lucide React
-- Mock 데이터 (`src/lib/mock-data`) — 약 300명 / 30순 / 최근 3개월 QT
+- Lucide React + Supabase (`@supabase/supabase-js`)
+- Mock / roster 데이터 (`src/lib/mock-data`, `sun-roster`) — 순 명단·집계 보조
 
 ## 실행 방법
 
 ```bash
+cp .env.example .env.local   # NEXT_PUBLIC_SUPABASE_URL / ANON_KEY 채우기
 npm install
 npm run dev
 ```
@@ -26,13 +27,14 @@ npm run build
 npm start
 ```
 
-## 테스트 로그인
+## 카카오 로그인
 
-1. 앱 실행 후 `/login` 으로 이동합니다.
-2. **「테스트로 시작하기」** 버튼을 누릅니다. (실제 카카오 로그인이 아님을 화면에 명시)
-3. 테스트 계정 `이민지` (김병준 순, 관리자·다락방장; 순장은 김병준)로 오늘의 QT에 입장합니다.
+1. Supabase Dashboard에 Kakao provider + Redirect URLs를 설정합니다 (`.env.example` 체크리스트).
+2. 한 번 `supabase/migrations/20261117_kakao_community_verify.sql` 을 SQL Editor에서 실행합니다. (`20261118_rls_security_harden.sql` 은 Kakao 확인 후 / DQ-699)
+3. `/login` → **「카카오로 시작하기」** → `/auth/callback` → `/verify` (다락방→순→본명).
+4. 명단 일치 시 `/home`. 없으면 예외 신청 경로 사용.
 
-로그아웃은 마이페이지(`/me`)에서 할 수 있습니다. 세션은 브라우저 `localStorage`에만 저장됩니다.
+로그아웃은 계정설정(`/me/settings`)에서 합니다.
 
 ## UX 규칙 (요약)
 
@@ -45,7 +47,9 @@ npm start
 
 | 경로 | 설명 |
 |------|------|
-| `/login` | 테스트 로그인 |
+| `/login` | 카카오 로그인 |
+| `/auth/callback` | OAuth 세션 교환 |
+| `/verify` | 공동체 확인 (다락방→순→본명) |
 | `/home` | 오늘의 QT · 본문 + 작성 |
 | `/qt` | 오늘의 QT 작성 · 완료 |
 | `/history` | 나의 QT들 월간 캘린더 |

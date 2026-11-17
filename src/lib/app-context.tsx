@@ -18,11 +18,7 @@ import type {
   QtEntryFields,
   User,
 } from "@/types";
-import {
-  getMockData,
-  getTestUser,
-  TEST_USER_ID,
-} from "@/lib/mock-data";
+import { getMockData, TEST_USER_ID } from "@/lib/mock-data";
 import { isFutureDate, todaySeoul } from "@/lib/dates";
 import { loadJson, removeKey, saveJson, trySaveJson } from "@/lib/storage";
 import {
@@ -43,11 +39,22 @@ import {
   uploadAndSaveAvatar,
 } from "@/lib/supabase/avatar-repo";
 import {
+  applyCommunityVerification,
+  ensureKakaoProfile,
   fetchDisplayName,
   fetchProfileGroupId,
+  isCommunityVerified,
+  submitCommunityException,
   updateDisplayName,
   updateProfileGroupId,
+  type CommunityStatus,
+  type ProfileRow,
 } from "@/lib/supabase/profile-repo";
+import {
+  getAuthSession,
+  signOutAuth,
+} from "@/lib/supabase/auth";
+import { getSupabaseBrowser } from "@/lib/supabase/client";
 import {
   deleteQtEntry,
   fetchQtPresence,
@@ -55,6 +62,7 @@ import {
   isSupabaseConfigured,
   upsertQtEntry,
 } from "@/lib/supabase/qt-repo";
+import type { User as AuthUser } from "@supabase/supabase-js";
 
 interface AppState {
   ready: boolean;
@@ -66,8 +74,23 @@ interface AppState {
   awards: MonthlyAward[];
   /** True when NEXT_PUBLIC_SUPABASE_* is set. */
   supabaseEnabled: boolean;
-  loginAsTestUser: () => void;
-  logout: () => void;
+  /** Kakao community gate: pending | verified | exception */
+  communityStatus: CommunityStatus;
+  /** After `/auth/callback` — sync session + profile into app state. */
+  hydrateFromAuthUser: (
+    authUser: AuthUser,
+    profile: ProfileRow,
+  ) => Promise<void>;
+  applyRosterVerification: (input: {
+    legalName: string;
+    groupId: string;
+    role: "admin" | "leader" | "member";
+  }) => Promise<{ ok: boolean; message: string }>;
+  submitVerificationException: (
+    legalName: string,
+    note: string,
+  ) => Promise<{ ok: boolean; message: string }>;
+  logout: () => Promise<void>;
   /** Save QT entry; marks day complete if valid. */
   saveEntry: (
     date: string,
@@ -266,6 +289,27 @@ const EMPTY_REMOTE: RemoteQt = {
   loadedFor: null,
 };
 
+function mapStatus(profile: ProfileRow | null | undefined): CommunityStatus {
+  if (!profile) return "pending";
+  if (profile.community_status === "verified") return "verified";
+  if (profile.community_status === "exception") return "exception";
+  if (!profile.community_status && profile.group_id) return "verified";
+  return "pending";
+}
+
+function profileToUser(profile: ProfileRow, leaderMap: Record<string, string>): User {
+  const groupId = profile.group_id ?? "";
+  const role = profile.role;
+  return {
+    id: profile.id,
+    name: profile.display_name || profile.legal_name || "드림",
+    groupId,
+    isAdmin: role === "admin",
+    isLeader: role === "leader" || leaderMap[groupId] === profile.id,
+    avatarUrl: profile.avatar_url,
+  };
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const snap = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const clientReady = useSyncExternalStore(
@@ -285,6 +329,83 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
   const [lastEarnedDate, setLastEarnedDate] = useState<string | null>(null);
   const [remoteTick, setRemoteTick] = useState(0);
+  const [authBootstrapped, setAuthBootstrapped] = useState(!supabaseEnabled);
+  const [authProfile, setAuthProfile] = useState<ProfileRow | null>(null);
+  const [communityStatus, setCommunityStatus] =
+    useState<CommunityStatus>("pending");
+
+  /** Bootstrap Kakao / Supabase session on load (replaces local test login). */
+  useEffect(() => {
+    if (!supabaseEnabled) {
+      setAuthBootstrapped(true);
+      return;
+    }
+    let cancelled = false;
+    const sb = getSupabaseBrowser();
+    if (!sb) {
+      setAuthBootstrapped(true);
+      return;
+    }
+
+    const applySession = async (authUser: AuthUser | null) => {
+      if (cancelled) return;
+      if (!authUser) {
+        writeSession(null);
+        setAuthProfile(null);
+        setCommunityStatus("pending");
+        return;
+      }
+      const ensured = await ensureKakaoProfile(authUser);
+      if (cancelled) return;
+      if (!ensured.ok) {
+        writeSession(authUser.id);
+        setAuthProfile(null);
+        setCommunityStatus("pending");
+        return;
+      }
+      writeSession(authUser.id);
+      setAuthProfile(ensured.data);
+      setCommunityStatus(
+        isCommunityVerified(ensured.data) ? "verified" : mapStatus(ensured.data),
+      );
+      // Hydrate nickname / avatar / group into local overrides.
+      const nameMap = { ...(getSnapshot().overrides.nameMap ?? {}) };
+      if (ensured.data.display_name?.trim()) {
+        nameMap[authUser.id] = ensured.data.display_name.trim();
+      }
+      const avatarMap = { ...(getSnapshot().overrides.avatarMap ?? {}) };
+      if (ensured.data.avatar_url) {
+        avatarMap[authUser.id] = ensured.data.avatar_url;
+      }
+      const userGroupMap = {
+        ...(getSnapshot().overrides.userGroupMap ?? {}),
+      };
+      if (ensured.data.group_id) {
+        userGroupMap[authUser.id] = ensured.data.group_id;
+      }
+      writeOverrides({
+        ...getSnapshot().overrides,
+        nameMap,
+        avatarMap: stripDataUrlAvatars(avatarMap),
+        userGroupMap,
+      });
+    };
+
+    (async () => {
+      const session = await getAuthSession();
+      await applySession(session?.user ?? null);
+      if (!cancelled) setAuthBootstrapped(true);
+    })();
+
+    const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
+      void applySession(session?.user ?? null);
+    });
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
+  }, [supabaseEnabled]);
 
   useEffect(() => {
     if (!supabaseEnabled || !sessionUserId) return;
@@ -438,7 +559,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     remoteQt.loadedFor === sessionUserId;
 
   const users = useMemo(() => {
-    return base.users.map((u) => {
+    const mapped = base.users.map((u) => {
       const groupId = overrides.userGroupMap[u.id] ?? u.groupId;
       const isLeader =
         (overrides.leaderMap[groupId] ??
@@ -452,6 +573,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const name = overrides.nameMap?.[u.id]?.trim() || u.name;
       return { ...u, name, groupId, isLeader, avatarUrl };
     });
+
+    // Kakao auth user (UUID) is not in mock seed — inject for group / me views.
+    if (authProfile && !mapped.some((u) => u.id === authProfile.id)) {
+      const injected = profileToUser(authProfile, overrides.leaderMap);
+      const groupId =
+        overrides.userGroupMap[authProfile.id] ?? injected.groupId;
+      const name =
+        overrides.nameMap?.[authProfile.id]?.trim() || injected.name;
+      const avatarUrl =
+        overrides.avatarMap?.[authProfile.id] ??
+        remoteAvatars[authProfile.id] ??
+        injected.avatarUrl ??
+        null;
+      const isLeader =
+        (overrides.leaderMap[groupId] ??
+          base.groups.find((g) => g.id === groupId)?.leaderId) ===
+          authProfile.id || injected.isLeader;
+      mapped.push({
+        ...injected,
+        name,
+        groupId,
+        isLeader,
+        avatarUrl,
+        isAdmin: authProfile.role === "admin" || injected.isAdmin,
+      });
+    }
+
+    return mapped;
   }, [
     base,
     overrides.userGroupMap,
@@ -459,6 +608,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     overrides.avatarMap,
     overrides.nameMap,
     remoteAvatars,
+    authProfile,
   ]);
 
   const groups = useMemo(() => {
@@ -640,13 +790,94 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return users.find((u) => u.id === sessionUserId) ?? null;
   }, [sessionUserId, users]);
 
-  const loginAsTestUser = useCallback(() => {
-    writeSession(getTestUser().id);
-  }, []);
+  const hydrateFromAuthUser = useCallback(
+    async (authUser: AuthUser, profile: ProfileRow) => {
+      writeSession(authUser.id);
+      setAuthProfile(profile);
+      setCommunityStatus(
+        isCommunityVerified(profile) ? "verified" : mapStatus(profile),
+      );
+      const nameMap = { ...(getSnapshot().overrides.nameMap ?? {}) };
+      if (profile.display_name?.trim()) {
+        nameMap[authUser.id] = profile.display_name.trim();
+      }
+      const avatarMap = { ...(getSnapshot().overrides.avatarMap ?? {}) };
+      if (profile.avatar_url) {
+        avatarMap[authUser.id] = profile.avatar_url;
+      }
+      const userGroupMap = {
+        ...(getSnapshot().overrides.userGroupMap ?? {}),
+      };
+      if (profile.group_id) {
+        userGroupMap[authUser.id] = profile.group_id;
+      }
+      writeOverrides({
+        ...getSnapshot().overrides,
+        nameMap,
+        avatarMap: stripDataUrlAvatars(avatarMap),
+        userGroupMap,
+      });
+    },
+    [],
+  );
 
-  const logout = useCallback(() => {
+  const applyRosterVerification = useCallback(
+    async (input: {
+      legalName: string;
+      groupId: string;
+      role: "admin" | "leader" | "member";
+    }) => {
+      if (!sessionUserId) {
+        return { ok: false, message: "로그인이 필요해요." };
+      }
+      const res = await applyCommunityVerification({
+        userId: sessionUserId,
+        legalName: input.legalName,
+        groupId: input.groupId,
+        role: input.role,
+      });
+      if (!res.ok) return { ok: false, message: res.error };
+      setAuthProfile(res.data);
+      setCommunityStatus("verified");
+      writeOverrides({
+        ...getSnapshot().overrides,
+        userGroupMap: {
+          ...(getSnapshot().overrides.userGroupMap ?? {}),
+          [sessionUserId]: input.groupId,
+        },
+      });
+      return { ok: true, message: "공동체 확인이 완료됐어요." };
+    },
+    [sessionUserId],
+  );
+
+  const submitVerificationException = useCallback(
+    async (legalName: string, note: string) => {
+      if (!sessionUserId) {
+        return { ok: false, message: "로그인이 필요해요." };
+      }
+      const res = await submitCommunityException(
+        sessionUserId,
+        legalName,
+        note,
+      );
+      if (!res.ok) return { ok: false, message: res.error };
+      setAuthProfile(res.data);
+      setCommunityStatus("exception");
+      return { ok: true, message: "확인 요청을 남겼어요." };
+    },
+    [sessionUserId],
+  );
+
+  const logout = useCallback(async () => {
+    if (supabaseEnabled) {
+      await signOutAuth();
+    }
     writeSession(null);
-  }, []);
+    setAuthProfile(null);
+    setCommunityStatus("pending");
+    setRemoteQt(EMPTY_REMOTE);
+  }, [supabaseEnabled]);
 
   const isCompleted = useCallback(
     (userId: string, date: string) =>
@@ -1047,7 +1278,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const value: AppState = {
-    ready: clientReady,
+    ready: clientReady && authBootstrapped,
     currentUser,
     groups,
     users,
@@ -1055,7 +1286,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     reflections,
     awards,
     supabaseEnabled,
-    loginAsTestUser,
+    communityStatus,
+    hydrateFromAuthUser,
+    applyRosterVerification,
+    submitVerificationException,
     logout,
     saveEntry,
     clearEntry,

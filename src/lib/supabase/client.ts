@@ -20,7 +20,10 @@ export function isSupabaseConfigured(): boolean {
   return Boolean(url && key);
 }
 
-/** Browser/client Supabase. Returns null when env is missing (local fallback). */
+/**
+ * Browser/client Supabase. Returns null when env is missing (local fallback).
+ * Kakao OAuth needs persisted session + URL detection for `/auth/callback`.
+ */
 export function getSupabaseBrowser(): SupabaseClient<Database> | null {
   if (!isSupabaseConfigured()) return null;
   if (browserClient) return browserClient;
@@ -29,9 +32,10 @@ export function getSupabaseBrowser(): SupabaseClient<Database> | null {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false,
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: "pkce",
       },
     },
   );

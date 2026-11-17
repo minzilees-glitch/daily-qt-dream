@@ -118,8 +118,10 @@ export default function MeSettingsPage() {
             type="button"
             className="w-full"
             onClick={() => {
-              logout();
-              router.replace("/login");
+              void (async () => {
+                await logout();
+                router.replace("/login");
+              })();
             }}
           >
             <LogOut size={18} strokeWidth={1.75} />
@@ -127,8 +129,8 @@ export default function MeSettingsPage() {
           </PrimaryButton>
 
           <p className="qt-validation-hint mt-[var(--space-stack-sm)] text-center type-caption text-text-secondary">
-            로그인 세션은 이 브라우저 localStorage에 저장됩니다. 큐티 기록은
-            Supabase가 설정되면 DB에 저장되고, 없으면 로컬로 대체됩니다.
+            카카오 로그인 세션은 Supabase Auth에 저장됩니다. 큐티 기록은
+            Supabase DB에 저장되고, 환경변수가 없으면 로컬로 대체됩니다.
           </p>
         </div>
       </section>
