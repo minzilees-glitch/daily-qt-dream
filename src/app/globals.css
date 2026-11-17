@@ -1532,11 +1532,22 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   width: 100%;
   border: none;
   border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--color-mint) 35%, white);
+  background-color: color-mix(in srgb, var(--color-mint) 35%, white);
   padding: 0.75rem 0.85rem;
   font-size: var(--fs-body-sm);
   color: var(--text-main);
   outline: none;
+}
+
+/* Native select chevron sits flush on the edge — replace with inset arrow. */
+select.admin-field {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 2.35rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23768896' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center; /* inset from the right edge */
+  background-size: 12px 8px;
 }
 
 .admin-field:focus {
