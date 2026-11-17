@@ -180,13 +180,13 @@ function pickActivity(index: number): Activity {
   return cycle[index % cycle.length]!;
 }
 
-/** Roam band raised into the mid-sky (not glued to the card floor). */
+/** Roam band near the card floor (feet close to ground). */
 function walkBand(height: number): { minY: number; maxY: number } {
   const floorMax = Math.max(0, height - WALKER_FIGURE_H - FLOOR_INSET_PX);
-  // Lift the whole band so walkers sit higher than the previous floor strip.
-  const lift = Math.max(18, height * 0.16);
+  // Almost no lift — keep walkers on the ground strip.
+  const lift = Math.max(2, height * 0.015);
   const maxY = Math.max(0, floorMax - lift);
-  const span = Math.max(28, height * 0.24);
+  const span = Math.max(10, height * 0.07);
   const minY = Math.min(maxY, Math.max(0, maxY - span));
   return { minY, maxY };
 }
