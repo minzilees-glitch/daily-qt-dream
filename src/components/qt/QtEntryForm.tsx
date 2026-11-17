@@ -204,7 +204,10 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         rows={minRows}
         placeholder={placeholder}
-        className="qt-lined-field type-body w-full text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:ring-0 disabled:opacity-60"
+        className="qt-lined-field w-full text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:ring-0 disabled:opacity-60"
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck={false}
       />
     </div>
   );

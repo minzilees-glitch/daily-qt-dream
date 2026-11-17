@@ -336,12 +336,21 @@ html[data-sky-mode="밤모드"] {
 }
 
 /* QT textareas: notebook lines under every row.
- * Avoid background-attachment:local — WebKit often paints nothing on <textarea>. */
+ * Avoid background-attachment:local — WebKit often paints nothing on <textarea>.
+ * Caret size tracks font-size — lock identical metrics on every field
+ * (구절 / 묵상 / 결단과 순종 / 기도제목); baseline = 결단과 순종. */
 .qt-lined-field {
   /* Body × ~1.9 so underline rows track font-size when rem scales. */
   --qt-line: calc(var(--fs-body) * 1.9);
-  font-size: var(--fs-body);
+  font-family: inherit !important;
+  font-size: var(--fs-body) !important; /* 17px — same caret height all fields */
+  font-weight: 400 !important;
+  font-style: normal !important;
   line-height: var(--qt-line) !important;
+  letter-spacing: normal !important;
+  caret-color: var(--color-black);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   padding: 0 !important;
   margin: 0;
   border: none !important;
@@ -898,7 +907,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-ink-blue) !important; /* #1F3E62 */
   opacity: 1 !important;
   text-decoration: underline;
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: 3px; /* thicker when today is not selected */
   text-underline-offset: 12px; /* air under the numeral; not tight */
   text-decoration-color: var(--color-ink-blue);
 }
@@ -944,19 +953,15 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 }
 
 /*
- * 나의 QT들 sheet: top pad + grabber + passage share one mint wash;
- * QT hint + fields sit on solid white below.
+ * 나의 QT들 sheet: mint only on grabber + 말씀 header bands.
+ * Everything below 말씀 (future notice / form / completed QT / empty
+ * drawer fill) is solid white — not mint.
  * !important: beat earlier `.premium-qt-sheet` / sky sheet rules.
  */
 .premium-qt-root--history > .premium-qt-sheet.premium-qt-sheet--history,
 .premium-qt-root:has(> .premium-qt-header)
   > .premium-qt-sheet.premium-qt-sheet--history {
-  /*
-   * Mint chrome for the whole sheet top — grabber stays mint while 말씀
-   * scrolls away (white only on `.premium-history-qt`). Avoids a white
-   * gap under the pinned handle.
-   */
-  background: color-mix(in srgb, var(--color-mint) 40%, white) !important;
+  background: #ffffff !important;
   display: flex;
   flex-direction: column;
   padding-bottom: 0;
@@ -1012,8 +1017,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* Transparent so sheet mint shows under grabber while 말씀 scrolls. */
-  background: transparent;
+  /* White fill under 말씀 — future / completed / short content stay white. */
+  background: #ffffff;
 }
 
 /* Single drawer scroller: 말씀 header + QT body travel together. */
@@ -1024,7 +1029,9 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  background: transparent;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
 }
 
 /* Date + passage inside mint band. */
@@ -1038,13 +1045,12 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 }
 
 /* Form body: solid white edge-to-edge; scroll owned by .premium-history-sheet-scroll.
- * Sheet height already clears the floating nav via --nav-reserve.
- * flex-grow so white fills the rest of the mint drawer (no mint strip under form). */
+ * flex-grow fills remaining drawer so short QT / future notice don't leave mint. */
 .premium-history-qt {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   margin-inline: 0;
   width: 100%;
-  min-height: min-content;
+  min-height: 0;
   padding: 0 var(--space-page-x) 1.5rem;
   background: #ffffff !important;
   box-sizing: border-box;
@@ -1718,7 +1724,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   margin-bottom: calc(-1 * (var(--nav-reserve) + var(--safe-bottom)));
 }
 
-/* Range + 「말씀보기」 row: force vertical center (range 22px vs caption CTA). */
+/* Range + 「말씀보기」 row: shared vertical center (본문범위 ↔ icon+label). */
 .home-duranno-range-row {
   display: flex !important;
   align-items: center !important;
@@ -1728,7 +1734,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 .home-duranno-meta .reading-passage-range {
   color: var(--color-black) !important; /* #000917 */
   margin: 0;
-  line-height: 1 !important; /* leading-none — optical middle with CTA */
+  line-height: 1 !important; /* leading-none — same midline as CTA */
   display: flex;
   align-items: center;
   align-self: center;
@@ -1777,9 +1783,9 @@ button.home-duranno-cta:focus,
 a.home-duranno-cta:focus-visible,
 button.home-duranno-cta:focus-visible {
   display: inline-flex !important;
-  align-items: center;
-  align-self: center;
-  gap: 0 !important; /* icon↔label space via .home-duranno-cta-label ml */
+  align-items: center !important; /* icon + 「말씀보기」 share one midline */
+  align-self: center !important; /* that midline matches 본문범위 */
+  gap: 0 !important; /* icon↔label space via .home-duranno-cta-icon-gap */
   flex: 0 0 auto;
   flex-wrap: nowrap !important;
   white-space: nowrap !important;
@@ -1807,7 +1813,7 @@ button.home-duranno-cta:focus-visible {
   font-size: var(--fs-caption);
   font-weight: 600;
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1 !important; /* match range leading-none for shared center */
   opacity: 1 !important;
 }
 
@@ -1820,10 +1826,14 @@ button.home-duranno-cta svg {
   color: var(--color-sky-deep) !important;
   stroke: var(--color-sky-deep) !important;
   fill: none !important;
+  display: block;
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0 !important;
   opacity: 1 !important;
-  /* Optical align: book glyph sits a hair high vs 「말씀보기」 caption. */
-  transform: translateY(2px);
+  /* No translateY — true flex center with 「말씀보기」 + 본문범위. */
+  transform: none !important;
 }
 
 /*
@@ -1833,13 +1843,14 @@ button.home-duranno-cta svg {
  */
 a.home-duranno-cta .home-duranno-cta-icon-gap,
 button.home-duranno-cta .home-duranno-cta-icon-gap {
-  display: inline-block !important;
+  display: block !important;
   box-sizing: border-box !important;
   width: 5px !important;
   min-width: 5px !important;
   max-width: 5px !important;
   flex: 0 0 5px !important;
-  height: 1em !important;
+  /* Width-only spacer — keep height 0 so it does not skew flex midline. */
+  height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
@@ -1848,13 +1859,16 @@ button.home-duranno-cta .home-duranno-cta-icon-gap {
   font-size: 0 !important;
   line-height: 0 !important;
   user-select: none;
+  align-self: center;
 }
 
 a.home-duranno-cta .home-duranno-cta-label,
 button.home-duranno-cta .home-duranno-cta-label {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin: 0 !important;
   padding: 0 !important;
+  line-height: 1 !important;
 }
 
 a.home-duranno-cta:hover,
