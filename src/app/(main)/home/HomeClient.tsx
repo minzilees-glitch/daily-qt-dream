@@ -26,7 +26,6 @@ import {
 export function HomeClient() {
   const {
     currentUser,
-    isCompleted,
     getEntry,
     saveEntry,
     clearEntry,
@@ -41,10 +40,11 @@ export function HomeClient() {
   if (!currentUser) return null;
 
   const todayEntry = getEntry(currentUser.id, today);
-  /** Completion flags without QT text (fetch miss / empty row) → compose, not empty copy. */
+  /**
+   * Real QT text drives home light/status (#75 already gates presence in
+   * app-context). Incomplete: gray @ 50% + new copy; complete: yellow twinkle.
+   */
   const hasContent = entryHasQtContent(todayEntry);
-  /** Home light/status follow real QT text — not presence-only completion. */
-  const doneToday = hasContent && isCompleted(currentUser.id, today);
   const showEdit = hasContent;
   const editActive = editing && showEdit;
   /** Read-only view only when there is real saved text; otherwise open the form. */
@@ -122,17 +122,19 @@ export function HomeClient() {
             nickname={currentUser.name}
             dateAccessory={
               <LightIcon
-                active={doneToday}
+                active={hasContent}
                 size={22}
-                justEarned={doneToday || lastEarnedDate === today}
-                label=""
+                twinkle={hasContent}
+                justEarned={hasContent && lastEarnedDate === today}
+                label={hasContent ? "오늘의 큐티 완료" : "오늘의 큐티 미완료"}
+                className={hasContent ? undefined : "opacity-50"}
               />
             }
             status={
               <p className="home-status-line type-body-sm font-normal text-text-main">
-                {doneToday
+                {hasContent
                   ? "오늘의 큐티를 완료했어요"
-                  : "오늘의 큐티를 아직 안했어요"}
+                  : "아직 오늘의 큐티가 완료되지 않았어요."}
               </p>
             }
           />

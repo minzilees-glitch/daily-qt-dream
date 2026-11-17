@@ -17,19 +17,31 @@ type Tab = {
   icon?: LucideIcon;
   /** Home uses the shared 빛 asset instead of a Lucide icon. */
   light?: boolean;
+  /** Extra path prefixes that keep this tab active (e.g. /qt → Home). */
+  matchPrefixes?: string[];
 };
 
 /** Equal-priority row: home first (no raised center). */
 const TABS: Tab[] = [
-  { href: "/home", label: "오늘의 큐티", light: true },
+  {
+    href: "/home",
+    label: "오늘의 큐티",
+    light: true,
+    matchPrefixes: ["/qt"],
+  },
   { href: "/history", label: "나의 큐티들", icon: CalendarDays },
   { href: "/group", label: "우리 순", icon: Users },
   { href: "/ranking", label: "랭킹", icon: Trophy },
   { href: "/me", label: "마이페이지", icon: UserRound },
 ];
 
-function isActive(pathname: string, href: string) {
-  return pathname === href || (href !== "/home" && pathname.startsWith(href));
+function isActive(pathname: string, tab: Tab) {
+  if (pathname === tab.href || pathname.startsWith(`${tab.href}/`)) {
+    return true;
+  }
+  return (tab.matchPrefixes ?? []).some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 }
 
 export function BottomNav() {
@@ -45,8 +57,9 @@ export function BottomNav() {
         icon (not only the glyph) navigate.
       */}
       <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-2.5">
-        {TABS.map(({ href, label, icon: Icon, light }) => {
-          const active = isActive(pathname, href);
+        {TABS.map((tab) => {
+          const { href, label, icon: Icon, light } = tab;
+          const active = isActive(pathname, tab);
           return (
             <Link
               key={href}
@@ -63,6 +76,7 @@ export function BottomNav() {
                   tone="white"
                   size={22}
                   rays={false}
+                  interactive={false}
                   label=""
                   className={`pointer-events-none ${active ? "opacity-100" : "opacity-75"}`}
                 />

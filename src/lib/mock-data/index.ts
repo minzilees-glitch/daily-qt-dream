@@ -11,6 +11,7 @@ import { buildUsers } from "./users";
 import {
   buildQtCompletions,
   buildEntries,
+  ensureTestUserTodayEntries,
   monthsCovered,
 } from "./qt-records";
 import { buildAwards } from "./awards";
@@ -37,8 +38,12 @@ export function getMockData(): MockDataset {
   const groups = buildGroups();
   const users = buildUsers(groups);
   // Seeded demo: 이민지 Sep/Oct + 11-15; 파일럿 순 Sep/Oct/Nov. Others 0.
+  // Seoul today is never seeded for the current demo user (incomplete + no light).
   const completions = buildQtCompletions(users);
-  const reflections = buildEntries(users, completions);
+  const reflections = ensureTestUserTodayEntries(
+    buildEntries(users, completions),
+    TEST_USER_ID,
+  );
   const awards = buildAwards();
   const readingRanges = buildReadingRanges(3);
 

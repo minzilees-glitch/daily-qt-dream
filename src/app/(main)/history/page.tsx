@@ -343,8 +343,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 max={maxYm}
                 align="start"
               />
+              {/* h-7 matches MonthPicker chevron row so icon+count sit on the same vertical center. */}
               <div
-                className="inline-flex items-center"
+                className="inline-flex h-7 shrink-0 items-center self-center"
                 title="이번달 내가 모은 빛"
                 aria-label={`이번달 내가 모은 빛 ${stats.lights}`}
               >
@@ -352,7 +353,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   lights={stats.lights}
                   size={22}
                   rays={false}
-                  textClassName="type-stat font-semibold tabular-nums text-[var(--color-mint)]"
+                  textClassName="type-stat font-semibold tabular-nums leading-none text-[var(--color-mint)]"
                 />
               </div>
             </div>
