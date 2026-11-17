@@ -1529,6 +1529,13 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   color: var(--color-ink-blue);
 }
 
+.admin-roster-chips-rule {
+  margin: 0.95rem 0;
+  border: none;
+  border-top: 1px solid var(--divider, #e5eaf0);
+  height: 0;
+}
+
 .admin-roster-accordion {
   list-style: none;
   margin: 0;

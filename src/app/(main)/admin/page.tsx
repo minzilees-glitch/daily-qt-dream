@@ -460,14 +460,15 @@ export default function AdminPage() {
                 );
               })}
             </div>
+            <div className="admin-roster-chips-rule" aria-hidden />
 
             {rosterLoading ? (
-              <p className="mt-3 type-caption text-text-secondary">
+              <p className="type-caption text-text-secondary">
                 가입 현황 불러오는 중…
               </p>
             ) : null}
 
-            <div className="mt-4 space-y-5">
+            <div className="space-y-5">
               {visibleRosterRooms.map((room) => (
                 <section key={room.id}>
                   <h3 className="type-body font-bold text-text-main">
