@@ -200,9 +200,9 @@ html[data-sky-mode="밤모드"] {
   filter: none;
 }
 
-/* 우리순 SkyWalkers: nudge cloud photo slightly upward in the frame. */
+/* 우리순 SkyWalkers: nudge cloud photo upward in the frame. */
 .premium-qt-root--group-sky .sky-group-card > img.sky-clouds-bg {
-  object-position: center 28%;
+  object-position: center 16%;
 }
 
 @theme inline {
