@@ -14,7 +14,8 @@ import { PassageEntryActions } from "@/components/qt/PassageEntryActions";
 import { HomePremiumShell } from "@/components/qt/HomePremiumShell";
 import { useApp } from "@/lib/app-context";
 import { formatDisplayDate } from "@/lib/dates";
-import { useDurannoToday } from "@/hooks/useDurannoToday";
+import { durannoUrlForDate } from "@/lib/duranno";
+import { getHistoryPassage } from "@/lib/history-passages";
 import { useSeoulToday } from "@/hooks/useSeoulToday";
 import { entryHasQtContent, fieldsFromEntry } from "@/lib/qt-entry";
 import {
@@ -33,7 +34,12 @@ export function HomeClient() {
     lastEarnedDate,
   } = useApp();
   const today = useSeoulToday();
-  const reading = useDurannoToday(today);
+  /** Same uploaded calendar as 「나의 큐티들」 — not Duranno scrape. */
+  const historyPassage = getHistoryPassage(today);
+  const reading = {
+    range: historyPassage.range,
+    url: durannoUrlForDate(today),
+  };
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -126,6 +132,8 @@ export function HomeClient() {
                 size={22}
                 justEarned={doneToday || lastEarnedDate === today}
                 label=""
+                /* Default (미완료) light: 50% opacity next to the home date. */
+                className={doneToday ? undefined : "opacity-50"}
               />
             }
             status={

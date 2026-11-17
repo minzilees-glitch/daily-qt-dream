@@ -937,6 +937,12 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   flex: 0 0 auto;
 }
 
+/* 이번달 모은 빛 count: full opacity (icon + number). */
+.premium-qt-root--history > .premium-qt-header .history-month-lights,
+.premium-qt-root--history > .premium-qt-header .history-month-lights * {
+  opacity: 1 !important;
+}
+
 /*
  * 나의 QT들 sheet: top pad + grabber + passage share one mint wash;
  * QT hint + fields sit on solid white below.
@@ -1816,6 +1822,8 @@ button.home-duranno-cta svg {
   fill: none !important;
   flex-shrink: 0;
   opacity: 1 !important;
+  /* Optical align: book glyph sits a hair high vs 「말씀보기」 caption. */
+  transform: translateY(2px);
 }
 
 /*
