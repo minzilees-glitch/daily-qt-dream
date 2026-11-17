@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Camera, UserRound } from "lucide-react";
 import { useApp } from "@/lib/app-context";
-import { compressAvatarImage } from "@/lib/avatar-image";
+import { compressAvatarImage, yieldToUi } from "@/lib/avatar-image";
 
 export function ProfileAvatarButton({
   light = false,
@@ -17,12 +17,23 @@ export function ProfileAvatarButton({
 }) {
   const { currentUser, setAvatarUrl } = useApp();
   const inputRef = useRef<HTMLInputElement>(null);
+  const objectUrlRef = useRef<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   /** Compressed JPEG from picker — upload this Blob (avoid data-URL roundtrip). */
   const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
+  const [preparing, setPreparing] = useState(false);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const revokeObjectUrl = () => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+  };
+
+  useEffect(() => () => revokeObjectUrl(), []);
 
   if (!currentUser) return null;
 
@@ -38,12 +49,14 @@ export function ProfileAvatarButton({
         : "bg-sky-light text-sky hover:bg-sky-light";
 
   const closeModal = () => {
-    if (saving) return;
+    if (saving || preparing) return;
     setOpen(false);
     setPreview(null);
     setPreviewBlob(null);
     setError(null);
     setSaving(false);
+    setPreparing(false);
+    revokeObjectUrl();
   };
 
   const onPick = (file: File | null) => {
@@ -55,32 +68,54 @@ export function ProfileAvatarButton({
       setPreviewBlob(null);
       return;
     }
+
+    // Instant preview — do NOT compress before opening the modal (that froze iOS).
+    revokeObjectUrl();
+    const objectUrl = URL.createObjectURL(file);
+    objectUrlRef.current = objectUrl;
+    setPreview(objectUrl);
+    setPreviewBlob(null);
+    setError(null);
+    setPreparing(true);
+    setOpen(true);
+
     void (async () => {
-      setError(null);
       try {
+        await yieldToUi();
         const { dataUrl, blob } = await compressAvatarImage(file);
+        revokeObjectUrl();
         setPreview(dataUrl);
         setPreviewBlob(blob);
-        setOpen(true);
       } catch (err) {
-        setPreview(null);
         setPreviewBlob(null);
-        setOpen(true);
         setError(
           err instanceof Error
             ? err.message
             : "이미지를 열 수 없어요. JPEG/PNG로 다시 선택해 주세요.",
         );
+      } finally {
+        setPreparing(false);
       }
     })();
   };
 
   const onSave = async () => {
-    if ((!previewBlob && !preview) || saving) return;
+    if (saving || preparing) return;
+    if (!previewBlob && !preview) return;
     setSaving(true);
     setError(null);
     try {
-      const res = await setAvatarUrl(previewBlob ?? preview);
+      // Prefer compressed JPEG blob; never re-upload the raw camera file.
+      const payload = previewBlob ?? preview;
+      if (!payload) {
+        setError("이미지를 준비하지 못했어요. 다시 선택해 주세요.");
+        return;
+      }
+      if (!previewBlob) {
+        setError("사진 변환이 아직 안 끝났어요. 잠시 후 다시 저장해 주세요.");
+        return;
+      }
+      const res = await setAvatarUrl(previewBlob);
       if (!res.ok) {
         setError(res.message || "저장에 실패했어요.");
         return;
@@ -89,6 +124,7 @@ export function ProfileAvatarButton({
       setPreview(null);
       setPreviewBlob(null);
       setError(null);
+      revokeObjectUrl();
     } catch (err) {
       setError(
         err instanceof Error
@@ -137,7 +173,7 @@ export function ProfileAvatarButton({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp,image/gif"
         className="hidden"
         onChange={(e) => {
           onPick(e.target.files?.[0] ?? null);
@@ -170,6 +206,11 @@ export function ProfileAvatarButton({
                 />
               </div>
             ) : null}
+            {preparing ? (
+              <p className="mt-3 text-center type-caption text-text-secondary">
+                사진 준비 중…
+              </p>
+            ) : null}
             {error ? (
               <p className="qt-validation-hint mt-3 text-center type-caption text-danger">
                 {error}
@@ -178,7 +219,7 @@ export function ProfileAvatarButton({
             <div className="mt-[var(--space-stack)] grid grid-cols-2 gap-2">
               <button
                 type="button"
-                disabled={saving}
+                disabled={saving || preparing}
                 className="rounded-full bg-sky-light px-4 py-3 type-body-sm font-semibold text-text-main disabled:opacity-50"
                 onClick={closeModal}
               >
@@ -186,11 +227,11 @@ export function ProfileAvatarButton({
               </button>
               <button
                 type="button"
-                disabled={saving || !preview}
+                disabled={saving || preparing || !previewBlob}
                 className="btn-cta bg-cta rounded-full px-4 py-3 type-body-sm font-semibold !text-[var(--color-mint)] disabled:opacity-50"
                 onClick={() => void onSave()}
               >
-                {saving ? "저장 중…" : "저장"}
+                {saving ? "저장 중…" : preparing ? "준비 중…" : "저장"}
               </button>
             </div>
           </div>

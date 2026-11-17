@@ -48,7 +48,8 @@ export async function fetchDurannoTodayMeta(
       "User-Agent":
         "Mozilla/5.0 (compatible; DailyQtDream/1.0; +local-dev)",
     },
-    cache: "no-store",
+    // Reuse scrape briefly so /api/duranno/today stays snappy after first hit.
+    next: { revalidate: 300 },
   });
 
   if (!res.ok) {
