@@ -583,20 +583,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
     remoteQt.loadedFor === sessionUserId;
 
   const users = useMemo(() => {
-    const mapped = base.users.map((u) => {
-      const groupId = overrides.userGroupMap[u.id] ?? u.groupId;
-      const isLeader =
-        (overrides.leaderMap[groupId] ??
-          base.groups.find((g) => g.id === groupId)?.leaderId) === u.id;
-      // Local optimistic / offline → remote profiles.avatar_url → mock
-      const avatarUrl =
-        overrides.avatarMap?.[u.id] ??
-        remoteAvatars[u.id] ??
-        u.avatarUrl ??
-        null;
-      const name = overrides.nameMap?.[u.id]?.trim() || u.name;
-      return { ...u, name, groupId, isLeader, avatarUrl };
-    });
+    /**
+     * Kakao UUID ≠ seed `u-00N`. After verify, injecting the live profile without
+     * dropping the seed row for the same legal_name double-counts 우리순
+     * (e.g. 김병준 순 6 → 7: seed 「이민지」 + Kakao 「밍밍이」).
+     */
+    const claimedLegal = authProfile?.legal_name?.trim() || "";
+    const seedDoppelgangerIds = new Set<string>();
+    if (claimedLegal) {
+      for (const u of base.users) {
+        if (u.name === claimedLegal) seedDoppelgangerIds.add(u.id);
+      }
+    }
+
+    const mapped = base.users
+      .filter((u) => !seedDoppelgangerIds.has(u.id))
+      .map((u) => {
+        const groupId = overrides.userGroupMap[u.id] ?? u.groupId;
+        const isLeader =
+          (overrides.leaderMap[groupId] ??
+            base.groups.find((g) => g.id === groupId)?.leaderId) === u.id;
+        // Local optimistic / offline → remote profiles.avatar_url → mock
+        const avatarUrl =
+          overrides.avatarMap?.[u.id] ??
+          remoteAvatars[u.id] ??
+          u.avatarUrl ??
+          null;
+        const name = overrides.nameMap?.[u.id]?.trim() || u.name;
+        return { ...u, name, groupId, isLeader, avatarUrl };
+      });
 
     // Kakao auth user (UUID) is not in mock seed — inject for group / me views.
     if (authProfile && !mapped.some((u) => u.id === authProfile.id)) {
