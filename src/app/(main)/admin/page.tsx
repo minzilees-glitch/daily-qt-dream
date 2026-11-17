@@ -490,7 +490,7 @@ export default function AdminPage() {
                               {sun.groupName}
                             </span>
                             <span className="admin-roster-acc__meta">
-                              <span className="type-caption text-text-secondary">
+                              <span className="admin-roster-acc__count type-caption font-semibold text-text-main">
                                 {sun.memberNames.length === 0
                                   ? "자유 입력"
                                   : `가입 ${counts.joined}/${counts.total}`}
@@ -499,14 +499,14 @@ export default function AdminPage() {
                                 <ChevronUp
                                   size={20}
                                   strokeWidth={2}
-                                  className="text-cta"
+                                  className="admin-roster-acc__chev text-cta"
                                   aria-hidden
                                 />
                               ) : (
                                 <ChevronDown
                                   size={20}
                                   strokeWidth={2}
-                                  className="text-cta"
+                                  className="admin-roster-acc__chev text-cta"
                                   aria-hidden
                                 />
                               )}
