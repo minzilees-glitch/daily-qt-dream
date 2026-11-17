@@ -183,8 +183,8 @@ function pickActivity(index: number): Activity {
 /** Roam band near the card floor (feet close to ground). */
 function walkBand(height: number): { minY: number; maxY: number } {
   const floorMax = Math.max(0, height - WALKER_FIGURE_H - FLOOR_INSET_PX);
-  // Almost no lift — keep walkers on the ground strip.
-  const lift = Math.max(2, height * 0.015);
+  // Almost no lift — keep walkers on the ground strip, then nudge 10px higher.
+  const lift = Math.max(2, height * 0.015) + 10;
   const maxY = Math.max(0, floorMax - lift);
   const span = Math.max(10, height * 0.07);
   const minY = Math.min(maxY, Math.max(0, maxY - span));
