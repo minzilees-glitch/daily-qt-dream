@@ -35,7 +35,12 @@ def env_url() -> str:
         die(
             "Set NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL) for avatar Storage backup.",
         )
-    return raw.rstrip("/")
+    # Project URL only — strip accidental API suffixes like /rest/v1 from Connect copy-paste.
+    url = raw.rstrip("/")
+    for suffix in ("/rest/v1", "/auth/v1", "/storage/v1"):
+        if url.endswith(suffix):
+            url = url[: -len(suffix)].rstrip("/")
+    return url
 
 
 def env_key() -> str:
