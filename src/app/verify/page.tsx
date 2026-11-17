@@ -168,7 +168,7 @@ export default function CommunityVerifyPage() {
               })}
             </div>
             <p className="mt-2 type-caption text-text-secondary">
-              다락방 구분은 임시 매핑이에요. 엑셀 확정 후 조정됩니다.
+              다락방장 이름으로 선택해 주세요.
             </p>
           </div>
 

@@ -1,7 +1,9 @@
 /**
- * Scaffold: 다락방 → 순 → 본명 for post-Kakao community verification.
- * 다락방 buckets are provisional (~6 rooms × ~5–6 순) until Minzi’s Excel
- * maps 순 → 다락방. Member lists come from `sun-roster.ts` (DQ-694).
+ * Canonical 다락방 → 순 → 본명 for post-Kakao community verification.
+ * 다락방 labels confirmed by Minzi (2026-11-17) — definitive, not provisional.
+ * Member lists come from `sun-roster.ts` (DQ-694).
+ * 순 → 다락방 sun buckets: 김병준 순 under 김병준 다락방; other 순 split across
+ * the six rooms until a full Excel map arrives.
  */
 
 import { SUN_ROSTERS, type RosterMember, type SunRoster } from "@/lib/mock-data/sun-roster";
@@ -10,43 +12,43 @@ export type DarakbangId = string;
 
 export type Darakbang = {
   id: DarakbangId;
-  /** Display label, e.g. 「1다락방」 */
+  /** Display label, e.g. 「김병준 다락방」 */
   name: string;
   /** Exact `SunRoster.groupName` values in this room. */
   sunNames: string[];
 };
 
-/** Provisional 6-room split of the 33 순 (김병준 순 first). */
+/** Canonical 6 다락방 (Minzi 2026-11-17). Order matches her list. */
 export const DARAKBANGS: Darakbang[] = [
   {
-    id: "d-01",
-    name: "1다락방",
+    id: "d-kangminjeong",
+    name: "강민정 다락방",
     sunNames: [
-      "김병준 순",
       "김서경 순",
       "최다혜 순",
       "오요섭 순",
       "문은미 순",
       "장석인 순",
+      "임인택 순",
     ],
   },
   {
-    id: "d-02",
-    name: "2다락방",
+    id: "d-gumina",
+    name: "구민아 다락방",
     sunNames: [
-      "임인택 순",
       "이지행 순",
       "신은영 순",
       "정현태 순",
       "한준희 순",
       "이한지 순",
+      "이유진 순",
     ],
   },
   {
-    id: "d-03",
-    name: "3다락방",
+    id: "d-kimbyeongjun",
+    name: "김병준 다락방",
     sunNames: [
-      "이유진 순",
+      "김병준 순",
       "박하은 순",
       "홍승우 순",
       "최진화 순",
@@ -55,8 +57,8 @@ export const DARAKBANGS: Darakbang[] = [
     ],
   },
   {
-    id: "d-04",
-    name: "4다락방",
+    id: "d-kimcheolho",
+    name: "김철호 다락방",
     sunNames: [
       "김이현 순",
       "김태희 순",
@@ -67,8 +69,8 @@ export const DARAKBANGS: Darakbang[] = [
     ],
   },
   {
-    id: "d-05",
-    name: "5다락방",
+    id: "d-leeminji",
+    name: "이민지 다락방",
     sunNames: [
       "김송하 순",
       "박현수 순",
@@ -78,8 +80,8 @@ export const DARAKBANGS: Darakbang[] = [
     ],
   },
   {
-    id: "d-06",
-    name: "6다락방",
+    id: "d-choihyeongyeong",
+    name: "최현경 다락방",
     sunNames: ["신의정 순", "우경식 순", "임예진 순", "정봉훈 순"],
   },
 ];
