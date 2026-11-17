@@ -1495,6 +1495,141 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   box-shadow: none;
 }
 
+/* —— Admin (premium sheet; no SoftCard / ivory chrome) —— */
+.admin-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: var(--space-stack);
+  border-bottom: 1px solid var(--divider);
+}
+
+.admin-tabs__btn {
+  flex: 1 1 0;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  padding: 0.65rem 0.35rem 0.7rem;
+  margin-bottom: -1px;
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.admin-tabs__btn[aria-selected="true"] {
+  color: var(--color-ink-blue);
+  border-bottom-color: var(--color-ink-blue);
+}
+
+.admin-field {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-mint) 35%, white);
+  padding: 0.75rem 0.85rem;
+  font-size: var(--fs-body-sm);
+  color: var(--text-main);
+  outline: none;
+}
+
+.admin-field:focus {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-sky) 55%, transparent);
+}
+
+.admin-select-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-select-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgb(0 9 23 / 0.08);
+  padding: 0.75rem 0.15rem;
+  cursor: pointer;
+}
+
+.admin-select-row--on {
+  background: color-mix(in srgb, var(--color-mint) 28%, white);
+  margin-inline: -0.35rem;
+  padding-inline: 0.5rem;
+  border-radius: 10px;
+  border-bottom-color: transparent;
+}
+
+.admin-group-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-group-row {
+  border-bottom: 1px solid rgb(0 9 23 / 0.08);
+  padding: 0.85rem 0.1rem;
+}
+
+.admin-group-row:last-child {
+  border-bottom: none;
+}
+
+.admin-user-table {
+  width: 100%;
+  background: transparent;
+}
+
+.admin-user-table__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgb(0 9 23 / 0.12);
+  padding: 0.25rem 0.15rem 0.45rem;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--color-text-secondary, #5c6570);
+}
+
+.admin-user-table__body {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-user-table__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgb(0 9 23 / 0.08);
+  padding: 0.7rem 0.15rem;
+  background: transparent;
+}
+
+.admin-user-table__rank {
+  display: flex;
+  width: 2.25rem;
+  flex-shrink: 0;
+  justify-content: center;
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.admin-user-table__name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.admin-user-table__num {
+  display: flex;
+  width: 3.75rem;
+  flex-shrink: 0;
+  justify-content: flex-end;
+}
+
 .premium-rank-row--mine {
   background: var(--color-ink-blue); /* #1F3E62 */
   outline: none;
