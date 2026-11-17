@@ -44,8 +44,9 @@ export function QtEntryForm({
   const locked = disabled || busy;
 
   return (
-    <div className="space-y-[var(--space-stack-lg)]">
-      <div className="pt-[var(--space-stack-lg)]">
+    <div>
+      {/* Helper → first field: slightly tighter than field stack (--space-stack). */}
+      <div className="pt-[var(--space-stack-lg)] pb-[var(--space-stack)]">
         {helperNotice ? (
           <div className="qt-validation-hint type-caption mb-[var(--space-stack-sm)] break-keep text-text-secondary">
             {helperNotice}
@@ -69,6 +70,7 @@ export function QtEntryForm({
         </p>
       </div>
 
+      <div className="space-y-[var(--space-stack-lg)]">
       <Field
         id="verse"
         label="오늘 나의 마음에 남는 구절"
@@ -139,6 +141,7 @@ export function QtEntryForm({
             삭제
           </PrimaryButton>
         ) : null}
+      </div>
       </div>
     </div>
   );
