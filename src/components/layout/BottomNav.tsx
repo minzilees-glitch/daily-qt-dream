@@ -44,7 +44,7 @@ export function BottomNav() {
         Floating capsule: each <Link> fills its grid cell so taps near the
         icon (not only the glyph) navigate.
       */}
-      <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-2.5">
+      <div className="nav-glass pointer-events-auto grid w-full max-w-[var(--phone-max)] grid-cols-5 gap-0.5 rounded-[var(--radius-btn)] px-1.5 py-2">
         {TABS.map(({ href, label, icon: Icon, light }) => {
           const active = isActive(pathname, href);
           return (
@@ -53,7 +53,7 @@ export function BottomNav() {
               href={href}
               aria-label={label}
               title={label}
-              className={`nav-tab-hit flex min-w-0 items-center justify-center rounded-[var(--radius-btn)] px-1 py-2.5 transition ${
+              className={`nav-tab-hit flex min-w-0 items-center justify-center rounded-[var(--radius-btn)] px-1 py-2 transition ${
                 active ? "bg-white/20" : "hover:bg-white/10 active:bg-white/15"
               }`}
               aria-current={active ? "page" : undefined}
