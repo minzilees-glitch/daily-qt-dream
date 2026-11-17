@@ -7,11 +7,26 @@ import { BrandMark } from "@/components/ui/BrandMark";
 import { useApp } from "@/lib/app-context";
 import { isSupabaseConfigured, signInWithKakao } from "@/lib/supabase/auth";
 
+function kakaoErrorMessage(code: string | null): string | null {
+  if (!code) return null;
+  if (code === "missing_kakao_env") {
+    return "카카오 OIDC용 env가 없어요. .env.local에 NEXT_PUBLIC_KAKAO_REST_API_KEY + KAKAO_CLIENT_SECRET을 넣고 서버를 재시작하세요.";
+  }
+  return code;
+}
+
 export default function LoginPage() {
   const { ready, currentUser, communityStatus, supabaseEnabled } = useApp();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fromQuery = kakaoErrorMessage(
+      new URLSearchParams(window.location.search).get("kakao_error"),
+    );
+    if (fromQuery) setError(fromQuery);
+  }, []);
 
   useEffect(() => {
     if (!ready || !currentUser) return;
@@ -75,7 +90,7 @@ export default function LoginPage() {
             <p className="qt-validation-hint text-center type-caption text-text-secondary">
               로그인 후 다락방 · 순 · 본명으로 공동체 확인을 합니다.
               <br />
-              (전화번호는 사용하지 않아요)
+              닉네임·프로필만 요청해요 (이메일·전화 없음).
             </p>
           )}
 

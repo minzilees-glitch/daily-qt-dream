@@ -5,6 +5,20 @@ export type AuthResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
+/**
+ * Kakao consent scopes we want (nickname + profile only).
+ * Never include account_email / email — phone/email scopes are unavailable
+ * without Biz/검수 for this community app.
+ *
+ * Note: Supabase GoTrue’s built-in Kakao provider still *hardcodes*
+ * `account_email` server-side and appends client scopes (KOE205 if unset).
+ * Prefer `/api/auth/kakao/start` (OIDC → signInWithIdToken) which controls
+ * the authorize `scope` ourselves. Keep “Allow users without an email” ON.
+ */
+export const KAKAO_PROFILE_SCOPES = "profile_nickname,profile_image" as const;
+/** Space-separated for Kakao authorize URL (OIDC path). */
+export const KAKAO_OIDC_SCOPE = "openid profile_nickname profile_image" as const;
+
 /** App origin for OAuth redirectTo (localhost or Vercel). */
 export function getAppOrigin(): string {
   if (typeof window !== "undefined" && window.location?.origin) {
@@ -15,13 +29,26 @@ export function getAppOrigin(): string {
   return "http://localhost:3000";
 }
 
-/** Kakao → Supabase OAuth. Redirects the browser; does not return a session. */
+/**
+ * Start Kakao login.
+ * 1) Preferred: app-owned OIDC (`/api/auth/kakao/start`) — no account_email.
+ * 2) Fallback: Supabase `signInWithOAuth` (may KOE205 until GoTrue omits email
+ *    or Minzi enables 카카오계정(이메일) as optional on a Biz app).
+ */
 export async function signInWithKakao(): Promise<AuthResult<void>> {
+  // Public REST key present → use OIDC path (secret is server-only on the API).
+  const restKey = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY?.trim();
+  if (restKey && typeof window !== "undefined") {
+    window.location.assign("/api/auth/kakao/start");
+    return { ok: true, data: undefined };
+  }
+
   const sb = getSupabaseBrowser();
   if (!sb) {
     return {
       ok: false,
-      error: "Supabase가 설정되지 않았어요. NEXT_PUBLIC_SUPABASE_URL / ANON_KEY를 확인하세요.",
+      error:
+        "Supabase가 설정되지 않았어요. NEXT_PUBLIC_SUPABASE_URL / ANON_KEY를 확인하세요.",
     };
   }
 
@@ -30,14 +57,33 @@ export async function signInWithKakao(): Promise<AuthResult<void>> {
     provider: "kakao",
     options: {
       redirectTo,
-      // Phone scope unavailable; nickname + profile image only.
-      scopes: "profile_nickname,profile_image",
+      // Nickname + profile only — never account_email / email / phone.
+      // Supabase may still append account_email server-side (see KAKAO_PROFILE_SCOPES note).
+      scopes: KAKAO_PROFILE_SCOPES,
       skipBrowserRedirect: false,
     },
   });
 
   if (error) return { ok: false, error: error.message };
   return { ok: true, data: undefined };
+}
+
+/** Finish Kakao OIDC path: exchange id_token for a Supabase session. */
+export async function signInWithKakaoIdToken(
+  idToken: string,
+): Promise<AuthResult<Session>> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+  const token = idToken.trim();
+  if (!token) return { ok: false, error: "카카오 ID 토큰이 없어요." };
+
+  const { data, error } = await sb.auth.signInWithIdToken({
+    provider: "kakao",
+    token,
+  });
+  if (error) return { ok: false, error: error.message };
+  if (!data.session) return { ok: false, error: "세션을 만들지 못했어요." };
+  return { ok: true, data: data.session };
 }
 
 export async function signOutAuth(): Promise<AuthResult<void>> {
@@ -56,7 +102,7 @@ export async function getAuthSession(): Promise<Session | null> {
   return data.session ?? null;
 }
 
-/** Finish PKCE on `/auth/callback` when `?code=` is present. */
+/** Finish PKCE on `/auth/callback` when `?code=` is present (Supabase OAuth). */
 export async function exchangeCodeFromUrl(
   url: string = typeof window !== "undefined" ? window.location.href : "",
 ): Promise<AuthResult<Session>> {

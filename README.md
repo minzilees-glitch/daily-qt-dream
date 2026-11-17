@@ -29,10 +29,15 @@ npm start
 
 ## 카카오 로그인
 
-1. Supabase Dashboard에 Kakao provider + Redirect URLs를 설정합니다 (`.env.example` 체크리스트).
-2. 한 번 `supabase/migrations/20261117_kakao_community_verify.sql` 을 SQL Editor에서 실행합니다. (`20261118_rls_security_harden.sql` 은 Kakao 확인 후 / DQ-699)
-3. `/login` → **「카카오로 시작하기」** → `/auth/callback` → `/verify` (다락방→순→본명).
-4. 명단 일치 시 `/home`. 없으면 예외 신청 경로 사용.
+Preferred path is **app OIDC** (`/api/auth/kakao/start`) so we never request `account_email` (avoids KOE205). Supabase’s built-in Kakao provider still hardcodes that scope.
+
+1. `.env.local`: `NEXT_PUBLIC_KAKAO_REST_API_KEY` + `KAKAO_CLIENT_SECRET` (see `.env.example`).
+2. Kakao Developers: Login ON, **OpenID Connect ON**, consent = nickname + profile only; Redirect URI `http://localhost:3000/api/auth/kakao/callback`.
+3. Supabase Kakao: keep **Allow users without an email** ON.
+4. Run `supabase/migrations/20261117_kakao_community_verify.sql` once. Do not run RLS harden yet (DQ-699).
+5. `/login` → 카카오 → `/auth/callback` → `/verify` (다락방→순→본명) → `/home`.
+
+Last-resort fallback (Biz App): enable optional 카카오계정(이메일) so Supabase `signInWithOAuth` stops KOE205.
 
 로그아웃은 계정설정(`/me/settings`)에서 합니다.
 
