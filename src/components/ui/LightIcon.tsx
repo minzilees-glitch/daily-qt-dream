@@ -129,6 +129,13 @@ export function LightIcon({
    * after saveEntry). Ignored when rays={false}.
    */
   justEarned = false,
+  /** Soft ongoing sparkle while the light is lit (e.g. home header when QT done). */
+  twinkle = false,
+  /**
+   * When false, inactive lights stay non-interactive (no tip button).
+   * Use for metric rows so icon+count stay vertically aligned with neighbors.
+   */
+  interactive = true,
 }: {
   active?: boolean;
   tone?: Tone;
@@ -139,6 +146,8 @@ export function LightIcon({
   future?: boolean;
   rays?: boolean;
   justEarned?: boolean;
+  twinkle?: boolean;
+  interactive?: boolean;
 }) {
   const resolved: Tone = future
     ? "inactive"
@@ -211,9 +220,10 @@ export function LightIcon({
 
   const showBurst = rays && burst && !isInactive;
 
-  if (!isInactive) {
+  if (!isInactive || !interactive) {
     // Layout box is always `size`×`size` so earn rays/zoom never shift
     // the glyph center in flex rows (home title, history date, calendar).
+    const twinkleClass = twinkle && !showBurst && !isInactive ? " light-twinkle" : "";
     return (
       <span
         className={`relative inline-flex shrink-0 items-center justify-center overflow-visible ${className}`}
@@ -225,7 +235,7 @@ export function LightIcon({
         <span
           className={`relative flex h-full w-full items-center justify-center overflow-visible${
             showBurst ? " light-earn-burst" : ""
-          }`}
+          }${twinkleClass}`}
         >
           {showBurst ? (
             <RayBurst size={size} color={toneColor(resolved)} />
@@ -285,14 +295,17 @@ export function LightCount({
 }) {
   const resolvedTone: Tone = lights > 0 ? tone : "inactive";
   return (
-    <span className={`inline-flex items-center gap-1 overflow-visible ${className}`}>
+    <span
+      className={`inline-flex items-center gap-1 leading-none overflow-visible ${className}`}
+    >
       <LightIcon
         tone={resolvedTone}
         size={size}
         label={`빛 ${lights}`}
         rays={rays}
+        interactive={false}
       />
-      <span className={textClassName}>{lights}</span>
+      <span className={`leading-none ${textClassName}`}>{lights}</span>
     </span>
   );
 }

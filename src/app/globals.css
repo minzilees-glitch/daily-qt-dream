@@ -546,6 +546,32 @@ a {
   animation: light-rays-burst 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Soft ongoing sparkle for a lit light (home header when today’s QT is done). */
+@keyframes light-twinkle {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+    opacity: 0.92;
+  }
+  40% {
+    transform: scale(1.1);
+    filter: brightness(1.28);
+    opacity: 1;
+  }
+  65% {
+    transform: scale(0.96);
+    filter: brightness(0.94);
+    opacity: 0.82;
+  }
+}
+
+.light-twinkle {
+  transform-origin: center center;
+  animation: light-twinkle 2.4s ease-in-out infinite;
+  will-change: transform, filter, opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .light-earn-burst {
     animation: none;
@@ -553,6 +579,12 @@ a {
   .light-rays {
     animation: none;
     opacity: 0;
+  }
+  .light-twinkle {
+    animation: none;
+    filter: none;
+    opacity: 1;
+    will-change: auto;
   }
 }
 
@@ -893,21 +925,28 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
 }
 
 /* Inactive today (not selected): solid numeral + underline (day & night).
- * Selected today uses .premium-cal-day-selected / glow — no today class → no underline. */
+ * Selected today uses .premium-cal-day-selected / glow — no today class → no underline.
+ * DQ-705 / #71: 2px stroke, 12px offset. !important so resets cannot drop it again. */
 .premium-qt-header .premium-cal-day-today {
+  display: inline-block;
   color: var(--color-ink-blue) !important; /* #1F3E62 */
   opacity: 1 !important;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 12px; /* air under the numeral; not tight */
-  text-decoration-color: var(--color-ink-blue);
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 12px !important; /* air under the numeral; not tight */
+  text-decoration-color: var(--color-ink-blue) !important;
+  /* Keep underline paintable below leading-none glyphs (week/month cells). */
+  padding-bottom: 2px;
 }
 
 /* 밤모드: brighter today ink so underline/numeral read full-strength on black. */
 html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   color: var(--color-mint) !important; /* #CAEBF2 */
   opacity: 1 !important;
-  text-decoration-color: var(--color-mint);
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 12px !important;
+  text-decoration-color: var(--color-mint) !important;
 }
 
 .premium-qt-header svg {

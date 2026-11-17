@@ -43,6 +43,7 @@ const PILOT_LEADER_NAME = "파일럿";
  * - 이민지: Sep 22 / Oct 14 random days + fixed 2026-11-15
  * - 파일럿 순 (placeholder 순장): Sep 23 / Oct 11 / Nov 7 aggregate
  * Other 순 stay at 0. 김병준 순 roster unchanged.
+ * Current user never gets today seeded (no light / no saved QT for Seoul today).
  */
 export function buildQtCompletions(users: User[]): QtCompletion[] {
   const today = todaySeoul();
@@ -69,7 +70,8 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
     pushUserMonthSample(records, pilotLeader.id, "2026-11", 7, today, 2203);
   }
 
-  return records;
+  // Hard guarantee: current demo user has no completion / light for Seoul today.
+  return ensureTestUserToday(records, minzi?.id);
 }
 
 function pushUserMonthSample(
@@ -80,7 +82,8 @@ function pushUserMonthSample(
   today: string,
   seed: number,
 ): void {
-  const pool = rankingScopeDays(yearMonth, today);
+  // Exclude Seoul today so demos never open with today’s QT already done.
+  const pool = rankingScopeDays(yearMonth, today).filter((d) => d !== today);
   if (pool.length === 0 || count <= 0) return;
   const rng = mulberry32(seed);
   const picked = sampleN(rng, pool, Math.min(count, pool.length));
@@ -168,13 +171,27 @@ export function buildEntries(
   return entries;
 }
 
-/** @deprecated alias */
+/** Strip Seoul-today completion for the demo user (no light / not saved). */
 export function ensureTestUserToday(
   completions: QtCompletion[],
-  testUserId: string,
+  testUserId?: string,
 ): QtCompletion[] {
+  if (!testUserId) return completions;
+  const today = todaySeoul();
   return completions.filter(
-    (c) => !(c.userId === testUserId && c.date === todaySeoul()),
+    (c) => !(c.userId === testUserId && c.date === today),
+  );
+}
+
+/** Strip Seoul-today QT text for the demo user. */
+export function ensureTestUserTodayEntries(
+  entries: QtEntry[],
+  testUserId?: string,
+): QtEntry[] {
+  if (!testUserId) return entries;
+  const today = todaySeoul();
+  return entries.filter(
+    (e) => !(e.userId === testUserId && e.date === today),
   );
 }
 
