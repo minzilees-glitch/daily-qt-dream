@@ -36,12 +36,10 @@ const OBEDIENCE_SAMPLES = [
 ];
 
 const TEST_USER_NAME = "이민지";
-const PILOT_LEADER_NAME = "파일럿";
 
 /**
- * Pilot seed:
+ * Demo seed:
  * - 이민지: Sep 22 / Oct 14 random days + fixed 2026-11-15
- * - 파일럿 순 (placeholder 순장): Sep 23 / Oct 11 / Nov 7 aggregate
  * Other 순 stay at 0. 김병준 순 roster unchanged.
  */
 export function buildQtCompletions(users: User[]): QtCompletion[] {
@@ -60,13 +58,6 @@ export function buildQtCompletions(users: User[]): QtCompletion[] {
         completed: true,
       });
     }
-  }
-
-  const pilotLeader = users.find((u) => u.name === PILOT_LEADER_NAME);
-  if (pilotLeader) {
-    pushUserMonthSample(records, pilotLeader.id, "2026-09", 23, today, 2201);
-    pushUserMonthSample(records, pilotLeader.id, "2026-10", 11, today, 2202);
-    pushUserMonthSample(records, pilotLeader.id, "2026-11", 7, today, 2203);
   }
 
   return records;

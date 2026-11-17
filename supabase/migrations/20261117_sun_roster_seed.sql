@@ -317,4 +317,4 @@ insert into public.profiles (id, display_name, group_id, role) values
   ('u-271', '박수연', 'g-33', 'member'),
   ('u-272', '공의애', 'g-33', 'member');
 
--- Counts: 33 순, 272 profiles (excl. 파일럿 mock-only).
+-- Counts: 33 순, 272 profiles.

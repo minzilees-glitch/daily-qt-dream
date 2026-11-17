@@ -19,7 +19,7 @@ export type ProfileRepoResult<T> =
  * - `group_id` / role / roster membership: admin JWT or service_role seed — never phones in client tables.
  */
 
-/** Read display_name for one profile (pilot nickname). */
+/** Read display_name for one profile (nickname). */
 export async function fetchDisplayName(
   userId: string,
 ): Promise<ProfileRepoResult<string | null>> {
