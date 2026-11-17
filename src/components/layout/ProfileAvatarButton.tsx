@@ -18,7 +18,11 @@ import {
 } from "@/lib/avatar-crop";
 import { yieldToUi } from "@/lib/avatar-image";
 
-const CROP_VIEW = 280;
+/** Square crop edge — shrinks on narrow phones so the modal fits. */
+function cropViewSize(): number {
+  if (typeof window === "undefined") return 280;
+  return Math.max(200, Math.min(280, window.innerWidth - 72));
+}
 
 export function ProfileAvatarButton({
   light = false,
@@ -47,6 +51,7 @@ export function ProfileAvatarButton({
   const [transform, setTransform] = useState<AvatarCropTransform>(
     defaultCropTransform,
   );
+  const [viewSize, setViewSize] = useState(280);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +64,14 @@ export function ProfileAvatarButton({
   };
 
   useEffect(() => () => revokeObjectUrl(), []);
+
+  useEffect(() => {
+    if (!open) return;
+    const sync = () => setViewSize(cropViewSize());
+    sync();
+    window.addEventListener("resize", sync);
+    return () => window.removeEventListener("resize", sync);
+  }, [open]);
 
   const resetCrop = useCallback(() => {
     setTransform(defaultCropTransform());
@@ -101,6 +114,7 @@ export function ProfileAvatarButton({
     revokeObjectUrl();
     const objectUrl = URL.createObjectURL(file);
     objectUrlRef.current = objectUrl;
+    setViewSize(cropViewSize());
     setSourceUrl(objectUrl);
     setSourceBlob(file);
     setError(null);
@@ -121,7 +135,7 @@ export function ProfileAvatarButton({
     const clamped = clampCropOffset(
       imgSize.w,
       imgSize.h,
-      CROP_VIEW,
+      viewSize,
       zoom,
       nextX,
       nextY,
@@ -161,7 +175,7 @@ export function ProfileAvatarButton({
       await yieldToUi();
       const cropped = await exportSquareAvatarCrop(
         sourceBlob,
-        CROP_VIEW,
+        viewSize,
         transform,
       );
       const res = await setAvatarUrl(cropped.blob);
@@ -187,10 +201,10 @@ export function ProfileAvatarButton({
   };
 
   const baseCover = imgSize
-    ? coverScale(imgSize.w, imgSize.h, CROP_VIEW) * transform.zoom
+    ? coverScale(imgSize.w, imgSize.h, viewSize) * transform.zoom
     : 1;
-  const drawnW = imgSize ? imgSize.w * baseCover : CROP_VIEW;
-  const drawnH = imgSize ? imgSize.h * baseCover : CROP_VIEW;
+  const drawnW = imgSize ? imgSize.w * baseCover : viewSize;
+  const drawnH = imgSize ? imgSize.h * baseCover : viewSize;
 
   return (
     <>
@@ -239,28 +253,34 @@ export function ProfileAvatarButton({
 
       {open ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-[var(--space-page-x)]"
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/50 px-[var(--space-page-x)] pb-[calc(1rem+var(--safe-bottom))] pt-8 sm:items-center sm:pb-8"
           role="dialog"
           aria-modal="true"
-          aria-label="프로필 사진 자르기"
+          aria-label="프로필 사진 사각형 자르기"
           onClick={closeModal}
         >
           <div
-            className="w-full max-w-sm rounded-[var(--radius-md)] bg-white p-[var(--space-card)] shadow-none"
+            className="max-h-[min(92dvh,720px)] w-full max-w-sm overflow-y-auto rounded-[var(--radius-md)] bg-white p-[var(--space-card)] shadow-none"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="type-body font-semibold text-text-main">
-              프로필 사진 변경
+              사각형으로 자르기
             </p>
             <p className="mt-1 type-caption text-text-secondary">
-              드래그로 위치, 슬라이더로 확대 후 정사각형으로 저장해요.
+              네모 안만 저장돼요. 드래그로 위치, 슬라이더로 확대해 주세요.
             </p>
 
             {sourceUrl ? (
               <div className="mt-[var(--space-stack-sm)] flex flex-col items-center gap-3">
+                {/* Square crop viewport — not circular. */}
                 <div
-                  className="relative touch-none overflow-hidden rounded-full bg-sky-light"
-                  style={{ width: CROP_VIEW, height: CROP_VIEW }}
+                  className="relative touch-none overflow-hidden bg-sky-light"
+                  style={{
+                    width: viewSize,
+                    height: viewSize,
+                    borderRadius: 12,
+                    boxShadow: "inset 0 0 0 2px var(--color-ink-blue)",
+                  }}
                   onPointerDown={onPointerDown}
                   onPointerMove={onPointerMove}
                   onPointerUp={onPointerUp}
@@ -269,14 +289,14 @@ export function ProfileAvatarButton({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={sourceUrl}
-                    alt="자르기 미리보기"
+                    alt="사각형 자르기 미리보기"
                     draggable={false}
                     className="absolute max-w-none select-none"
                     style={{
                       width: drawnW,
                       height: drawnH,
-                      left: (CROP_VIEW - drawnW) / 2 + transform.offsetX,
-                      top: (CROP_VIEW - drawnH) / 2 + transform.offsetY,
+                      left: (viewSize - drawnW) / 2 + transform.offsetX,
+                      top: (viewSize - drawnH) / 2 + transform.offsetY,
                     }}
                     onLoad={(e) => {
                       const el = e.currentTarget;
@@ -288,13 +308,16 @@ export function ProfileAvatarButton({
                       );
                     }}
                   />
-                  <div
-                    className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-white/80"
-                    aria-hidden
-                  />
+                  {/* Corner ticks so the square frame reads clearly. */}
+                  <div className="pointer-events-none absolute inset-0" aria-hidden>
+                    <span className="absolute left-2 top-2 h-4 w-4 border-l-2 border-t-2 border-white" />
+                    <span className="absolute right-2 top-2 h-4 w-4 border-r-2 border-t-2 border-white" />
+                    <span className="absolute bottom-2 left-2 h-4 w-4 border-b-2 border-l-2 border-white" />
+                    <span className="absolute bottom-2 right-2 h-4 w-4 border-b-2 border-r-2 border-white" />
+                  </div>
                 </div>
 
-                <label className="flex w-full max-w-[280px] flex-col gap-1">
+                <label className="flex w-full flex-col gap-1" style={{ maxWidth: viewSize }}>
                   <span className="type-caption text-text-secondary">확대</span>
                   <input
                     type="range"
@@ -311,6 +334,35 @@ export function ProfileAvatarButton({
                     aria-label="사진 확대"
                   />
                 </label>
+
+                {/* How it will look as the circular profile thumb. */}
+                <div className="flex items-center gap-3 self-start">
+                  <div
+                    className="overflow-hidden rounded-full bg-sky-light"
+                    style={{ width: 48, height: 48 }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={sourceUrl}
+                      alt=""
+                      draggable={false}
+                      className="max-w-none select-none"
+                      style={{
+                        width: drawnW * (48 / viewSize),
+                        height: drawnH * (48 / viewSize),
+                        marginLeft:
+                          ((viewSize - drawnW) / 2 + transform.offsetX) *
+                          (48 / viewSize),
+                        marginTop:
+                          ((viewSize - drawnH) / 2 + transform.offsetY) *
+                          (48 / viewSize),
+                      }}
+                    />
+                  </div>
+                  <p className="type-caption text-text-secondary">
+                    프로필에서는 이렇게 동그랗게 보여요.
+                  </p>
+                </div>
               </div>
             ) : null}
 
