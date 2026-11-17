@@ -72,7 +72,8 @@ html {
   --skywalker-blue: #5f8fcf;
   --skywalker-skin: #f2c9a8;
 
-  /* ——— Base fill (solid sky / night black via --sky-mode-fill) ——— */
+  /* ——— Base page/shell fill (white); headers/sky bands use --sky-mode-fill ——— */
+  --page-bg: var(--color-white); /* #ffffff */
   --wash-blur: 0;
 
   /*
@@ -156,8 +157,8 @@ html {
   --nav-reserve: 4.5rem; /* bottom nav capsule stack (~72px) */
   --desktop-shell-chrome: 3rem; /* desktop phone-shell vertical inset */
 
-  /* ——— Premium QT calendar (나의 QT들) — 낮모드/밤모드 fill + white sheet ——— */
-  --premium-cal-bg: var(--sky-mode-fill);
+  /* ——— Premium QT calendar (나의 QT들) — white page + white sheet; header keeps --sky-mode-fill ——— */
+  --premium-cal-bg: var(--page-bg); /* #ffffff */
   --premium-sheet: var(--color-white);
 }
 
@@ -426,7 +427,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background: var(--sky-mode-fill); /* 낮 #6DC2FF · 밤 #000917 */
+  background: var(--page-bg); /* #ffffff — overall shell; headers keep --sky-mode-fill */
   color: var(--text-main);
   font-family:
     "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR",
@@ -549,7 +550,7 @@ a {
   }
 }
 
-/* Legacy hooks — solid base lives on body / .phone-shell (no wash layers). */
+/* Legacy hooks — white base lives on body / .phone-shell (no wash layers). */
 .hero-gradient,
 .hero-gradient-spread {
   position: relative;
@@ -619,8 +620,8 @@ a {
   position: relative;
   /* Contain position:fixed nav inside the phone column (mobile + desktop mock) */
   transform: translateZ(0);
-  /* Solid sky / night fill — no gradient wash */
-  background: var(--sky-mode-fill);
+  /* Overall shell fill — white; headers/sky bands keep --sky-mode-fill */
+  background: var(--page-bg); /* #ffffff */
   overflow: hidden;
 }
 
@@ -638,7 +639,7 @@ a {
 
 @media (min-width: 32.5rem) {
   body {
-    background: var(--sky-mode-fill);
+    background: var(--page-bg); /* #ffffff */
   }
 
   .phone-shell {
@@ -751,12 +752,12 @@ a {
   }
 }
 
-/* ——— Premium QT calendar page (sky calendar + brand CTA) ——— */
+/* ——— Premium QT calendar page (white page + sky/black header band) ——— */
 .premium-qt-root {
   position: relative;
   z-index: 1;
   min-height: calc(100dvh - var(--nav-reserve) - var(--safe-bottom));
-  background: var(--premium-cal-bg);
+  background: var(--premium-cal-bg); /* --page-bg #ffffff */
   color: var(--text-main);
   /* Allow sheet drop-shadow to paint above the rounded top. */
   overflow-x: hidden;
