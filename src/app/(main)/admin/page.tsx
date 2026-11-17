@@ -76,8 +76,9 @@ export default function AdminPage() {
   const [joinedNames, setJoinedNames] = useState<Set<string>>(new Set());
   const [rosterLoading, setRosterLoading] = useState(false);
   const [rosterError, setRosterError] = useState<string | null>(null);
-  const [rosterDarakbangId, setRosterDarakbangId] = useState(
-    DARAKBANGS[0]?.id ?? "",
+  /** Empty set = 「전체」 (show every 다락방). */
+  const [rosterRoomIds, setRosterRoomIds] = useState<Set<string>>(
+    () => new Set(),
   );
   const [openSuns, setOpenSuns] = useState<Set<string>>(() => new Set());
 
@@ -169,10 +170,30 @@ export default function AdminPage() {
     setJoinedNames(new Set(res.data));
   }, [supabaseEnabled]);
 
-  const selectedRosterRoom = useMemo(
-    () => DARAKBANGS.find((d) => d.id === rosterDarakbangId) ?? DARAKBANGS[0],
-    [rosterDarakbangId],
-  );
+  const rosterAllSelected = rosterRoomIds.size === 0;
+
+  const visibleRosterRooms = useMemo(() => {
+    if (rosterAllSelected) return DARAKBANGS;
+    return DARAKBANGS.filter((d) => rosterRoomIds.has(d.id));
+  }, [rosterAllSelected, rosterRoomIds]);
+
+  const selectRosterAll = () => {
+    setRosterRoomIds(new Set());
+    setOpenSuns(new Set());
+  };
+
+  const toggleRosterRoom = (id: string) => {
+    setRosterRoomIds((prev) => {
+      // Leaving 「전체」: start with only this room.
+      if (prev.size === 0) return new Set([id]);
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      // None left → back to 「전체」.
+      return next;
+    });
+    setOpenSuns(new Set());
+  };
 
   const toggleSun = (key: string) => {
     setOpenSuns((prev) => {
@@ -393,12 +414,7 @@ export default function AdminPage() {
             className="premium-panel animate-fade-up"
           >
             <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="premium-panel-title">명단</h2>
-                <p className="type-caption text-text-secondary">
-                  위에서 다락방을 고르고, 순을 펼쳐 가입 여부를 확인합니다.
-                </p>
-              </div>
+              <h2 className="premium-panel-title mb-0">명단</h2>
               <button
                 type="button"
                 className="shrink-0 type-caption font-semibold text-[var(--color-sky-deep)]"
@@ -417,22 +433,27 @@ export default function AdminPage() {
 
             <div
               className="admin-roster-chips mt-4"
-              role="tablist"
-              aria-label="다락방"
+              role="group"
+              aria-label="다락방 필터"
             >
+              <button
+                type="button"
+                aria-pressed={rosterAllSelected}
+                className={`admin-roster-chip${rosterAllSelected ? " is-active" : ""}`}
+                onClick={selectRosterAll}
+              >
+                전체
+              </button>
               {DARAKBANGS.map((room) => {
-                const active = room.id === selectedRosterRoom?.id;
+                const active =
+                  !rosterAllSelected && rosterRoomIds.has(room.id);
                 return (
                   <button
                     key={room.id}
                     type="button"
-                    role="tab"
-                    aria-selected={active}
+                    aria-pressed={active}
                     className={`admin-roster-chip${active ? " is-active" : ""}`}
-                    onClick={() => {
-                      setRosterDarakbangId(room.id);
-                      setOpenSuns(new Set());
-                    }}
+                    onClick={() => toggleRosterRoom(room.id)}
                   >
                     {room.name.replace(/\s*다락방\s*$/, "")}
                   </button>
@@ -440,75 +461,88 @@ export default function AdminPage() {
               })}
             </div>
 
-            <p className="mt-4 type-body font-bold text-text-main">
-              {selectedRosterRoom?.name ?? "다락방"}
-              {rosterLoading ? (
-                <span className="ml-2 type-caption font-medium text-text-secondary">
-                  불러오는 중…
-                </span>
-              ) : null}
-            </p>
+            {rosterLoading ? (
+              <p className="mt-3 type-caption text-text-secondary">
+                가입 현황 불러오는 중…
+              </p>
+            ) : null}
 
-            <ul className="admin-roster-accordion mt-3">
-              {(selectedRosterRoom?.suns ?? []).map((sun) => {
-                const sunKey = `${selectedRosterRoom?.id ?? ""}:${sun.groupName}`;
-                const open = openSuns.has(sunKey);
-                const counts = sunJoinCount(sun.memberNames);
-                return (
-                  <li key={sunKey} className="admin-roster-acc">
-                    <button
-                      type="button"
-                      className="admin-roster-acc__head"
-                      aria-expanded={open}
-                      onClick={() => toggleSun(sunKey)}
-                    >
-                      <span className="type-body font-semibold text-text-main">
-                        {sun.groupName}
-                      </span>
-                      <span className="type-caption text-text-secondary">
-                        {sun.memberNames.length === 0
-                          ? "자유 입력"
-                          : `가입 ${counts.joined}/${counts.total}`}
-                        <span className="admin-roster-acc__chev" aria-hidden>
-                          {open ? "▾" : "▸"}
-                        </span>
-                      </span>
-                    </button>
-                    {open ? (
-                      <div className="admin-roster-acc__body">
-                        {sun.memberNames.length === 0 ? (
-                          <p className="type-body-sm text-text-secondary">
-                            고정 명단 없음 · verify에서 본명을 직접 입력합니다.
-                          </p>
-                        ) : (
-                          <ul className="admin-roster-members">
-                            {sun.memberNames.map((name) => {
-                              const joined = joinedNames.has(name);
-                              return (
-                                <li key={name} className="admin-roster-member">
-                                  <span className="type-body font-semibold text-text-main">
-                                    {name}
-                                  </span>
-                                  <span
-                                    className={`type-caption font-semibold ${
-                                      joined
-                                        ? "text-[var(--color-sky-deep)]"
-                                        : "text-text-secondary"
-                                    }`}
-                                  >
-                                    {joined ? "가입" : "미가입"}
-                                  </span>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        )}
-                      </div>
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ul>
+            <div className="mt-4 space-y-5">
+              {visibleRosterRooms.map((room) => (
+                <section key={room.id}>
+                  <h3 className="type-body font-bold text-text-main">
+                    {room.name}
+                  </h3>
+                  <ul className="admin-roster-accordion mt-2">
+                    {room.suns.map((sun) => {
+                      const sunKey = `${room.id}:${sun.groupName}`;
+                      const open = openSuns.has(sunKey);
+                      const counts = sunJoinCount(sun.memberNames);
+                      return (
+                        <li key={sunKey} className="admin-roster-acc">
+                          <button
+                            type="button"
+                            className="admin-roster-acc__head"
+                            aria-expanded={open}
+                            onClick={() => toggleSun(sunKey)}
+                          >
+                            <span className="type-body font-semibold text-text-main">
+                              {sun.groupName}
+                            </span>
+                            <span className="type-caption text-text-secondary">
+                              {sun.memberNames.length === 0
+                                ? "자유 입력"
+                                : `가입 ${counts.joined}/${counts.total}`}
+                              <span
+                                className="admin-roster-acc__chev"
+                                aria-hidden
+                              >
+                                {open ? "▾" : "▸"}
+                              </span>
+                            </span>
+                          </button>
+                          {open ? (
+                            <div className="admin-roster-acc__body">
+                              {sun.memberNames.length === 0 ? (
+                                <p className="type-body-sm text-text-secondary">
+                                  고정 명단 없음 · verify에서 본명을 직접
+                                  입력합니다.
+                                </p>
+                              ) : (
+                                <ul className="admin-roster-members">
+                                  {sun.memberNames.map((name) => {
+                                    const joined = joinedNames.has(name);
+                                    return (
+                                      <li
+                                        key={name}
+                                        className="admin-roster-member"
+                                      >
+                                        <span className="type-body font-semibold text-text-main">
+                                          {name}
+                                        </span>
+                                        <span
+                                          className={`type-caption font-semibold ${
+                                            joined
+                                              ? "text-[var(--color-sky-deep)]"
+                                              : "text-text-secondary"
+                                          }`}
+                                        >
+                                          {joined ? "가입" : "미가입"}
+                                        </span>
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              )}
+                            </div>
+                          ) : null}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              ))}
+            </div>
           </div>
         ) : null}
 
