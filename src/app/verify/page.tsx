@@ -346,14 +346,18 @@ export default function CommunityVerifyPage() {
                   이미 인증된 본명 {hiddenClaimedCount}개는 목록에서 빼 두었어요.
                 </p>
               ) : null}
-              <div className="mt-2 space-y-1">
-                <p className="type-caption font-bold text-text-main">
-                  반드시 본인 이름만 선택하여 주세요. 저희는 믿음으로 운영합니다.
+              {/* Gap below 본명 control; helpers share one caption style (only first sentence bold). */}
+              <div className="mt-5 space-y-1.5">
+                <p className="type-caption font-normal text-text-secondary">
+                  <span className="font-bold">
+                    반드시 본인 이름만 선택하여 주세요.
+                  </span>{" "}
+                  저희는 믿음으로 운영합니다.
                 </p>
-                <p className="type-caption text-text-secondary">
+                <p className="type-caption font-normal text-text-secondary">
                   입장 후에, 별명과 썸네일을 재 설정할 수 있습니다.
                 </p>
-                <p className="type-caption text-text-secondary">
+                <p className="type-caption font-normal text-text-secondary">
                   가입에 문제 생긴 경우, 순장님 또는 다락방장님께 문의주시면 빠르게
                   처리해 드리겠습니다.
                 </p>
