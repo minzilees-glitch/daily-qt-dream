@@ -336,12 +336,21 @@ html[data-sky-mode="밤모드"] {
 }
 
 /* QT textareas: notebook lines under every row.
- * Avoid background-attachment:local — WebKit often paints nothing on <textarea>. */
+ * Avoid background-attachment:local — WebKit often paints nothing on <textarea>.
+ * Caret size tracks font-size — lock identical metrics on every field
+ * (구절 / 묵상 / 결단과 순종 / 기도제목); baseline = 결단과 순종. */
 .qt-lined-field {
   /* Body × ~1.9 so underline rows track font-size when rem scales. */
   --qt-line: calc(var(--fs-body) * 1.9);
-  font-size: var(--fs-body);
+  font-family: inherit !important;
+  font-size: var(--fs-body) !important; /* 17px — same caret height all fields */
+  font-weight: 400 !important;
+  font-style: normal !important;
   line-height: var(--qt-line) !important;
+  letter-spacing: normal !important;
+  caret-color: var(--color-black);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   padding: 0 !important;
   margin: 0;
   border: none !important;
