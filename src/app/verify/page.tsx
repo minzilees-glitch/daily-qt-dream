@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell } from "@/components/layout/PhoneShell";
 import { BrandMark } from "@/components/ui/BrandMark";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { useApp } from "@/lib/app-context";
 import {
@@ -44,6 +45,7 @@ export default function CommunityVerifyPage() {
   const [legalName, setLegalName] = useState("");
   const [exceptionNote, setExceptionNote] = useState("");
   const [showException, setShowException] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -284,15 +286,31 @@ export default function CommunityVerifyPage() {
                   ))}
                 </select>
               )}
-              <p className="mt-2 type-caption text-text-secondary">
-                본인 인증 후에 별명을 재설정 할 수 있어요
-              </p>
+              <div className="mt-2 space-y-1">
+                <p className="type-caption font-bold text-text-main">
+                  반드시 본인 이름만 선택하여 주세요. 저희는 믿음으로 운영합니다.
+                </p>
+                <p className="type-caption text-text-secondary">
+                  입장 후에, 별명과 썸네일을 재 설정할 수 있습니다.
+                </p>
+              </div>
               {!unassigned ? (
                 <PrimaryButton
                   type="button"
                   className="mt-3 w-full"
                   disabled={busy || !legalName.trim()}
-                  onClick={() => void onConfirmName()}
+                  onClick={() => {
+                    setError(null);
+                    if (!legalName.trim()) {
+                      setError(
+                        freeTextName
+                          ? "본명을 입력해 주세요."
+                          : "본명을 선택해 주세요.",
+                      );
+                      return;
+                    }
+                    setConfirmOpen(true);
+                  }}
                 >
                   {busy ? "확인 중…" : "내가 맞아요"}
                 </PrimaryButton>
@@ -338,6 +356,20 @@ export default function CommunityVerifyPage() {
           다른 계정으로 로그인
         </button>
       </div>
+
+      <ConfirmModal
+        open={confirmOpen}
+        title={`${legalName.trim()}님이 맞나요?`}
+        description="본인 이름이 맞을 때만 확인해 주세요. 다른 사람의 이름으로 입장하면 안 됩니다."
+        confirmLabel="네, 맞아요"
+        cancelLabel="다시 선택"
+        confirmTone="primary"
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={async () => {
+          setConfirmOpen(false);
+          await onConfirmName();
+        }}
+      />
     </PhoneShell>
   );
 }

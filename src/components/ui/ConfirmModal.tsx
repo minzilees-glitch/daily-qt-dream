@@ -10,6 +10,8 @@ export function ConfirmModal({
   description,
   confirmLabel = "삭제",
   cancelLabel = "취소",
+  /** `danger` (default) for destructive actions; `primary` for affirmative confirms. */
+  confirmTone = "danger",
   onConfirm,
   onCancel,
 }: {
@@ -18,6 +20,7 @@ export function ConfirmModal({
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  confirmTone?: "danger" | "primary";
   onConfirm: () => void | Promise<void>;
   onCancel: () => void;
 }) {
@@ -71,7 +74,11 @@ export function ConfirmModal({
           </PrimaryButton>
           <PrimaryButton
             type="button"
-            className="flex-1 !bg-danger !py-[18px] !text-white !shadow-none [&_svg]:!text-white"
+            className={
+              confirmTone === "danger"
+                ? "flex-1 !bg-danger !py-[18px] !text-white !shadow-none [&_svg]:!text-white"
+                : "flex-1 !py-[18px]"
+            }
             onClick={onConfirm}
           >
             {confirmLabel}

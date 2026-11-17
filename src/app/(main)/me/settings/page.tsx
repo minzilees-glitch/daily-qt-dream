@@ -3,19 +3,26 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ChevronRight, LogOut, Shield } from "lucide-react";
+import { ArrowLeft, ChevronRight, LogOut, RefreshCw, Shield } from "lucide-react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Toast } from "@/components/ui/Toast";
 import { useApp } from "@/lib/app-context";
 
 export default function MeSettingsPage() {
-  const { currentUser, groups, logout, setDisplayName } = useApp();
+  const {
+    currentUser,
+    groups,
+    logout,
+    setDisplayName,
+    restartCommunityVerification,
+  } = useApp();
   const router = useRouter();
   const userName = currentUser?.name ?? "";
   const [nickname, setNickname] = useState(userName);
   const [syncedName, setSyncedName] = useState(userName);
   const [savingName, setSavingName] = useState(false);
+  const [resettingVerify, setResettingVerify] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   // Sync draft when profile name changes (render-time adjust — no effect setState).
@@ -110,6 +117,38 @@ export default function MeSettingsPage() {
               </span>
               <ChevronRight size={18} className="text-text-secondary" />
             </Link>
+            <button
+              type="button"
+              className="premium-list-row w-full text-left disabled:opacity-50"
+              disabled={resettingVerify}
+              onClick={() => {
+                void (async () => {
+                  setResettingVerify(true);
+                  const res = await restartCommunityVerification();
+                  setResettingVerify(false);
+                  if (!res.ok) {
+                    showToast(res.message);
+                    return;
+                  }
+                  router.replace("/verify");
+                })();
+              }}
+            >
+              <span className="flex items-center gap-3 type-body font-medium text-text-main">
+                <RefreshCw
+                  size={18}
+                  className="text-[var(--color-ink-blue)]"
+                  strokeWidth={1.75}
+                />
+                {resettingVerify
+                  ? "초기화 중…"
+                  : "공동체 인증 다시하기"}
+              </span>
+              <ChevronRight size={18} className="text-text-secondary" />
+            </button>
+            <p className="type-caption text-text-secondary px-1">
+              임시 · 관리자만 · verify 화면 재테스트용
+            </p>
           </div>
         ) : null}
 

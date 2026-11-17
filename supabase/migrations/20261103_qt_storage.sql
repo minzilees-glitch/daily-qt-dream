@@ -61,7 +61,7 @@ from public.qt_entries;
 -- ---------------------------------------------------------------------------
 -- Seed: 김병준 순 roster + test profile matching app TEST_USER_ID = u-001
 -- Members (all admin/다락방장): 이민지, 김병준, 구민아, 최현경, 강민정, 김철호
--- 순장 (leader): 김병준 (u-002). Test login: 이민지 (u-001, admin, not 순장).
+-- 순장 (leader): 김병준 (u-002). Seed member: 이민지 (u-001, admin, not 순장; legal name only).
 -- ---------------------------------------------------------------------------
 
 insert into public.groups (id, name, leader_id)
