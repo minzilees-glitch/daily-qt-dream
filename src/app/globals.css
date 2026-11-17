@@ -1502,7 +1502,7 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   border-bottom: 1px solid rgb(0 9 23 / 0.12);
   background: transparent;
   padding: 0.25rem 0.25rem 0.45rem;
-  font-size: var(--fs-nav);
+  font-size: var(--fs-caption); /* 14px — was --fs-nav (too small for 순위/순/빛) */
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--color-text-secondary, #5c6570);
@@ -1747,8 +1747,7 @@ select.admin-field {
   font-weight: 600;
   line-height: 1.2;
   color: var(--color-sky-deep); /* same as 「말씀보기」 CTA */
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
+  text-decoration: none;
   cursor: pointer;
 }
 
