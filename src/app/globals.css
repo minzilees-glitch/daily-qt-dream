@@ -1746,7 +1746,7 @@ select.admin-field {
   font-size: var(--fs-caption, var(--fs-nav));
   font-weight: 600;
   line-height: 1.2;
-  color: var(--color-ink-blue, #1f3e62);
+  color: var(--color-sky-deep); /* same as 「말씀보기」 CTA */
   text-decoration: underline;
   text-underline-offset: 0.15em;
   cursor: pointer;
