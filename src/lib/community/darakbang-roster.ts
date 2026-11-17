@@ -4,8 +4,9 @@
  *
  * Display 순 as 「{이름} 순」. 김송하 순 (not 김승하).
  * 임예진 순 includes 임예진 (순장) even though header count was 6 listed.
- * 김병준 순 (admin set) stays in mock `sun-roster` for app prefs — not in
- * this verify map (admins are 다락방장 names; not listed under a 순 here).
+ * 김병준 순 (admin set) stays in mock `sun-roster` for app prefs.
+ * Verify for 다락방장 names: **기타 → 다락방장 순** (이민지·김병준·구민아·최현경·강민정·김철호).
+ * **기타 → 미배정 순** has no members (exception path).
  */
 
 import { SUN_ROSTERS, type RosterMember, type SunRoster } from "@/lib/mock-data/sun-roster";
@@ -397,7 +398,27 @@ export const DARAKBANGS: Darakbang[] = [
       ]),
     ],
   },
+  {
+    id: "d-etc",
+    name: "기타",
+    suns: [
+      // Prefs: 김병준 순 admin/다락방장 set (verify home for 다락방장 names).
+      sun("다락방장 순", [
+        "이민지",
+        "김병준",
+        "구민아",
+        "최현경",
+        "강민정",
+        "김철호",
+      ]),
+      // Empty roster — 본명 match fails → exception path.
+      sun("미배정 순", []),
+    ],
+  },
 ];
+
+/** Seed group id for 김병준 순 (admin / 다락방장 home). */
+const KIM_BYEONGJUN_GROUP_ID = "g-01";
 
 function leaderNameFromSun(groupName: string): string {
   return groupName.replace(/\s*순\s*$/, "").trim();
@@ -405,10 +426,12 @@ function leaderNameFromSun(groupName: string): string {
 
 function toRosterMember(sun: VerifySun, name: string): RosterMember {
   const leader = leaderNameFromSun(sun.groupName);
+  const isDarakbangjangSun = sun.groupName === "다락방장 순";
   return {
     name,
-    isLeader: name === leader,
-    isAdmin: false,
+    // 「다락방장 순」 has no person named 다락방장 — 순장 is 김병준 (prefs).
+    isLeader: isDarakbangjangSun ? name === "김병준" : name === leader,
+    isAdmin: isDarakbangjangSun,
   };
 }
 
@@ -450,6 +473,9 @@ export function findRosterMember(
  * Uses SUN_ROSTERS order so profiles.group_id stays aligned with seed.
  */
 export function sunNameToGroupId(sunName: string): string | null {
+  if (sunName === "다락방장 순") return KIM_BYEONGJUN_GROUP_ID;
+  // 미배정: no seed group — verify match won't succeed (empty members).
+  if (sunName === "미배정 순") return null;
   const idx = SUN_ROSTERS.findIndex((r) => r.groupName === sunName);
   if (idx < 0) return null;
   return `g-${String(idx + 1).padStart(2, "0")}`;

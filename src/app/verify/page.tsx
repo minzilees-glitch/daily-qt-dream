@@ -168,7 +168,7 @@ export default function CommunityVerifyPage() {
               })}
             </div>
             <p className="mt-2 type-caption text-text-secondary">
-              다락방장 이름으로 선택해 주세요.
+              다락방장 이름으로 선택해 주세요. 해당 없으면 「기타」.
             </p>
           </div>
 
