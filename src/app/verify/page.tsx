@@ -16,6 +16,9 @@ import {
 
 type Step = "darakbang" | "sun" | "name";
 
+const selectClassName =
+  "w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]";
+
 export default function CommunityVerifyPage() {
   const router = useRouter();
   const {
@@ -53,6 +56,16 @@ export default function CommunityVerifyPage() {
   );
 
   const selectedDarakbang = DARAKBANGS.find((d) => d.id === darakbangId);
+  const selectedSun = suns.find((s) => s.groupName === sunName);
+  const memberNames = selectedSun?.members.map((m) => m.name) ?? [];
+  const hasMemberList = memberNames.length > 0;
+
+  // 미배정 (empty roster): open exception path once 순 is chosen.
+  useEffect(() => {
+    if (step === "name" && sunName && !hasMemberList) {
+      setShowException(true);
+    }
+  }, [step, sunName, hasMemberList]);
 
   const onConfirmName = async () => {
     setError(null);
@@ -62,13 +75,13 @@ export default function CommunityVerifyPage() {
       return;
     }
     if (!name) {
-      setError("본명을 입력해 주세요.");
+      setError("본명을 선택해 주세요.");
       return;
     }
     const member = findRosterMember(sunName, name);
     if (!member) {
       setError(
-        "명단에서 본명을 찾지 못했어요. 철자를 확인하거나 아래 예외 신청을 이용해 주세요.",
+        "명단에서 본명을 찾지 못했어요. 아래 예외 신청을 이용해 주세요.",
       );
       setShowException(true);
       return;
@@ -94,6 +107,10 @@ export default function CommunityVerifyPage() {
 
   const onException = async () => {
     setError(null);
+    if (!legalName.trim()) {
+      setError("예외 신청에도 본명을 적어 주세요.");
+      return;
+    }
     setBusy(true);
     const res = await submitVerificationException(
       legalName,
@@ -153,6 +170,8 @@ export default function CommunityVerifyPage() {
                     onClick={() => {
                       setDarakbangId(d.id);
                       setSunName("");
+                      setLegalName("");
+                      setShowException(false);
                       setStep("sun");
                       setError(null);
                     }}
@@ -177,10 +196,12 @@ export default function CommunityVerifyPage() {
                 value={sunName}
                 onChange={(e) => {
                   setSunName(e.target.value);
+                  setLegalName("");
+                  setShowException(false);
                   setStep("name");
                   setError(null);
                 }}
-                className="w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]"
+                className={selectClassName}
               >
                 <option value="">순을 선택하세요</option>
                 {suns.map((s) => (
@@ -192,27 +213,52 @@ export default function CommunityVerifyPage() {
             </div>
           ) : null}
 
-          {/* Step 3: 본명 */}
+          {/* Step 3: 본명 — dropdown when roster has members; free-text for 미배정 */}
           {step === "name" && sunName ? (
             <div>
               <p className="qt-field-title mb-2">3. 본명</p>
-              <input
-                type="text"
-                value={legalName}
-                maxLength={40}
-                autoComplete="name"
-                placeholder="명단에 있는 이름"
-                onChange={(e) => setLegalName(e.target.value)}
-                className="w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]"
-              />
-              <PrimaryButton
-                type="button"
-                className="mt-3 w-full"
-                disabled={busy || !legalName.trim()}
-                onClick={() => void onConfirmName()}
-              >
-                {busy ? "확인 중…" : "명단과 맞추기"}
-              </PrimaryButton>
+              {hasMemberList ? (
+                <select
+                  value={legalName}
+                  onChange={(e) => {
+                    setLegalName(e.target.value);
+                    setError(null);
+                  }}
+                  className={selectClassName}
+                >
+                  <option value="">본명을 선택하세요</option>
+                  {memberNames.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    value={legalName}
+                    maxLength={40}
+                    autoComplete="name"
+                    placeholder="본명을 입력해 주세요"
+                    onChange={(e) => setLegalName(e.target.value)}
+                    className={selectClassName}
+                  />
+                  <p className="mt-2 type-caption text-text-secondary">
+                    미배정은 명단이 없어요. 본명을 적고 예외 신청해 주세요.
+                  </p>
+                </>
+              )}
+              {hasMemberList ? (
+                <PrimaryButton
+                  type="button"
+                  className="mt-3 w-full"
+                  disabled={busy || !legalName.trim()}
+                  onClick={() => void onConfirmName()}
+                >
+                  {busy ? "확인 중…" : "명단과 맞추기"}
+                </PrimaryButton>
+              ) : null}
             </div>
           ) : null}
 

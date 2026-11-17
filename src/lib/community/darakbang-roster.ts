@@ -5,9 +5,9 @@
  * Display 순 as 「{이름} 순」. 김송하 순 (not 김승하).
  * 임예진 순 includes 임예진 (순장) even though header count was 6 listed.
  * 김병준 순 (admin set) stays in mock `sun-roster` for app prefs.
- * Verify: **기타 → 다락방장** joins **김병준 순** (g-01) with
+ * Verify: **기타 → 어드민** joins **김병준 순** (g-01) with
  * 이민지·김병준·구민아·최현경·강민정·김철호 (all admin).
- * **기타 → 미배정** has no members (exception path).
+ * **기타 → 미배정** first in dropdown; no members (free-text + exception).
  */
 
 import { SUN_ROSTERS, type RosterMember, type SunRoster } from "@/lib/mock-data/sun-roster";
@@ -403,8 +403,10 @@ export const DARAKBANGS: Darakbang[] = [
     id: "d-etc",
     name: "기타",
     suns: [
-      // UI label 「다락방장」 → membership = 김병준 순 (g-01), all admin.
-      sun("다락방장", [
+      // Order: 미배정 first, then 어드민.
+      sun("미배정", []),
+      // UI label 「어드민」 → membership = 김병준 순 (g-01), all admin.
+      sun("어드민", [
         "이민지",
         "김병준",
         "구민아",
@@ -412,15 +414,13 @@ export const DARAKBANGS: Darakbang[] = [
         "강민정",
         "김철호",
       ]),
-      // Empty roster — 본명 match fails → exception path.
-      sun("미배정", []),
     ],
   },
 ];
 
-/** Seed group id for 김병준 순 (admin / 다락방장 home). */
+/** Seed group id for 김병준 순 (admin / 어드민 home). */
 const KIM_BYEONGJUN_GROUP_ID = "g-01";
-const DARAKBANGJANG_SUN = "다락방장";
+const ADMIN_SUN = "어드민";
 const UNASSIGNED_SUN = "미배정";
 
 function leaderNameFromSun(groupName: string): string {
@@ -429,12 +429,12 @@ function leaderNameFromSun(groupName: string): string {
 
 function toRosterMember(sun: VerifySun, name: string): RosterMember {
   const leader = leaderNameFromSun(sun.groupName);
-  const isDarakbangjangSun = sun.groupName === DARAKBANGJANG_SUN;
+  const isAdminSun = sun.groupName === ADMIN_SUN;
   return {
     name,
-    // 다락방장 slot has no person named 다락방장 — 순장 is 김병준 (prefs).
-    isLeader: isDarakbangjangSun ? name === "김병준" : name === leader,
-    isAdmin: isDarakbangjangSun,
+    // 어드민 slot — 순장 is 김병준 (prefs).
+    isLeader: isAdminSun ? name === "김병준" : name === leader,
+    isAdmin: isAdminSun,
   };
 }
 
@@ -476,8 +476,8 @@ export function findRosterMember(
  * Uses SUN_ROSTERS order so profiles.group_id stays aligned with seed.
  */
 export function sunNameToGroupId(sunName: string): string | null {
-  // 기타 → 다락방장 joins 김병준 순.
-  if (sunName === DARAKBANGJANG_SUN) return KIM_BYEONGJUN_GROUP_ID;
+  // 기타 → 어드민 joins 김병준 순.
+  if (sunName === ADMIN_SUN) return KIM_BYEONGJUN_GROUP_ID;
   // 미배정: no seed group — verify match won't succeed (empty members).
   if (sunName === UNASSIGNED_SUN) return null;
   const idx = SUN_ROSTERS.findIndex((r) => r.groupName === sunName);
