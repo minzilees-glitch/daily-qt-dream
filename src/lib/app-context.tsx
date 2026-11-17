@@ -44,7 +44,6 @@ import {
   fetchDisplayName,
   fetchProfileGroupId,
   isCommunityVerified,
-  resetCommunityVerification,
   submitCommunityException,
   updateDisplayName,
   updateProfileGroupId,
@@ -91,8 +90,6 @@ interface AppState {
     legalName: string,
     note: string,
   ) => Promise<{ ok: boolean; message: string }>;
-  /** Temp re-test: set community_status=pending and open /verify again. */
-  restartCommunityVerification: () => Promise<{ ok: boolean; message: string }>;
   logout: () => Promise<void>;
   /** Save QT entry; marks day complete if valid. */
   saveEntry: (
@@ -901,21 +898,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [sessionUserId],
   );
 
-  const restartCommunityVerification = useCallback(async () => {
-    if (!sessionUserId) {
-      return { ok: false, message: "로그인이 필요해요." };
-    }
-    if (!supabaseEnabled) {
-      setCommunityStatus("pending");
-      return { ok: true, message: "공동체 인증을 다시 진행할 수 있어요." };
-    }
-    const res = await resetCommunityVerification(sessionUserId);
-    if (!res.ok) return { ok: false, message: res.error };
-    setAuthProfile(res.data);
-    setCommunityStatus("pending");
-    return { ok: true, message: "공동체 인증을 다시 진행할 수 있어요." };
-  }, [sessionUserId, supabaseEnabled]);
-
   const logout = useCallback(async () => {
     if (supabaseEnabled) {
       await signOutAuth();
@@ -1337,7 +1319,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     hydrateFromAuthUser,
     applyRosterVerification,
     submitVerificationException,
-    restartCommunityVerification,
     logout,
     saveEntry,
     clearEntry,

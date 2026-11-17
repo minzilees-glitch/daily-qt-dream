@@ -394,51 +394,6 @@ export async function applyCommunityVerification(
   };
 }
 
-/**
- * Local re-test helper: set community_status back to pending (keeps 순/role).
- * Used by account-settings 「공동체 인증 다시하기」 so /verify is reachable again.
- */
-export async function resetCommunityVerification(
-  userId: string,
-): Promise<ProfileRepoResult<ProfileRow>> {
-  const sb = getSupabaseBrowser();
-  if (!sb) return { ok: false, error: "Supabase not configured" };
-
-  const { error } = await sb
-    .from("profiles")
-    .update({
-      community_status: "pending",
-      legal_name: null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", userId);
-
-  if (error) {
-    if (/legal_name|community_status|42703|PGRST204/i.test(error.message)) {
-      return {
-        ok: false,
-        error:
-          "community_status 컬럼이 없어요. 20261117_kakao_community_verify.sql 을 적용해 주세요.",
-      };
-    }
-    return { ok: false, error: error.message };
-  }
-
-  const refreshed = await fetchProfile(userId);
-  if (!refreshed.ok) return refreshed;
-  if (!refreshed.data) {
-    return { ok: false, error: "상태를 초기화한 뒤 프로필을 읽지 못했어요." };
-  }
-  return {
-    ok: true,
-    data: {
-      ...refreshed.data,
-      community_status: "pending",
-      legal_name: null,
-    },
-  };
-}
-
 /** Manual exception path when roster match fails — pending admin review. */
 export async function submitCommunityException(
   userId: string,
