@@ -1464,8 +1464,21 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 }
 
 /* —— Admin (premium sheet; no SoftCard / ivory chrome) —— */
+.premium-qt-sheet.admin-sheet.premium-qt-sheet--fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-qt-sheet.admin-sheet > .admin-panel--fill {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .admin-tabs {
   display: flex;
+  flex-shrink: 0;
   gap: 0.35rem;
   margin-bottom: var(--space-stack);
   border-bottom: 1px solid var(--divider);
@@ -1494,6 +1507,111 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   border-bottom-color: var(--color-ink-blue);
 }
 
+.admin-roster-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-roster-chip {
+  border: none;
+  border-radius: 9999px;
+  background: var(--color-gray, #f2f2f2);
+  color: var(--text-main);
+  padding: 0.55rem 0.9rem;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-roster-chip.is-active {
+  background: color-mix(in srgb, var(--color-sky) 28%, white);
+  color: var(--color-ink-blue);
+}
+
+.admin-roster-chips-rule {
+  margin: 0.95rem 0;
+  border: none;
+  border-top: 1px solid var(--divider, #e5eaf0);
+  height: 0;
+}
+
+.admin-roster-accordion {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-roster-acc {
+  border-bottom: 1px solid var(--divider, #e5eaf0);
+}
+
+.admin-roster-acc:last-child {
+  border-bottom: none;
+}
+
+.admin-roster-acc__head {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: none;
+  background: transparent;
+  padding: 0.95rem 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* 다락방 section title (e.g. 강민정 다락방): type-body +2pt, bold ink */
+.admin-roster-room__title {
+  font-size: 1.1875rem; /* 19px — type-body 17px + 2pt */
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-black, #000917);
+  opacity: 1;
+}
+
+/* 순 accordion title: default lighter body style (via utilities) */
+.admin-roster-acc__title {
+  min-width: 0;
+}
+
+.admin-roster-acc__meta {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.admin-roster-acc__count {
+  color: var(--text-main, #000917);
+}
+
+.admin-roster-acc__chev {
+  flex-shrink: 0;
+}
+
+.admin-roster-acc__body {
+  padding: 0 0 0.85rem;
+}
+
+.admin-roster-members {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-roster-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+}
+
 .admin-field {
   box-sizing: border-box;
   display: block;
@@ -1507,18 +1625,32 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   outline: none;
 }
 
-/* Native select chevron sits flush on the edge — replace with inset arrow. */
-select.admin-field {
-  -webkit-appearance: none;
-  appearance: none;
-  padding-right: 2.35rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23768896' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center; /* inset from the right edge */
-  background-size: 12px 8px;
+/* Native select chevron sits flush on the edge — replace with inset arrow.
+ * Use !important so Tailwind px-* / bg-* utilities cannot wipe padding-right
+ * or background-image (verify selects previously looked flush for this reason). */
+select.admin-field,
+select.verify-field {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  padding-right: 2.75rem !important; /* ~pr-11 — room for inset chevron */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23768896' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 1.15rem center !important; /* inset from right edge */
+  background-size: 12px 8px !important;
 }
 
-.admin-field:focus {
+select.admin-field {
+  background-color: color-mix(in srgb, var(--color-mint) 35%, white) !important;
+}
+
+/* Verify selects: soft gray capsule (QT input family — not white). */
+select.verify-field {
+  border-radius: 9999px !important;
+  background-color: var(--color-gray, #f2f2f2) !important;
+}
+
+.admin-field:focus,
+.verify-field:focus {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-sky) 55%, transparent);
 }
 

@@ -3,7 +3,7 @@ import { SUN_ROSTERS } from "./sun-roster";
 
 /**
  * Build users from DQ-694 sun roster.
- * - 김병준 순: 6 admins (다락방장), 순장 김병준; 이민지 = u-001 test login.
+ * - 김병준 순: 6 admins (다락방장), 순장 김병준; 이민지 = u-001 (legal name only — no personal nick).
  * - Other 순: full members; leader = name matching 순 title; not admin.
  */
 export function buildUsers(groups: Group[]): User[] {

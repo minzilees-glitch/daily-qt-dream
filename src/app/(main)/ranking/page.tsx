@@ -7,24 +7,35 @@ import {
   RANKING_MY_ROW_ID,
 } from "@/components/ranking/RankingList";
 import { useApp } from "@/lib/app-context";
-import { addMonths, currentYearMonth } from "@/lib/dates";
+import {
+  currentYearMonth,
+  TERM_14_START_YM,
+} from "@/lib/dates";
 import { computeGroupRanking } from "@/lib/stats";
+
+function clampRankingYm(ym: string): string {
+  const cur = currentYearMonth();
+  if (ym < TERM_14_START_YM) return TERM_14_START_YM;
+  if (ym > cur) return cur;
+  return ym;
+}
 
 export default function RankingPage() {
   const { currentUser, groups, users, completions } = useApp();
-  const [ym, setYm] = useState(currentYearMonth());
+  const [ym, setYm] = useState(() => clampRankingYm(currentYearMonth()));
 
-  const rows = useMemo(
-    () =>
-      computeGroupRanking(
-        groups,
-        users,
-        completions,
-        ym,
-        currentUser?.groupId,
-      ),
-    [groups, users, completions, ym, currentUser?.groupId],
-  );
+  const preTerm = ym < TERM_14_START_YM;
+
+  const rows = useMemo(() => {
+    if (preTerm) return [];
+    return computeGroupRanking(
+      groups,
+      users,
+      completions,
+      ym,
+      currentUser?.groupId,
+    );
+  }, [preTerm, groups, users, completions, ym, currentUser?.groupId]);
 
   const hasMine = rows.some((r) => r.isMine);
 
@@ -50,8 +61,8 @@ export default function RankingPage() {
           <div className="mb-[var(--space-stack)] flex items-center justify-between gap-3">
             <MonthPicker
               value={ym}
-              onChange={setYm}
-              min={addMonths(currentYearMonth(), -2)}
+              onChange={(next) => setYm(clampRankingYm(next))}
+              min={TERM_14_START_YM}
               max={currentYearMonth()}
               align="start"
             />
@@ -59,12 +70,18 @@ export default function RankingPage() {
               type="button"
               className="premium-find-my-rank shrink-0"
               onClick={scrollToMyGroup}
-              disabled={!hasMine}
+              disabled={!hasMine || preTerm}
             >
               내순 찾기
             </button>
           </div>
-          <RankingList rows={rows} />
+          {preTerm ? (
+            <p className="py-10 text-center type-body-sm text-text-secondary">
+              14기 시작 전입니다.
+            </p>
+          ) : (
+            <RankingList rows={rows} />
+          )}
         </div>
       </section>
     </div>

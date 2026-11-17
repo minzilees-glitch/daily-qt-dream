@@ -37,6 +37,10 @@ export interface Database {
           group_id: string | null;
           role: "admin" | "member" | "leader";
           avatar_url: string | null;
+          /** Real name (본명) from community verification — not Kakao nickname. */
+          legal_name: string | null;
+          /** pending | verified | exception */
+          community_status: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -46,6 +50,8 @@ export interface Database {
           group_id?: string | null;
           role?: "admin" | "member" | "leader";
           avatar_url?: string | null;
+          legal_name?: string | null;
+          community_status?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -55,6 +61,8 @@ export interface Database {
           group_id?: string | null;
           role?: "admin" | "member" | "leader";
           avatar_url?: string | null;
+          legal_name?: string | null;
+          community_status?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -164,6 +172,14 @@ export interface Database {
       };
       profiles_share_group: {
         Args: { target_user_id: string };
+        Returns: boolean;
+      };
+      claimed_legal_names: {
+        Args: Record<string, never>;
+        Returns: { legal_name: string }[];
+      };
+      is_legal_name_taken: {
+        Args: { candidate: string };
         Returns: boolean;
       };
     };

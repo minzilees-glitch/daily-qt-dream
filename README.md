@@ -2,17 +2,18 @@
 
 매일 Quiet Time을 기록하고, 순(그룹) 참여 현황과 월간 랭킹을 확인하는 웹 앱 **「드림 매일큐티」 Phase 1 프론트엔드 프로토타입**입니다.
 
-> 실제 카카오 로그인 / Supabase는 포함되어 있지 않습니다. 테스트 로그인만 제공합니다.
+> 카카오 로그인(Supabase Auth) + 공동체 확인(다락방→순→본명)이 연결되어 있습니다.
 
 ## 기술 스택
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
-- Lucide React
-- Mock 데이터 (`src/lib/mock-data`) — 약 300명 / 30순 / 최근 3개월 QT
+- Lucide React + Supabase (`@supabase/supabase-js`)
+- Mock / roster 데이터 (`src/lib/mock-data`, `sun-roster`) — 순 명단·집계 보조
 
 ## 실행 방법
 
 ```bash
+cp .env.example .env.local   # NEXT_PUBLIC_SUPABASE_URL / ANON_KEY 채우기
 npm install
 npm run dev
 ```
@@ -26,13 +27,19 @@ npm run build
 npm start
 ```
 
-## 테스트 로그인
+## 카카오 로그인
 
-1. 앱 실행 후 `/login` 으로 이동합니다.
-2. **「테스트로 시작하기」** 버튼을 누릅니다. (실제 카카오 로그인이 아님을 화면에 명시)
-3. 테스트 계정 `이민지` (김병준 순, 관리자·다락방장; 순장은 김병준)로 오늘의 QT에 입장합니다.
+Preferred path is **app OIDC** (`/api/auth/kakao/start`) so we never request `account_email` (avoids KOE205). Supabase’s built-in Kakao provider still hardcodes that scope.
 
-로그아웃은 마이페이지(`/me`)에서 할 수 있습니다. 세션은 브라우저 `localStorage`에만 저장됩니다.
+1. `.env.local`: `NEXT_PUBLIC_KAKAO_REST_API_KEY` + `KAKAO_CLIENT_SECRET` (see `.env.example`).
+2. Kakao Developers: Login ON, **OpenID Connect ON**, consent = nickname + profile only; Redirect URI `http://localhost:3000/api/auth/kakao/callback`.
+3. Supabase Kakao: keep **Allow users without an email** ON.
+4. Run `supabase/migrations/20261117_kakao_community_verify.sql` once. Do not run RLS harden yet (DQ-699).
+5. `/login` → 카카오 → `/auth/callback` → `/verify` (다락방→순→본명) → `/home`.
+
+Last-resort fallback (Biz App): enable optional 카카오계정(이메일) so Supabase `signInWithOAuth` stops KOE205.
+
+로그아웃은 계정설정(`/me/settings`)에서 합니다.
 
 ## UX 규칙 (요약)
 
@@ -45,7 +52,9 @@ npm start
 
 | 경로 | 설명 |
 |------|------|
-| `/login` | 테스트 로그인 |
+| `/login` | 카카오 로그인 |
+| `/auth/callback` | OAuth 세션 교환 |
+| `/verify` | 공동체 확인 (다락방→순→본명) |
 | `/home` | 오늘의 QT · 본문 + 작성 |
 | `/qt` | 오늘의 QT 작성 · 완료 |
 | `/history` | 나의 QT들 월간 캘린더 |

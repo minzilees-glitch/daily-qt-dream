@@ -7,13 +7,17 @@ import { PhoneShell } from "@/components/layout/PhoneShell";
 import { BrandMark } from "@/components/ui/BrandMark";
 
 export default function RootPage() {
-  const { ready, currentUser } = useApp();
+  const { ready, currentUser, communityStatus } = useApp();
   const router = useRouter();
 
   useEffect(() => {
     if (!ready) return;
-    router.replace(currentUser ? "/home" : "/login");
-  }, [ready, currentUser, router]);
+    if (!currentUser) {
+      router.replace("/login");
+      return;
+    }
+    router.replace(communityStatus === "verified" ? "/home" : "/verify");
+  }, [ready, currentUser, communityStatus, router]);
 
   return (
     <PhoneShell>
