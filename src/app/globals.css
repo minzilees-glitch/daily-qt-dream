@@ -844,12 +844,15 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 /*
  * 나의 QT들: fixed-height shell; sheet is absolute and fills to page bottom.
  * Continuous grabber drag moves `top` between week (open) and month (collapsed).
+ * Root uses --sky-mode-fill so rounded sheet ears don't flash page white
+ * (same sheet-ear seam pattern as me / home).
  */
 .premium-qt-root--history {
   position: relative;
   height: calc(100dvh - var(--nav-reserve) - var(--safe-bottom));
   max-height: calc(100dvh - var(--nav-reserve) - var(--safe-bottom));
   overflow: hidden;
+  background: var(--sky-mode-fill);
 }
 
 @media (min-width: 32.5rem) {
@@ -861,6 +864,20 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
 
 .premium-qt-root--history > .premium-qt-header {
   flex: 0 0 auto;
+  overflow: visible;
+}
+
+/* Extend header chrome under the sheet’s rounded top (home `.premium-home-top::after`). */
+.premium-qt-root--history > .premium-qt-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: var(--radius-sheet);
+  background: var(--sky-mode-fill);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* 이번달 모은 빛 count: full opacity (icon + number). */
