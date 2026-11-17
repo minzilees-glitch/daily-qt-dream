@@ -471,7 +471,7 @@ export default function AdminPage() {
             <div className="space-y-5">
               {visibleRosterRooms.map((room) => (
                 <section key={room.id}>
-                  <h3 className="type-body font-bold text-text-main">
+                  <h3 className="admin-roster-room__title">
                     {room.name}
                   </h3>
                   <ul className="admin-roster-accordion mt-2">
@@ -487,7 +487,7 @@ export default function AdminPage() {
                             aria-expanded={open}
                             onClick={() => toggleSun(sunKey)}
                           >
-                            <span className="admin-roster-acc__title">
+                            <span className="admin-roster-acc__title type-body font-semibold text-text-main">
                               {sun.groupName}
                             </span>
                             <span className="admin-roster-acc__meta">

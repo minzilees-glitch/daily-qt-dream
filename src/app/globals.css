@@ -1563,13 +1563,18 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   cursor: pointer;
 }
 
-/* 다락방 title: type-body 17px + 2pt → 19px, bold ink */
-.admin-roster-acc__title {
-  font-size: 1.1875rem; /* 19px */
+/* 다락방 section title (e.g. 강민정 다락방): type-body +2pt, bold ink */
+.admin-roster-room__title {
+  font-size: 1.1875rem; /* 19px — type-body 17px + 2pt */
   font-weight: 700;
   line-height: 1.35;
   color: var(--color-black, #000917);
   opacity: 1;
+}
+
+/* 순 accordion title: default lighter body style (via utilities) */
+.admin-roster-acc__title {
+  min-width: 0;
 }
 
 .admin-roster-acc__meta {
