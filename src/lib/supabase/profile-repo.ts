@@ -14,9 +14,12 @@ export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 /**
  * Profile row helpers (Postgres `profiles`, not Storage).
  *
- * Kakao (DQ-17):
+ * Kakao (DQ-17 / DQ-792):
  * - `profiles.id` = `auth.uid()` (UUID text).
- * - Nickname / avatar from Kakao metadata on first upsert; user can edit later.
+ * - Nickname from Kakao metadata on first upsert; user can edit later.
+ * - Avatar: temporary Kakao CDN URL may be written when empty; login sync
+ *   (`/api/auth/kakao/sync-avatar`) downloads → Storage `avatars` and replaces
+ *   `avatar_url`. Skips overwrite when URL already points at Storage.
  * - Community verify: 다락방 → 순 → 본명 (roster), not phone.
  *
  * Security (20261118_rls_security_harden — apply only after Kakao works / DQ-699):

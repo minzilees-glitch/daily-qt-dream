@@ -1,10 +1,25 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseBrowser, isSupabaseConfigured } from "@/lib/supabase/client";
+import type { Database } from "@/lib/supabase/database.types";
 
 export type AvatarRepoResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
 export const AVATARS_BUCKET = "avatars";
+
+/** True when `avatar_url` already points at our public `avatars` Storage object. */
+export function isStoredAvatarUrl(url: string | null | undefined): boolean {
+  if (!url?.trim()) return false;
+  try {
+    const parsed = new URL(url.trim());
+    return parsed.pathname.includes(
+      `/storage/v1/object/public/${AVATARS_BUCKET}/`,
+    );
+  } catch {
+    return url.includes(`/storage/v1/object/public/${AVATARS_BUCKET}/`);
+  }
+}
 
 const MIME_EXT: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -118,9 +133,20 @@ export async function uploadAndSaveAvatar(
   userId: string,
   blob: Blob,
 ): Promise<AvatarRepoResult<string>> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+  return uploadAndSaveAvatarWithClient(sb, userId, blob);
+}
+
+/** Same as `uploadAndSaveAvatar` but with an explicit client (browser or JWT). */
+export async function uploadAndSaveAvatarWithClient(
+  sb: SupabaseClient<Database>,
+  userId: string,
+  blob: Blob,
+): Promise<AvatarRepoResult<string>> {
   try {
     return await withTimeout(
-      uploadAndSaveAvatarInner(userId, blob),
+      uploadAndSaveAvatarInner(sb, userId, blob),
       AVATAR_UPLOAD_TIMEOUT_MS,
       "업로드가 너무 오래 걸려요. 네트워크를 확인하고 다시 시도해 주세요.",
     );
@@ -131,12 +157,10 @@ export async function uploadAndSaveAvatar(
 }
 
 async function uploadAndSaveAvatarInner(
+  sb: SupabaseClient<Database>,
   userId: string,
   blob: Blob,
 ): Promise<AvatarRepoResult<string>> {
-  const sb = getSupabaseBrowser();
-  if (!sb) return { ok: false, error: "Supabase not configured" };
-
   if (!userId.trim()) {
     return { ok: false, error: "로그인이 필요해요." };
   }
