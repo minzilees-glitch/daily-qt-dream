@@ -297,10 +297,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ]);
       if (cancelled) return;
       // Keep optimistic rows if fetch fails or returns older data (home save race).
+      // Only mark remote hydrate ready (loadedFor) when the owner QT fetch succeeds —
+      // a failed select must not look like "cloud returned []" and wipe journals.
       setRemoteQt((prev) => {
         const sameUser = prev.loadedFor === sessionUserId;
-        let myEntries = mine.ok ? mine.data : sameUser ? prev.myEntries : [];
-        if (mine.ok && sameUser && prev.myEntries.length > 0) {
+        if (!mine.ok) {
+          return {
+            myEntries: sameUser ? prev.myEntries : [],
+            presence: presence.ok
+              ? presence.data
+              : sameUser
+                ? prev.presence
+                : [],
+            // Leave loadedFor unset so remoteReady stays false; local drafts remain.
+            loadedFor: sameUser ? prev.loadedFor : null,
+          };
+        }
+        let myEntries = mine.data;
+        if (sameUser && prev.myEntries.length > 0) {
           const map = new Map<string, (typeof mine.data)[number]>();
           for (const e of mine.data) map.set(`${e.userId}|${e.date}`, e);
           for (const e of prev.myEntries) {
@@ -332,14 +346,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // DQ-691: flush any leftover localStorage QT text → qt_entries, then drop local copies.
-      {
+      // DQ-691: flush leftover localStorage QT text → qt_entries.
+      // Only drop local rows that actually upserted; keep drafts on cloud failure.
+      if (mine.ok) {
         const cur = getSnapshot().overrides;
         const localMine = (cur.reflections ?? []).filter(
           (r) => r.userId === sessionUserId,
         );
         if (localMine.length > 0) {
           const flushed: QtEntry[] = [];
+          const flushedDates = new Set<string>();
           for (const entry of localMine) {
             const res = await upsertQtEntry(sessionUserId, entry.date, {
               meditation: entry.meditation,
@@ -347,7 +363,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
               decisionObedience: entry.decisionObedience,
               prayer: entry.prayer,
             });
-            if (res.ok) flushed.push(res.data);
+            if (res.ok) {
+              flushed.push(res.data);
+              flushedDates.add(entry.date);
+            }
           }
           if (!cancelled && flushed.length > 0) {
             setRemoteQt((prev) => {
@@ -365,16 +384,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
               };
             });
           }
-          writeOverrides({
-            ...getSnapshot().overrides,
-            reflections: (getSnapshot().overrides.reflections ?? []).filter(
-              (r) => r.userId !== sessionUserId,
-            ),
-            // Completions for this user come from qt_entry_presence / qt_entries.
-            completions: (getSnapshot().overrides.completions ?? []).filter(
-              (c) => c.userId !== sessionUserId,
-            ),
-          });
+          if (flushedDates.size > 0) {
+            writeOverrides({
+              ...getSnapshot().overrides,
+              reflections: (getSnapshot().overrides.reflections ?? []).filter(
+                (r) =>
+                  !(
+                    r.userId === sessionUserId && flushedDates.has(r.date)
+                  ),
+              ),
+              completions: (getSnapshot().overrides.completions ?? []).filter(
+                (c) =>
+                  !(
+                    c.userId === sessionUserId && flushedDates.has(c.date)
+                  ),
+              ),
+            });
+          }
         }
       }
 
@@ -449,7 +475,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     if (supabaseEnabled && sessionUserId) {
-      // Logged-in user lights come from qt_entries / presence only (not localStorage).
+      // Logged-in user lights come from qt_entries / presence when hydrated.
       for (const key of [...map.keys()]) {
         if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
       }
@@ -461,6 +487,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
             .filter((e) => entryHasQtContent(e))
             .map((e) => e.date),
         );
+        for (const r of overrides.reflections) {
+          if (
+            r.userId === sessionUserId &&
+            entryHasQtContent(r)
+          ) {
+            myContentDates.add(r.date);
+          }
+        }
         for (const c of remoteQt.presence) {
           if (
             c.userId === sessionUserId &&
@@ -469,6 +503,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
             continue;
           }
           map.set(`${c.userId}|${c.date}`, c.completed);
+        }
+        // Local draft completions after a failed cloud save.
+        for (const c of overrides.completions) {
+          if (c.userId === sessionUserId) {
+            map.set(`${c.userId}|${c.date}`, c.completed);
+          }
+        }
+      } else {
+        // Cloud hydrate failed / still loading — keep local draft completions.
+        for (const c of overrides.completions) {
+          if (c.userId === sessionUserId) {
+            map.set(`${c.userId}|${c.date}`, c.completed);
+          }
         }
       }
     } else if (!supabaseEnabled) {
@@ -496,13 +543,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     if (supabaseEnabled && sessionUserId) {
-      // DQ-691: QT text for the session user is Postgres qt_entries only (not Storage / local).
+      // DQ-691: prefer Postgres qt_entries once hydrate succeeds.
       for (const key of [...map.keys()]) {
         if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
       }
       if (remoteReady) {
         for (const r of remoteQt.myEntries) {
           map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
+        }
+        // Overlay local drafts left after a failed cloud save / partial flush.
+        for (const r of overrides.reflections) {
+          if (r.userId !== sessionUserId) continue;
+          const k = `${r.userId}|${r.date}`;
+          const remote = map.get(k);
+          if (!remote || r.updatedAt >= remote.updatedAt) {
+            map.set(k, normalizeEntry(r));
+          }
+        }
+      } else {
+        // Do not treat a failed cloud fetch as empty journals — keep local drafts.
+        for (const r of overrides.reflections) {
+          if (r.userId === sessionUserId) {
+            map.set(`${r.userId}|${r.date}`, normalizeEntry(r));
+          }
         }
       }
     } else if (!supabaseEnabled) {
@@ -642,9 +705,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
         } catch (err) {
           const detail =
             err instanceof Error ? err.message : "네트워크 오류";
+          // Keep a local draft so revisit does not look empty after cloud failure.
+          writeOverrides({
+            ...overrides,
+            reflections: [
+              ...overrides.reflections.filter(
+                (r) => !(r.userId === sessionUserId && r.date === date),
+              ),
+              entry,
+            ],
+            completions: [
+              ...overrides.completions.filter(
+                (c) => !(c.userId === sessionUserId && c.date === date),
+              ),
+              { userId: sessionUserId, date, completed: true, earnsLight },
+            ],
+            noLightKeys: nextNoLight,
+          });
           return { ok: false, message: `저장 실패: ${detail}` };
         }
         if (!res.ok) {
+          writeOverrides({
+            ...overrides,
+            reflections: [
+              ...overrides.reflections.filter(
+                (r) => !(r.userId === sessionUserId && r.date === date),
+              ),
+              entry,
+            ],
+            completions: [
+              ...overrides.completions.filter(
+                (c) => !(c.userId === sessionUserId && c.date === date),
+              ),
+              { userId: sessionUserId, date, completed: true, earnsLight },
+            ],
+            noLightKeys: nextNoLight,
+          });
           return {
             ok: false,
             message: `저장 실패: ${res.error}. Supabase 마이그레이션·시드(u-001)를 확인하세요.`,

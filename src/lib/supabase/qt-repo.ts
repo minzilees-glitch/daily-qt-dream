@@ -5,10 +5,31 @@ export type QtRepoResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
-const ENTRY_SELECT =
-  "user_id, entry_date, meditation, verse, decision_obedience, prayer, updated_at";
+const ENTRY_SELECT_FULL =
+  "user_id, entry_date, meditation, verse, decision_obedience, prayer, updated_at" as const;
+const ENTRY_SELECT_LEGACY =
+  "user_id, entry_date, meditation, verse, prayer, updated_at" as const;
 
-function mapEntry(row: {
+/**
+ * Prod may lag migration `20261104_qt_decision_obedience.sql`.
+ * Cache the working shape after the first successful probe so we do not
+ * keep failing SELECT/UPSERT with PGRST204 / missing-column errors.
+ */
+type QtSchemaMode = "full" | "legacy";
+let qtSchemaMode: QtSchemaMode | null = null;
+
+function isMissingDecisionObedienceError(error: {
+  message?: string;
+  code?: string;
+}): boolean {
+  return (
+    /decision_obedience/i.test(error.message ?? "") ||
+    error.code === "PGRST204" ||
+    error.code === "42703"
+  );
+}
+
+type EntryRow = {
   user_id: string;
   entry_date: string;
   meditation: string;
@@ -16,7 +37,9 @@ function mapEntry(row: {
   decision_obedience?: string | null;
   prayer: string;
   updated_at: string;
-}): QtEntry {
+};
+
+function mapEntry(row: EntryRow): QtEntry {
   return {
     userId: row.user_id,
     date: row.entry_date,
@@ -35,14 +58,58 @@ export async function fetchUserQtEntries(
   const sb = getSupabaseBrowser();
   if (!sb) return { ok: false, error: "Supabase not configured" };
 
-  const { data, error } = await sb
-    .from("qt_entries")
-    .select(ENTRY_SELECT)
-    .eq("user_id", userId)
-    .order("entry_date", { ascending: false });
+  const selectFull = () =>
+    sb
+      .from("qt_entries")
+      .select(ENTRY_SELECT_FULL)
+      .eq("user_id", userId)
+      .order("entry_date", { ascending: false });
 
-  if (error) return { ok: false, error: error.message };
-  return { ok: true, data: (data ?? []).map(mapEntry) };
+  const selectLegacy = () =>
+    sb
+      .from("qt_entries")
+      .select(ENTRY_SELECT_LEGACY)
+      .eq("user_id", userId)
+      .order("entry_date", { ascending: false });
+
+  if (qtSchemaMode === "legacy") {
+    const cached = await selectLegacy();
+    if (cached.error) return { ok: false, error: cached.error.message };
+    return {
+      ok: true,
+      data: (cached.data ?? []).map((row) => mapEntry(row as EntryRow)),
+    };
+  }
+
+  if (qtSchemaMode === "full") {
+    const cached = await selectFull();
+    if (cached.error) return { ok: false, error: cached.error.message };
+    return {
+      ok: true,
+      data: (cached.data ?? []).map((row) => mapEntry(row as EntryRow)),
+    };
+  }
+
+  const first = await selectFull();
+  if (!first.error) {
+    qtSchemaMode = "full";
+    return {
+      ok: true,
+      data: (first.data ?? []).map((row) => mapEntry(row as EntryRow)),
+    };
+  }
+
+  if (!isMissingDecisionObedienceError(first.error)) {
+    return { ok: false, error: first.error.message };
+  }
+
+  const second = await selectLegacy();
+  if (second.error) return { ok: false, error: second.error.message };
+  qtSchemaMode = "legacy";
+  return {
+    ok: true,
+    data: (second.data ?? []).map((row) => mapEntry(row as EntryRow)),
+  };
 }
 
 /**
@@ -103,9 +170,20 @@ export async function fetchQtPresence(): Promise<
   };
 }
 
+type FullUpsertRow = {
+  user_id: string;
+  entry_date: string;
+  meditation: string;
+  verse: string;
+  decision_obedience: string;
+  prayer: string;
+  updated_at: string;
+};
+
 /**
  * Persist QT text to Postgres `qt_entries` (not Storage).
  * Columns: meditation, verse, decision_obedience, prayer.
+ * Falls back to legacy columns when decision_obedience is missing on prod.
  */
 export async function upsertQtEntry(
   userId: string,
@@ -116,7 +194,7 @@ export async function upsertQtEntry(
   if (!sb) return { ok: false, error: "Supabase not configured" };
 
   const updatedAt = new Date().toISOString();
-  const row = {
+  const fullRow: FullUpsertRow = {
     user_id: userId,
     entry_date: date,
     meditation: fields.meditation,
@@ -125,44 +203,61 @@ export async function upsertQtEntry(
     prayer: fields.prayer,
     updated_at: updatedAt,
   };
-
-  const first = await sb
-    .from("qt_entries")
-    .upsert(row, { onConflict: "user_id,entry_date" })
-    .select(ENTRY_SELECT)
-    .single();
-
-  if (!first.error) return { ok: true, data: mapEntry(first.data) };
-
-  // Production may lag the decision_obedience migration — retry without it
-  // so home/history saves still persist meditation/verse/prayer.
-  const missingDecisionCol =
-    /decision_obedience/i.test(first.error.message) ||
-    first.error.code === "PGRST204";
-  if (!missingDecisionCol) return { ok: false, error: first.error.message };
-
-  const legacySelect =
-    "user_id, entry_date, meditation, verse, prayer, updated_at";
   const legacyRow = {
-    user_id: row.user_id,
-    entry_date: row.entry_date,
-    meditation: row.meditation,
-    verse: row.verse,
-    prayer: row.prayer,
-    updated_at: row.updated_at,
+    user_id: userId,
+    entry_date: date,
+    meditation: fields.meditation,
+    verse: fields.verse,
+    prayer: fields.prayer,
+    updated_at: updatedAt,
   };
-  const second = await sb
-    .from("qt_entries")
-    // Legacy schema without decision_obedience — cast for Typed client.
-    .upsert(legacyRow as typeof row, { onConflict: "user_id,entry_date" })
-    .select(legacySelect)
-    .single();
 
+  const upsertFull = () =>
+    sb
+      .from("qt_entries")
+      .upsert(fullRow, { onConflict: "user_id,entry_date" })
+      .select(ENTRY_SELECT_FULL)
+      .single();
+
+  const upsertLegacy = () =>
+    sb
+      .from("qt_entries")
+      // Legacy schema without decision_obedience — cast for Typed client.
+      .upsert(legacyRow as FullUpsertRow, {
+        onConflict: "user_id,entry_date",
+      })
+      .select(ENTRY_SELECT_LEGACY)
+      .single();
+
+  if (qtSchemaMode === "legacy") {
+    const cached = await upsertLegacy();
+    if (cached.error) return { ok: false, error: cached.error.message };
+    return {
+      ok: true,
+      data: mapEntry({
+        ...(cached.data as EntryRow),
+        decision_obedience: fields.decisionObedience,
+      }),
+    };
+  }
+
+  // Prefer full schema (cached "full" or first probe).
+  const first = await upsertFull();
+  if (!first.error) {
+    qtSchemaMode = "full";
+    return { ok: true, data: mapEntry(first.data as EntryRow) };
+  }
+  if (!isMissingDecisionObedienceError(first.error)) {
+    return { ok: false, error: first.error.message };
+  }
+
+  const second = await upsertLegacy();
   if (second.error) return { ok: false, error: second.error.message };
+  qtSchemaMode = "legacy";
   return {
     ok: true,
     data: mapEntry({
-      ...second.data,
+      ...(second.data as EntryRow),
       decision_obedience: fields.decisionObedience,
     }),
   };
