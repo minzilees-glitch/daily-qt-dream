@@ -6,9 +6,40 @@ const MAX_EDGE = 384;
 const JPEG_QUALITY = 0.65;
 /** Soft target under Storage 2 MiB after base64 overhead. */
 const MAX_BYTES = 1_500_000;
+/** Guard against hung decode/compress on huge phone photos. */
+const COMPRESS_TIMEOUT_MS = 20_000;
 
 const HEIC_MSG =
   "이 형식(HEIC)은 지원하지 않아요. JPEG/PNG로 변환하거나 다른 사진을 선택해 주세요.";
+
+function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  message: string,
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      },
+    );
+  });
+}
+
+/** Yield so the UI can paint (modal open) before heavy canvas work. */
+export function yieldToUi(): Promise<void> {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      window.setTimeout(resolve, 0);
+    });
+  });
+}
 
 /**
  * Decode a File or data URL into an HTMLImageElement.
@@ -98,14 +129,61 @@ export function isPrecompressedAvatarJpeg(blob: Blob): boolean {
 export async function jpegBlobToAvatarPayload(
   blob: Blob,
 ): Promise<{ dataUrl: string; blob: Blob }> {
-  return { dataUrl: await blobToDataUrl(blob), blob };
+  // Cloud upload only needs the Blob; skip data URL unless caller needs preview.
+  return { dataUrl: "", blob };
 }
 
-/**
- * Resize + JPEG-compress a picked photo into a small avatar thumbnail.
- * Keeps uploads under the avatars bucket 2 MiB limit and avoids localStorage bloat.
- */
-export async function compressAvatarImage(
+async function drawSourceToCanvas(
+  source: Blob | string,
+): Promise<HTMLCanvasElement> {
+  let bitmap: ImageBitmap | null = null;
+  let w = 0;
+  let h = 0;
+  let drawable: CanvasImageSource;
+
+  if (typeof source !== "string" && typeof createImageBitmap === "function") {
+    try {
+      bitmap = await createImageBitmap(source);
+      w = bitmap.width;
+      h = bitmap.height;
+      drawable = bitmap;
+    } catch {
+      bitmap = null;
+    }
+  }
+
+  if (!bitmap) {
+    const src =
+      typeof source === "string" ? source : await blobToDataUrl(source);
+    const img = await loadImage(src);
+    w = img.naturalWidth || img.width;
+    h = img.naturalHeight || img.height;
+    drawable = img;
+  }
+
+  if (!w || !h) {
+    bitmap?.close();
+    throw new Error("이미지를 열 수 없어요.");
+  }
+
+  const scale = Math.min(1, MAX_EDGE / Math.max(w, h));
+  const cw = Math.max(1, Math.round(w * scale));
+  const ch = Math.max(1, Math.round(h * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = cw;
+  canvas.height = ch;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    bitmap?.close();
+    throw new Error("이미지 변환에 실패했어요.");
+  }
+  ctx.drawImage(drawable, 0, 0, cw, ch);
+  bitmap?.close();
+  return canvas;
+}
+
+async function compressAvatarImageInner(
   source: Blob | string,
 ): Promise<{ dataUrl: string; blob: Blob }> {
   if (typeof source !== "string") {
@@ -116,23 +194,7 @@ export async function compressAvatarImage(
     await assertNotHeic(source);
   }
 
-  const src =
-    typeof source === "string" ? source : await blobToDataUrl(source);
-  const img = await loadImage(src);
-  const w = img.naturalWidth || img.width;
-  const h = img.naturalHeight || img.height;
-  if (!w || !h) throw new Error("이미지를 열 수 없어요.");
-
-  const scale = Math.min(1, MAX_EDGE / Math.max(w, h));
-  const cw = Math.max(1, Math.round(w * scale));
-  const ch = Math.max(1, Math.round(h * scale));
-
-  const canvas = document.createElement("canvas");
-  canvas.width = cw;
-  canvas.height = ch;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("이미지 변환에 실패했어요.");
-  ctx.drawImage(img, 0, 0, cw, ch);
+  const canvas = await drawSourceToCanvas(source);
 
   let quality = JPEG_QUALITY;
   let blob = await canvasToJpegBlob(canvas, quality);
@@ -144,6 +206,21 @@ export async function compressAvatarImage(
     throw new Error("사진이 너무 커요. 더 작은 사진으로 다시 시도해 주세요.");
   }
 
+  // Preview data URL from the small JPEG only (never from the original photo).
   const dataUrl = await blobToDataUrl(blob);
   return { dataUrl, blob };
+}
+
+/**
+ * Resize + JPEG-compress a picked photo into a small avatar thumbnail.
+ * Keeps uploads under the avatars bucket 2 MiB limit and avoids localStorage bloat.
+ */
+export async function compressAvatarImage(
+  source: Blob | string,
+): Promise<{ dataUrl: string; blob: Blob }> {
+  return withTimeout(
+    compressAvatarImageInner(source),
+    COMPRESS_TIMEOUT_MS,
+    "사진 변환이 너무 오래 걸려요. JPEG/PNG로 다시 시도해 주세요.",
+  );
 }

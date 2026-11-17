@@ -1,19 +1,19 @@
 "use client";
 
-import type { ReactNode, MouseEvent } from "react";
+import type { ReactNode } from "react";
 import { BookOpen } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 import { openInSystemBrowser } from "@/lib/open-external";
 
 /**
- * 말씀 header — eyebrow + verse range (+ optional deep-sky 「말씀보기」 link).
+ * 말씀 header — eyebrow + verse range (+ optional deep-sky 「말씀보기」 CTA).
  * No 본문 써머리 / title line (home + history).
- * Home: full-bleed mint via `.home-duranno-in-sheet` + Duranno link.
+ * Home: full-bleed mint via `.home-duranno-in-sheet` + Duranno CTA.
  * History: `embedded` skips mint (parent owns wash); pass `showLink` for today only.
  *
- * 「말씀보기」 always opens Duranno in the system browser (Safari/Chrome),
- * not as an in-app same-shell navigation.
+ * 「말씀보기」 is a button (not <a href>) so the current app page never
+ * navigates — Duranno only opens in the system browser.
  */
 export function HomeDurannoPassage({
   reading,
@@ -33,16 +33,6 @@ export function HomeDurannoPassage({
 }) {
   const range = reading.range || "—";
   const linkUrl = showLink ? reading.url?.trim() : "";
-
-  const onOpenExternal = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!linkUrl) return;
-    // Let modified clicks (new tab / window via browser chrome) keep default.
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
-      return;
-    }
-    e.preventDefault();
-    openInSystemBrowser(linkUrl);
-  };
 
   const body = (
     <>
@@ -64,11 +54,9 @@ export function HomeDurannoPassage({
             <>
               {/* Dedicated spacer — not flex gap (gap was easy to miss / override). */}
               <span className="home-duranno-cta-gap shrink-0" aria-hidden />
-              <a
-                href={linkUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="home-duranno-cta inline-flex shrink-0 whitespace-nowrap self-center"
+              <button
+                type="button"
+                className="home-duranno-cta inline-flex shrink-0 cursor-pointer whitespace-nowrap self-center"
                 style={{
                   color: "var(--color-sky-deep)",
                   WebkitTextFillColor: "var(--color-sky-deep)",
@@ -76,7 +64,7 @@ export function HomeDurannoPassage({
                 }}
                 aria-label="말씀보기 (외부 브라우저)"
                 title="외부 브라우저에서 말씀보기"
-                onClick={onOpenExternal}
+                onClick={() => openInSystemBrowser(linkUrl)}
               >
                 <BookOpen
                   size={16}
@@ -89,7 +77,7 @@ export function HomeDurannoPassage({
                   {"\u00A0"}
                 </span>
                 <span className="home-duranno-cta-label">말씀보기</span>
-              </a>
+              </button>
             </>
           ) : null}
         </div>

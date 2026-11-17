@@ -32,9 +32,9 @@ import {
   validationMessage,
 } from "@/lib/qt-entry";
 import {
+  blobToDataUrl,
   compressAvatarImage,
   isPrecompressedAvatarJpeg,
-  jpegBlobToAvatarPayload,
 } from "@/lib/avatar-image";
 import {
   clearAvatar,
@@ -843,17 +843,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       // Prefer an already-compressed JPEG Blob from the picker; otherwise compress.
       // Re-encoding a second time freezes the UI on large phone photos.
-      let compressed: { dataUrl: string; blob: Blob };
+      let uploadBlob: Blob | null = null;
+      let localDataUrl: string | null = null;
       try {
         if (image instanceof Blob && isPrecompressedAvatarJpeg(image)) {
-          compressed = await jpegBlobToAvatarPayload(image);
+          uploadBlob = image;
+          // Local-only mode needs a data URL; cloud path uploads the Blob as-is.
+          if (!supabaseEnabled) {
+            localDataUrl = await blobToDataUrl(image);
+          }
         } else if (
           image instanceof Blob &&
           image.type.startsWith("image/")
         ) {
-          compressed = await compressAvatarImage(image);
+          const compressed = await compressAvatarImage(image);
+          uploadBlob = compressed.blob;
+          localDataUrl = compressed.dataUrl;
         } else if (typeof image === "string") {
-          compressed = await compressAvatarImage(image);
+          const compressed = await compressAvatarImage(image);
+          uploadBlob = compressed.blob;
+          localDataUrl = compressed.dataUrl;
         } else {
           return { ok: false, message: "이미지 파일만 업로드할 수 있어요." };
         }
@@ -865,17 +874,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       // Local-only: persist compressed data URL (no Supabase).
       if (!supabaseEnabled) {
+        if (!localDataUrl) {
+          return { ok: false, message: "이미지 형식을 읽지 못했어요." };
+        }
         const avatarMap = { ...(overrides.avatarMap ?? {}) };
-        avatarMap[sessionUserId] = compressed.dataUrl;
+        avatarMap[sessionUserId] = localDataUrl;
         writeOverrides({ ...overrides, avatarMap });
         return { ok: true, message: "저장했어요." };
       }
 
       // Supabase on: upload Blob first; persist public URL only (never data URL).
       const blob =
-        compressed.blob.type.startsWith("image/")
-          ? compressed.blob
-          : dataUrlToBlob(compressed.dataUrl);
+        uploadBlob && uploadBlob.type.startsWith("image/")
+          ? uploadBlob
+          : localDataUrl
+            ? dataUrlToBlob(localDataUrl)
+            : null;
       if (!blob) {
         return { ok: false, message: "이미지 형식을 읽지 못했어요." };
       }
