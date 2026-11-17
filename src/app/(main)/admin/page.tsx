@@ -374,12 +374,12 @@ export default function AdminPage() {
                 align="start"
               />
               <p className="shrink-0 type-caption font-medium text-text-secondary">
-                {TERM_14_LABEL} 누적 = 전체
+                {TERM_14_LABEL} 누적
               </p>
             </div>
             <p className="mb-3 type-caption text-text-secondary">
-              선택 달의 빛과 {TERM_14_LABEL} 전체 누적을 함께 봅니다. 순위는 해당
-              달 빛 기준입니다.
+              선택 월의 빛과 {TERM_14_LABEL} 전체 누적을 함께 봅니다. 순위는 해당
+              월 빛 기준입니다.
             </p>
             <input
               value={userQuery}
@@ -397,10 +397,13 @@ export default function AdminPage() {
                   이름
                 </span>
                 <span className="admin-user-table__num" role="columnheader">
-                  달
+                  월
                 </span>
-                <span className="admin-user-table__num" role="columnheader">
-                  전체
+                <span
+                  className="admin-user-table__num admin-user-table__num--all"
+                  role="columnheader"
+                >
+                  14기 전체
                 </span>
               </div>
               <ul className="admin-user-table__body" role="rowgroup">
@@ -434,7 +437,10 @@ export default function AdminPage() {
                         textClassName="type-body-sm font-semibold text-text-main"
                       />
                     </div>
-                    <div className="admin-user-table__num" role="cell">
+                    <div
+                      className="admin-user-table__num admin-user-table__num--all"
+                      role="cell"
+                    >
                       <LightCount
                         lights={row.allLights}
                         size={16}
