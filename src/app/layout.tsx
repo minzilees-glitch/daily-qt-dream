@@ -7,6 +7,14 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "드림 매일큐티",
   description: "매일의 Quiet Time을 함께 기록하는 순 공동체 앱",
+  // App Router also auto-serves src/app/{favicon.ico,icon.png,apple-icon.png}.
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {
