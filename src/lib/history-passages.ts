@@ -1,6 +1,6 @@
 /**
- * Manual 말씀 ranges for 「나의 큐티들」 history sheet.
- * Home still scrapes Duranno for today; history does NOT.
+ * Manual 말씀 ranges for Home + 「나의 큐티들」 (uploaded calendar).
+ * Do not scrape Duranno for the range label — only 「말씀보기」 opens Duranno.
  *
  * How to fill (monthly):
  * 1. Add or edit a month block under HISTORY_PASSAGES keyed by `YYYY-MM`.
@@ -8,7 +8,7 @@
  * 3. Use full Korean book names (아모스, not 암; 고린도후서, not 고후).
  * 4. Dates missing from the map show HISTORY_PASSAGE_PLACEHOLDER.
  *
- * Sources (Duranno 공지):
+ * Sources (Duranno 공지 — used when filling this file, not at runtime):
  * - 2026-10: sn=22428
  * - 2026-11: sn=22582
  * - 2026-12: sn=22722
