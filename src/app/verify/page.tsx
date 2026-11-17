@@ -17,8 +17,15 @@ import {
   sunNameToGroupId,
   usesFreeTextLegalName,
 } from "@/lib/community/darakbang-roster";
+import {
+  fetchClaimedLegalNames,
+  isLegalNameTaken,
+} from "@/lib/supabase/profile-repo";
 
 type Step = "darakbang" | "sun" | "name";
+
+const NAME_TAKEN_MSG =
+  "이미 인증된 본명이에요. 다른 이름을 선택하거나 예외 신청해 주세요.";
 
 /* Chevron/padding live in globals.css `.verify-field` — avoid Tailwind px/bg
  * utilities that override appearance + padding-right + background-image. */
@@ -48,6 +55,7 @@ export default function CommunityVerifyPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [claimedNames, setClaimedNames] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!ready) return;
@@ -60,6 +68,24 @@ export default function CommunityVerifyPage() {
     }
   }, [ready, currentUser, communityStatus, router]);
 
+  // Load verified 본명 set so dropdown / 새가족 can block duplicates.
+  useEffect(() => {
+    if (!ready || !currentUser) return;
+    let cancelled = false;
+    void (async () => {
+      const res = await fetchClaimedLegalNames();
+      if (cancelled) return;
+      if (!res.ok) {
+        // Soft-fail UX: submit path still re-checks via is_legal_name_taken.
+        return;
+      }
+      setClaimedNames(new Set(res.data));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, currentUser]);
+
   const suns = useMemo(
     () => (darakbangId ? getSunsForDarakbang(darakbangId) : []),
     [darakbangId],
@@ -68,6 +94,11 @@ export default function CommunityVerifyPage() {
   const selectedDarakbang = DARAKBANGS.find((d) => d.id === darakbangId);
   const selectedSun = suns.find((s) => s.groupName === sunName);
   const memberNames = selectedSun?.members.map((m) => m.name) ?? [];
+  const availableMemberNames = useMemo(
+    () => memberNames.filter((name) => !claimedNames.has(name.trim())),
+    [memberNames, claimedNames],
+  );
+  const hiddenClaimedCount = memberNames.length - availableMemberNames.length;
   const freeTextName = Boolean(sunName && usesFreeTextLegalName(sunName));
   const unassigned = Boolean(sunName && isUnassignedSun(sunName));
   const newFamily = Boolean(sunName && isNewFamilySun(sunName));
@@ -79,6 +110,14 @@ export default function CommunityVerifyPage() {
     }
   }, [step, unassigned]);
 
+  // Clear selection if the chosen 본명 becomes unavailable (claimed).
+  useEffect(() => {
+    if (!legalName.trim()) return;
+    if (claimedNames.has(legalName.trim())) {
+      setLegalName("");
+    }
+  }, [claimedNames, legalName]);
+
   const onConfirmName = async () => {
     setError(null);
     const name = legalName.trim();
@@ -88,6 +127,22 @@ export default function CommunityVerifyPage() {
     }
     if (!name) {
       setError(freeTextName ? "본명을 입력해 주세요." : "본명을 선택해 주세요.");
+      return;
+    }
+
+    // 새가족 (and any free-text): reject names already verified.
+    if (newFamily || freeTextName) {
+      const taken = await isLegalNameTaken(name);
+      if (!taken.ok) {
+        setError(taken.error);
+        return;
+      }
+      if (taken.data) {
+        setError(NAME_TAKEN_MSG);
+        return;
+      }
+    } else if (claimedNames.has(name)) {
+      setError(NAME_TAKEN_MSG);
       return;
     }
 
@@ -279,13 +334,18 @@ export default function CommunityVerifyPage() {
                   className={selectClassName}
                 >
                   <option value="">본명을 선택하세요</option>
-                  {memberNames.map((name) => (
+                  {availableMemberNames.map((name) => (
                     <option key={name} value={name}>
                       {name}
                     </option>
                   ))}
                 </select>
               )}
+              {hiddenClaimedCount > 0 && !freeTextName ? (
+                <p className="mt-2 type-caption text-text-secondary">
+                  이미 인증된 본명 {hiddenClaimedCount}개는 목록에서 빼 두었어요.
+                </p>
+              ) : null}
               <div className="mt-2 space-y-1">
                 <p className="type-caption font-bold text-text-main">
                   반드시 본인 이름만 선택하여 주세요. 저희는 믿음으로 운영합니다.

@@ -255,6 +255,59 @@ export type CommunityVerificationInput = {
   displayNameFallback?: string;
 };
 
+/** Verified profiles' 본명 set (excludes current auth user). RLS-safe RPC. */
+export async function fetchClaimedLegalNames(): Promise<
+  ProfileRepoResult<string[]>
+> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+
+  const { data, error } = await sb.rpc("claimed_legal_names");
+  if (error) {
+    if (/claimed_legal_names|42883|PGRST202/i.test(error.message)) {
+      return {
+        ok: false,
+        error:
+          "본명 중복 확인 RPC가 없어요. supabase/migrations/20261117_claimed_legal_names.sql 을 적용해 주세요.",
+      };
+    }
+    return { ok: false, error: error.message };
+  }
+
+  const names = (data ?? [])
+    .map((row: { legal_name?: string | null } | string) =>
+      typeof row === "string" ? row.trim() : (row.legal_name ?? "").trim(),
+    )
+    .filter(Boolean);
+  return { ok: true, data: Array.from(new Set(names)) };
+}
+
+/** True when another verified profile already owns this 본명. */
+export async function isLegalNameTaken(
+  candidate: string,
+): Promise<ProfileRepoResult<boolean>> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+
+  const name = candidate.trim();
+  if (!name) return { ok: true, data: false };
+
+  const { data, error } = await sb.rpc("is_legal_name_taken", {
+    candidate: name,
+  });
+  if (error) {
+    if (/is_legal_name_taken|42883|PGRST202/i.test(error.message)) {
+      return {
+        ok: false,
+        error:
+          "본명 중복 확인 RPC가 없어요. supabase/migrations/20261117_claimed_legal_names.sql 을 적용해 주세요.",
+      };
+    }
+    return { ok: false, error: error.message };
+  }
+  return { ok: true, data: Boolean(data) };
+}
+
 /** Roster match success → set 본명, 순, role, community_status=verified. */
 export async function applyCommunityVerification(
   input: CommunityVerificationInput,
@@ -264,6 +317,15 @@ export async function applyCommunityVerification(
 
   const legalName = input.legalName.trim();
   if (!legalName) return { ok: false, error: "본명을 입력해 주세요." };
+
+  const taken = await isLegalNameTaken(legalName);
+  if (!taken.ok) return { ok: false, error: taken.error };
+  if (taken.data) {
+    return {
+      ok: false,
+      error: "이미 인증된 본명이에요. 다른 이름을 선택하거나 예외 신청해 주세요.",
+    };
+  }
 
   const patch: Database["public"]["Tables"]["profiles"]["Update"] = {
     legal_name: legalName,

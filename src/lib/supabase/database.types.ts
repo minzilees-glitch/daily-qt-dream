@@ -174,6 +174,14 @@ export interface Database {
         Args: { target_user_id: string };
         Returns: boolean;
       };
+      claimed_legal_names: {
+        Args: Record<string, never>;
+        Returns: { legal_name: string }[];
+      };
+      is_legal_name_taken: {
+        Args: { candidate: string };
+        Returns: boolean;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
