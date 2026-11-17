@@ -433,7 +433,7 @@ export default function AdminPage() {
                       <LightCount
                         lights={row.monthLights}
                         size={16}
-                        className="justify-end"
+                        className="justify-start"
                         textClassName="type-body-sm font-semibold text-text-main"
                       />
                     </div>
