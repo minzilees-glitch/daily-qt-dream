@@ -51,8 +51,8 @@ export default function RankingPage() {
       <header className="premium-tab-header premium-tab-header--ranking">
         <h1 className="premium-tab-title">랭킹</h1>
         <p className="qt-validation-hint type-caption mt-[var(--space-stack-sm)] text-text-secondary">
-          큐티를 당일에 완료한 날마다 빛 1개를 모읍니다. 순 전체 빛 수로 순위를
-          매깁니다.
+          당일 큐티를 완료하면 빛이 쌓여요. 지난 날짜에 채운 큐티는 저장만 되고,
+          빛 순위에는 들어가지 않아요.
         </p>
       </header>
 
