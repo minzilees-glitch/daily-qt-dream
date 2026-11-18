@@ -42,6 +42,7 @@ import {
   applyCommunityVerification,
   ensureKakaoProfile,
   fetchDisplayName,
+  fetchGroupMemberProfiles,
   fetchProfileGroupId,
   isCommunityVerified,
   submitCommunityException,
@@ -337,6 +338,41 @@ function profileToUser(profile: ProfileRow, leaderMap: Record<string, string>): 
   };
 }
 
+const PROTOTYPE_SEED_ID = /^u-\d+$/;
+
+function isKakaoProfileId(id: string): boolean {
+  return id.includes("-") && !PROTOTYPE_SEED_ID.test(id);
+}
+
+function userFromCloudProfile(
+  profile: ProfileRow,
+  leaderMap: Record<string, string>,
+  overrides: Overrides,
+  remoteAvatars: Record<string, string>,
+  baseGroups: Group[],
+): User {
+  const user = profileToUser(profile, leaderMap);
+  const groupId = overrides.userGroupMap[profile.id] ?? user.groupId;
+  const name = overrides.nameMap?.[profile.id]?.trim() || user.name;
+  const avatarUrl =
+    overrides.avatarMap?.[profile.id] ??
+    remoteAvatars[profile.id] ??
+    user.avatarUrl ??
+    null;
+  const isLeader =
+    (overrides.leaderMap[groupId] ??
+      baseGroups.find((g) => g.id === groupId)?.leaderId) === profile.id ||
+    user.isLeader;
+  return {
+    ...user,
+    name,
+    groupId,
+    isLeader,
+    avatarUrl: avatarUrl ?? null,
+    isAdmin: profile.role === "admin" || user.isAdmin,
+  };
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const snap = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const clientReady = useSyncExternalStore(
@@ -358,6 +394,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [remoteTick, setRemoteTick] = useState(0);
   const [authBootstrapped, setAuthBootstrapped] = useState(!supabaseEnabled);
   const [authProfile, setAuthProfile] = useState<ProfileRow | null>(null);
+  /** Same-순 members from Postgres (replaces mock u-00N for light totals). */
+  const [remoteGroupRoster, setRemoteGroupRoster] = useState<ProfileRow[]>([]);
   const [communityStatus, setCommunityStatus] =
     useState<CommunityStatus>("pending");
 
@@ -591,6 +629,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           userGroupMap[sessionUserId] = group.data;
           writeOverrides({ ...getSnapshot().overrides, userGroupMap });
         }
+        const roster = await fetchGroupMemberProfiles(group.data);
+        if (!cancelled && roster.ok) {
+          setRemoteGroupRoster(roster.data);
+        }
+      } else if (!cancelled) {
+        setRemoteGroupRoster([]);
       }
       setRemoteTick((t) => t + 1);
     })();
@@ -618,7 +662,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    const mapped = base.users
+    const cloudByGroup = new Map<string, ProfileRow[]>();
+    for (const p of remoteGroupRoster) {
+      if (!p.group_id) continue;
+      const list = cloudByGroup.get(p.group_id) ?? [];
+      list.push(p);
+      cloudByGroup.set(p.group_id, list);
+    }
+
+    let mapped: User[] = base.users
       .filter((u) => !seedDoppelgangerIds.has(u.id))
       .map((u) => {
         const groupId = overrides.userGroupMap[u.id] ?? u.groupId;
@@ -634,6 +686,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const name = overrides.nameMap?.[u.id]?.trim() || u.name;
         return { ...u, name, groupId, isLeader, avatarUrl };
       });
+
+    // Production: same-순 roster from profiles — drop mock u-00N so lights sum Kakao UUIDs.
+    for (const [gid, cloudMembers] of cloudByGroup) {
+      if (!cloudMembers.some((p) => isKakaoProfileId(p.id))) continue;
+      mapped = mapped.filter(
+        (u) => !(u.groupId === gid && PROTOTYPE_SEED_ID.test(u.id)),
+      );
+      for (const p of cloudMembers) {
+        if (mapped.some((u) => u.id === p.id)) continue;
+        mapped.push(
+          userFromCloudProfile(
+            p,
+            overrides.leaderMap,
+            overrides,
+            remoteAvatars,
+            base.groups,
+          ),
+        );
+      }
+    }
 
     // Kakao auth user (UUID) is not in mock seed — inject for group / me views.
     if (authProfile && !mapped.some((u) => u.id === authProfile.id)) {
@@ -670,6 +742,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     overrides.nameMap,
     remoteAvatars,
     authProfile,
+    remoteGroupRoster,
   ]);
 
   const groups = useMemo(() => {
@@ -947,6 +1020,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     writeSession(null);
     setAuthProfile(null);
     setCommunityStatus("pending");
+    setRemoteGroupRoster([]);
     setRemoteQt(EMPTY_REMOTE);
   }, [supabaseEnabled]);
 

@@ -76,6 +76,55 @@ export async function updateDisplayName(
   return { ok: true, data: name };
 }
 
+/**
+ * Same-순 roster from Postgres `profiles` (Kakao UUIDs).
+ * RLS (`profiles_select_same_group`) should scope to the signed-in user's group.
+ */
+export async function fetchGroupMemberProfiles(
+  groupId: string,
+): Promise<ProfileRepoResult<ProfileRow[]>> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+  const gid = groupId.trim();
+  if (!gid) return { ok: true, data: [] };
+
+  const selectFull =
+    "id, display_name, group_id, role, avatar_url, legal_name, community_status, created_at, updated_at" as const;
+
+  const first = await sb
+    .from("profiles")
+    .select(selectFull)
+    .eq("group_id", gid);
+  if (!first.error) {
+    return { ok: true, data: (first.data ?? []) as ProfileRow[] };
+  }
+  if (/legal_name|community_status|42703|PGRST204/i.test(first.error.message)) {
+    const second = await sb
+      .from("profiles")
+      .select("id, display_name, group_id, role, avatar_url, created_at, updated_at")
+      .eq("group_id", gid);
+    if (second.error) return { ok: false, error: second.error.message };
+    type LeanRow = {
+      id: string;
+      display_name: string;
+      group_id: string | null;
+      role: ProfileRow["role"];
+      avatar_url: string | null;
+      created_at: string;
+      updated_at: string;
+    };
+    return {
+      ok: true,
+      data: ((second.data ?? []) as LeanRow[]).map((row) => ({
+        ...row,
+        legal_name: null,
+        community_status: row.group_id ? "verified" : "pending",
+      })) as ProfileRow[],
+    };
+  }
+  return { ok: false, error: first.error.message };
+}
+
 /** Read profiles.group_id for one user (순 membership). */
 export async function fetchProfileGroupId(
   userId: string,
