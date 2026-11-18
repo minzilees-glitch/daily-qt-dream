@@ -57,13 +57,13 @@ export function HomeDurannoPassage({
       </div>
       {/* Trailing share/edit stay absolute so they don't inflate range-row
           height (h-8 buttons vs range text). Far-right = actions.
-          Keep 「말씀보기」 on the same line as 말씀범위: no wrap; tighten
-          CTA gap + icon reserve; slightly smaller range type for Amos-length. */}
+          Keep 「말씀보기」 on the same line as 말씀범위: no wrap; restore
+          20px range type and tighten icon/CTA gaps instead of shrinking type. */}
       <div className="relative mt-1">
         <div
           className={`home-duranno-range-row flex min-w-0 flex-nowrap items-center${
-            /* Copy + 수정 (~72px hit targets); 말씀보기 sits in-flow. */
-            rangeTrailing ? " pr-[4.75rem]" : ""
+            /* Copy + 수정 (~64px hit targets); 말씀보기 sits in-flow. */
+            rangeTrailing ? " pr-16" : ""
           }`}
         >
           <p className="reading-passage-range m-0 min-w-0 shrink-0 self-center whitespace-nowrap leading-none">

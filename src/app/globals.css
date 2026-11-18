@@ -2125,9 +2125,7 @@ select.verify-field {
 .home-duranno-meta .reading-passage-range {
   color: var(--color-black) !important; /* #000917 */
   margin: 0;
-  /* Under global 20px so long ranges + 「말씀보기」 + trailing icons stay one line. */
-  font-size: 1rem !important; /* 16px */
-  letter-spacing: -0.02em;
+  /* Keep global .reading-passage-range 20px — fit same-line CTA via tighter gaps. */
   line-height: 1 !important;
   white-space: nowrap;
   align-self: center;
@@ -2147,10 +2145,10 @@ select.verify-field {
  */
 .home-duranno-cta-gap {
   display: inline-block;
-  width: 0.375rem; /* 6px — keep 「말씀보기」 on the range line */
-  min-width: 0.375rem;
+  width: 0.25rem; /* 4px — room for restored 20px range + same-line CTA */
+  min-width: 0.25rem;
   height: 1px;
-  flex: 0 0 0.375rem;
+  flex: 0 0 0.25rem;
   align-self: center;
   pointer-events: none;
 }
@@ -2230,7 +2228,7 @@ button.home-duranno-cta svg {
 }
 
 /*
- * Literal 5px spacer between BookOpen and 「말씀보기」.
+ * Literal spacer between BookOpen and 「말씀보기」.
  * Width/flex-basis (not margin/gap) so it cannot collapse; nbsp keeps
  * the box from being treated as empty in some engines.
  */
@@ -2238,10 +2236,10 @@ a.home-duranno-cta .home-duranno-cta-icon-gap,
 button.home-duranno-cta .home-duranno-cta-icon-gap {
   display: block !important;
   box-sizing: border-box !important;
-  width: 5px !important;
-  min-width: 5px !important;
-  max-width: 5px !important;
-  flex: 0 0 5px !important;
+  width: 3px !important;
+  min-width: 3px !important;
+  max-width: 3px !important;
+  flex: 0 0 3px !important;
   /* Width-only spacer — keep height 0 so it does not skew flex midline. */
   height: 0 !important;
   margin: 0 !important;
