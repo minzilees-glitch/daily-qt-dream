@@ -32,7 +32,7 @@ export function QtEntryForm({
   editing = false,
   /** Optional notice above 「큐티는 전체 합쳐…」 helper (e.g. past-empty history). */
   helperNotice,
-  /** Edit mode — back control beside the 「큐티는 전체…」 helper (exit without save). */
+  /** Edit mode — back control above the 「큐티는 전체…」 helper (exit without save). */
   onBack,
 }: {
   initial?: QtEntry | null;
@@ -69,7 +69,7 @@ export function QtEntryForm({
         ) : null}
         <div
           className={
-            showBack ? "flex items-start gap-1.5" : undefined
+            showBack ? "flex flex-col items-start gap-1" : undefined
           }
         >
           {showBack ? (
@@ -78,12 +78,12 @@ export function QtEntryForm({
               aria-label="수정 취소"
               title="수정 취소"
               onClick={onBack}
-              className="-ml-1.5 mt-[-2px] flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] opacity-70 shadow-none transition hover:opacity-100"
+              className="-ml-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] opacity-70 shadow-none transition hover:opacity-100"
             >
-              <ArrowLeft size={18} strokeWidth={1.75} aria-hidden />
+              <ArrowLeft size={20} strokeWidth={1.75} aria-hidden />
             </button>
           ) : null}
-          <p className="qt-validation-hint min-w-0 flex-1 type-caption text-text-secondary">
+          <p className="qt-validation-hint min-w-0 w-full type-caption text-text-secondary">
             큐티는 전체{" "}
             <strong className="type-caption-em">
               최소 {QT_MIN_TOTAL_CHARS}자 이상
