@@ -134,9 +134,15 @@ export function QtEntryForm({
           <PrimaryButton
             type="button"
             variant="secondary"
-            className="w-full !bg-[color-mix(in_srgb,var(--color-danger)_16%,white)] !text-danger hover:brightness-95 [&_svg]:!text-danger"
+            className="w-full touch-manipulation !bg-[color-mix(in_srgb,var(--color-danger)_16%,white)] !text-danger hover:brightness-95 [&_svg]:!text-danger"
             disabled={locked}
-            onClick={onDelete}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // Defer past the current synthetic click so ConfirmModal backdrop
+              // does not receive the same tap (mobile WebViews).
+              queueMicrotask(() => onDelete());
+            }}
           >
             삭제
           </PrimaryButton>

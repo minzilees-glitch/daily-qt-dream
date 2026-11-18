@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
+
+/**
+ * iOS / Kakao WebView: opening a full-screen overlay in the same
+ * gesture as the triggering tap can retarget the synthetic click to the
+ * backdrop and instantly dismiss the dialog (feels like “삭제 does nothing”).
+ */
+const BACKDROP_DISMISS_GUARD_MS = 450;
 
 export function ConfirmModal({
   open,
@@ -24,8 +31,12 @@ export function ConfirmModal({
   onConfirm: () => void | Promise<void>;
   onCancel: () => void;
 }) {
+  const suppressBackdropUntilRef = useRef(0);
+
   useEffect(() => {
     if (!open) return;
+    suppressBackdropUntilRef.current =
+      performance.now() + BACKDROP_DISMISS_GUARD_MS;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCancel();
     };
@@ -50,13 +61,18 @@ export function ConfirmModal({
 
   if (!open || typeof document === "undefined") return null;
 
+  const onBackdropDismiss = () => {
+    if (performance.now() < suppressBackdropUntilRef.current) return;
+    onCancel();
+  };
+
   return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/45 px-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-title"
-      onClick={onCancel}
+      onClick={onBackdropDismiss}
     >
       <div
         className="w-full max-w-[22.5rem] rounded-[var(--radius-md)] bg-white p-[var(--space-card)] shadow-none"
