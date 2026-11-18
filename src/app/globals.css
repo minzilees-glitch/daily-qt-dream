@@ -906,11 +906,10 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   left: 0;
   right: 0;
   top: 100%;
-  margin-top: 1px; /* tight under the digit — clears the light below */
+  margin-top: 2px; /* gap under the digit */
   height: 1px;
   border-radius: 1px;
-  /* Highlight yellow — same as light-icon accent (#F5C518); not numeral ink. */
-  background: #f5c518;
+  background: #fff; /* white underline */
   pointer-events: none;
 }
 
