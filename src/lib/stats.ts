@@ -40,7 +40,8 @@ export function buildLightSet(completions: QtCompletion[]): Set<string> {
 
 /**
  * Past-date completions that saved content but earned no light.
- * Shown as outline sparks on calendar / MeSky / SkyWalkers — not counted.
+ * Shown as outline sparks on calendar (and MeSky); SkyWalkers excludes them.
+ * Never counted in dashboard or ranking light totals.
  */
 export function buildOutlineSet(completions: QtCompletion[]): Set<string> {
   const set = new Set<string>();
