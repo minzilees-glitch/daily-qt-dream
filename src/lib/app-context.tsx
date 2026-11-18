@@ -39,6 +39,10 @@ import {
   uploadAndSaveAvatar,
 } from "@/lib/supabase/avatar-repo";
 import {
+  parseShareTextLayout,
+  type ShareTextLayout,
+} from "@/lib/qt-share";
+import {
   applyCommunityVerification,
   ensureKakaoProfile,
   fetchDisplayName,
@@ -48,6 +52,7 @@ import {
   submitCommunityException,
   updateDisplayName,
   updateProfileGroupId,
+  updateShareTextLayout,
   type CommunityStatus,
   type ProfileRow,
 } from "@/lib/supabase/profile-repo";
@@ -117,6 +122,12 @@ interface AppState {
   setDisplayName: (
     name: string,
   ) => Promise<{ ok: boolean; message: string }>;
+  /** Current user's QT share/copy layout (default titled). */
+  shareTextLayout: ShareTextLayout;
+  /** Persist share/copy layout (profiles.share_text_layout + local fallback). */
+  setShareTextLayout: (
+    layout: ShareTextLayout,
+  ) => Promise<{ ok: boolean; message: string }>;
   isCompleted: (userId: string, date: string) => boolean;
   getReflection: (userId: string, date: string) => QtEntry | undefined;
   getEntry: (userId: string, date: string) => QtEntry | undefined;
@@ -143,6 +154,8 @@ interface Overrides {
   avatarMap: Record<string, string>;
   /** Nickname overrides keyed by user id (profiles.display_name). */
   nameMap?: Record<string, string>;
+  /** QT share/copy layout keyed by user id (profiles.share_text_layout). */
+  shareTextLayoutMap?: Record<string, ShareTextLayout>;
   /**
    * Completions that do not earn lights (past-date backfills).
    * Keys: `userId|YYYY-MM-DD`. Persists for both local + Supabase saves.
@@ -158,6 +171,7 @@ const emptyOverrides = (): Overrides => ({
   awards: [],
   avatarMap: {},
   nameMap: {},
+  shareTextLayoutMap: {},
   noLightKeys: [],
 });
 
@@ -950,11 +964,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (profile.group_id) {
         userGroupMap[authUser.id] = profile.group_id;
       }
+      const shareTextLayoutMap = {
+        ...(getSnapshot().overrides.shareTextLayoutMap ?? {}),
+        [authUser.id]: parseShareTextLayout(profile.share_text_layout),
+      };
       writeOverrides({
         ...getSnapshot().overrides,
         nameMap,
         avatarMap: stripDataUrlAvatars(avatarMap),
         userGroupMap,
+        shareTextLayoutMap,
       });
     },
     [],
@@ -1435,6 +1454,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [overrides, sessionUserId, supabaseEnabled],
   );
 
+  const shareTextLayout = useMemo<ShareTextLayout>(() => {
+    if (!sessionUserId) return "titled";
+    return parseShareTextLayout(
+      overrides.shareTextLayoutMap?.[sessionUserId],
+    );
+  }, [overrides.shareTextLayoutMap, sessionUserId]);
+
+  const setShareTextLayout = useCallback(
+    async (layout: ShareTextLayout) => {
+      if (!sessionUserId) {
+        return { ok: false, message: "로그인이 필요해요." };
+      }
+      const next = parseShareTextLayout(layout);
+      const shareTextLayoutMap = {
+        ...(overrides.shareTextLayoutMap ?? {}),
+        [sessionUserId]: next,
+      };
+      writeOverrides({ ...overrides, shareTextLayoutMap });
+
+      if (!supabaseEnabled) {
+        return { ok: true, message: "공유 형식을 저장했어요." };
+      }
+
+      const res = await updateShareTextLayout(sessionUserId, next);
+      if (!res.ok) {
+        return {
+          ok: true,
+          message: `기기에 저장했어요. 클라우드 동기화 실패: ${res.error}`,
+        };
+      }
+      return { ok: true, message: "공유 형식을 저장했어요." };
+    },
+    [overrides, sessionUserId, supabaseEnabled],
+  );
+
   const value: AppState = {
     ready: clientReady && authBootstrapped,
     currentUser,
@@ -1457,6 +1511,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     confirmAward,
     setAvatarUrl,
     setDisplayName,
+    shareTextLayout,
+    setShareTextLayout,
     isCompleted,
     getReflection,
     getEntry,

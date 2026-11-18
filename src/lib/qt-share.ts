@@ -1,5 +1,12 @@
 import type { QtEntryFields } from "@/types";
 
+/** Per-user QT share/copy layout (profiles.share_text_layout). */
+export type ShareTextLayout = "titled" | "plain";
+
+export function parseShareTextLayout(raw: unknown): ShareTextLayout {
+  return raw === "plain" ? "plain" : "titled";
+}
+
 /** Share clipboard field order — matches home QT form. */
 export const QT_SHARE_FIELD_ORDER: {
   key: keyof QtEntryFields;
@@ -12,26 +19,31 @@ export const QT_SHARE_FIELD_ORDER: {
 ];
 
 /**
- * Build share clipboard text (Asia/Seoul civil date as YYYY/MM/DD).
- * Empty fields are omitted entirely (title + body).
+ * Build share clipboard / Kakao text (Asia/Seoul civil date as YYYY/MM/DD).
+ * Empty fields are omitted entirely.
+ * - titled (default): `- title` then body per field
+ * - plain: bodies only (no field titles)
  */
 export function formatQtShareText({
   dateYmd,
   passageRange,
   fields,
+  layout = "titled",
 }: {
   dateYmd: string;
   passageRange: string;
   fields: QtEntryFields;
+  layout?: ShareTextLayout;
 }): string {
   const dateSlash = dateYmd.trim().replace(/-/g, "/");
   const range = passageRange.trim();
   const header = range ? `${dateSlash} ${range}` : dateSlash;
+  const includeTitles = layout !== "plain";
 
   const blocks = QT_SHARE_FIELD_ORDER.flatMap(({ key, title }) => {
     const body = fields[key]?.trim() ?? "";
     if (!body) return [];
-    return [`- ${title}\n${body}`];
+    return [includeTitles ? `- ${title}\n${body}` : body];
   });
 
   if (blocks.length === 0) return header;

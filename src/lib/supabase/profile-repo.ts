@@ -1,4 +1,8 @@
 import type { User as AuthUser } from "@supabase/supabase-js";
+import {
+  parseShareTextLayout,
+  type ShareTextLayout,
+} from "@/lib/qt-share";
 import { extractKakaoMeta } from "@/lib/supabase/auth";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/database.types";
@@ -76,6 +80,36 @@ export async function updateDisplayName(
   return { ok: true, data: name };
 }
 
+/** Persist QT share/copy layout → profiles.share_text_layout. */
+export async function updateShareTextLayout(
+  userId: string,
+  layout: ShareTextLayout,
+): Promise<ProfileRepoResult<ShareTextLayout>> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return { ok: false, error: "Supabase not configured" };
+
+  const next = parseShareTextLayout(layout);
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      share_text_layout: next,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId);
+
+  if (error) {
+    if (/share_text_layout|42703|PGRST204/i.test(error.message)) {
+      return {
+        ok: false,
+        error:
+          "공유 형식 설정 컬럼이 아직 DB에 없어요. 20261118_profiles_share_text_layout.sql 을 적용해 주세요.",
+      };
+    }
+    return { ok: false, error: error.message };
+  }
+  return { ok: true, data: next };
+}
+
 /**
  * Same-순 roster from Postgres `profiles` (Kakao UUIDs).
  * RLS (`profiles_select_same_group`) should scope to the signed-in user's group.
@@ -119,6 +153,7 @@ export async function fetchGroupMemberProfiles(
         ...row,
         legal_name: null,
         community_status: row.group_id ? "verified" : "pending",
+        share_text_layout: "titled" as const,
       })) as ProfileRow[],
     };
   }
@@ -175,14 +210,34 @@ export async function fetchProfile(
   const { data, error } = await sb
     .from("profiles")
     .select(
-      "id, display_name, group_id, role, avatar_url, legal_name, community_status, created_at, updated_at",
+      "id, display_name, group_id, role, avatar_url, legal_name, community_status, share_text_layout, created_at, updated_at",
     )
     .eq("id", userId)
     .maybeSingle();
 
   if (error) {
     // Columns may be missing until migration is applied — retry lean select.
-    if (/legal_name|community_status|42703|PGRST204/i.test(error.message)) {
+    if (
+      /legal_name|community_status|share_text_layout|42703|PGRST204/i.test(
+        error.message,
+      )
+    ) {
+      const mid = await sb
+        .from("profiles")
+        .select(
+          "id, display_name, group_id, role, avatar_url, legal_name, community_status, created_at, updated_at",
+        )
+        .eq("id", userId)
+        .maybeSingle();
+      if (!mid.error && mid.data) {
+        return {
+          ok: true,
+          data: {
+            ...mid.data,
+            share_text_layout: "titled",
+          } as ProfileRow,
+        };
+      }
       const lean = await sb
         .from("profiles")
         .select("id, display_name, group_id, role, avatar_url, created_at, updated_at")
@@ -196,12 +251,21 @@ export async function fetchProfile(
           ...lean.data,
           legal_name: null,
           community_status: lean.data.group_id ? "verified" : "pending",
+          share_text_layout: "titled",
         } as ProfileRow,
       };
     }
     return { ok: false, error: error.message };
   }
-  return { ok: true, data: data as ProfileRow | null };
+  return {
+    ok: true,
+    data: data
+      ? ({
+          ...data,
+          share_text_layout: parseShareTextLayout(data.share_text_layout),
+        } as ProfileRow)
+      : null,
+  };
 }
 
 /**
@@ -289,6 +353,7 @@ export async function ensureKakaoProfile(
         role: "member",
         legal_name: null,
         community_status: "pending",
+        share_text_layout: "titled",
         created_at: new Date().toISOString(),
         updated_at: insertRow.updated_at,
       },
@@ -428,6 +493,7 @@ export async function applyCommunityVerification(
         role: input.role,
         avatar_url: null,
         community_status: "verified",
+        share_text_layout: "titled",
         created_at: new Date().toISOString(),
         updated_at: patch.updated_at!,
       },
@@ -442,6 +508,9 @@ export async function applyCommunityVerification(
       ),
       legal_name: refreshed.data.legal_name ?? legalName,
       group_id: refreshed.data.group_id ?? input.groupId,
+      share_text_layout: parseShareTextLayout(
+        refreshed.data.share_text_layout,
+      ),
     },
   };
 }
