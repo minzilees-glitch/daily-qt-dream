@@ -66,8 +66,8 @@ export function HomeDurannoPassage({
                 {/* Match 말씀범위 ~20px type — icon scale, not oversized hit target. */}
                 <ArrowLeft size={20} strokeWidth={2} aria-hidden />
               </button>
-              {/* Same 22px spacer as range ↔ 「말씀보기」. */}
-              <span className="home-duranno-cta-gap shrink-0" aria-hidden />
+              {/* Half of range↔말씀보기 gap (22px → 11px). */}
+              <span className="home-duranno-edit-back-gap shrink-0" aria-hidden />
             </>
           ) : null}
           <p className="reading-passage-range m-0 min-w-0 shrink-0 self-center whitespace-nowrap leading-none">
