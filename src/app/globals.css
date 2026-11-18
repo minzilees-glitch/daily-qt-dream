@@ -2114,19 +2114,20 @@ select.verify-field {
   margin-bottom: calc(-1 * (var(--nav-reserve) + var(--safe-bottom)));
 }
 
-/* Range + 「말씀보기」 row: shared vertical center (본문범위 ↔ icon+label). */
+/* Range + 「말씀보기」 row: shared vertical center; wrap CTA before truncating range. */
 .home-duranno-range-row {
   display: flex !important;
+  flex-wrap: wrap !important;
   align-items: center !important;
+  row-gap: 0.25rem;
 }
 
 .home-duranno-in-sheet .reading-passage-range,
 .home-duranno-meta .reading-passage-range {
   color: var(--color-black) !important; /* #000917 */
   margin: 0;
-  line-height: 1 !important; /* leading-none — same midline as CTA */
-  display: flex;
-  align-items: center;
+  /* snug multi-line — long ranges wrap beside icons instead of truncating */
+  line-height: 1.25 !important;
   align-self: center;
 }
 
