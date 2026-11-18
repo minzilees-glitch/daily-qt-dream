@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 import { openInSystemBrowser } from "@/lib/open-external";
@@ -14,7 +14,7 @@ import { openInSystemBrowser } from "@/lib/open-external";
  *
  * 「말씀보기」 is a button (not <a href>) so the current app page never
  * navigates — Duranno only opens in the system browser.
- * Edit exit lives on QtEntryForm helper back (not the header).
+ * Edit exit: optional ArrowLeft before 말씀범위 (same row / same 22px gap as CTA).
  */
 export function HomeDurannoPassage({
   reading,
@@ -24,6 +24,8 @@ export function HomeDurannoPassage({
   showLink = true,
   /** Right-aligned on the 말씀구절 (range) row (e.g. edit icon). */
   rangeTrailing,
+  /** Edit mode — exit without save; sits before 말씀범위 on the range row. */
+  onEditBack,
 }: {
   reading: Pick<DurannoTodayMeta, "range"> &
     Partial<Pick<DurannoTodayMeta, "url">>;
@@ -31,6 +33,7 @@ export function HomeDurannoPassage({
   embedded?: boolean;
   showLink?: boolean;
   rangeTrailing?: ReactNode;
+  onEditBack?: () => void;
 }) {
   const range = reading.range || "—";
   const linkUrl = showLink ? reading.url?.trim() : "";
@@ -51,6 +54,22 @@ export function HomeDurannoPassage({
             rangeTrailing ? " pr-16" : ""
           }`}
         >
+          {onEditBack ? (
+            <>
+              <button
+                type="button"
+                aria-label="수정 취소"
+                title="수정 취소"
+                onClick={onEditBack}
+                className="home-duranno-edit-back inline-flex shrink-0 cursor-pointer items-center self-center border-0 bg-transparent p-0 text-[var(--color-black)] shadow-none opacity-70 transition hover:opacity-100"
+              >
+                {/* Match 말씀범위 ~20px type — icon scale, not oversized hit target. */}
+                <ArrowLeft size={20} strokeWidth={2} aria-hidden />
+              </button>
+              {/* Same 22px spacer as range ↔ 「말씀보기」. */}
+              <span className="home-duranno-cta-gap shrink-0" aria-hidden />
+            </>
+          ) : null}
           <p className="reading-passage-range m-0 min-w-0 shrink-0 self-center whitespace-nowrap leading-none">
             {range}
           </p>

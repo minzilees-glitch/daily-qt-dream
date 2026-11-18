@@ -83,9 +83,6 @@ export function HomeClient() {
       key={`home-qt-${today}-${editing ? todayEntry?.updatedAt ?? "edit" : "new"}`}
       initial={todayEntry}
       editing={editing && hasContent}
-      onBack={
-        editing && hasContent ? () => setEditing(false) : undefined
-      }
       onDelete={editing && hasContent ? () => setConfirmOpen(true) : undefined}
       onSave={async (fields) => {
         try {
@@ -143,6 +140,9 @@ export function HomeClient() {
             <HomeDurannoPassage
               reading={reading}
               label="오늘의 말씀"
+              onEditBack={
+                editActive ? () => setEditing(false) : undefined
+              }
               rangeTrailing={
                 showEdit ? (
                   <PassageEntryActions
