@@ -1,9 +1,13 @@
 import type { QtCompletion, QtEntry, QtEntryFields } from "@/types";
+import { getAuthSession } from "@/lib/supabase/auth";
 import { getSupabaseBrowser, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export type QtRepoResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: string };
+
+/** Whether presence rows cover the whole 순 (RPC) or own rows only (legacy anon). */
+export type QtPresenceScope = "group" | "own";
 
 const ENTRY_SELECT_FULL =
   "user_id, entry_date, meditation, verse, decision_obedience, prayer, updated_at" as const;
@@ -118,21 +122,36 @@ export async function fetchUserQtEntries(
  * Falls back to presence view, then user_id+entry_date select (own rows under RLS).
  */
 export async function fetchQtPresence(): Promise<
-  QtRepoResult<QtCompletion[]>
+  QtRepoResult<QtCompletion[]> & { scope?: QtPresenceScope }
 > {
   const sb = getSupabaseBrowser();
   if (!sb) return { ok: false, error: "Supabase not configured" };
+
+  const mapPresence = (
+    rows: { user_id: string; entry_date: string }[],
+  ): QtCompletion[] =>
+    rows.map((r) => ({
+      userId: r.user_id,
+      date: r.entry_date,
+      completed: true,
+    }));
 
   const viaRpc = await sb.rpc("get_qt_presence");
   if (!viaRpc.error) {
     return {
       ok: true,
-      data: (viaRpc.data ?? []).map((r) => ({
-        userId: r.user_id,
-        date: r.entry_date,
-        completed: true,
-      })),
+      scope: "group",
+      data: mapPresence(viaRpc.data ?? []),
     };
+  }
+
+  /**
+   * Hardened RLS: qt_entries / qt_entry_presence only return the signed-in user.
+   * Treating that as "group presence" made 우리순 전체 count only the viewer's lights.
+   */
+  const session = await getAuthSession();
+  if (session?.user) {
+    return { ok: false, error: viaRpc.error.message };
   }
 
   const viaView = await sb
@@ -142,11 +161,8 @@ export async function fetchQtPresence(): Promise<
   if (!viaView.error) {
     return {
       ok: true,
-      data: (viaView.data ?? []).map((r) => ({
-        userId: r.user_id,
-        date: r.entry_date,
-        completed: true,
-      })),
+      scope: "own",
+      data: mapPresence(viaView.data ?? []),
     };
   }
 
@@ -162,11 +178,8 @@ export async function fetchQtPresence(): Promise<
   }
   return {
     ok: true,
-    data: (viaTable.data ?? []).map((r) => ({
-      userId: r.user_id,
-      date: r.entry_date,
-      completed: true,
-    })),
+    scope: "own",
+    data: mapPresence(viaTable.data ?? []),
   };
 }
 
