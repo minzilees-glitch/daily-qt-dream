@@ -282,7 +282,7 @@ export default function CommunityVerifyPage() {
 
   if (!ready || !currentUser) {
     return (
-      <PhoneShell>
+      <PhoneShell scroll="page">
         <div className="phone-scroll">
           <div className="flex min-h-full items-center justify-center bg-white">
             <BrandMark size={56} className="animate-soft-pulse" />
@@ -293,13 +293,14 @@ export default function CommunityVerifyPage() {
   }
 
   return (
-    <PhoneShell>
+    <PhoneShell scroll="page">
       {/*
-        PhoneShell is fixed-height + overflow:hidden. Main tabs scroll via
-        .phone-scroll; verify must too or step 2/3 (본명 + CTA) clip on mobile.
+        Long chip lists (#92) exceed the viewport. Nested .phone-scroll inside
+        overflow:hidden + transform shell fails touch pan in some iOS/Kakao
+        WebViews — shell page-scroll is the single scroller.
       */}
       <div className="phone-scroll">
-        <div className="relative flex min-h-full flex-col bg-white px-6 pb-10 pt-[calc(2.5rem+var(--safe-top))]">
+        <div className="relative flex min-h-full flex-col bg-white px-6 pb-[calc(2.5rem+var(--safe-bottom))] pt-[calc(2.5rem+var(--safe-top))]">
           <div className="mb-6 text-center">
             <BrandMark size={56} className="mx-auto mb-4" />
             <h1 className="type-display-xl text-text-main">공동체 확인</h1>
@@ -315,7 +316,8 @@ export default function CommunityVerifyPage() {
             ) : null}
           </div>
 
-          <div className="soft-card flex-1 space-y-5 p-[var(--space-card)]">
+          {/* No flex-1: size to content so the shell scroller's scrollHeight is real. */}
+          <div className="soft-card space-y-5 p-[var(--space-card)]">
             {/* Step 1: 다락방 */}
             <div>
               <p className="qt-field-title mb-2">1. 다락방</p>
