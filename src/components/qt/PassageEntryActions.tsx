@@ -40,23 +40,23 @@ export function PassageEntryActions({
   };
 
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-0">
       {onCopy ? (
         <button
           type="button"
           aria-label="텍스트 복사"
           title="텍스트 복사"
           onClick={handleCopy}
-          className={`flex h-10 w-10 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] shadow-none transition ${
+          className={`flex h-9 w-9 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] shadow-none transition ${
             copiedFlash
               ? "opacity-100"
               : "opacity-30 hover:opacity-50"
           }`}
         >
           {copiedFlash ? (
-            <Check size={20} strokeWidth={2} aria-hidden />
+            <Check size={18} strokeWidth={2} aria-hidden />
           ) : (
-            <Copy size={20} strokeWidth={1.75} aria-hidden />
+            <Copy size={18} strokeWidth={1.75} aria-hidden />
           )}
         </button>
       ) : null}
@@ -66,11 +66,11 @@ export function PassageEntryActions({
         title="큐티 수정"
         aria-pressed={editActive}
         onClick={onEdit}
-        className={`flex h-10 w-10 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] shadow-none transition ${
+        className={`flex h-9 w-9 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] shadow-none transition ${
           editActive ? "opacity-100" : "opacity-30 hover:opacity-50"
         }`}
       >
-        <Pencil size={20} strokeWidth={1.75} aria-hidden />
+        <Pencil size={18} strokeWidth={1.75} aria-hidden />
       </button>
     </div>
   );
