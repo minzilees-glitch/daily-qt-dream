@@ -55,20 +55,20 @@ export function HomeDurannoPassage({
           }`}
         >
           {onEditBack ? (
-            <>
+            <span className="home-duranno-edit-back-wrap inline-flex shrink-0 items-center self-center">
               <button
                 type="button"
                 aria-label="수정 취소"
                 title="수정 취소"
                 onClick={onEditBack}
-                className="home-duranno-edit-back inline-flex shrink-0 cursor-pointer items-center self-center border-0 bg-transparent p-0 text-[var(--color-black)] shadow-none opacity-70 transition hover:opacity-100"
+                className="home-duranno-edit-back inline-flex shrink-0 cursor-pointer items-center self-center border-0 bg-transparent p-0 text-[var(--color-black)] shadow-none opacity-70 transition-opacity hover:opacity-100"
               >
                 {/* Match 말씀범위 ~20px type — icon scale, not oversized hit target. */}
                 <ArrowLeft size={20} strokeWidth={2} aria-hidden />
               </button>
               {/* Half of range↔말씀보기 gap (22px → 11px). */}
               <span className="home-duranno-edit-back-gap shrink-0" aria-hidden />
-            </>
+            </span>
           ) : null}
           <p className="reading-passage-range m-0 min-w-0 shrink-0 self-center whitespace-nowrap leading-none">
             {range}
