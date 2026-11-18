@@ -175,13 +175,16 @@ export function QtCalendar({
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!collapsed) return;
+    if (e.button !== 0) return;
     swipeRef.current = {
       active: true,
       startX: e.clientX,
       startY: e.clientY,
       moved: false,
     };
-    e.currentTarget.setPointerCapture(e.pointerId);
+    // Do not capture here. Immediate capture on the week viewport retargets the
+    // click away from day buttons, so taps never select a date. Capture only
+    // after a horizontal swipe is confirmed (see onPointerMove).
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -190,7 +193,14 @@ export function QtCalendar({
     const dx = e.clientX - swipe.startX;
     const dy = e.clientY - swipe.startY;
     if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
-      swipe.moved = true;
+      if (!swipe.moved) {
+        swipe.moved = true;
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId);
+        } catch {
+          // ignore — capture is best-effort for in-progress swipes
+        }
+      }
     }
   };
 
