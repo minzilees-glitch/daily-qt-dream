@@ -65,8 +65,9 @@ export function isShareAbortError(err: unknown): boolean {
 }
 
 /**
- * Mobile-first: `navigator.share({ text })` when available (Kakao / Messages / Copy).
+ * System share sheet (Web Share API): `navigator.share({ text })` when available.
  * Falls back to clipboard when Share API is missing or rejects (except user cancel).
+ * KakaoTalk deep-link sharing lives in `@/lib/kakao-sdk` (separate CTA).
  */
 export async function shareOrCopyText(
   text: string,

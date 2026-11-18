@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Send } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { LightIcon } from "@/components/ui/LightIcon";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Toast } from "@/components/ui/Toast";
 import { DayEntryView } from "@/components/qt/DayEntryView";
@@ -18,11 +16,8 @@ import { durannoUrlForDate } from "@/lib/duranno";
 import { getHistoryPassage } from "@/lib/history-passages";
 import { useSeoulToday } from "@/hooks/useSeoulToday";
 import { entryHasQtContent, fieldsFromEntry } from "@/lib/qt-entry";
-import {
-  formatQtShareText,
-  isShareAbortError,
-  shareOrCopyText,
-} from "@/lib/qt-share";
+import { formatQtShareText } from "@/lib/qt-share";
+import { QtShareActions } from "@/components/qt/QtShareActions";
 
 export function HomeClient() {
   const {
@@ -61,27 +56,17 @@ export function HomeClient() {
     window.setTimeout(() => setToast(null), 2400);
   };
 
-  const shareOpts = {
-    dateYmd: today,
-    passageRange: reading.range,
-    onShared: (via: "share" | "clipboard") =>
-      showToast(via === "share" ? "공유했어요" : "클립보드에 복사했어요"),
-    onError: (message: string) => showToast(message),
-  };
-
-  const shareSavedEntry = async () => {
-    const text = formatQtShareText({
+  const getShareText = () =>
+    formatQtShareText({
       dateYmd: today,
       passageRange: reading.range,
       fields: fieldsFromEntry(todayEntry),
     });
-    try {
-      const via = await shareOrCopyText(text);
-      shareOpts.onShared(via);
-    } catch (err) {
-      if (isShareAbortError(err)) return;
-      shareOpts.onError("공유에 실패했어요");
-    }
+
+  const onShared = (via: "share" | "clipboard" | "kakao") => {
+    if (via === "kakao") showToast("카카오톡으로 보냈어요");
+    else if (via === "share") showToast("공유했어요");
+    else showToast("클립보드에 복사했어요");
   };
 
   const formBody = showCompose ? (
@@ -105,15 +90,11 @@ export function HomeClient() {
   ) : (
     <div className="space-y-[var(--space-stack-lg)]">
       <DayEntryView entry={todayEntry} />
-      <PrimaryButton
-        type="button"
-        variant="secondary"
-        className="w-full"
-        onClick={shareSavedEntry}
-      >
-        <Send size={18} strokeWidth={2.25} aria-hidden />
-        나의 큐티 나누기
-      </PrimaryButton>
+      <QtShareActions
+        getShareText={getShareText}
+        onShared={onShared}
+        onError={(message) => showToast(message)}
+      />
     </div>
   );
 

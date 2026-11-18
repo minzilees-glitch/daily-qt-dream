@@ -11,12 +11,11 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { CalendarDays, Rows2, Send } from "lucide-react";
+import { CalendarDays, Rows2 } from "lucide-react";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { LightCount } from "@/components/ui/LightIcon";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { QtCalendar } from "@/components/qt/QtCalendar";
 import { QtEntryForm } from "@/components/qt/QtEntryForm";
 import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
@@ -29,11 +28,8 @@ import {
 } from "@/lib/history-passages";
 import { durannoUrlForDate } from "@/lib/duranno";
 import { entryHasQtContent, fieldsFromEntry } from "@/lib/qt-entry";
-import {
-  formatQtShareText,
-  isShareAbortError,
-  shareOrCopyText,
-} from "@/lib/qt-share";
+import { formatQtShareText } from "@/lib/qt-share";
+import { QtShareActions } from "@/components/qt/QtShareActions";
 import {
   isFutureDate,
   todaySeoul,
@@ -315,27 +311,17 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     window.setTimeout(() => setToast(null), 2400);
   };
 
-  const share = {
-    dateYmd: selected,
-    passageRange: historyPassage.range,
-    onShared: (via: "share" | "clipboard") =>
-      showToast(via === "share" ? "공유했어요" : "클립보드에 복사했어요"),
-    onError: (message: string) => showToast(message),
-  };
-
-  const shareSavedEntry = async () => {
-    const text = formatQtShareText({
-      dateYmd: share.dateYmd,
-      passageRange: share.passageRange,
+  const getShareText = () =>
+    formatQtShareText({
+      dateYmd: selected,
+      passageRange: historyPassage.range,
       fields: fieldsFromEntry(selectedEntry),
     });
-    try {
-      const via = await shareOrCopyText(text);
-      share.onShared(via);
-    } catch (err) {
-      if (isShareAbortError(err)) return;
-      share.onError("공유에 실패했어요");
-    }
+
+  const onShared = (via: "share" | "clipboard" | "kakao") => {
+    if (via === "kakao") showToast("카카오톡으로 보냈어요");
+    else if (via === "share") showToast("공유했어요");
+    else showToast("클립보드에 복사했어요");
   };
 
   return (
@@ -505,15 +491,11 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
               ) : hasContent ? (
                 <div className="space-y-[var(--space-stack-lg)]">
                   <DayEntryView entry={selectedEntry} />
-                  <PrimaryButton
-                    type="button"
-                    variant="secondary"
-                    className="w-full"
-                    onClick={shareSavedEntry}
-                  >
-                    <Send size={18} strokeWidth={2.25} aria-hidden />
-                    나의 큐티 나누기
-                  </PrimaryButton>
+                  <QtShareActions
+                    getShareText={getShareText}
+                    onShared={onShared}
+                    onError={(message) => showToast(message)}
+                  />
                 </div>
               ) : (
                 <QtEntryForm
