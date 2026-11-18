@@ -44,7 +44,8 @@ export function HomeDurannoPassage({
       <div className="relative mt-1">
         <div
           className={`home-duranno-range-row flex min-w-0 items-center${
-            rangeTrailing ? (linkUrl ? " pr-24" : " pr-16") : ""
+            /* Two trailing icons (copy + 수정) need ~80px; more with 말씀보기. */
+            rangeTrailing ? (linkUrl ? " pr-32" : " pr-24") : ""
           }`}
         >
           <p className="reading-passage-range m-0 w-auto max-w-full shrink self-center truncate leading-none">

@@ -113,7 +113,7 @@ export async function shareTextViaKakao(
       ok: false,
       code: "missing_key",
       message:
-        "카카오톡 공유 설정이 아직 없어요. 잠시 후 다시 시도하거나 아래 공유하기를 이용해 주세요.",
+        "카카오톡 공유 설정이 아직 없어요. 잠시 후 다시 시도하거나 말씀 옆 복사 아이콘을 이용해 주세요.",
     };
   }
 
@@ -159,7 +159,7 @@ export async function shareTextViaKakao(
         ok: false,
         code: "load_failed",
         message:
-          "카카오톡 공유를 불러오지 못했어요. 네트워크를 확인하거나 공유하기를 이용해 주세요.",
+          "카카오톡 공유를 불러오지 못했어요. 네트워크를 확인하거나 말씀 옆 복사 아이콘을 이용해 주세요.",
       };
     }
     return {
@@ -167,8 +167,8 @@ export async function shareTextViaKakao(
       code: "share_failed",
       message:
         detail && !detail.includes("kakao_sdk")
-          ? "카카오톡으로 보낼 수 없어요. 공유하기를 이용해 주세요."
-          : "카카오톡 공유에 실패했어요. 공유하기를 이용해 주세요.",
+          ? "카카오톡으로 보낼 수 없어요. 말씀 옆 복사 아이콘을 이용해 주세요."
+          : "카카오톡 공유에 실패했어요. 말씀 옆 복사 아이콘을 이용해 주세요.",
     };
   }
 }
