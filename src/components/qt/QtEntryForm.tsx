@@ -6,7 +6,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { ArrowLeft } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -32,8 +31,6 @@ export function QtEntryForm({
   editing = false,
   /** Optional notice above 「큐티는 전체 합쳐…」 helper (e.g. past-empty history). */
   helperNotice,
-  /** Edit mode — back control above the 「큐티는 전체…」 helper (exit without save). */
-  onBack,
 }: {
   initial?: QtEntry | null;
   onSave: (fields: QtEntryFields) => void | Promise<void>;
@@ -42,7 +39,6 @@ export function QtEntryForm({
   disabled?: boolean;
   editing?: boolean;
   helperNotice?: ReactNode;
-  onBack?: () => void;
 }) {
   const seed = fieldsFromEntry(initial);
   const [meditation, setMeditation] = useState(seed.meditation);
@@ -56,7 +52,6 @@ export function QtEntryForm({
   const fields = { meditation, verse, decisionObedience, prayer };
   const totalLen = totalTrimmedLength(fields);
   const locked = disabled || busy;
-  const showBack = Boolean(editing && onBack);
 
   return (
     <div>
@@ -67,39 +62,22 @@ export function QtEntryForm({
             {helperNotice}
           </div>
         ) : null}
-        <div
-          className={
-            showBack ? "flex flex-col items-start gap-1" : undefined
-          }
-        >
-          {showBack ? (
-            <button
-              type="button"
-              aria-label="수정 취소"
-              title="수정 취소"
-              onClick={onBack}
-              className="-ml-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] opacity-70 shadow-none transition hover:opacity-100"
-            >
-              <ArrowLeft size={20} strokeWidth={1.75} aria-hidden />
-            </button>
-          ) : null}
-          <p className="qt-validation-hint min-w-0 w-full type-caption text-text-secondary">
-            큐티는 전체{" "}
-            <strong className="type-caption-em">
-              최소 {QT_MIN_TOTAL_CHARS}자 이상
-            </strong>{" "}
-            적어주세요.
-            <span
-              className={`ml-1.5 tabular-nums ${
-                totalLen >= QT_MIN_TOTAL_CHARS
-                  ? "text-text-main"
-                  : "text-text-secondary/70"
-              }`}
-            >
-              (현재 {totalLen}자)
-            </span>
-          </p>
-        </div>
+        <p className="qt-validation-hint type-caption text-text-secondary">
+          큐티는 전체{" "}
+          <strong className="type-caption-em">
+            최소 {QT_MIN_TOTAL_CHARS}자 이상
+          </strong>{" "}
+          적어주세요.
+          <span
+            className={`ml-1.5 tabular-nums ${
+              totalLen >= QT_MIN_TOTAL_CHARS
+                ? "text-text-main"
+                : "text-text-secondary/70"
+            }`}
+          >
+            (현재 {totalLen}자)
+          </span>
+        </p>
       </div>
 
       <div className="space-y-[var(--space-stack-lg)]">

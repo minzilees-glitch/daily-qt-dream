@@ -465,6 +465,9 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   label={passageLabel}
                   embedded
                   showLink={isToday}
+                  onEditBack={
+                    editing ? () => setEditing(false) : undefined
+                  }
                   rangeTrailing={
                     showEdit ? (
                       <PassageEntryActions
@@ -491,7 +494,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
                   initial={selectedEntry}
                   editing
-                  onBack={() => setEditing(false)}
                   onDelete={() => setConfirmOpen(true)}
                   onSave={async (fields) => {
                     try {
