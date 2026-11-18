@@ -324,8 +324,8 @@ html[data-sky-mode="밤모드"] {
  * Avoid background-attachment:local — WebKit often paints nothing on <textarea>.
  * Comfortable pitch is body × ~1.9, but Chromium/WebKit size the native caret
  * to the line box after soft-wrap (caret jumps taller on line 2+). Keep the
- * notebook line-height; hide the native caret and draw .qt-lined-caret at
- * font-size height (see QtEntryForm). */
+ * notebook line-height; hide the native caret and draw .qt-lined-caret at a
+ * normal text-caret height (see linedCaretHeight / QtEntryForm). */
 .qt-lined-field-shell {
   position: relative;
 }
@@ -339,7 +339,7 @@ html[data-sky-mode="밤모드"] {
   font-style: normal !important;
   line-height: var(--qt-line) !important;
   letter-spacing: normal !important;
-  /* Native caret tracks line-height on wrap — hide; custom caret is font-sized. */
+  /* Native caret tracks line-height on wrap — hide; custom caret is stable. */
   caret-color: transparent;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -368,7 +368,7 @@ html[data-sky-mode="밤모드"] {
   background-clip: border-box;
 }
 
-/* Font-sized caret overlay — same height on line 1 and wrapped lines. */
+/* Custom caret overlay — same height on line 1 and wrapped lines. */
 .qt-lined-caret {
   position: absolute;
   top: 0;

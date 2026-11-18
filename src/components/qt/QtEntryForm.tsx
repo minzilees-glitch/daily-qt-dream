@@ -13,7 +13,10 @@ import {
   fieldsFromEntry,
   totalTrimmedLength,
 } from "@/lib/qt-entry";
-import { getTextareaCaretMetrics } from "@/lib/textarea-caret";
+import {
+  getTextareaCaretMetrics,
+  linedCaretHeight,
+} from "@/lib/textarea-caret";
 import type { QtEntry } from "@/types";
 
 /** Matches .qt-lined-field --qt-line ≈ 17×1.9 when CSS var is unavailable. */
@@ -220,8 +223,8 @@ function Field({
       return;
     }
     const m = getTextareaCaretMetrics(node, start);
-    // Center a font-sized caret inside the tall notebook line box.
-    const height = m.fontSize;
+    // Normal-text caret height (not 1em, not full line box), centered in row.
+    const height = linedCaretHeight(m.fontSize, m.lineHeight);
     const y = m.top + Math.max(0, (m.lineHeight - height) / 2);
     setCaret((prev) => ({
       x: m.left,

@@ -1,7 +1,21 @@
 /**
+ * Custom caret height vs CSS font-size — closer to a normal text caret than
+ * 1em, but well below notebook line-height so wrap does not enlarge it.
+ */
+export const QT_LINED_CARET_EM = 1.3;
+
+/** Height for `.qt-lined-caret`, clamped under the line box. */
+export function linedCaretHeight(fontSize: number, lineHeight: number): number {
+  const target = fontSize * QT_LINED_CARET_EM;
+  // Stay clearly below the notebook line box (native caret used the full box).
+  const max = lineHeight * 0.72;
+  return Math.min(target, max);
+}
+
+/**
  * Mirror-div caret metrics for a <textarea>.
  * Returns line-box top/left (content coords) plus fontSize / lineHeight
- * so callers can draw a font-sized caret centered in a tall notebook line.
+ * so callers can draw a stable caret centered in a tall notebook line.
  */
 export function getTextareaCaretMetrics(
   el: HTMLTextAreaElement,
