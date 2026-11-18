@@ -304,12 +304,15 @@ type RemoteQt = {
   myEntries: QtEntry[];
   /** Presence for light counts (all users that have rows in Supabase). */
   presence: QtCompletion[];
+  /** True when `get_qt_presence` succeeded (same-group / admin scope). */
+  groupPresence: boolean;
   loadedFor: string | null;
 };
 
 const EMPTY_REMOTE: RemoteQt = {
   myEntries: [],
   presence: [],
+  groupPresence: false,
   loadedFor: null,
 };
 
@@ -446,6 +449,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // a failed select must not look like "cloud returned []" and wipe journals.
       setRemoteQt((prev) => {
         const sameUser = prev.loadedFor === sessionUserId;
+        const groupPresence =
+          presence.ok && presence.scope === "group";
         if (!mine.ok) {
           return {
             myEntries: sameUser ? prev.myEntries : [],
@@ -454,6 +459,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
               : sameUser
                 ? prev.presence
                 : [],
+            groupPresence: groupPresence
+              ? true
+              : sameUser
+                ? prev.groupPresence
+                : false,
             // Leave loadedFor unset so remoteReady stays false; local drafts remain.
             loadedFor: sameUser ? prev.loadedFor : null,
           };
@@ -476,6 +486,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
             : sameUser
               ? prev.presence
               : [],
+          groupPresence: groupPresence
+            ? true
+            : sameUser
+              ? prev.groupPresence
+              : false,
           loadedFor: sessionUserId,
         };
       });
@@ -659,6 +674,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const completionMap = useMemo(() => {
     const map = new Map<string, boolean>();
+    const applySessionPresence = () => {
+      const myContentDates = new Set(
+        remoteQt.myEntries
+          .filter((e) => entryHasQtContent(e))
+          .map((e) => e.date),
+      );
+      for (const r of overrides.reflections) {
+        if (r.userId === sessionUserId && entryHasQtContent(r)) {
+          myContentDates.add(r.date);
+        }
+      }
+      for (const c of remoteQt.presence) {
+        if (c.userId === sessionUserId && !myContentDates.has(c.date)) {
+          continue;
+        }
+        map.set(`${c.userId}|${c.date}`, c.completed);
+      }
+      for (const c of overrides.completions) {
+        if (c.userId === sessionUserId) {
+          map.set(`${c.userId}|${c.date}`, c.completed);
+        }
+      }
+    };
+
+    if (
+      supabaseEnabled &&
+      sessionUserId &&
+      remoteReady &&
+      remoteQt.groupPresence
+    ) {
+      // Cloud same-group presence only — do not mix stale mock seed rows for Kakao roster.
+      applySessionPresence();
+      return map;
+    }
+
     for (const c of base.completions) {
       map.set(`${c.userId}|${c.date}`, c.completed);
     }
@@ -669,36 +719,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (key.startsWith(`${sessionUserId}|`)) map.delete(key);
       }
       if (remoteReady) {
-        // Session user: presence alone can outrun / miss QT text (empty row,
-        // fetch lag). Only count days that still have saved QT content.
-        const myContentDates = new Set(
-          remoteQt.myEntries
-            .filter((e) => entryHasQtContent(e))
-            .map((e) => e.date),
-        );
-        for (const r of overrides.reflections) {
-          if (
-            r.userId === sessionUserId &&
-            entryHasQtContent(r)
-          ) {
-            myContentDates.add(r.date);
-          }
-        }
-        for (const c of remoteQt.presence) {
-          if (
-            c.userId === sessionUserId &&
-            !myContentDates.has(c.date)
-          ) {
-            continue;
-          }
-          map.set(`${c.userId}|${c.date}`, c.completed);
-        }
-        // Local draft completions after a failed cloud save.
-        for (const c of overrides.completions) {
-          if (c.userId === sessionUserId) {
-            map.set(`${c.userId}|${c.date}`, c.completed);
-          }
-        }
+        applySessionPresence();
       } else {
         // Cloud hydrate failed / still loading — keep local draft completions.
         for (const c of overrides.completions) {
@@ -1040,6 +1061,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             },
           ];
           return {
+            ...prev,
             myEntries,
             presence,
             loadedFor: sessionUserId,
@@ -1106,6 +1128,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           };
         }
         setRemoteQt((prev) => ({
+          ...prev,
           myEntries: prev.myEntries.filter(
             (r) => !(r.userId === sessionUserId && r.date === date),
           ),
