@@ -57,17 +57,16 @@ export function HomeDurannoPassage({
       </div>
       {/* Trailing share/edit stay absolute so they don't inflate range-row
           height (h-8 buttons vs range text). Far-right = actions.
-          No truncate: prefer keeping the full range on one line; flex-wrap
-          drops 「말씀보기」 below when the row is tight. Very long labels
-          still wrap within max-w-full (icon padding reserved). */}
+          Keep 「말씀보기」 on the same line as 말씀범위: no wrap; tighten
+          CTA gap + icon reserve; slightly smaller range type for Amos-length. */}
       <div className="relative mt-1">
         <div
-          className={`home-duranno-range-row flex min-w-0 flex-wrap items-center${
-            /* Two trailing icons (copy + 수정) need ~80px; more with 말씀보기. */
-            rangeTrailing ? (linkUrl ? " pr-32" : " pr-24") : ""
+          className={`home-duranno-range-row flex min-w-0 flex-nowrap items-center${
+            /* Copy + 수정 (~72px hit targets); 말씀보기 sits in-flow. */
+            rangeTrailing ? " pr-[4.75rem]" : ""
           }`}
         >
-          <p className="reading-passage-range m-0 max-w-full shrink-0 self-center break-keep whitespace-normal leading-snug">
+          <p className="reading-passage-range m-0 min-w-0 shrink-0 self-center whitespace-nowrap leading-none">
             {range}
           </p>
           {linkUrl ? (

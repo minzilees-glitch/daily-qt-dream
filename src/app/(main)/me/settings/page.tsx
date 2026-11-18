@@ -56,8 +56,8 @@ function ShareLayoutCheckbox({ selected }: { selected: boolean }) {
   return (
     <span
       aria-hidden
-      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[3px] border-2 border-[var(--color-ink-blue)] bg-transparent shadow-none ${
-        selected ? "text-[var(--color-ink-blue)]" : "text-transparent"
+      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[3px] border-2 border-[var(--sky)] bg-transparent shadow-none ${
+        selected ? "text-[var(--sky)]" : "text-transparent"
       }`}
     >
       {selected ? <Check size={14} strokeWidth={2.5} /> : null}
@@ -192,16 +192,16 @@ export default function MeSettingsPage() {
                   aria-checked={selected}
                   disabled={savingLayout}
                   onClick={() => void onPickLayout(opt.id)}
-                  className={`w-full rounded-[var(--radius-sm)] px-3 py-3 text-left shadow-none transition ${
+                  className={`w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--sky)_10%,white)] px-3 py-3 text-left shadow-none transition ${
                     selected
-                      ? "bg-[color-mix(in_srgb,var(--color-mint)_40%,white)] ring-2 ring-[var(--color-ink-blue)]"
-                      : "bg-[color-mix(in_srgb,var(--color-mint)_22%,white)]"
+                      ? "ring-2 ring-[var(--sky)]"
+                      : "ring-1 ring-transparent"
                   }`}
                 >
                   <span className="flex items-start gap-2.5">
                     <ShareLayoutCheckbox selected={selected} />
                     <span className="min-w-0 flex-1">
-                      <span className="block type-body font-bold text-text-main">
+                      <span className="block type-body !font-bold text-text-main">
                         {opt.label}
                       </span>
                       <span className="mt-1 block type-body-sm font-normal text-text-secondary">
