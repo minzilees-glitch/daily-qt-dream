@@ -2154,6 +2154,17 @@ select.verify-field {
   pointer-events: none;
 }
 
+/* Edit-mode back ↔ 말씀범위 — half of CTA gap (22px → 11px). */
+.home-duranno-edit-back-gap {
+  display: inline-block;
+  width: 11px;
+  min-width: 11px;
+  height: 1px;
+  flex: 0 0 11px;
+  align-self: center;
+  pointer-events: none;
+}
+
 /*
  * 「말씀보기」 + BookOpen — dedicated deep sky (not --color-sky).
  * Nested selectors + token beat inherit/a leftovers.
