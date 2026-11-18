@@ -875,9 +875,10 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   right: 0;
   top: 100%;
   margin-top: 1px; /* tight under the digit — clears the light below */
-  height: 1.5px;
+  height: 1px;
   border-radius: 1px;
-  background: currentColor;
+  /* Highlight yellow — same as light-icon accent (#F5C518); not numeral ink. */
+  background: #f5c518;
   pointer-events: none;
 }
 
