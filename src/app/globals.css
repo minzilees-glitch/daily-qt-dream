@@ -909,7 +909,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   margin-top: 2px; /* gap under the digit */
   height: 1px;
   border-radius: 1px;
-  background: #fff; /* white underline */
+  /* Match day-digit ink (ink-blue / mint in 밤모드) via currentColor. */
+  background: currentColor;
   pointer-events: none;
 }
 
