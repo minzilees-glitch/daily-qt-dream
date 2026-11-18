@@ -322,13 +322,15 @@ html[data-sky-mode="밤모드"] {
 
 /* QT textareas: notebook lines under every row.
  * Avoid background-attachment:local — WebKit often paints nothing on <textarea>.
- * Caret size tracks font-size — lock identical metrics on every field
- * (구절 / 묵상 / 결단과 순종 / 기도제목); baseline = 결단과 순종. */
+ * Chromium/WebKit size the caret to the line box after soft-wrap, so a tall
+ * line-height (e.g. ×1.9) makes the caret jump larger on line 2+. Keep the
+ * notebook pitch close to font metrics so caret height stays stable across
+ * wraps; lock identical type metrics on every field. */
 .qt-lined-field {
-  /* Body × ~1.9 so underline rows track font-size when rem scales. */
-  --qt-line: calc(var(--fs-body) * 1.9);
+  /* Body × ~1.25 — lined rows without caret jump on wrap (was ×1.9). */
+  --qt-line: calc(var(--fs-body) * 1.25);
   font-family: inherit !important;
-  font-size: var(--fs-body) !important; /* 17px — same caret height all fields */
+  font-size: var(--fs-body) !important; /* 17px */
   font-weight: 400 !important;
   font-style: normal !important;
   line-height: var(--qt-line) !important;

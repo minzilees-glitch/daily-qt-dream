@@ -10,7 +10,8 @@ import {
 } from "@/lib/qt-entry";
 import type { QtEntry } from "@/types";
 
-const QT_LINE_FALLBACK_PX = 36;
+/** Matches .qt-lined-field --qt-line ≈ 17×1.25 when CSS var is unavailable. */
+const QT_LINE_FALLBACK_PX = 22;
 
 export function QtEntryForm({
   initial,
