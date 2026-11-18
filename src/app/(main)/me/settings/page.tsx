@@ -224,10 +224,13 @@ export default function MeSettingsPage() {
             로그아웃
           </PrimaryButton>
 
-          <p className="qt-validation-hint mt-[var(--space-stack-sm)] text-center type-caption text-text-secondary">
-            카카오 로그인 세션은 Supabase Auth에 저장됩니다. 큐티 기록은
-            Supabase DB에 저장되고, 환경변수가 없으면 로컬로 대체됩니다.
-          </p>
+          <div className="mt-[var(--space-stack-sm)] space-y-1 text-center type-caption text-text-secondary">
+            <p className="m-0">Copyright to 14기 드림 더 베스트</p>
+            <p className="m-0 break-keep">
+              With every breath that I am able, I will sing of the goodness of
+              God
+            </p>
+          </div>
         </div>
       </section>
       <Toast message={toast} />
