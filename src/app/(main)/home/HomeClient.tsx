@@ -27,6 +27,7 @@ export function HomeClient() {
     saveEntry,
     clearEntry,
     lastEarnedDate,
+    shareTextLayout,
   } = useApp();
   const today = useSeoulToday();
   /** Same uploaded calendar as 「나의 큐티들」 — not Duranno scrape. */
@@ -61,6 +62,7 @@ export function HomeClient() {
       dateYmd: today,
       passageRange: reading.range,
       fields: fieldsFromEntry(todayEntry),
+      layout: shareTextLayout,
     });
 
   const onShared = (via: "kakao") => {

@@ -56,8 +56,15 @@ function clampHistoryDate(date: string): string {
 }
 
 function HistoryPageInner({ initialDate }: { initialDate: string }) {
-  const { currentUser, completions, getEntry, saveEntry, clearEntry, lastEarnedDate } =
-    useApp();
+  const {
+    currentUser,
+    completions,
+    getEntry,
+    saveEntry,
+    clearEntry,
+    lastEarnedDate,
+    shareTextLayout,
+  } = useApp();
 
   const startDate = clampHistoryDate(initialDate);
   const [ym, setYm] = useState(yearMonthOf(startDate));
@@ -316,6 +323,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
       dateYmd: selected,
       passageRange: historyPassage.range,
       fields: fieldsFromEntry(selectedEntry),
+      layout: shareTextLayout,
     });
 
   const onShared = (via: "kakao") => {

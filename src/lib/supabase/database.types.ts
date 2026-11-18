@@ -41,6 +41,8 @@ export interface Database {
           legal_name: string | null;
           /** pending | verified | exception */
           community_status: string | null;
+          /** QT share/copy layout: titled (field titles) | plain (contents only). */
+          share_text_layout: "titled" | "plain";
           created_at: string;
           updated_at: string;
         };
@@ -52,6 +54,7 @@ export interface Database {
           avatar_url?: string | null;
           legal_name?: string | null;
           community_status?: string | null;
+          share_text_layout?: "titled" | "plain";
           created_at?: string;
           updated_at?: string;
         };
@@ -63,6 +66,7 @@ export interface Database {
           avatar_url?: string | null;
           legal_name?: string | null;
           community_status?: string | null;
+          share_text_layout?: "titled" | "plain";
           created_at?: string;
           updated_at?: string;
         };
