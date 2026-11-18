@@ -322,20 +322,25 @@ html[data-sky-mode="밤모드"] {
 
 /* QT textareas: notebook lines under every row.
  * Avoid background-attachment:local — WebKit often paints nothing on <textarea>.
- * Chromium/WebKit size the caret to the line box after soft-wrap, so a tall
- * line-height (e.g. ×1.9) makes the caret jump larger on line 2+. Keep the
- * notebook pitch close to font metrics so caret height stays stable across
- * wraps; lock identical type metrics on every field. */
+ * Comfortable pitch is body × ~1.9, but Chromium/WebKit size the native caret
+ * to the line box after soft-wrap (caret jumps taller on line 2+). Keep the
+ * notebook line-height; hide the native caret and draw .qt-lined-caret at
+ * font-size height (see QtEntryForm). */
+.qt-lined-field-shell {
+  position: relative;
+}
+
 .qt-lined-field {
-  /* Body × ~1.25 — lined rows without caret jump on wrap (was ×1.9). */
-  --qt-line: calc(var(--fs-body) * 1.25);
+  /* Body × ~1.9 — restored notebook air after #102’s tight ×1.25. */
+  --qt-line: calc(var(--fs-body) * 1.9);
   font-family: inherit !important;
   font-size: var(--fs-body) !important; /* 17px */
   font-weight: 400 !important;
   font-style: normal !important;
   line-height: var(--qt-line) !important;
   letter-spacing: normal !important;
-  caret-color: var(--color-black);
+  /* Native caret tracks line-height on wrap — hide; custom caret is font-sized. */
+  caret-color: transparent;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   padding: 0 !important;
@@ -361,6 +366,33 @@ html[data-sky-mode="밤모드"] {
   background-attachment: scroll !important;
   -webkit-background-clip: border-box;
   background-clip: border-box;
+}
+
+/* Font-sized caret overlay — same height on line 1 and wrapped lines. */
+.qt-lined-caret {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.5px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--color-black);
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: qt-lined-caret-blink 1.05s step-end infinite;
+}
+
+@keyframes qt-lined-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qt-lined-caret {
+    animation: none;
+  }
 }
 
 .reading-passage-range {

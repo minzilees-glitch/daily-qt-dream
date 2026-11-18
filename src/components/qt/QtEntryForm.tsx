@@ -1,6 +1,11 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { QtEntryFields } from "@/types";
 import {
@@ -8,10 +13,11 @@ import {
   fieldsFromEntry,
   totalTrimmedLength,
 } from "@/lib/qt-entry";
+import { getTextareaCaretMetrics } from "@/lib/textarea-caret";
 import type { QtEntry } from "@/types";
 
-/** Matches .qt-lined-field --qt-line ≈ 17×1.25 when CSS var is unavailable. */
-const QT_LINE_FALLBACK_PX = 22;
+/** Matches .qt-lined-field --qt-line ≈ 17×1.9 when CSS var is unavailable. */
+const QT_LINE_FALLBACK_PX = 36;
 
 export function QtEntryForm({
   initial,
@@ -169,6 +175,14 @@ function syncAutoGrowHeight(el: HTMLTextAreaElement, minRows: number) {
   el.style.height = `${Math.ceil(needed / line) * line}px`;
 }
 
+type CaretPaint = {
+  x: number;
+  y: number;
+  height: number;
+  /** Remount key so blink restarts after caret moves. */
+  tick: number;
+};
+
 function Field({
   id,
   label,
@@ -187,6 +201,35 @@ function Field({
   minRows: number;
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
+  const disabledRef = useRef(disabled);
+  disabledRef.current = disabled;
+  const [focused, setFocused] = useState(false);
+  const [caret, setCaret] = useState<CaretPaint | null>(null);
+
+  const paintCaret = () => {
+    const node = ref.current;
+    if (!node || disabledRef.current || document.activeElement !== node) {
+      setCaret(null);
+      return;
+    }
+    const start = node.selectionStart ?? 0;
+    const end = node.selectionEnd ?? 0;
+    // Range selection: rely on native highlight; no insertion caret.
+    if (start !== end) {
+      setCaret(null);
+      return;
+    }
+    const m = getTextareaCaretMetrics(node, start);
+    // Center a font-sized caret inside the tall notebook line box.
+    const height = m.fontSize;
+    const y = m.top + Math.max(0, (m.lineHeight - height) / 2);
+    setCaret((prev) => ({
+      x: m.left,
+      y,
+      height,
+      tick: prev && prev.x === m.left && prev.y === y ? prev.tick : Date.now(),
+    }));
+  };
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -198,24 +241,56 @@ function Field({
     return () => window.removeEventListener("resize", onResize);
   }, [value, minRows]);
 
+  useLayoutEffect(() => {
+    if (!focused || disabled) {
+      setCaret(null);
+      return;
+    }
+    paintCaret();
+    document.addEventListener("selectionchange", paintCaret);
+    window.addEventListener("resize", paintCaret);
+    return () => {
+      document.removeEventListener("selectionchange", paintCaret);
+      window.removeEventListener("resize", paintCaret);
+    };
+  }, [focused, disabled, value]);
+
   return (
     <div>
       <label htmlFor={id} className="qt-field-title mb-3 block">
         {label}
       </label>
-      <textarea
-        ref={ref}
-        id={id}
-        value={value}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.value)}
-        rows={minRows}
-        placeholder={placeholder}
-        className="qt-lined-field w-full text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:ring-0 disabled:opacity-60"
-        autoComplete="off"
-        autoCorrect="off"
-        spellCheck={false}
-      />
+      <div className="qt-lined-field-shell">
+        <textarea
+          ref={ref}
+          id={id}
+          value={value}
+          disabled={disabled}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onKeyUp={paintCaret}
+          onClick={paintCaret}
+          onSelect={paintCaret}
+          rows={minRows}
+          placeholder={placeholder}
+          className="qt-lined-field w-full text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:ring-0 disabled:opacity-60"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+        />
+        {caret ? (
+          <span
+            key={caret.tick}
+            aria-hidden
+            className="qt-lined-caret"
+            style={{
+              height: caret.height,
+              transform: `translate(${caret.x}px, ${caret.y}px)`,
+            }}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }
