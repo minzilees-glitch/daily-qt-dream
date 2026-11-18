@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { Send } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { getAppOrigin } from "@/lib/supabase/auth";
 import {
@@ -9,14 +8,10 @@ import {
   preloadKakaoShareSdk,
   shareTextViaKakao,
 } from "@/lib/kakao-sdk";
-import {
-  isShareAbortError,
-  shareOrCopyText,
-} from "@/lib/qt-share";
 
 type Props = {
   getShareText: () => string;
-  onShared: (via: "share" | "clipboard" | "kakao") => void;
+  onShared: (via: "kakao") => void;
   onError: (message: string) => void;
 };
 
@@ -37,6 +32,7 @@ function KakaoTalkGlyph() {
   );
 }
 
+/** KakaoTalk share CTA only — clipboard copy lives beside 수정 in the 말씀 header. */
 export function QtShareActions({ getShareText, onShared, onError }: Props) {
   useEffect(() => {
     if (isKakaoShareConfigured()) preloadKakaoShareSdk();
@@ -52,33 +48,12 @@ export function QtShareActions({ getShareText, onShared, onError }: Props) {
     onError(result.message);
   };
 
-  const onSystemShare = async () => {
-    const text = getShareText();
-    try {
-      const via = await shareOrCopyText(text);
-      onShared(via);
-    } catch (err) {
-      if (isShareAbortError(err)) return;
-      onError("공유에 실패했어요");
-    }
-  };
-
   return (
-    <div className="flex flex-row items-stretch gap-2">
+    <div className="flex flex-row items-stretch">
       <PrimaryButton
         type="button"
         variant="secondary"
-        className="min-w-0 flex-1 px-3"
-        onClick={() => void onSystemShare()}
-        aria-label="텍스트로 나누기"
-      >
-        <Send size={18} strokeWidth={2.25} aria-hidden />
-        텍스트로 나누기
-      </PrimaryButton>
-      <PrimaryButton
-        type="button"
-        variant="secondary"
-        className="min-w-0 flex-1 px-3"
+        className="min-w-0 w-full px-3"
         onClick={() => void onKakao()}
         aria-label="카톡으로 나누기"
       >

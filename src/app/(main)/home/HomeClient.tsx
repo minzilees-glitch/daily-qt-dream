@@ -16,7 +16,7 @@ import { durannoUrlForDate } from "@/lib/duranno";
 import { getHistoryPassage } from "@/lib/history-passages";
 import { useSeoulToday } from "@/hooks/useSeoulToday";
 import { entryHasQtContent, fieldsFromEntry } from "@/lib/qt-entry";
-import { formatQtShareText } from "@/lib/qt-share";
+import { copyTextToClipboard, formatQtShareText } from "@/lib/qt-share";
 import { QtShareActions } from "@/components/qt/QtShareActions";
 
 export function HomeClient() {
@@ -63,10 +63,17 @@ export function HomeClient() {
       fields: fieldsFromEntry(todayEntry),
     });
 
-  const onShared = (via: "share" | "clipboard" | "kakao") => {
+  const onShared = (via: "kakao") => {
     if (via === "kakao") showToast("카카오톡으로 보냈어요");
-    else if (via === "share") showToast("공유했어요");
-    else showToast("클립보드에 복사했어요");
+  };
+
+  const onCopyShareText = async () => {
+    try {
+      await copyTextToClipboard(getShareText());
+      showToast("클립보드에 복사했어요");
+    } catch {
+      showToast("복사에 실패했어요");
+    }
   };
 
   const formBody = showCompose ? (
@@ -136,6 +143,7 @@ export function HomeClient() {
                   <PassageEntryActions
                     editActive={editActive}
                     onEdit={() => setEditing(true)}
+                    onCopy={() => void onCopyShareText()}
                   />
                 ) : null
               }
