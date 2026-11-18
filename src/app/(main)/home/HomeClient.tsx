@@ -83,6 +83,9 @@ export function HomeClient() {
       key={`home-qt-${today}-${editing ? todayEntry?.updatedAt ?? "edit" : "new"}`}
       initial={todayEntry}
       editing={editing && hasContent}
+      onBack={
+        editing && hasContent ? () => setEditing(false) : undefined
+      }
       onDelete={editing && hasContent ? () => setConfirmOpen(true) : undefined}
       onSave={async (fields) => {
         try {
@@ -144,7 +147,7 @@ export function HomeClient() {
                 showEdit ? (
                   <PassageEntryActions
                     editActive={editActive}
-                    onEdit={() => setEditing((v) => !v)}
+                    onEdit={() => setEditing(true)}
                     onCopy={() => void onCopyShareText()}
                   />
                 ) : null

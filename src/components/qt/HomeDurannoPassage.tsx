@@ -14,7 +14,7 @@ import { openInSystemBrowser } from "@/lib/open-external";
  *
  * 「말씀보기」 is a button (not <a href>) so the current app page never
  * navigates — Duranno only opens in the system browser.
- * Exit edit via the trailing 수정 icon (muted check while editing) — no back button.
+ * Edit exit lives on QtEntryForm helper back (not the header).
  */
 export function HomeDurannoPassage({
   reading,

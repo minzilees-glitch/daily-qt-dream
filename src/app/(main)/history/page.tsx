@@ -469,7 +469,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                     showEdit ? (
                       <PassageEntryActions
                         editActive={editing}
-                        onEdit={() => setEditing((v) => !v)}
+                        onEdit={() => setEditing(true)}
                         onCopy={() => void onCopyShareText()}
                       />
                     ) : null
@@ -491,6 +491,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
                   initial={selectedEntry}
                   editing
+                  onBack={() => setEditing(false)}
                   onDelete={() => setConfirmOpen(true)}
                   onSave={async (fields) => {
                     try {

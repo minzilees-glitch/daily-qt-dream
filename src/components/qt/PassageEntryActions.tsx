@@ -12,7 +12,7 @@ export function PassageEntryActions({
   onEdit: () => void;
   /** Clipboard-copy QT share text (same format as former 텍스트로 나누기). */
   onCopy?: () => void;
-  /** While editing — muted check (tap again to exit). Idle — muted pencil. */
+  /** While editing — pencil stays; exit via form helper back control. */
   editActive?: boolean;
 }) {
   const [copiedFlash, setCopiedFlash] = useState(false);
@@ -62,17 +62,15 @@ export function PassageEntryActions({
       ) : null}
       <button
         type="button"
-        aria-label={editActive ? "수정 끝내기" : "큐티 수정"}
-        title={editActive ? "수정 끝내기" : "큐티 수정"}
+        aria-label="큐티 수정"
+        title="큐티 수정"
         aria-pressed={editActive}
         onClick={onEdit}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] opacity-30 shadow-none transition hover:opacity-50"
+        className={`flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] shadow-none transition ${
+          editActive ? "opacity-100" : "opacity-30 hover:opacity-50"
+        }`}
       >
-        {editActive ? (
-          <Check size={16} strokeWidth={1.75} aria-hidden />
-        ) : (
-          <Pencil size={16} strokeWidth={1.75} aria-hidden />
-        )}
+        <Pencil size={16} strokeWidth={1.75} aria-hidden />
       </button>
     </div>
   );
