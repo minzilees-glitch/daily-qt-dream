@@ -6,8 +6,6 @@ import {
 import { getSupabaseWithAccessToken } from "@/lib/supabase/client";
 import { isAllowedKakaoImageUrl } from "@/lib/supabase/kakao-avatar";
 
-export const runtime = "nodejs";
-
 const MAX_BYTES = 2_000_000;
 
 type Body = { imageUrl?: string | null };
