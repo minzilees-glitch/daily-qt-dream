@@ -140,12 +140,11 @@ export function HomeClient() {
             <HomeDurannoPassage
               reading={reading}
               label="오늘의 말씀"
-              onBack={editActive ? () => setEditing(false) : undefined}
               rangeTrailing={
                 showEdit ? (
                   <PassageEntryActions
                     editActive={editActive}
-                    onEdit={() => setEditing(true)}
+                    onEdit={() => setEditing((v) => !v)}
                     onCopy={() => void onCopyShareText()}
                   />
                 ) : null

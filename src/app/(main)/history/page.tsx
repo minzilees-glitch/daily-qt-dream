@@ -465,16 +465,11 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   label={passageLabel}
                   embedded
                   showLink={isToday}
-                  onBack={
-                    editing && hasContent
-                      ? () => setEditing(false)
-                      : undefined
-                  }
                   rangeTrailing={
                     showEdit ? (
                       <PassageEntryActions
                         editActive={editing}
-                        onEdit={() => setEditing(true)}
+                        onEdit={() => setEditing((v) => !v)}
                         onCopy={() => void onCopyShareText()}
                       />
                     ) : null
