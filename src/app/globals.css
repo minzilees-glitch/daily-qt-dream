@@ -862,8 +862,8 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-muted {
   color: var(--color-ink-blue) !important; /* #1F3E62 */
   opacity: 1 !important;
   text-decoration: underline;
-  text-decoration-thickness: 3px; /* thicker when today is not selected */
-  text-underline-offset: 12px; /* air under the numeral; not tight */
+  text-decoration-thickness: 2px; /* slightly thinner than prior 3px */
+  text-underline-offset: 3px; /* snug under the day digit */
   text-decoration-color: var(--color-ink-blue);
 }
 
