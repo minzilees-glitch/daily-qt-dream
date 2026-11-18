@@ -479,13 +479,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
           }
           myEntries = [...map.values()];
         }
+        const presenceRows = presence.ok
+          ? presence.data
+          : sameUser
+            ? prev.presence
+            : mine.data
+                .filter((e) => entryHasQtContent(e))
+                .map((e) => ({
+                  userId: e.userId,
+                  date: e.date,
+                  completed: true as const,
+                }));
         return {
           myEntries,
-          presence: presence.ok
-            ? presence.data
-            : sameUser
-              ? prev.presence
-              : [],
+          presence: presenceRows,
           groupPresence: groupPresence
             ? true
             : sameUser
@@ -685,6 +692,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           myContentDates.add(r.date);
         }
       }
+      // Own QT always counts when journal text exists (even if presence/RPC lagged).
+      for (const date of myContentDates) {
+        map.set(`${sessionUserId}|${date}`, true);
+      }
       for (const c of remoteQt.presence) {
         if (c.userId === sessionUserId && !myContentDates.has(c.date)) {
           continue;
@@ -698,13 +709,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    if (
-      supabaseEnabled &&
-      sessionUserId &&
-      remoteReady &&
-      remoteQt.groupPresence
-    ) {
-      // Cloud same-group presence only — do not mix stale mock seed rows for Kakao roster.
+    if (supabaseEnabled && sessionUserId && remoteReady) {
+      // Cloud path: RPC group presence and/or own-row degrade — never stale mock seed.
       applySessionPresence();
       return map;
     }
