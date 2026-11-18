@@ -69,21 +69,21 @@ export function QtShareActions({ getShareText, onShared, onError }: Props) {
         type="button"
         variant="secondary"
         className="min-w-0 flex-1 px-3"
-        onClick={() => void onKakao()}
-        aria-label="카톡으로 나누기"
-      >
-        <KakaoTalkGlyph />
-        카톡으로 나누기
-      </PrimaryButton>
-      <PrimaryButton
-        type="button"
-        variant="secondary"
-        className="min-w-0 flex-1 px-3"
         onClick={() => void onSystemShare()}
         aria-label="텍스트로 나누기"
       >
         <Send size={18} strokeWidth={2.25} aria-hidden />
         텍스트로 나누기
+      </PrimaryButton>
+      <PrimaryButton
+        type="button"
+        variant="secondary"
+        className="min-w-0 flex-1 px-3"
+        onClick={() => void onKakao()}
+        aria-label="카톡으로 나누기"
+      >
+        <KakaoTalkGlyph />
+        카톡으로 나누기
       </PrimaryButton>
     </div>
   );
