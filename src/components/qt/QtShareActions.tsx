@@ -70,20 +70,20 @@ export function QtShareActions({ getShareText, onShared, onError }: Props) {
         variant="secondary"
         className="min-w-0 flex-1 px-3"
         onClick={() => void onKakao()}
-        aria-label="카카오톡으로 보내기"
+        aria-label="카톡으로 나누기"
       >
         <KakaoTalkGlyph />
-        카톡으로 보내기
+        카톡으로 나누기
       </PrimaryButton>
       <PrimaryButton
         type="button"
         variant="secondary"
         className="min-w-0 flex-1 px-3"
         onClick={() => void onSystemShare()}
-        aria-label="공유하기"
+        aria-label="텍스트로 나누기"
       >
         <Send size={18} strokeWidth={2.25} aria-hidden />
-        공유하기
+        텍스트로 나누기
       </PrimaryButton>
     </div>
   );
