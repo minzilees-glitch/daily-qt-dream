@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ChevronRight, LogOut, Shield } from "lucide-react";
+import { ArrowLeft, Check, ChevronRight, LogOut, Shield } from "lucide-react";
 import { ProfileAvatarButton } from "@/components/layout/ProfileAvatarButton";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Toast } from "@/components/ui/Toast";
@@ -13,9 +13,11 @@ import {
   type ShareTextLayout,
 } from "@/lib/qt-share";
 
+/** Sample bodies long enough to truncate mid-content with 「…」. */
 const SHARE_LAYOUT_SAMPLE_FIELDS = {
-  verse: "하나님이 세상을 이처럼 사랑하사",
-  meditation: "사랑은 행동으로 드러납니다.",
+  verse: "하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 그를 믿는 자마다",
+  meditation:
+    "사랑은 말로만이 아니라 행동으로 드러납니다. 오늘 한 사람에게 먼저 손을 내밀고 싶습니다.",
   decisionObedience: "",
   prayer: "",
 };
@@ -38,12 +40,29 @@ const SHARE_LAYOUT_OPTIONS: {
 ];
 
 function shareLayoutExample(layout: ShareTextLayout): string {
-  return formatQtShareText({
+  const full = formatQtShareText({
     dateYmd: "2026-11-18",
     passageRange: "요한복음 3:16-17",
     fields: SHARE_LAYOUT_SAMPLE_FIELDS,
     layout,
   });
+  // Mid-content ellipsis — show preview is truncated, not the full share text.
+  const max = 72;
+  if (full.length <= max) return `${full}…`;
+  return `${full.slice(0, max).trimEnd()}…`;
+}
+
+function ShareLayoutCheckbox({ selected }: { selected: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[3px] border-2 border-[var(--color-ink-blue)] bg-transparent shadow-none ${
+        selected ? "text-[var(--color-ink-blue)]" : "text-transparent"
+      }`}
+    >
+      {selected ? <Check size={14} strokeWidth={2.5} /> : null}
+    </span>
+  );
 }
 
 export default function MeSettingsPage() {
@@ -73,6 +92,12 @@ export default function MeSettingsPage() {
 
   const group = groups.find((g) => g.id === currentUser.groupId);
   const nameDirty = nickname.trim() !== currentUser.name.trim();
+  const roleBits = [
+    group?.name?.trim() || null,
+    currentUser.isLeader ? "순장" : null,
+    currentUser.isAdmin ? "관리자" : null,
+  ].filter(Boolean);
+  const roleLine = roleBits.length > 0 ? roleBits.join(" · ") : "—";
 
   const showToast = (message: string) => {
     setToast(message);
@@ -114,6 +139,12 @@ export default function MeSettingsPage() {
         <div className="premium-panel animate-fade-up">
           <div className="flex flex-col items-center gap-3 py-2">
             <ProfileAvatarButton size={88} fallback="initial" />
+            <p className="m-0 max-w-xs text-center type-body-sm text-text-secondary">
+              프로필 사진을 눌러 변경할 수 있어요.
+            </p>
+            <p className="m-0 max-w-xs text-center type-body-sm font-medium text-text-main">
+              {roleLine}
+            </p>
             <div className="w-full max-w-xs text-center">
               <label className="qt-field-title mb-2 block text-left" htmlFor="nickname">
                 닉네임
@@ -125,13 +156,8 @@ export default function MeSettingsPage() {
                 maxLength={40}
                 autoComplete="nickname"
                 onChange={(e) => setNickname(e.target.value)}
-                className="w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 text-center type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]"
+                className="w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_35%,white)] px-3 py-3 text-center type-body font-semibold text-text-main outline-none focus:ring-2 focus:ring-[var(--color-sky-deep)]"
               />
-              <p className="mt-2 type-body-sm text-text-secondary">
-                {group?.name ?? "-"}
-                {currentUser.isLeader ? " · 순장" : ""}
-                {currentUser.isAdmin ? " · 관리자" : ""}
-              </p>
               <PrimaryButton
                 type="button"
                 className="mt-3 w-full"
@@ -147,7 +173,7 @@ export default function MeSettingsPage() {
         <div className="premium-panel animate-fade-up space-y-3">
           <div>
             <p className="qt-field-title mb-1">큐티 나누기 형식</p>
-            <p className="type-body-sm text-text-secondary">
+            <p className="type-body-sm font-normal text-text-secondary">
               복사·카톡 공유에 쓰는 텍스트 형식이에요.
             </p>
           </div>
@@ -168,29 +194,28 @@ export default function MeSettingsPage() {
                   onClick={() => void onPickLayout(opt.id)}
                   className={`w-full rounded-[var(--radius-sm)] px-3 py-3 text-left shadow-none transition ${
                     selected
-                      ? "bg-[color-mix(in_srgb,var(--color-sky)_22%,white)] ring-2 ring-[color-mix(in_srgb,var(--color-sky)_55%,transparent)]"
-                      : "bg-[color-mix(in_srgb,var(--color-mint)_28%,white)] opacity-90 hover:opacity-100"
+                      ? "bg-[color-mix(in_srgb,var(--color-mint)_40%,white)] ring-2 ring-[var(--color-ink-blue)]"
+                      : "bg-[color-mix(in_srgb,var(--color-mint)_22%,white)]"
                   }`}
                 >
-                  <span className="type-body font-semibold text-text-main">
-                    {opt.label}
+                  <span className="flex items-start gap-2.5">
+                    <ShareLayoutCheckbox selected={selected} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block type-body font-bold text-text-main">
+                        {opt.label}
+                      </span>
+                      <span className="mt-1 block type-body-sm font-normal text-text-secondary">
+                        {opt.hint}
+                      </span>
+                    </span>
                   </span>
-                  <span className="mt-1 block type-body-sm text-text-secondary">
-                    {opt.hint}
-                  </span>
-                  <pre className="mt-2 whitespace-pre-wrap break-keep rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-black)_6%,white)] px-2.5 py-2 type-caption text-text-main">
+                  <pre className="mt-2.5 whitespace-pre-wrap break-keep rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-mint)_55%,white)] px-4 py-2.5 type-caption font-normal text-text-main">
                     {shareLayoutExample(opt.id)}
                   </pre>
                 </button>
               );
             })}
           </div>
-        </div>
-
-        <div className="premium-panel animate-fade-up">
-          <p className="type-body-sm text-text-secondary">
-            프로필 사진을 눌러 변경할 수 있어요.
-          </p>
         </div>
 
         {currentUser.isAdmin ? (
