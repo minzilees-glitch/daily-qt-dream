@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen } from "lucide-react";
 import { StatLabel } from "@/components/ui/StatLabel";
 import type { DurannoTodayMeta } from "@/lib/duranno";
 import { openInSystemBrowser } from "@/lib/open-external";
@@ -23,6 +23,8 @@ export function HomeDurannoPassage({
   showLink = true,
   /** Right-aligned on the 말씀구절 (range) row (e.g. edit icon). */
   rangeTrailing,
+  /** Editing existing QT — leading back control exits edit without saving. */
+  onBack,
 }: {
   reading: Pick<DurannoTodayMeta, "range"> &
     Partial<Pick<DurannoTodayMeta, "url">>;
@@ -30,15 +32,29 @@ export function HomeDurannoPassage({
   embedded?: boolean;
   showLink?: boolean;
   rangeTrailing?: ReactNode;
+  onBack?: () => void;
 }) {
   const range = reading.range || "—";
   const linkUrl = showLink ? reading.url?.trim() : "";
 
   const body = (
     <>
-      <StatLabel className="home-duranno-label min-w-0 truncate text-text-secondary">
-        {label}
-      </StatLabel>
+      <div className="flex min-w-0 items-center gap-1">
+        {onBack ? (
+          <button
+            type="button"
+            aria-label="수정 취소"
+            title="수정 취소"
+            onClick={onBack}
+            className="-ml-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-transparent text-[var(--color-black)] opacity-70 shadow-none transition hover:opacity-100"
+          >
+            <ArrowLeft size={20} strokeWidth={1.75} aria-hidden />
+          </button>
+        ) : null}
+        <StatLabel className="home-duranno-label min-w-0 truncate text-text-secondary">
+          {label}
+        </StatLabel>
+      </div>
       {/* Trailing share/edit stay absolute so they don't inflate range-row
           height (h-8 buttons vs range text). Far-right = actions. */}
       <div className="relative mt-1">
