@@ -1114,7 +1114,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ),
           loadedFor: sessionUserId,
         }));
-        writeOverrides({ ...overrides, noLightKeys: nextNoLight });
+        // Drop local drafts / stale completions so lights and calendar update
+        // immediately (overrides overlay remote presence after delete).
+        writeOverrides({
+          ...overrides,
+          reflections: overrides.reflections.filter(
+            (r) => !(r.userId === sessionUserId && r.date === date),
+          ),
+          completions: overrides.completions.filter(
+            (c) => !(c.userId === sessionUserId && c.date === date),
+          ),
+          noLightKeys: nextNoLight,
+        });
         setRemoteTick((t) => t + 1);
         return { ok: true, message: "기록을 지우고 완료를 취소했습니다." };
       }
