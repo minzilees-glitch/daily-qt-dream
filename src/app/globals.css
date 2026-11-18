@@ -1298,9 +1298,11 @@ html[data-sky-mode="밤모드"] .premium-qt-header .premium-cal-day-today {
   color: var(--color-white) !important;
 }
 
+/* Month selected day: solid CTA square — no outer faint ring. */
 .premium-cal-glow {
-  background: var(--color-ink-blue); /* #1F3E62 */
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-ink-blue) 28%, transparent);
+  background: var(--cta); /* #008CFF */
+  border-radius: var(--radius-day); /* 12px square, not circle */
+  box-shadow: none; /* was 4px low-opacity ring — removed */
   animation: premium-select-pop 0.42s cubic-bezier(0.22, 1.4, 0.36, 1) both;
 }
 
@@ -2301,9 +2303,14 @@ button.home-duranno-cta:focus-visible {
   }
 }
 
-/* Collapsed week strip: horizontal page turn when week steps. */
+/*
+ * Collapsed week strip: clip horizontal week-slide, but leave vertical
+ * padding so premium-select-pop scale(1.04) is not cut at top/bottom.
+ */
 .premium-cal-week-viewport {
   overflow: hidden;
+  padding-block: 0.5rem; /* ~8px each side > 4% of min-h-[4.5rem] cell */
+  margin-block: -0.5rem; /* keep measured header height unchanged */
 }
 
 @keyframes premium-week-slide-next {

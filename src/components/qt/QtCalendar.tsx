@@ -384,7 +384,7 @@ export function QtCalendar({
                     className="group relative flex min-h-[2.75rem] aspect-square items-center justify-center overflow-visible touch-pan-y"
                   >
                     <span
-                      className={`relative flex h-[2.625rem] w-[2.625rem] flex-col items-center justify-center rounded-full transition ${
+                      className={`relative flex h-[2.625rem] w-[2.625rem] flex-col items-center justify-center rounded-[var(--radius-day)] transition ${
                         selected ? "premium-cal-glow" : ""
                       }`}
                     >
