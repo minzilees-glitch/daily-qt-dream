@@ -192,7 +192,7 @@ export default function MeSettingsPage() {
                   aria-checked={selected}
                   disabled={savingLayout}
                   onClick={() => void onPickLayout(opt.id)}
-                  className={`w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--sky)_18%,white)] px-3 py-3 text-left shadow-none transition ${
+                  className={`w-full rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--sky)_10%,white)] px-3 py-3 text-left shadow-none transition ${
                     selected
                       ? "ring-2 ring-[var(--sky)]"
                       : "ring-1 ring-transparent"
