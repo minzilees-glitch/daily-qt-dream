@@ -8,6 +8,7 @@ import {
   exchangeCodeFromUrl,
   signInWithKakaoIdToken,
 } from "@/lib/supabase/auth";
+import { syncKakaoAvatarAfterLogin } from "@/lib/supabase/kakao-avatar";
 import {
   ensureKakaoProfile,
   isCommunityVerified,
@@ -39,6 +40,7 @@ export default function AuthCallbackPage() {
       const isOidc = params.get("kakao_oidc") === "1";
 
       let sessionUser;
+      let kakaoProfileImage: string | null = null;
       if (isOidc) {
         const tokenRes = await fetch("/api/auth/kakao/id-token", {
           method: "POST",
@@ -47,6 +49,7 @@ export default function AuthCallbackPage() {
         const tokenJson = (await tokenRes.json()) as {
           ok: boolean;
           id_token?: string;
+          profile_image?: string;
         };
         if (cancelled) return;
         if (!tokenJson.ok || !tokenJson.id_token) {
@@ -54,6 +57,7 @@ export default function AuthCallbackPage() {
           window.setTimeout(() => router.replace("/login"), 2200);
           return;
         }
+        kakaoProfileImage = tokenJson.profile_image?.trim() || null;
         const signed = await signInWithKakaoIdToken(tokenJson.id_token);
         if (cancelled) return;
         if (!signed.ok) {
@@ -81,10 +85,25 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      await hydrateFromAuthUser(sessionUser, profileRes.data);
+      // Best-effort: Kakao picture → Storage avatars + profiles.avatar_url.
+      // Skips when user already has a custom Storage upload.
+      let profileForHydrate = profileRes.data;
+      const avatarSync = await syncKakaoAvatarAfterLogin(
+        sessionUser,
+        kakaoProfileImage,
+      );
+      if (cancelled) return;
+      if (avatarSync.ok && avatarSync.status === "uploaded") {
+        profileForHydrate = {
+          ...profileRes.data,
+          avatar_url: avatarSync.avatarUrl,
+        };
+      }
+
+      await hydrateFromAuthUser(sessionUser, profileForHydrate);
       if (cancelled) return;
 
-      if (isCommunityVerified(profileRes.data)) {
+      if (isCommunityVerified(profileForHydrate)) {
         setMessage("환영합니다. 오늘의 큐티로 이동해요.");
         router.replace("/home");
       } else {

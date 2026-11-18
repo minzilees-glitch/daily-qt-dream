@@ -4,7 +4,7 @@ import type { Database } from "@/lib/supabase/database.types";
 let browserClient: SupabaseClient<Database> | null = null;
 
 /** Project root URL only — strip accidental `/rest/v1` etc. from Connect copy-paste. */
-function normalizeSupabaseUrl(raw: string | undefined): string {
+export function normalizeSupabaseUrl(raw: string | undefined): string {
   let url = (raw ?? "").trim().replace(/\/+$/, "");
   for (const suffix of ["/rest/v1", "/auth/v1", "/storage/v1"] as const) {
     if (url.endsWith(suffix)) {
@@ -40,4 +40,28 @@ export function getSupabaseBrowser(): SupabaseClient<Database> | null {
     },
   );
   return browserClient;
+}
+
+/**
+ * Stateless client authenticated as the given user (server routes).
+ * Uses the anon key + caller JWT so Storage/profiles RLS sees auth.uid().
+ */
+export function getSupabaseWithAccessToken(
+  accessToken: string,
+): SupabaseClient<Database> | null {
+  if (!isSupabaseConfigured()) return null;
+  const token = accessToken.trim();
+  if (!token) return null;
+  return createClient<Database>(
+    normalizeSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL),
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    },
+  );
 }

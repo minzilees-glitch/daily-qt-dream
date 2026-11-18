@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import {
+  fetchKakaoProfileImageUrl,
+  isAllowedKakaoImageUrl,
+  pictureFromIdToken,
+} from "@/lib/supabase/kakao-avatar";
 
 /**
  * Kakao → us (OIDC). Exchange code for id_token, stash in httpOnly cookie,
  * then hand off to `/auth/callback?kakao_oidc=1` (no account_email).
+ *
+ * Also captures Kakao `profile_image` / OIDC `picture` into a short-lived
+ * cookie so `/auth/callback` can sync it into Supabase Storage + profiles.
  */
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -47,6 +55,7 @@ export async function GET(request: Request) {
 
   let tokenJson: {
     id_token?: string;
+    access_token?: string;
     error?: string;
     error_description?: string;
   };
@@ -78,6 +87,17 @@ export async function GET(request: Request) {
     );
   }
 
+  // Best-effort profile image for Storage sync (login must not fail).
+  let profileImage: string | null = pictureFromIdToken(idToken);
+  const kakaoAccess = tokenJson.access_token?.trim();
+  if ((!profileImage || !isAllowedKakaoImageUrl(profileImage)) && kakaoAccess) {
+    const fromApi = await fetchKakaoProfileImageUrl(kakaoAccess);
+    if (fromApi) profileImage = fromApi;
+  }
+  if (profileImage && !isAllowedKakaoImageUrl(profileImage)) {
+    profileImage = null;
+  }
+
   const next = new URL("/auth/callback", origin);
   next.searchParams.set("kakao_oidc", "1");
 
@@ -94,5 +114,20 @@ export async function GET(request: Request) {
     path: "/",
     maxAge: 120,
   });
+  if (profileImage) {
+    res.cookies.set("kakao_profile_image", profileImage, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: origin.startsWith("https://"),
+      path: "/",
+      maxAge: 120,
+    });
+  } else {
+    res.cookies.set("kakao_profile_image", "", {
+      httpOnly: true,
+      path: "/",
+      maxAge: 0,
+    });
+  }
   return res;
 }
