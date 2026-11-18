@@ -2237,10 +2237,10 @@ a.home-duranno-cta .home-duranno-cta-icon-gap,
 button.home-duranno-cta .home-duranno-cta-icon-gap {
   display: block !important;
   box-sizing: border-box !important;
-  width: 3px !important;
-  min-width: 3px !important;
-  max-width: 3px !important;
-  flex: 0 0 3px !important;
+  width: 5px !important; /* slight bump from 3px — BookOpen ↔ 「말씀보기」 */
+  min-width: 5px !important;
+  max-width: 5px !important;
+  flex: 0 0 5px !important;
   /* Width-only spacer — keep height 0 so it does not skew flex midline. */
   height: 0 !important;
   margin: 0 !important;
