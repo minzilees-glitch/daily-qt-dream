@@ -145,13 +145,46 @@ export async function fetchQtPresence(): Promise<
     };
   }
 
-  /**
-   * Hardened RLS: qt_entries / qt_entry_presence only return the signed-in user.
-   * Treating that as "group presence" made 우리순 전체 count only the viewer's lights.
-   */
   const session = await getAuthSession();
+  const rpcError = viaRpc.error.message;
+
+  /**
+   * Hardened RLS: only own rows from direct SELECT — never label that as group scope.
+   * When `get_qt_presence` is missing/failing, still return own rows so the signed-in
+   * user's lights never disappear (prod regression after #96 returned ok:false → []).
+   */
   if (session?.user) {
-    return { ok: false, error: viaRpc.error.message };
+    const ownId = session.user.id;
+    const viaTable = await sb
+      .from("qt_entries")
+      .select("user_id, entry_date")
+      .eq("user_id", ownId);
+
+    if (!viaTable.error) {
+      return {
+        ok: true,
+        scope: "own",
+        data: mapPresence(viaTable.data ?? []),
+      };
+    }
+
+    const viaView = await sb
+      .from("qt_entry_presence")
+      .select("user_id, entry_date")
+      .eq("user_id", ownId);
+
+    if (!viaView.error) {
+      return {
+        ok: true,
+        scope: "own",
+        data: mapPresence(viaView.data ?? []),
+      };
+    }
+
+    return {
+      ok: false,
+      error: rpcError || viaTable.error.message,
+    };
   }
 
   const viaView = await sb
