@@ -13,14 +13,36 @@ export function linedCaretHeight(fontSize: number, lineHeight: number): number {
 }
 
 /**
+ * Vertical translate for `.qt-lined-caret`.
+ *
+ * `contentTop` is the mirror marker's offsetTop — the inline **content-box**
+ * top after half-leading, not the line-box top. Center the caret in that
+ * content box so it lines up with Hangul/Latin glyphs (centering in the full
+ * line-height on top of offsetTop double-counts half-leading and sits low).
+ */
+export function linedCaretY(
+  contentTop: number,
+  contentHeight: number,
+  caretHeight: number,
+): number {
+  return contentTop + (contentHeight - caretHeight) / 2;
+}
+
+/**
  * Mirror-div caret metrics for a <textarea>.
- * Returns line-box top/left (content coords) plus fontSize / lineHeight
- * so callers can draw a stable caret centered in a tall notebook line.
+ * Returns content-box top/left (after half-leading) plus fontSize / lineHeight
+ * / contentHeight so callers can draw a stable caret centered on the glyphs.
  */
 export function getTextareaCaretMetrics(
   el: HTMLTextAreaElement,
   position: number,
-): { top: number; left: number; fontSize: number; lineHeight: number } {
+): {
+  top: number;
+  left: number;
+  fontSize: number;
+  lineHeight: number;
+  contentHeight: number;
+} {
   const style = getComputedStyle(el);
   const div = document.createElement("div");
   const span = document.createElement("span");
@@ -91,10 +113,13 @@ export function getTextareaCaretMetrics(
       ? fontSize * 1.2
       : Number.parseFloat(lineHeightRaw) || fontSize * 1.2;
 
+  // offsetTop/Height describe the inline content box (after half-leading),
+  // not the full line box — see linedCaretY.
   const top = span.offsetTop - el.scrollTop + el.clientTop;
   const left = span.offsetLeft - el.scrollLeft + el.clientLeft;
+  const contentHeight = span.offsetHeight || fontSize;
 
   document.body.removeChild(div);
 
-  return { top, left, fontSize, lineHeight };
+  return { top, left, fontSize, lineHeight, contentHeight };
 }
