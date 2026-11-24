@@ -21,6 +21,7 @@ import {
 import {
   getTextareaCaretMetrics,
   linedCaretHeight,
+  linedCaretY,
 } from "@/lib/textarea-caret";
 import type { QtEntry } from "@/types";
 
@@ -347,9 +348,10 @@ function Field({
       return;
     }
     const m = getTextareaCaretMetrics(node, start);
-    // Normal-text caret height (not 1em, not full line box), centered in row.
+    // Normal-text caret height (not 1em, not full line box), centered on glyphs.
+    // m.top is content-box top (after half-leading) — do not re-center in lineHeight.
     const height = linedCaretHeight(m.fontSize, m.lineHeight);
-    const y = m.top + Math.max(0, (m.lineHeight - height) / 2);
+    const y = linedCaretY(m.top, m.contentHeight, height);
     setCaret((prev) => ({
       x: m.left,
       y,

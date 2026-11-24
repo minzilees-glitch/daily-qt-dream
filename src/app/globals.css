@@ -368,9 +368,11 @@ html[data-sky-mode="밤모드"] {
   background-clip: border-box;
 }
 
-/* Custom caret overlay — same height on line 1 and wrapped lines. */
+/* Custom caret overlay — same height on line 1 and wrapped lines.
+ * Vertically centered on the glyph content box (see linedCaretY). */
 .qt-lined-caret {
   position: absolute;
+  display: block;
   top: 0;
   left: 0;
   width: 1.5px;
