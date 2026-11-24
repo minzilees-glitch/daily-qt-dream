@@ -2165,6 +2165,22 @@ select.verify-field {
   pointer-events: none;
 }
 
+/* Subtle appear when entering edit — fade + slight slide (~200ms). */
+@keyframes home-duranno-edit-back-in {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.home-duranno-edit-back-wrap {
+  animation: home-duranno-edit-back-in 0.2s ease-out both;
+}
+
 /*
  * 「말씀보기」 + BookOpen — dedicated deep sky (not --color-sky).
  * Nested selectors + token beat inherit/a leftovers.
@@ -2375,7 +2391,8 @@ button.home-duranno-cta:focus-visible {
   .premium-cal-month-anim,
   .premium-cal-week-slide-next,
   .premium-cal-week-slide-prev,
-  .premium-content-crossfade {
+  .premium-content-crossfade,
+  .home-duranno-edit-back-wrap {
     animation: none;
   }
 }
