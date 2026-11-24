@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { LightIcon } from "@/components/ui/LightIcon";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Toast } from "@/components/ui/Toast";
 import { DayEntryView } from "@/components/qt/DayEntryView";
-import { QtEntryForm } from "@/components/qt/QtEntryForm";
+import {
+  QtEntryForm,
+  type QtEntryFormHandle,
+} from "@/components/qt/QtEntryForm";
 import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
 import { PassageEntryActions } from "@/components/qt/PassageEntryActions";
 import { HomePremiumShell } from "@/components/qt/HomePremiumShell";
@@ -39,6 +42,8 @@ export function HomeClient() {
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const formRef = useRef<QtEntryFormHandle>(null);
+  const exitingEditRef = useRef(false);
 
   if (!currentUser) return null;
 
@@ -55,6 +60,18 @@ export function HomeClient() {
   const showToast = (message: string) => {
     setToast(message);
     window.setTimeout(() => setToast(null), 2400);
+  };
+
+  /** Persist draft then leave edit (back / pencil). Unmount also flushes as backup. */
+  const exitEdit = async () => {
+    if (exitingEditRef.current) return;
+    exitingEditRef.current = true;
+    try {
+      await formRef.current?.flush();
+      setEditing(false);
+    } finally {
+      exitingEditRef.current = false;
+    }
   };
 
   const getShareText = () =>
@@ -80,15 +97,18 @@ export function HomeClient() {
 
   const formBody = showCompose ? (
     <QtEntryForm
+      ref={formRef}
       key={`home-qt-${today}-${editing ? todayEntry?.updatedAt ?? "edit" : "new"}`}
       initial={todayEntry}
       editing={editing && hasContent}
       onDelete={editing && hasContent ? () => setConfirmOpen(true) : undefined}
-      onSave={async (fields) => {
+      onSave={async (fields, meta) => {
+        const silent = meta?.reason === "autosave";
         try {
           const res = await saveEntry(today, fields);
-          showToast(res.message);
-          if (res.ok) setEditing(false);
+          if (!silent) showToast(res.message);
+          else if (!res.ok) showToast(res.message);
+          if (res.ok && !silent) setEditing(false);
         } catch (err) {
           const detail =
             err instanceof Error ? err.message : "알 수 없는 오류";
@@ -141,13 +161,16 @@ export function HomeClient() {
               reading={reading}
               label="오늘의 말씀"
               onEditBack={
-                editActive ? () => setEditing(false) : undefined
+                editActive ? () => void exitEdit() : undefined
               }
               rangeTrailing={
                 showEdit ? (
                   <PassageEntryActions
                     editActive={editActive}
-                    onEdit={() => setEditing(true)}
+                    onEdit={() => {
+                      if (editActive) void exitEdit();
+                      else setEditing(true);
+                    }}
                     onCopy={() => void onCopyShareText()}
                   />
                 ) : null

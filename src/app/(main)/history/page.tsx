@@ -17,7 +17,10 @@ import { Toast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { LightCount } from "@/components/ui/LightIcon";
 import { QtCalendar } from "@/components/qt/QtCalendar";
-import { QtEntryForm } from "@/components/qt/QtEntryForm";
+import {
+  QtEntryForm,
+  type QtEntryFormHandle,
+} from "@/components/qt/QtEntryForm";
 import { HomeDurannoPassage } from "@/components/qt/HomeDurannoPassage";
 import { PassageEntryActions } from "@/components/qt/PassageEntryActions";
 import { DayEntryView } from "@/components/qt/DayEntryView";
@@ -79,6 +82,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const [toast, setToast] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const formRef = useRef<QtEntryFormHandle>(null);
+  const exitingEditRef = useRef(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -290,6 +295,8 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
   const selectDate = (date: string) => {
     if (yearMonthOf(date) < HISTORY_MIN_YM) return;
+    // Flush current edit to the previous day before switching (unmount backup too).
+    if (editing) void formRef.current?.flush();
     setSelected(date);
     setEditing(false);
     if (yearMonthOf(date) !== ym) setYm(yearMonthOf(date));
@@ -316,6 +323,18 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
   const showToast = (message: string) => {
     setToast(message);
     window.setTimeout(() => setToast(null), 2400);
+  };
+
+  /** Persist edit draft then leave edit (back / pencil). Unmount also flushes. */
+  const exitEdit = async () => {
+    if (exitingEditRef.current) return;
+    exitingEditRef.current = true;
+    try {
+      await formRef.current?.flush();
+      setEditing(false);
+    } finally {
+      exitingEditRef.current = false;
+    }
   };
 
   const getShareText = () =>
@@ -466,13 +485,16 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                   embedded
                   showLink={isToday}
                   onEditBack={
-                    editing ? () => setEditing(false) : undefined
+                    editing ? () => void exitEdit() : undefined
                   }
                   rangeTrailing={
                     showEdit ? (
                       <PassageEntryActions
                         editActive={editing}
-                        onEdit={() => setEditing(true)}
+                        onEdit={() => {
+                          if (editing) void exitEdit();
+                          else setEditing(true);
+                        }}
                         onCopy={() => void onCopyShareText()}
                       />
                     ) : null
@@ -491,15 +513,18 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 </div>
               ) : editing ? (
                 <QtEntryForm
+                  ref={formRef}
                   key={`hist-edit-${selected}-${selectedEntry?.updatedAt ?? "new"}`}
                   initial={selectedEntry}
                   editing
                   onDelete={() => setConfirmOpen(true)}
-                  onSave={async (fields) => {
+                  onSave={async (fields, meta) => {
+                    const silent = meta?.reason === "autosave";
                     try {
                       const res = await saveEntry(selected, fields);
-                      showToast(res.message);
-                      if (res.ok) setEditing(false);
+                      if (!silent) showToast(res.message);
+                      else if (!res.ok) showToast(res.message);
+                      if (res.ok && !silent) setEditing(false);
                     } catch (err) {
                       const detail =
                         err instanceof Error ? err.message : "알 수 없는 오류";

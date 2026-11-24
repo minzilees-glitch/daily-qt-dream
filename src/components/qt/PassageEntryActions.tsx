@@ -12,7 +12,7 @@ export function PassageEntryActions({
   onEdit: () => void;
   /** Clipboard-copy QT share text (same format as former 텍스트로 나누기). */
   onCopy?: () => void;
-  /** While editing — pencil stays; exit via 말씀 header back control. */
+  /** While editing — pencil stays active; tap again exits (parent flushes draft). */
   editActive?: boolean;
 }) {
   const [copiedFlash, setCopiedFlash] = useState(false);

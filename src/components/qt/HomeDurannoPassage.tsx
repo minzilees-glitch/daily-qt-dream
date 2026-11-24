@@ -24,7 +24,7 @@ export function HomeDurannoPassage({
   showLink = true,
   /** Right-aligned on the 말씀구절 (range) row (e.g. edit icon). */
   rangeTrailing,
-  /** Edit mode — exit without save; sits before 말씀범위 on the range row. */
+  /** Edit mode — exit (parent autosaves draft); sits before 말씀범위 on the range row. */
   onEditBack,
 }: {
   reading: Pick<DurannoTodayMeta, "range"> &
