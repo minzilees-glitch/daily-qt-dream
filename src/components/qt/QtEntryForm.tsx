@@ -60,8 +60,9 @@ export const QtEntryForm = forwardRef<
     /** Editing a saved entry: secondary 삭제 + primary 「수정사항 저장」. */
     editing?: boolean;
     /**
-     * When true (default while `editing`), flush dirty drafts on unmount /
-     * pagehide / beforeunload. Mid-edit debounce is optional; leave always flushes.
+     * When true (default), flush dirty drafts on unmount / pagehide /
+     * beforeunload — compose and edit. Mid-edit debounce is optional; leave
+     * always flushes. Pass false only to opt out.
      */
     autoSaveOnLeave?: boolean;
     /** Optional notice above 「큐티는 전체 합쳐…」 helper (e.g. past-empty history). */
@@ -92,7 +93,7 @@ export const QtEntryForm = forwardRef<
   const totalLen = totalTrimmedLength(fields);
   const locked = disabled || busy;
 
-  const shouldAutoSave = autoSaveOnLeave ?? editing;
+  const shouldAutoSave = autoSaveOnLeave ?? true;
 
   const fieldsRef = useRef(fields);
   const onSaveRef = useRef(onSave);

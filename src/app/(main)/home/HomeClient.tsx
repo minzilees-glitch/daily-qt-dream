@@ -17,6 +17,7 @@ import { useApp } from "@/lib/app-context";
 import { formatDisplayDate } from "@/lib/dates";
 import { durannoUrlForDate } from "@/lib/duranno";
 import { getHistoryPassage } from "@/lib/history-passages";
+import { useQtLeaveSaveExit } from "@/hooks/useQtLeaveSaveExit";
 import { useSeoulToday } from "@/hooks/useSeoulToday";
 import { entryHasQtContent, fieldsFromEntry } from "@/lib/qt-entry";
 import { copyTextToClipboard, formatQtShareText } from "@/lib/qt-share";
@@ -45,17 +46,25 @@ export function HomeClient() {
   const formRef = useRef<QtEntryFormHandle>(null);
   const exitingEditRef = useRef(false);
 
-  if (!currentUser) return null;
-
-  const todayEntry = getEntry(currentUser.id, today);
+  const todayEntry = currentUser ? getEntry(currentUser.id, today) : null;
   /** Completion flags without QT text (fetch miss / empty row) → compose, not empty copy. */
   const hasContent = entryHasQtContent(todayEntry);
+  /** Read-only view only when there is real saved text; otherwise open the form. */
+  const showCompose = editing || !hasContent;
+
+  /** Nav/tab/back/route leave: flush draft and exit edit so return shows saved view. */
+  useQtLeaveSaveExit({
+    active: Boolean(currentUser) && showCompose,
+    formRef,
+    onExit: () => setEditing(false),
+  });
+
+  if (!currentUser) return null;
+
   /** Home light/status follow real QT text — not presence-only completion. */
   const doneToday = hasContent && isCompleted(currentUser.id, today);
   const showEdit = hasContent;
   const editActive = editing && showEdit;
-  /** Read-only view only when there is real saved text; otherwise open the form. */
-  const showCompose = editing || !hasContent;
 
   const showToast = (message: string) => {
     setToast(message);

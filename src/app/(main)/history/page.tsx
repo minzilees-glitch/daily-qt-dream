@@ -38,6 +38,7 @@ import {
   todaySeoul,
   yearMonthOf,
 } from "@/lib/dates";
+import { useQtLeaveSaveExit } from "@/hooks/useQtLeaveSaveExit";
 import { buildCompletionSet, buildLightSet, userMonthStats } from "@/lib/stats";
 
 function parseDateParam(raw: string | null): string | null {
@@ -295,18 +296,32 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
 
   const selectDate = (date: string) => {
     if (yearMonthOf(date) < HISTORY_MIN_YM) return;
-    // Flush current edit to the previous day before switching (unmount backup too).
-    if (editing) void formRef.current?.flush();
+    // Flush compose/edit draft to the previous day before switching.
+    void formRef.current?.flush();
     setSelected(date);
     setEditing(false);
     if (yearMonthOf(date) !== ym) setYm(yearMonthOf(date));
   };
 
-  if (!currentUser) return null;
-
-  const selectedEntry = getEntry(currentUser.id, selected);
+  const selectedEntry = currentUser
+    ? getEntry(currentUser.id, selected)
+    : null;
   const today = todaySeoul();
   const future = isFutureDate(selected, today);
+  /** Real QT text only — completion/presence without rows opens compose, not empty copy. */
+  const hasContent = entryHasQtContent(selectedEntry);
+  const formOpen =
+    Boolean(currentUser) && !future && (editing || !hasContent);
+
+  /** Nav/tab/back/route leave: flush draft and exit edit so return shows saved view. */
+  useQtLeaveSaveExit({
+    active: formOpen,
+    formRef,
+    onExit: () => setEditing(false),
+  });
+
+  if (!currentUser) return null;
+
   const past = selected < today;
   const isToday = selected === today;
   const historyPassage = getHistoryPassage(selected);
@@ -315,8 +330,6 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
     url: isToday ? durannoUrlForDate(selected) : undefined,
   };
   const passageLabel = historyPassageLabel(selected);
-  /** Real QT text only — completion/presence without rows opens compose, not empty copy. */
-  const hasContent = entryHasQtContent(selectedEntry);
   /** 말씀 header edit: only when that day's QT has saved text (or currently editing). */
   const showEdit = !future && (hasContent || editing);
 
@@ -543,6 +556,7 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                 </div>
               ) : (
                 <QtEntryForm
+                  ref={formRef}
                   key={`hist-new-${selected}`}
                   initial={selectedEntry ?? null}
                   helperNotice={
@@ -550,10 +564,12 @@ function HistoryPageInner({ initialDate }: { initialDate: string }) {
                       ? "지난 큐티완료는 빛을 획득할 수 없습니다. 그러나 지난 큐티는 당신의 마음에 남습니다."
                       : null
                   }
-                  onSave={async (fields) => {
+                  onSave={async (fields, meta) => {
+                    const silent = meta?.reason === "autosave";
                     try {
                       const res = await saveEntry(selected, fields);
-                      showToast(res.message);
+                      if (!silent) showToast(res.message);
+                      else if (!res.ok) showToast(res.message);
                     } catch (err) {
                       const detail =
                         err instanceof Error ? err.message : "알 수 없는 오류";
