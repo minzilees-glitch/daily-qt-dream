@@ -32,6 +32,11 @@ export function linedCaretY(
  * Mirror-div caret metrics for a <textarea>.
  * Returns content-box top/left (after half-leading) plus fontSize / lineHeight
  * / contentHeight so callers can draw a stable caret centered on the glyphs.
+ *
+ * The marker span must stay **one line** (one char or ZWSP). Putting the entire
+ * remainder in the span makes `offsetHeight` grow with trailing lines, so
+ * linedCaretY drops the caret between rows when the selection is on an earlier
+ * line.
  */
 export function getTextareaCaretMetrics(
   el: HTMLTextAreaElement,
@@ -102,8 +107,14 @@ export function getTextareaCaretMetrics(
 
   const value = el.value;
   div.textContent = value.slice(0, position);
-  span.textContent = value.slice(position) || "\u200b";
+  // Single-line marker only — never the full remainder (multi-line offsetHeight
+  // would shove linedCaretY between notebook rows).
+  const ch = value.charAt(position);
+  span.textContent = ch && ch !== "\n" ? ch : "\u200b";
   div.appendChild(span);
+  if (ch) {
+    div.appendChild(document.createTextNode(value.slice(position + (ch === "\n" ? 0 : 1))));
+  }
   document.body.appendChild(div);
 
   const fontSize = Number.parseFloat(style.fontSize) || 17;
@@ -113,11 +124,16 @@ export function getTextareaCaretMetrics(
       ? fontSize * 1.2
       : Number.parseFloat(lineHeightRaw) || fontSize * 1.2;
 
-  // offsetTop/Height describe the inline content box (after half-leading),
-  // not the full line box — see linedCaretY.
+  // offsetTop describes the inline content box (after half-leading), not the
+  // full line box — see linedCaretY. Prefer the marker's content height; if a
+  // browser reports the line box (or anything taller), fall back to fontSize
+  // so we do not double-count half-leading.
   const top = span.offsetTop - el.scrollTop + el.clientTop;
   const left = span.offsetLeft - el.scrollLeft + el.clientLeft;
-  const contentHeight = span.offsetHeight || fontSize;
+  const measured = span.offsetHeight || fontSize;
+  // Multi-line or full line-box heights (≥ ~0.85×line) must not drive Y.
+  const contentHeight =
+    measured >= lineHeight * 0.85 ? fontSize : measured;
 
   document.body.removeChild(div);
 
