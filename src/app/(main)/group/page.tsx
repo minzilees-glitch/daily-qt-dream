@@ -5,8 +5,9 @@ import { MonthPicker } from "@/components/ui/MonthPicker";
 import { DayParticipation } from "@/components/groups/DayParticipation";
 import { WeekdayParticipation } from "@/components/groups/WeekdayParticipation";
 import { SkyWalkers } from "@/components/groups/SkyWalkers";
+import { useSeoulToday } from "@/hooks/useSeoulToday";
 import { useApp } from "@/lib/app-context";
-import { addMonths, currentYearMonth, todaySeoul } from "@/lib/dates";
+import { addMonths, yearMonthOf } from "@/lib/dates";
 import {
   buildCompletionSet,
   computeGroupRanking,
@@ -16,7 +17,11 @@ import {
 
 export default function GroupPage() {
   const { currentUser, groups, users, completions } = useApp();
-  const [ym, setYm] = useState(currentYearMonth());
+  const today = useSeoulToday();
+  const todayYm = yearMonthOf(today);
+  // null = follow Seoul today; remount on tab enter clears a stale picked month.
+  const [pickedYm, setPickedYm] = useState<string | null>(null);
+  const ym = pickedYm ?? todayYm;
 
   const set = useMemo(() => buildCompletionSet(completions), [completions]);
 
@@ -41,8 +46,13 @@ export default function GroupPage() {
     currentUser.groupId,
   );
   const myRank = ranking.find((r) => r.groupId === currentUser.groupId);
-  const dayPart = groupDayParticipation(currentUser.groupId, users, ym, set);
-  const today = todaySeoul();
+  const dayPart = groupDayParticipation(
+    currentUser.groupId,
+    users,
+    ym,
+    set,
+    today,
+  );
   const weekBars = groupThisWeekWeekdayParticipation(
     currentUser.groupId,
     users,
@@ -60,9 +70,9 @@ export default function GroupPage() {
         <div className="mt-2">
           <MonthPicker
             value={ym}
-            onChange={setYm}
-            min={addMonths(currentYearMonth(), -2)}
-            max={currentYearMonth()}
+            onChange={setPickedYm}
+            min={addMonths(todayYm, -2)}
+            max={todayYm}
             align="center"
           />
         </div>
@@ -98,7 +108,7 @@ export default function GroupPage() {
               우리순의 일별 참여
             </h2>
           </div>
-          <DayParticipation days={dayPart} />
+          <DayParticipation days={dayPart} anchorDate={today} />
         </div>
       </section>
     </div>
