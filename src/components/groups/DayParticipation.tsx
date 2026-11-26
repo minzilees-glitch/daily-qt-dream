@@ -1,12 +1,15 @@
 "use client";
 
-import { useRef } from "react";
-import { weekdaySunFirst } from "@/lib/dates";
+import { useLayoutEffect, useRef } from "react";
+import { todaySeoul, weekdaySunFirst } from "@/lib/dates";
 
 export function DayParticipation({
   days,
+  /** YYYY-MM-DD to bring into view when present (우리순 enter → Seoul today). */
+  anchorDate = todaySeoul(),
 }: {
   days: { date: string; count: number; total: number; active?: boolean }[];
+  anchorDate?: string;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{
@@ -15,6 +18,26 @@ export function DayParticipation({
     startScroll: number;
     moved: boolean;
   }>({ active: false, startX: 0, startScroll: 0, moved: false });
+
+  // Scroll/selection resting point: Seoul today when that day is in the strip.
+  // Depend on month identity + anchor, not `days` reference (counts refresh often).
+  const monthKey = days[0]?.date?.slice(0, 7) ?? "";
+  useLayoutEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller || !monthKey) return;
+    const target = scroller.querySelector<HTMLElement>(
+      `[data-day-date="${anchorDate}"]`,
+    );
+    if (!target) return;
+    // Horizontal only — avoid scrollIntoView yanking the page vertically.
+    const scrollerRect = scroller.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const delta =
+      targetRect.left +
+      targetRect.width / 2 -
+      (scrollerRect.left + scrollerRect.width / 2);
+    scroller.scrollLeft += delta;
+  }, [monthKey, anchorDate]);
 
   if (days.length === 0) {
     return (
@@ -77,9 +100,11 @@ export function DayParticipation({
         const ratio = !isActive || d.total === 0 ? 0 : d.count / d.total;
         const dayNum = Number(d.date.slice(8));
         const isSunday = weekdaySunFirst(d.date) === 0;
+        const isAnchor = d.date === anchorDate;
         return (
           <div
             key={d.date}
+            data-day-date={d.date}
             className={`flex w-8 shrink-0 snap-start flex-col items-center gap-1.5 ${
               isActive ? "" : "opacity-40"
             }`}
@@ -89,6 +114,7 @@ export function DayParticipation({
                 : `${d.date}: 아직 열리지 않은 날`
             }
             aria-disabled={!isActive}
+            aria-current={isAnchor ? "date" : undefined}
           >
             {isActive ? (
               <p className="type-label !font-normal tabular-nums text-[var(--color-black)]">
