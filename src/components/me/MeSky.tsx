@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
-import { Settings } from "lucide-react";
+import { ChevronRight, Settings } from "lucide-react";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
 import { WalkerFace } from "@/components/ui/WalkerFace";
@@ -370,12 +370,20 @@ export function MeSky({
           <p className="min-w-0 flex-1 truncate type-body-sm font-medium text-[var(--color-ink-blue)]">
             {[currentUser.name, groupLabel].filter(Boolean).join(" · ")}
           </p>
-          <Settings
-            size={18}
-            className="shrink-0 text-[var(--color-ink-blue)] opacity-60"
-            strokeWidth={1.75}
-            aria-hidden
-          />
+          <span className="flex shrink-0 items-center gap-0.5">
+            <Settings
+              size={18}
+              className="shrink-0 text-[var(--color-ink-blue)] opacity-60"
+              strokeWidth={1.75}
+              aria-hidden
+            />
+            <ChevronRight
+              size={18}
+              className="shrink-0 text-[var(--color-ink-blue)] opacity-60"
+              strokeWidth={1.75}
+              aria-hidden
+            />
+          </span>
         </Link>
 
         <div className="grid grid-cols-2 gap-2 text-center">
