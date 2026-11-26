@@ -375,11 +375,16 @@ export function MeSky({
               {groupLabel}
             </p>
           </div>
-          <ChevronRight
-            size={18}
-            className="shrink-0 text-[var(--color-ink-blue)] opacity-60"
-            strokeWidth={1.75}
-          />
+          <span className="flex shrink-0 items-center gap-0.5">
+            <span className="type-body-sm text-[var(--color-ink-blue)] opacity-75">
+              계정 설정
+            </span>
+            <ChevronRight
+              size={18}
+              className="shrink-0 text-[var(--color-ink-blue)] opacity-60"
+              strokeWidth={1.75}
+            />
+          </span>
         </Link>
 
         <div className="grid grid-cols-2 gap-2 text-center">
