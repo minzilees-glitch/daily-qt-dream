@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { Settings } from "lucide-react";
 import { LightCount, LightIcon } from "@/components/ui/LightIcon";
 import { StatLabel } from "@/components/ui/StatLabel";
 import { WalkerFace } from "@/components/ui/WalkerFace";
@@ -356,10 +356,10 @@ export function MeSky({
       <div ref={statsRef} className="relative z-20 px-4 pb-3 pt-3">
         <Link
           href="/me/settings"
-          className="mb-3 flex items-center gap-3 rounded-[8px] bg-white/50 px-3 py-2.5 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]"
+          className="mb-3 flex items-center gap-2 rounded-[8px] bg-white/50 px-3 py-1.5 shadow-[0_1px_4px_rgba(0,9,23,0.18)] backdrop-blur-[2px]"
           aria-label="계정 설정"
         >
-          <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-light type-stat text-[var(--color-ink-blue)]">
+          <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-light type-body-sm text-[var(--color-ink-blue)]">
             {avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={avatar} alt="" className="h-full w-full object-cover" />
@@ -367,24 +367,15 @@ export function MeSky({
               currentUser.name.slice(0, 1)
             )}
           </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate type-stat text-[var(--color-ink-blue)]">
-              {currentUser.name}
-            </p>
-            <p className="type-body-sm text-[var(--color-ink-blue)] opacity-75">
-              {groupLabel}
-            </p>
-          </div>
-          <span className="flex shrink-0 items-center gap-0.5">
-            <span className="type-label text-[var(--color-ink-blue)]">
-              계정 설정
-            </span>
-            <ChevronRight
-              size={18}
-              className="shrink-0 text-[var(--color-ink-blue)] opacity-60"
-              strokeWidth={1.75}
-            />
-          </span>
+          <p className="min-w-0 flex-1 truncate type-body-sm font-medium text-[var(--color-ink-blue)]">
+            {[currentUser.name, groupLabel].filter(Boolean).join(" · ")}
+          </p>
+          <Settings
+            size={18}
+            className="shrink-0 text-[var(--color-ink-blue)] opacity-60"
+            strokeWidth={1.75}
+            aria-hidden
+          />
         </Link>
 
         <div className="grid grid-cols-2 gap-2 text-center">
