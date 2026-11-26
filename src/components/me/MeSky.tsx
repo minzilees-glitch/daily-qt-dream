@@ -376,7 +376,7 @@ export function MeSky({
             </p>
           </div>
           <span className="flex shrink-0 items-center gap-0.5">
-            <span className="type-body-sm text-[var(--color-ink-blue)] opacity-75">
+            <span className="type-label text-[var(--color-ink-blue)]">
               계정 설정
             </span>
             <ChevronRight
